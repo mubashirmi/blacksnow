@@ -1,0 +1,14 @@
+.textInput {
+    background: #2e2e2e;
+    color: white;
+    border: none;
+
+    &::placeholder {
+        color: white;
+    }
+}
+
+.link:hover {
+    font-weight: bold;
+    text-decoration: none !important;
+}

@@ -1,0 +1,1 @@
+*.tsx text eol=lf\n*.ts text eol=lf\n*.js text eol=lf\n*.json text eol=lf\n*.yaml text eol=lf

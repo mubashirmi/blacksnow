@@ -1,0 +1,11 @@
+.next
+.cache
+coverage
+.idea
+pnpm-lock.json
+public
+node_modules
+next-env.d.ts
+next.config.ts
+jest.config.ts
+amplify

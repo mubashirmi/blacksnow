@@ -1,0 +1,16 @@
+{
+  "resourceName": "blackice",
+  "policyUUID": "71d0c2b9",
+  "bucketName": "blackicef",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

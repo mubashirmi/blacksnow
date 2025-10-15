@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-blackice-dev-91201-authRole",
+      "UnauthRoleArn": "arn:aws:iam::861312056417:role/amplify-blackice-dev-91201-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::861312056417:role/amplify-blackice-dev-91201-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-blackice-dev-91201-deployment",
+      "UnauthRoleName": "amplify-blackice-dev-91201-unauthRole",
+      "StackName": "amplify-blackice-dev-91201",
+      "StackId": "arn:aws:cloudformation:us-east-1:861312056417:stack/amplify-blackice-dev-91201/5bc67f00-28bd-11ef-8856-12252cfb8555",
+      "AmplifyAppId": "d3bfvz68ja3iy"
+    },
+    "categories": {
+      "auth": {
+        "blackicee9cfe810": {}
+      },
+      "storage": {
+        "blackice": {}
+      }
+    }
+  }
+}

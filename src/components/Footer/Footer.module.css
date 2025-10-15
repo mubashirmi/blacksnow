@@ -1,0 +1,5 @@
+.link:hover {
+    font-weight: bold;
+    text-decoration: none !important;
+    color: black !important;
+}

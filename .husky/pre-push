@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm run prettier ||
+(
+   echo 'formatting failed, please fix before committing'
+   false;
+)
+pnpm run lint ||
+(
+   echo 'linting failed, please fix before committing'
+   false;
+)
+pnpm run build ||
+(
+    echo 'Build Failed, Check Types/Lint'
+    false;
+)

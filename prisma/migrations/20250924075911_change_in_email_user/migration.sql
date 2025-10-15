@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "EmailJobResult" ALTER COLUMN "repeated" DROP NOT NULL,
+ALTER COLUMN "time" DROP NOT NULL;

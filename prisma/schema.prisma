@@ -1,0 +1,417 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEXT_PRIVATE_DATABASE_URL")
+}
+
+// schema.prisma (only the Auth model changed: role -> roles)
+model Auth {
+  id                        Int                         @id @default(autoincrement())
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  email                     String                      @unique
+  firstName                 String
+  lastName                  String
+  password                  String
+  // was: role String?
+  roles                     Role[]                      @default([]) // 👈 multiple roles
+  referralProducts          ReferralProducts[]
+  adminStripeConnectId      String?                     @unique
+  Checkouts                 Checkout[]
+  Subscription              Subscription[]
+  referredSales             Auth[]                      @relation("AffiliateToSales")
+  referredBy                Auth?                       @relation("AffiliateToSales", fields: [referredById], references: [id])
+  referredById              Int?
+  digitalBillboards         DigitalBillboard[] // many billboards per Auth
+  emailMarketingCredentials emailMarketingCredentials[]
+  emailUsers                EmailUser[] // <— updated type name
+  EmailJobResult            EmailJobResult[]
+  AdminPayouts              AdminPayouts[]
+  AdminRevenue              AdminRevenue[]
+}
+
+model AdminPayouts {
+  id                   Int      @id @default(autoincrement())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  amount               String
+  adminStripeConnectId String
+  auth                 Auth     @relation(fields: [authId], references: [id])
+  authId               Int
+}
+
+enum Role {
+  Affiliate
+  Sales
+  Admin
+  NewsLetter
+  Rsvp
+  DigitalBillboard
+}
+
+model emailMarketingCredentials {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  email       String
+  appPassword String // (typo fixed)
+  authId      Int      @unique // 👈 makes it one-to-one
+
+  Auth Auth @relation(fields: [authId], references: [id])
+}
+
+model ReferralProducts {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  productName String
+  productLink String
+  clicks      Int      @default(0)
+  Auth        Auth     @relation(fields: [authId], references: [id])
+  authId      Int
+  // 1-to-1 relation with Conversions
+  conversion  Int      @default(0)
+  comission   Int      @default(0)
+
+  @@unique([authId, productLink]) // one row per (user, product)
+  @@index([authId])
+}
+
+model AdminRevenue {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  revenue   Int      @default(0)
+  Auth      Auth     @relation(fields: [authId], references: [id])
+  authId    Int      @unique
+
+  @@index([authId])
+}
+
+model EmailUser {
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  email          String
+  fullName       String
+  auth           Auth             @relation(fields: [authId], references: [id])
+  authId         Int
+  EmailJobResult EmailJobResult[]
+
+  @@unique([authId, email]) // optional: prevent duplicates per auth
+  @@index([authId])
+}
+
+model EmailJobResult {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime?   @updatedAt
+  subject      String
+  text         String
+  runAt        DateTime?
+  timeInterval String? // time-only column in the DB
+  repeated     Boolean?    @default(false)
+  auth         Auth        @relation(fields: [authId], references: [id])
+  emailUser    EmailUser   @relation(fields: [emailUserId], references: [id])
+  authId       Int
+  emailUserId  Int
+  status       EmailStatus @default(pending)
+
+  @@index([authId])
+  @@index([emailUserId])
+}
+
+enum EmailStatus {
+  pending
+  processing
+  sent
+  failed
+}
+
+model User {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  deleted           Boolean     @default(false)
+  cognitoId         String?     @unique
+  email             String?     @unique
+  phone             String?
+  firstName         String?
+  lastName          String?
+  roleId            Int
+  disabled          Boolean
+  digitalBillboards Int         @default(0)
+  pageHits          Int         @default(0)
+  Advertiser        Advertiser?
+  Affiliate         Affiliate?
+  SignUp            SignUp[]
+}
+
+model SignUp {
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deleted     Boolean    @default(false)
+  userId      Int?
+  calendarId  Int
+  affiliateId Int?
+  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
+  calendar    Calendar   @relation(fields: [calendarId], references: [id])
+  salesMember User?      @relation(fields: [userId], references: [id])
+}
+
+model Calendar {
+  id                 Int                   @id @default(autoincrement())
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  date               DateTime
+  time               String
+  limit              Int?
+  compareDate        DateTime              @default(now())
+  SignUp             SignUp[]
+  userBroughtProduct UserBroughtProducts[]
+}
+
+model UserBroughtProducts {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  email      String?  @unique
+  phone      String?
+  firstName  String?
+  lastName   String?
+  calendarId Int
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model NewsLetter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  email     String
+  firstName String
+  lastName  String
+}
+
+model NewsLetterContent {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  published Boolean  @default(false)
+  title     String
+  content   String
+}
+
+model Checkout {
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deleted           Boolean  @default(false)
+  transactionId     String?
+  AuthId            Int
+  amount            Float
+  paid              Boolean  @default(false)
+  auth              Auth     @relation(fields: [AuthId], references: [id])
+  product           String?
+  cancelSubscripton Boolean
+}
+
+model FrequentQuestions {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  title     String
+  text      String
+}
+
+model Affiliate {
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deleted           Boolean  @default(false)
+  approved          Boolean
+  link              String
+  uuid              String
+  userId            Int      @unique
+  digitalBillboards Int      @default(0)
+  pageHits          Int      @default(0)
+  User              User     @relation(fields: [userId], references: [id])
+  SignUp            SignUp[]
+}
+
+model Careers {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deleted     Boolean      @default(false)
+  title       String?
+  description String?
+  location    String?
+  salary      Int?
+  image       String?
+  type        Type
+  Applicants  Applicants[]
+}
+
+enum Type {
+  Job
+  Recruitment
+}
+
+model Applicants {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  careersId Int
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  resume    String
+  career    Careers  @relation(fields: [careersId], references: [id])
+}
+
+model Consultation {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deleted        Boolean  @default(false)
+  name           String
+  companyName    String
+  location       String
+  title          String
+  email          String
+  phone          String
+  numOfPositions Int
+  dateTime       DateTime
+}
+
+model Blogpost {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
+  title       String
+  slug        String   @unique
+  postContent String
+  category    String
+  views       Int      @default(0)
+  headerImage String?
+  featured    Boolean  @default(false)
+}
+
+model Subscription {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deleted       Boolean  @default(false)
+  transactionId String?
+  amount        Float
+  paid          Boolean  @default(false)
+  AuthId        Int      @unique
+  auth          Auth     @relation(fields: [AuthId], references: [id])
+}
+
+model Notes {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  title      String
+  content    String
+  authorName String?
+}
+
+model Advertiser {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deleted       Boolean  @default(false)
+  approved      Boolean?
+  userId        Int      @unique
+  website       String?
+  twitter       String?
+  youtube       String?
+  facebook      String?
+  linkedIn      String?
+  instagram     String?
+  businessImage String?
+  companyName   String?
+  podcast       String?
+  companyBlurb  String?
+  User          User     @relation(fields: [userId], references: [id])
+}
+
+model Legal {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  title     String
+  content   String?
+}
+
+model AffiliateAgreement {
+  id                 Int      @id @default(autoincrement())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  affiliateAgreement String
+}
+
+model Gdpr {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  gdpr      String
+}
+
+model Terms {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  terms     String
+}
+
+model RiskDisclosure {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  riskDisclosure String
+}
+
+model PrivacyPolicy {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  privacyPolicy String
+}
+
+model DigitalBillboard {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  fullName    String
+  website     String
+  podcast     String
+  twitter     String
+  youTube     String
+  facebook    String
+  image       String
+  companyName String
+  description String
+  status      Status
+  authId      Int? // optional foreign key
+  Auth        Auth?    @relation(fields: [authId], references: [id]) // optional relation
+}
+
+enum Status {
+  Approved
+  NotApproved
+  Rejected
+}

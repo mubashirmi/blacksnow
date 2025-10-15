@@ -1,0 +1,158 @@
+import { AuthProvider } from '@/lib/auth';
+import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ReactNode } from 'react';
+import { HamburgerMenu } from '../hamburger-menu';
+
+function CoreLayout({ children }: { children: ReactNode }) {
+    return (
+        <AuthProvider>
+            <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#2c7bbe]'>
+                <div className='container mx-auto px-4 sm:px-6 md:px-8 py-2'>
+                    <div className='flex items-center justify-between'>
+                        <Link href={'/'}>
+                            <div className='flex items-center space-x-2'>
+                                <div className='relative group'>
+                                    <div className='relative transform transition-transform duration-300'>
+                                        <Image src='/logocolored.png' alt='Black Snow Logo' width={45} height={45} className='object-contain drop-shadow-2xl' />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className='text-[30px] sm:text-[44px] uppercase font-extralight md:font-light text-[#4cc7e8]  fontArchivoBlack'>
+                                        Black Snow
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <div className='flex items-center space-x-4'>
+                            <div className='cursor-pointer'>
+                                <HamburgerMenu />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Page Content */}
+            <main className='pt-16 sm:pt-20'>{children}</main>
+
+            {/* Footer */}
+            <footer className='relative bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-t border-[#2c7bbe]/20 pt-12 pb-7 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-7xl relative z-10'>
+                    <div className='grid lg:grid-cols-5 gap-8 sm:gap-12'>
+                        <div className='space-y-8 col-span-2'>
+                            <div className='flex items-center space-x-4'>
+                                <div className='relative group'>
+                                    <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
+                                        <Image
+                                            src='/logocolored.png'
+                                            alt='Black Snow Logo'
+                                            width={170}
+                                            height={170}
+                                            className='object-contain drop-shadow-2xl'
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className='flex space-x-4'>
+                                {[
+                                    { icon: Facebook, href: '#' },
+                                    { icon: Instagram, href: '#' },
+                                    { icon: Twitter, href: '#' },
+                                    { icon: Linkedin, href: '#' },
+                                ].map((social, index) => (
+                                    <Link
+                                        key={index}
+                                        href={social.href}
+                                        className='w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-xl flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group transform hover:scale-110'
+                                    >
+                                        <social.icon className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className='space-y-5'>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Company</h4>
+                            <div className='space-y-3'>
+                                {[
+                                    { name: 'Our Story', href: '/about' },
+                                    { name: 'Careers', href: '/careers' },
+                                    { name: 'Blogs', href: '/blogdirectory' },
+                                    { name: 'FAQ', href: '/faq' },
+                                    { name: 'Pricing', href: '/pricing' },
+                                    { name: 'Support', href: '/support' },
+                                ].map((link, index) => (
+                                    <Link
+                                        key={index}
+                                        href={link.href}
+                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                    >
+                                        <span className='flex items-center'>
+                                            {link.name}
+                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className='space-y-5'>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Resources</h4>
+                            <div className='space-y-3'>
+                                {[
+                                    { name: 'Affiliate Program', href: '/affiliate' },
+                                    { name: 'Webinar RSVP', href: '/rsvp' },
+                                    { name: 'Digital Billboard', href: '/advertising' },
+                                    { name: 'Email/SMS Marketing', href: '/emailMarketing' },
+                                    { name: 'Consultation', href: '/consultation' },
+                                ].map((link, index) => (
+                                    <Link
+                                        key={index}
+                                        href={link.href}
+                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                    >
+                                        <span className='flex items-center'>
+                                            {link.name}
+                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className='space-y-5'>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Legal</h4>
+                            <div className='space-y-3'>
+                                {[
+                                    { name: 'Affiliate Agreement', href: '/affiliateagreement' },
+                                    { name: 'Investment Risk Disclosure', href: '/riskdisclosure' },
+                                    { name: 'Terms & Conditions', href: '/terms' },
+                                    { name: 'Privacy Policy', href: '/privacy' },
+                                    { name: 'GDPR', href: '/gdpr' },
+                                ].map((link, index) => (
+                                    <Link
+                                        key={index}
+                                        href={link.href}
+                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                    >
+                                        <span className='flex items-center'>
+                                            {link.name}
+                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <p className='text-gray-400 font-semibold text-center mt-12 text-sm sm:text-base'>© 2024 Black Snow. All rights reserved.</p>
+                </div>
+            </footer>
+        </AuthProvider>
+    );
+}
+
+export { CoreLayout };
