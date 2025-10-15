@@ -1,6 +1,22 @@
 'use client';
 
-import { BarChart3, BookOpen, Calendar, FileText, HelpCircle, LogOut, Mail, Monitor, Scale, StickyNote, TrendingUp, UserCheck, Users, Target, LinkIcon } from 'lucide-react';
+import {
+    BarChart3,
+    BookOpen,
+    Calendar,
+    FileText,
+    HelpCircle,
+    LinkIcon,
+    LogOut,
+    Mail,
+    Monitor,
+    Scale,
+    StickyNote,
+    Target,
+    TrendingUp,
+    UserCheck,
+    Users,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
