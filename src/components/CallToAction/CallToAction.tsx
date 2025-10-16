@@ -2,9 +2,6 @@ import { Button, Center, Group, Image, Paper, Stack, Title, useMantineTheme } fr
 import { IconArrowRight } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 
-
-// sdfsdfsadfasdfasdfaskfkjsanfj
-
 const CallToAction = () => {
     const theme = useMantineTheme();
     const router = useRouter();
