@@ -28,6 +28,7 @@
 .fontArchivoBlack {
     font-family: 'Archivo Black', sans-serif;
     font-weight: 700;
+    /* line-height: 1; */
 }
 .whiteTextInput .mantine-InputPlaceholder-placeholder {
     color: black;
