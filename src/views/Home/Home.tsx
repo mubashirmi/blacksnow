@@ -8,7 +8,6 @@ import { useAuth } from '@/lib/auth';
 import {
     Activity,
     AlertTriangle,
-    ArrowRight,
     Award,
     BarChart2,
     Calendar,
@@ -24,7 +23,6 @@ import {
     TrendingUp,
     X,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
@@ -291,10 +289,10 @@ function Home() {
                         <div className='relative animate-slide-in-right'>
                             <div className='relative overflow-hidden'>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='flex items-center justify-center w-full sm: w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                         <LottieAnimation
                                             src='/animations/growthChartIcon.json'
-                                            className='w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
+                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
                                             loop={true}
                                             autoplay={true}
                                         />
@@ -789,7 +787,7 @@ function Home() {
                     </div>
 
                     {/* Revolutionary CTA Section */}
-                    <div className='text-center mt-24 animate-slide-in-up delay-600'>
+                    {/* <div className='text-center mt-24 animate-slide-in-up delay-600'>
                         <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-3xl p-12 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 max-w-4xl mx-auto'>
                             <h3 className='text-4xl font-black text-white mb-6'>
                                 Join our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliate</span> Program
@@ -828,12 +826,12 @@ function Home() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 
             {/* Newsletter Section - Enhanced with Learn More Lottie Animation in a different position */}
-            <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative pt-20 pb-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='text-center mb-16'>
                         <h2 className='text-4xl lg:text-5xl font-black text-white mb-6'>
@@ -893,16 +891,13 @@ function Home() {
                 </div>
             </section>
 
-            <section className='relative py-40 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] overflow-hidden'>
+            {/* <section className='relative py-40 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] overflow-hidden'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-20 items-center'>
-                        {/* LEFT: Master Stock List Content */}
                         <div className='space-y-12 animate-slide-in-left'>
-                            {/* Premium Status Badge */}
                             <div className='rounded-[100px] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in uppercase inline-block'>
                                 Elite Stock Intelligence
                             </div>
-                            {/* Headline */}
                             <div className='space-y-8'>
                                 <h2 className='text-5xl lg:text-6xl font-black leading-tight'>
                                     <span className='text-white'>Build and Prospect a</span>
@@ -916,7 +911,6 @@ function Home() {
                                     <span className='text-[#4cc7e8] font-bold'>Market Movers</span>
                                 </p>
                             </div>
-                            {/* Learning Points List */}
                             <div className='space-y-5'>
                                 {[
                                     'Learn To Create Options Trading Lists',
@@ -932,9 +926,7 @@ function Home() {
                                         className='group relative transform hover:scale-105 transition-all duration-300'
                                         style={{ animationDelay: `${index * 200}ms` }}
                                     >
-                                        {/* Glowing Background */}
                                         <div className='absolute inset-0 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
-                                        {/* Main Content */}
                                         <div className='relative bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10 backdrop-blur-2xl rounded-2xl p-5 border border-[#4cc7e8]/30 hover:border-opacity-60 transition-all duration-300'>
                                             <div className='flex items-center space-x-4'>
                                                 <div className='w-3 h-3 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full shadow-xl animate-pulse'></div>
@@ -945,7 +937,6 @@ function Home() {
                                 ))}
                             </div>
                         </div>
-                        {/* RIGHT: Lottie Animation */}
                         <div className='relative animate-slide-in-right flex justify-center'>
                             <div className='relative overflow-hidden w-full h-[600px] max-w-full max-h-full'>
                                 <LottieAnimation src='/animations/xyzicon.json' className='drop-shadow-2xl w-full h-full object-contain' />
@@ -953,7 +944,7 @@ function Home() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* --- MODALS --- */}
 

@@ -27,7 +27,7 @@ export default function SalesProfilePage() {
                 return;
             }
 
-            const response = await fetch(`/api/v2/email-users?authId=$56`);
+            const response = await fetch(`/api/v2/email-users?authId=56`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch users');

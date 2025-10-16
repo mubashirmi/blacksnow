@@ -10,23 +10,26 @@ function CoreLayout({ children }: { children: ReactNode }) {
         <AuthProvider>
             <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#2c7bbe]'>
                 <div className='container mx-auto px-4 sm:px-6 md:px-8 py-2'>
-                    <div className='flex items-center justify-between'>
-                        <Link href={'/'}>
-                            <div className='flex items-center space-x-2'>
+                    <div className='flex items-center justify-between md:justify-start'>
+                        {/* Logo - Center on mobile (with absolute positioning), Left on md+ */}
+                        <div className='absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center space-x-2'>
+                            <Link href={'/'}>
                                 <div className='relative group'>
                                     <div className='relative transform transition-transform duration-300'>
                                         <Image src='/logocolored.png' alt='Black Snow Logo' width={45} height={45} className='object-contain drop-shadow-2xl' />
                                     </div>
                                 </div>
-                                <div>
-                                    <div className='text-[30px] sm:text-[44px] uppercase font-extralight md:font-light text-[#4cc7e8]  fontArchivoBlack'>
-                                        Black Snow
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
 
-                        <div className='flex items-center space-x-4'>
+                            <Link href={'/'}>
+                                <div className='text-[24px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#4cc7e8] fontArchivoBlack whitespace-nowrap'>
+                                    Black Snow
+                                </div>
+                            </Link>
+                        </div>
+
+                        {/* Hamburger - Right on all screens */}
+                        <div className='ml-auto flex items-center space-x-4'>
                             <div className='cursor-pointer'>
                                 <HamburgerMenu />
                             </div>

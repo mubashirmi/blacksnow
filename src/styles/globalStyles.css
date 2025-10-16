@@ -1,6 +1,6 @@
-@import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+@import 'tailwindcss';
 
 .outlineButton {
     background-color: black !important;
@@ -28,6 +28,7 @@
 }
 .fontArchivoBlack {
     font-family: 'Archivo Black', sans-serif;
+    font-weight: 700;
 }
 .whiteTextInput .mantine-InputPlaceholder-placeholder {
     color: black;

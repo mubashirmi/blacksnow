@@ -30,7 +30,7 @@ function About() {
     return (
         <div className='min-h-screen bg-[#050608]'>
             {/* Hero Section */}
-            <section className='relative pt-20 pb-7 px-8'>
+            {/* <section className='relative pt-20 pb-7 px-8'>
                 <div className='container mx-auto max-w-6xl relative z-10'>
                     <div className='text-center'>
                         <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>ABOUT BLACK SNOW</Badge>
@@ -40,7 +40,7 @@ function About() {
                         <div className='w-32 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto'></div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Our Story Section */}
             <section className='relative py-20 px-8'>
