@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req;
     const { id } = req.query;
+    console.log("test")
     try {
         if (method === 'GET') {
             const affiliateData = await prisma.referralProducts.findMany({
