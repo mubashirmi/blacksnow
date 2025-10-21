@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock, Mail, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -9,9 +9,8 @@ import { useForm } from 'react-hook-form';
 // shadcn/ui
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 // OPTIONAL: keep your existing Card look inside the modal
 import { Card, CardContent } from '@/components/ui/card';
@@ -185,7 +184,7 @@ export default function AuthModal({
             }}
         >
             <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent'>
-                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl shadow-[#2c7bbe]/20'>
+                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20'>
                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
 
                     <DialogHeader className='p-8 text-center'>
@@ -210,10 +209,10 @@ export default function AuthModal({
                             {isSignUp && (
                                 <>
                                     <div className='space-y-2'>
-                                        <Label htmlFor='firstName' className='text-white font-semibold flex items-center space-x-2'>
+                                        {/* <Label htmlFor='firstName' className='text-white font-semibold flex items-center space-x-2'>
                                             <User className='w-4 h-4 text-[#4cc7e8]' />
                                             <span>First Name</span>
-                                        </Label>
+                                        </Label> */}
                                         <div className='relative'>
                                             <Input
                                                 id='firstName'
@@ -233,10 +232,10 @@ export default function AuthModal({
                                     </div>
 
                                     <div className='space-y-2'>
-                                        <Label htmlFor='lastName' className='text-white font-semibold flex items-center space-x-2'>
+                                        {/* <Label htmlFor='lastName' className='text-white font-semibold flex items-center space-x-2'>
                                             <User className='w-4 h-4 text-[#4cc7e8]' />
                                             <span>Last Name</span>
-                                        </Label>
+                                        </Label> */}
                                         <div className='relative'>
                                             <Input
                                                 id='lastName'
@@ -258,10 +257,10 @@ export default function AuthModal({
                             )}
 
                             <div className='space-y-2'>
-                                <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
+                                {/* <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
                                     <Mail className='w-4 h-4 text-[#4cc7e8]' />
                                     <span>Email Address</span>
-                                </Label>
+                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='email'
@@ -278,10 +277,10 @@ export default function AuthModal({
                             </div>
 
                             <div className='space-y-2'>
-                                <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
+                                {/* <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
                                     <Lock className='w-4 h-4 text-[#4cc7e8]' />
                                     <span>Password</span>
-                                </Label>
+                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='password'
@@ -344,16 +343,11 @@ export default function AuthModal({
                         </form>
                     </CardContent>
 
-                    <DialogFooter className='px-8 pb-6'>
-                        <DialogClose asChild>
-                            <Button
-                                variant='ghost'
-                                className='w-fit text-gray-300 hover:text-white cursor-pointer hover:bg-black/30 duration-200 ease-in-out transition-all rounded-lg py-2 px-8 flex justify-center items-center'
-                            >
-                                Close
-                            </Button>
-                        </DialogClose>
-                    </DialogFooter>
+                    <DialogClose asChild>
+                        <button className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'>
+                            <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        </button>
+                    </DialogClose>
                 </Card>
             </DialogContent>
         </Dialog>

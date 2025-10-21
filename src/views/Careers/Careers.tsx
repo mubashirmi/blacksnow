@@ -407,6 +407,7 @@ function Careers() {
                                 First Name
                             </Label>
                             <Input
+                                placeholder='Enter your first name'
                                 id='firstName'
                                 name='firstName'
                                 value={formData.firstName}
@@ -420,6 +421,7 @@ function Careers() {
                                 Last Name
                             </Label>
                             <Input
+                                placeholder='Enter your last name'
                                 id='lastName'
                                 name='lastName'
                                 value={formData.lastName}
@@ -429,10 +431,11 @@ function Careers() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor='email' className='text-gray-300'>
+                            {/* <Label htmlFor='email' className='text-gray-300'>
                                 Email
-                            </Label>
+                            </Label> */}
                             <Input
+                                placeholder='Enter your email'
                                 id='email'
                                 name='email'
                                 type='email'
@@ -443,10 +446,11 @@ function Careers() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor='phone' className='text-gray-300'>
+                            {/* <Label htmlFor='phone' className='text-gray-300'>
                                 Phone
-                            </Label>
+                            </Label> */}
                             <Input
+                                placeholder='Enter your phone number'
                                 id='phone'
                                 name='phone'
                                 value={formData.phone}

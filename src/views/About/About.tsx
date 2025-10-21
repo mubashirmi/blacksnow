@@ -3,7 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, Award, BookOpen, Brain, Shield, Star, Target, Users, Zap } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Target, Users, Zap } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 
 function About() {
@@ -98,29 +99,9 @@ function About() {
                         </div>
 
                         {/* Simplified Illustration */}
-                        <div className='relative'>
-                            <div className='relative w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center mx-auto'>
-                                <svg
-                                    className='w-64 h-64 text-[#4cc7e8]'
-                                    viewBox='0 0 200 200'
-                                    fill='none'
-                                    stroke='currentColor'
-                                    strokeWidth='3'
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                >
-                                    <ellipse cx='100' cy='140' rx='40' ry='30' />
-                                    <circle cx='100' cy='80' r='35' />
-                                    <circle cx='100' cy='80' r='45' fill='none' strokeDasharray='5,5' />
-                                    <circle cx='90' cy='75' r='3' fill='currentColor' />
-                                    <circle cx='110' cy='75' r='3' fill='currentColor' />
-                                    <path d='M95 85 Q100 90 105 85' />
-                                    <line x1='80' y1='170' x2='80' y2='190' />
-                                    <line x1='95' y1='170' x2='95' y2='190' />
-                                    <line x1='105' y1='170' x2='105' y2='190' />
-                                    <line x1='120' y1='170' x2='120' y2='190' />
-                                    <path d='M140 140 Q160 130 170 120' />
-                                </svg>
+                        <div className='relative w-full'>
+                            <div className='relative w-full sm:w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center mx-auto'>
+                                <Image width={100} height={100} src='/logocolored.png' alt='Black Snow Logo' className='w-[90%]' />
                             </div>
                         </div>
                     </div>
@@ -230,7 +211,7 @@ function About() {
             </section>
 
             {/* Stats Section */}
-            <section className='relative py-32 px-8'>
+            {/* <section className='relative py-32 px-8'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>OUR IMPACT</Badge>
@@ -261,7 +242,7 @@ function About() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Call to Action Section with Handshake Animation */}
             <section className='relative py-32 px-8 bg-[#0a0b0f]'>

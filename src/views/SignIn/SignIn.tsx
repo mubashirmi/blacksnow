@@ -4,7 +4,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import Image from 'next/image';
@@ -164,10 +163,10 @@ function SignIn() {
                             {isSignUp && (
                                 <>
                                     <div className='space-y-2'>
-                                        <Label htmlFor='firstName' className='text-white font-semibold flex items-center space-x-2'>
+                                        {/* <Label htmlFor='firstName' className='text-white font-semibold flex items-center space-x-2'>
                                             <User className='w-4 h-4 text-[#4cc7e8]' />
                                             <span>First Name</span>
-                                        </Label>
+                                        </Label> */}
                                         <div className='relative'>
                                             <Input
                                                 id='firstName'
@@ -187,10 +186,10 @@ function SignIn() {
                                     </div>
 
                                     <div className='space-y-2'>
-                                        <Label htmlFor='lastName' className='text-white font-semibold flex items-center space-x-2'>
+                                        {/* <Label htmlFor='lastName' className='text-white font-semibold flex items-center space-x-2'>
                                             <User className='w-4 h-4 text-[#4cc7e8]' />
                                             <span>Last Name</span>
-                                        </Label>
+                                        </Label> */}
                                         <div className='relative'>
                                             <Input
                                                 id='lastName'
@@ -212,10 +211,10 @@ function SignIn() {
                             )}
 
                             <div className='space-y-2'>
-                                <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
+                                {/* <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
                                     <Mail className='w-4 h-4 text-[#4cc7e8]' />
                                     <span>Email Address</span>
-                                </Label>
+                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='email'
@@ -232,10 +231,10 @@ function SignIn() {
                             </div>
 
                             <div className='space-y-2'>
-                                <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
+                                {/* <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
                                     <Lock className='w-4 h-4 text-[#4cc7e8]' />
                                     <span>Password</span>
-                                </Label>
+                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='password'

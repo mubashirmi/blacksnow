@@ -23,6 +23,7 @@ import {
     TrendingUp,
     X,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
@@ -830,7 +831,7 @@ function Home() {
                 </div>
             </section>
 
-            {/* Newsletter Section - Enhanced with Learn More Lottie Animation in a different position */}
+            {/* Newsletter Section - Enhanced with Learn More Lottie Animation */}
             <section className='relative pt-20 pb-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='text-center mb-16'>
@@ -847,6 +848,7 @@ function Home() {
                         </p>
                     </div>
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
+                        {/* LEFT - Benefits List */}
                         <div className='space-y-6'>
                             {[
                                 'Get your weekly stock picks for day trades, swing trades, options and dividends',
@@ -863,26 +865,34 @@ function Home() {
                                 </div>
                             ))}
                         </div>
-                        <div className='relative'>
-                            {/* Learn More Animation positioned at top right of the subscription form */}
-                            <div className='absolute -top-20 sm:-top-15 -right-0 sm:-right-15 z-10'>
-                                <div className='w-28 overflow-hidden h-28 bg-gradient-to-br from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-sm'>
-                                    <LottieAnimation src='/animations/LearnMore2.json' className='w-24 h-24' loop={true} autoplay={true} />
-                                </div>
+
+                        {/* RIGHT - Lottie Animation and Subscribe Form */}
+                        <div className='space-y-8'>
+                            {/* Learn More Lottie Animation */}
+                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
+                                <LottieAnimation
+                                    src='/animations/LearnMore2.json'
+                                    className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
+                                    loop={true}
+                                    autoplay={true}
+                                />
                             </div>
-                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-3xl p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20'>
-                                <div className='flex flex-col gap-4'>
+
+                            {/* Newsletter Signup Form */}
+                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20'>
+                                <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
                                     <Input
-                                        placeholder='Join Our Newsletter'
-                                        className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-lg py-6'
+                                        placeholder='Join our Newsletter'
+                                        className='flex-1 bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base sm:text-lg py-4 sm:py-5 md:py-6'
                                         readOnly
+                                        onClick={openSubscribeFlow}
                                     />
                                     <Button
                                         onClick={openSubscribeFlow}
-                                        className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-6 text-lg shadow-lg cursor-pointer'
+                                        className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white px-6 sm:px-8 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black cursor-pointer shadow-lg'
                                         disabled={authLoading || checkingAccess}
                                     >
-                                        Subscribe
+                                        {checkingAccess ? 'Checking…' : 'Subscribe'}
                                     </Button>
                                 </div>
                             </div>
@@ -972,28 +982,35 @@ function Home() {
 
             {/* 2) Signup Required */}
             <Dialog open={isSignupModalOpen} onOpenChange={setIsSignupModalOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-4xl rounded-4xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <button
                         onClick={() => setIsSignupModalOpen(false)}
                         className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
                     >
                         <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-                    <DialogHeader className='space-y-6 pb-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Calendar className='w-6 h-6 text-white' />
+                    <DialogHeader className='space-y-6'>
+                        <div className='flex items-center justify-center flex-col space-x-4'>
+                            <div className='w-16 h-16 mb-4 p-2 border-[#2c7bbe] border-2 rounded-2xl flex items-center justify-center shadow-xl'>
+                                <Image
+                                    src='/logocolored.png'
+                                    alt='Black Snow Logo'
+                                    width={100}
+                                    height={100}
+                                    className='object-contain w-full h-full  drop-shadow-2xl'
+                                    priority
+                                />
                             </div>
                             <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogTitle className='text-2xl font-black text-white text-center mb-2'>Signup Required</DialogTitle>
+                                <DialogDescription className='text-[#4cc7e8] font-semibold text-center'>
                                     You can&apos;t access the newsletter feature until you sign up.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
                     <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your subscription.</p>
+                        {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your subscription.</p> */}
                         <Button
                             onClick={() => router.push('/login?signup')}
                             className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
@@ -1062,34 +1079,34 @@ function Home() {
 
                     <div className='space-y-5'>
                         <div>
-                            <label className='text-sm text-gray-300 mb-2 block'>First Name</label>
+                            {/* <label className='text-sm text-gray-300 mb-2 block'>First Name</label> */}
                             <Input
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
-                                placeholder='First name'
+                                placeholder='Enter your first name'
                                 className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
                             />
                             <FieldError msg={formErrors.firstName} />
                         </div>
 
                         <div>
-                            <label className='text-sm text-gray-300 mb-2 block'>Last Name</label>
+                            {/* <label className='text-sm text-gray-300 mb-2 block'>Last Name</label> */}
                             <Input
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
-                                placeholder='Last name'
+                                placeholder='Enter your last name'
                                 className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
                             />
                             <FieldError msg={formErrors.lastName} />
                         </div>
 
                         <div>
-                            <label className='text-sm text-gray-300 mb-2 block'>Email</label>
+                            {/* <label className='text-sm text-gray-300 mb-2 block'>Email</label> */}
                             <Input
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 type='email'
-                                placeholder='you@example.com'
+                                placeholder='Enter your email'
                                 className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
                             />
                             <FieldError msg={formErrors.email} />

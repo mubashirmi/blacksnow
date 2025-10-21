@@ -372,10 +372,8 @@ function Page() {
                     </DialogHeader>
                     <form onSubmit={handleFormSubmit} className='space-y-4'>
                         <div>
-                            <Label htmlFor='firstName' className='text-gray-300'>
-                                First Name
-                            </Label>
                             <Input
+                                placeholder='Enter your first name'
                                 id='firstName'
                                 name='firstName'
                                 value={formData.firstName}
@@ -385,10 +383,8 @@ function Page() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor='lastName' className='text-gray-300'>
-                                Last Name
-                            </Label>
                             <Input
+                                placeholder='Enter your last name'
                                 id='lastName'
                                 name='lastName'
                                 value={formData.lastName}
@@ -398,10 +394,8 @@ function Page() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor='email' className='text-gray-300'>
-                                Email
-                            </Label>
                             <Input
+                                placeholder='Enter your email'
                                 id='email'
                                 name='email'
                                 type='email'
@@ -412,10 +406,8 @@ function Page() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor='phone' className='text-gray-300'>
-                                Phone
-                            </Label>
                             <Input
+                                placeholder='Enter your phone number'
                                 id='phone'
                                 name='phone'
                                 value={formData.phone}

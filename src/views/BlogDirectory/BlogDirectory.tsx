@@ -86,10 +86,6 @@ function BlogDirectory() {
                         <br />
                         <span className='text-white'>Directory</span>
                     </h1>
-
-                    <p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed animate-slide-in-up delay-400'>
-                        Discover expert insights, advanced strategies, and market analysis from our team of professional traders
-                    </p>
                 </div>
             </div>
 

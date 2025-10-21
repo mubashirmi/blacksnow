@@ -4,33 +4,33 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import lottie from 'lottie-web';
-import { ArrowRight, BookOpen, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Monitor, Newspaper, Star, Target, Users, X, Zap } from 'lucide-react';
-import Link from 'next/link';
+// import lottie from 'lottie-web';
+import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function Pricing() {
-    const LottieAnimation = ({ src, loop, autoplay, style }) => {
-        const containerRef = useRef(null);
+    // const LottieAnimation = ({ src, loop, autoplay, style }) => {
+    //     const containerRef = useRef(null);
 
-        useEffect(() => {
-            if (containerRef.current) {
-                const animation = lottie.loadAnimation({
-                    container: containerRef.current,
-                    renderer: 'svg',
-                    loop,
-                    autoplay,
-                    path: src,
-                });
+    //     useEffect(() => {
+    //         if (containerRef.current) {
+    //             const animation = lottie.loadAnimation({
+    //                 container: containerRef.current,
+    //                 renderer: 'svg',
+    //                 loop,
+    //                 autoplay,
+    //                 path: src,
+    //             });
 
-                return () => animation.destroy(); // Cleanup
-            }
-        }, [src, loop, autoplay]);
+    //             return () => animation.destroy(); // Cleanup
+    //         }
+    //     }, [src, loop, autoplay]);
 
-        return <div ref={containerRef} style={style} />;
-    };
+    //     return <div ref={containerRef} style={style} />;
+    // };
 
     const [isClient, setIsClient] = useState(false);
     const [purchasedProducts, setPurchasedProducts] = useState({});
@@ -447,7 +447,7 @@ function Pricing() {
                             WHY CHOOSE BLACK SNOW
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up'>
-                            Premium <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Trading Solutions</span>
+                            Premium <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Solutions</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto animate-slide-in-up delay-200'>
                             Our comprehensive suite of products is designed to give you the competitive edge in today&apos;s dynamic markets.
@@ -498,73 +498,9 @@ function Pricing() {
                 </div>
             </section>
 
-            {/* Call to Action Section with Rocket Animation */}
-            <section className='relative py-24 px-8'>
-                <div className='container mx-auto max-w-5xl'>
-                    <div className='relative bg-gradient-to-br from-[#0a0b0f]/80 to-[#050608]/90 backdrop-blur-xl border border-[#2c7bbe]/30 rounded-3xl p-12 overflow-hidden'>
-                        {/* Background Elements */}
-                        <div className='absolute top-0 right-0 w-64 h-64 bg-[#4cc7e8]/10 rounded-full blur-3xl'></div>
-                        <div className='absolute bottom-0 left-0 w-48 h-48 bg-[#2c7bbe]/10 rounded-full blur-3xl'></div>
-
-                        <div className='relative z-10 grid lg:grid-cols-2 gap-12 items-center'>
-                            {/* Content */}
-                            <div className='text-center lg:text-left'>
-                                <Badge className='bg-[#2c7bbe]/20 text-[#4cc7e8] border border-[#2c7bbe]/30 mb-6'>START YOUR JOURNEY TODAY</Badge>
-                                <h2 className='text-4xl lg:text-5xl font-bold text-white mb-6'>
-                                    Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
-                                    <br />
-                                    Your Trading?
-                                </h2>
-                                <p className='text-xl text-gray-300 mb-8 leading-relaxed'>
-                                    Join thousands of successful traders who have chosen Black Snow to accelerate their trading journey and achieve consistent
-                                    profitability.
-                                </p>
-                                <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                                    <Link href={'/login?signup'}>
-                                        <Button
-                                            size='lg'
-                                            className='cursor-pointer w-full sm:w-fit bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white px-8 py-4 text-lg font-bold'
-                                        >
-                                            <Star className='w-5 h-5 mr-2' />
-                                            Get Started
-                                            <ArrowRight className='w-5 h-5 ml-2' />
-                                        </Button>
-                                    </Link>
-                                    <Link href={'/about'}>
-                                        <Button
-                                            size='lg'
-                                            variant='outline'
-                                            className='cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] w-full sm:w-fit px-8 py-4 text-lg font-bold bg-transparent'
-                                        >
-                                            <BookOpen className='w-5 h-5 mr-2' />
-                                            Learn More
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </div>
-
-                            {/* Rocket Animation */}
-                            <div className='flex justify-center lg:justify-end'>
-                                <div className='relative'>
-                                    {/* Animation Container */}
-                                    <div className='w-96 h-96 relative'>
-                                        <LottieAnimation src='/animations/pricingicon.json' loop={true} autoplay={true} />
-                                    </div>
-
-                                    {/* Decorative Elements */}
-                                    <div className='absolute -top-4 -right-4 w-8 h-8 bg-[#4cc7e8]/30 rounded-full animate-pulse'></div>
-                                    <div className='absolute -bottom-4 -left-4 w-6 h-6 bg-[#2c7bbe]/40 rounded-full animate-pulse delay-1000'></div>
-                                    <div className='absolute top-1/2 -left-8 w-4 h-4 bg-[#4cc7e8]/50 rounded-full animate-bounce delay-500'></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {/* Signup Modal */}
             <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-4xl rounded-4xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <button
                         onClick={() => setShowSignupModal(false)}
                         className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
@@ -572,20 +508,29 @@ function Pricing() {
                         <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
 
-                    <DialogHeader className='space-y-6 pb-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Calendar className='w-6 h-6 text-white' />
+                    <DialogHeader className='space-y-6'>
+                        <div className='flex items-center justify-center flex-col space-x-4'>
+                            <div className='w-16 h-16 mb-4 p-2 border-[#2c7bbe] border-2 rounded-2xl flex items-center justify-center shadow-xl'>
+                                <Image
+                                    src='/logocolored.png'
+                                    alt='Black Snow Logo'
+                                    width={100}
+                                    height={100}
+                                    className='object-contain w-full h-full  drop-shadow-2xl'
+                                    priority
+                                />
                             </div>
                             <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>For purchasing any product please signup.</DialogDescription>
+                                <DialogTitle className='text-2xl font-black text-white text-center mb-2'>Signup Required</DialogTitle>
+                                <DialogDescription className='text-[#4cc7e8] font-semibold text-center'>
+                                    You can&apos;t access the newsletter feature until you sign up.
+                                </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your purchase.</p>
+                        {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your purchase.</p> */}
                         <Button
                             onClick={() => router.push('/login?signup')}
                             className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'

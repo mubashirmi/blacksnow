@@ -626,8 +626,9 @@ function Advertising() {
 
                     <div className='space-y-6 py-4'>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Full Name</Label>
+                            {/* <Label className='text-white font-semibold'>Full Name</Label> */}
                             <Input
+                                placeholder='Enter your Full Name'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.fullName}
                                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -635,8 +636,9 @@ function Advertising() {
                             {errors.fullName && <p className='text-red-500 text-sm'>{errors.fullName}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Website</Label>
+                            {/* <Label className='text-white font-semibold'>Website</Label> */}
                             <Input
+                                placeholder='Enter your Website URL'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.website}
                                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
@@ -644,8 +646,9 @@ function Advertising() {
                             {errors.website && <p className='text-red-500 text-sm'>{errors.website}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Podcast</Label>
+                            {/* <Label className='text-white font-semibold'>Podcast</Label> */}
                             <Input
+                                placeholder='Enter your Podcast Link'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.podcast}
                                 onChange={(e) => setFormData({ ...formData, podcast: e.target.value })}
@@ -653,8 +656,9 @@ function Advertising() {
                             {errors.podcast && <p className='text-red-500 text-sm'>{errors.podcast}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Twitter</Label>
+                            {/* <Label className='text-white font-semibold'>Twitter</Label> */}
                             <Input
+                                placeholder='Enter your Twitter Link'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.twitter}
                                 onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
@@ -662,8 +666,9 @@ function Advertising() {
                             {errors.twitter && <p className='text-red-500 text-sm'>{errors.twitter}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>YouTube</Label>
+                            {/* <Label className='text-white font-semibold'>YouTube</Label> */}
                             <Input
+                                placeholder='Enter your Youtube Link'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.youTube}
                                 onChange={(e) => setFormData({ ...formData, youTube: e.target.value })}
@@ -671,8 +676,9 @@ function Advertising() {
                             {errors.youTube && <p className='text-red-500 text-sm'>{errors.youTube}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Facebook</Label>
+                            {/* <Label className='text-white font-semibold'>Facebook</Label> */}
                             <Input
+                                placeholder='Enter your Facebook Link'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.facebook}
                                 onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
@@ -688,14 +694,15 @@ function Advertising() {
                                     const file = e.target.files?.[0];
                                     if (file) handleImageUpload(file);
                                 }}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white p-2 rounded-2xl w-full'
+                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 border-2 text-white p-2 rounded-lg w-full'
                             />
                             {formData.image && <p className='text-green-400 text-sm break-words'>{truncateImageName(formData.image)}</p>}
                             {errors.image && <p className='text-red-500 text-sm'>{errors.image}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Company Name</Label>
+                            {/* <Label className='text-white font-semibold'>Company Name</Label> */}
                             <Input
+                                placeholder='Enter your Company Name'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.companyName}
                                 onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
@@ -703,8 +710,9 @@ function Advertising() {
                             {errors.companyName && <p className='text-red-500 text-sm'>{errors.companyName}</p>}
                         </div>
                         <div className='space-y-2'>
-                            <Label className='text-white font-semibold'>Description</Label>
+                            {/* <Label className='text-white font-semibold'>Description</Label> */}
                             <Input
+                                placeholder='Enter Description'
                                 className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}

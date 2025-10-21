@@ -65,10 +65,6 @@ function FAQ() {
                         <br />
                         <span className='text-white'>Asked Questions</span>
                     </h1>
-
-                    <p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed animate-slide-in-up delay-400'>
-                        Find answers to common questions about our services, policies, and support
-                    </p>
                 </div>
             </div>
 

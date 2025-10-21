@@ -8,26 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import lottie from 'lottie-web';
-import {
-    ArrowRight,
-    Award,
-    BarChart3,
-    Building,
-    Calendar,
-    CheckCircle,
-    Clock,
-    Globe,
-    Heart,
-    Mail,
-    MapPin,
-    Phone,
-    Settings,
-    Shield,
-    Target,
-    Users,
-    X,
-    Zap,
-} from 'lucide-react';
+import { ArrowRight, Award, BarChart3, Calendar, CheckCircle, Clock, Globe, Heart, Mail, Phone, Settings, Shield, Target, Users, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import React, { CSSProperties, useEffect, useRef, useState } from 'react';
 
@@ -356,7 +337,7 @@ function Consultation() {
             {/* Main Content Section */}
             <section className='relative py-20 px-8'>
                 <div className='container mx-auto max-w-7xl'>
-                    <div className='grid lg:grid-cols-2 gap-16'>
+                    <div className='grid lg:grid-cols-2 gap-16 mb-32'>
                         {/* Left Side - Agency Information */}
                         <div className='space-y-12 animate-slide-in-left'>
                             <div className='space-y-8'>
@@ -383,7 +364,7 @@ function Consultation() {
                                 </div>
 
                                 {/* Quick Stats */}
-                                <div className='grid grid-cols-3 gap-6 pt-8'>
+                                {/* <div className='grid grid-cols-3 gap-6 pt-8'>
                                     {[
                                         { value: '500+', label: 'Successful Placements', icon: CheckCircle },
                                         { value: '98%', label: 'Client Satisfaction', icon: Award },
@@ -399,37 +380,7 @@ function Consultation() {
                                             <div className='text-gray-400 font-semibold text-sm'>{stat.label}</div>
                                         </div>
                                     ))}
-                                </div>
-                            </div>
-
-                            {/* Services Grid */}
-                            <div className='space-y-6'>
-                                <h3 className='text-3xl font-bold text-white mb-8'>Our Comprehensive Services</h3>
-                                <div className='grid gap-4'>
-                                    {services.map((service, index) => (
-                                        <Card
-                                            key={index}
-                                            className='group relative bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl overflow-hidden animate-fade-in-up'
-                                            style={{ animationDelay: `${index * 100}ms` }}
-                                        >
-                                            <CardContent className='p-6'>
-                                                <div className='flex items-start space-x-4'>
-                                                    <div
-                                                        className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
-                                                    >
-                                                        <service.icon className='w-6 h-6 text-white' />
-                                                    </div>
-                                                    <div className='space-y-2'>
-                                                        <h4 className='text-lg font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
-                                                            {service.title}
-                                                        </h4>
-                                                        <p className='text-gray-300 text-sm leading-relaxed'>{service.description}</p>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
+                                </div> */}
                             </div>
                         </div>
 
@@ -452,10 +403,10 @@ function Consultation() {
                                     <form onSubmit={handleSubmit} className='space-y-6'>
                                         {/* Company Name */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='companyName' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='companyName' className='text-white font-semibold flex items-center'>
                                                 <Building className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Company Name
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='companyName'
                                                 value={formData.companyName}
@@ -471,10 +422,10 @@ function Consultation() {
 
                                         {/* Location */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='location' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='location' className='text-white font-semibold flex items-center'>
                                                 <MapPin className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Location
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='location'
                                                 value={formData.location}
@@ -490,10 +441,10 @@ function Consultation() {
 
                                         {/* Title */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='title' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='title' className='text-white font-semibold flex items-center'>
                                                 <Award className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Title
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='title'
                                                 value={formData.title}
@@ -509,10 +460,10 @@ function Consultation() {
 
                                         {/* Your Name */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='name' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='name' className='text-white font-semibold flex items-center'>
                                                 <Users className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Your Name
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='name'
                                                 value={formData.name}
@@ -528,10 +479,10 @@ function Consultation() {
 
                                         {/* Work Email */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='email' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='email' className='text-white font-semibold flex items-center'>
                                                 <Mail className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Work Email
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='email'
                                                 type='email'
@@ -548,10 +499,10 @@ function Consultation() {
 
                                         {/* Phone Number */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='phone' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='phone' className='text-white font-semibold flex items-center'>
                                                 <Phone className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Phone Number
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='phone'
                                                 type='tel'
@@ -568,10 +519,10 @@ function Consultation() {
 
                                         {/* Number of Positions */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='numOfPositions' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='numOfPositions' className='text-white font-semibold flex items-center'>
                                                 <Target className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Number of positions hiring
-                                            </Label>
+                                            </Label> */}
                                             <Select
                                                 value={formData.numOfPositions}
                                                 onValueChange={(value) => setFormData((prev) => ({ ...prev, numOfPositions: value }))}
@@ -597,11 +548,12 @@ function Consultation() {
 
                                         {/* Date/Time */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='dateTime' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='dateTime' className='text-white font-semibold flex items-center'>
                                                 <Clock className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Preferred Date & Time
-                                            </Label>
+                                            </Label> */}
                                             <Input
+                                                placeholder='Select date/time'
                                                 id='dateTime'
                                                 type='datetime-local'
                                                 value={formData.dateTime}
@@ -710,6 +662,38 @@ function Consultation() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    {/* Services Grid */}
+                    <div className='space-y-6 container mx-auto max-w-7xl'>
+                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-10 leading-tight'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Our Comprehensive </span>
+                            Services
+                        </h2>
+                        <div className='grid md:grid-cols-2 gap-4'>
+                            {services.map((service, index) => (
+                                <Card
+                                    key={index}
+                                    className='group relative bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl overflow-hidden animate-fade-in-up'
+                                    style={{ animationDelay: `${index * 100}ms` }}
+                                >
+                                    <CardContent className='p-6'>
+                                        <div className='flex items-start space-x-4'>
+                                            <div
+                                                className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
+                                            >
+                                                <service.icon className='w-6 h-6 text-white' />
+                                            </div>
+                                            <div className='space-y-2'>
+                                                <h4 className='text-lg font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                                    {service.title}
+                                                </h4>
+                                                <p className='text-gray-300 text-sm leading-relaxed'>{service.description}</p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
                     </div>
                 </div>

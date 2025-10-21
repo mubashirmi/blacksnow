@@ -23,15 +23,14 @@ import {
     Eye,
     Globe,
     Mail,
-    Phone,
     Settings,
     Shield,
     Target,
     TrendingUp,
-    User,
     Users,
     X,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
@@ -640,10 +639,10 @@ function RSVP({ initialIsLoggedIn }) {
                                     <form className='space-y-6'>
                                         {/* Full Name */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='name' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='name' className='text-white font-semibold flex items-center'>
                                                 <User className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Full Name
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='name'
                                                 placeholder='Enter your full name'
@@ -656,10 +655,10 @@ function RSVP({ initialIsLoggedIn }) {
 
                                         {/* Email */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='email' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='email' className='text-white font-semibold flex items-center'>
                                                 <Mail className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Email Address
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='email'
                                                 type='email'
@@ -673,10 +672,10 @@ function RSVP({ initialIsLoggedIn }) {
 
                                         {/* Phone */}
                                         <div className='space-y-2'>
-                                            <Label htmlFor='phone' className='text-white font-semibold flex items-center'>
+                                            {/* <Label htmlFor='phone' className='text-white font-semibold flex items-center'>
                                                 <Phone className='w-4 h-4 mr-2 text-[#4cc7e8]' />
                                                 Phone Number
-                                            </Label>
+                                            </Label> */}
                                             <Input
                                                 id='phone'
                                                 type='tel'
@@ -814,7 +813,7 @@ function RSVP({ initialIsLoggedIn }) {
 
             {/* Signup Modal */}
             <Dialog open={modalOpened} onOpenChange={setModalOpened}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-4xl rounded-4xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <button
                         onClick={() => setModalOpened(false)}
                         className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
@@ -822,22 +821,29 @@ function RSVP({ initialIsLoggedIn }) {
                         <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
 
-                    <DialogHeader className='space-y-6 pb-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Calendar className='w-6 h-6 text-white' />
+                    <DialogHeader className='space-y-6'>
+                        <div className='flex items-center justify-center flex-col space-x-4'>
+                            <div className='w-16 h-16 mb-4 p-2 border-[#2c7bbe] border-2 rounded-2xl flex items-center justify-center shadow-xl'>
+                                <Image
+                                    src='/logocolored.png'
+                                    alt='Black Snow Logo'
+                                    width={100}
+                                    height={100}
+                                    className='object-contain w-full h-full  drop-shadow-2xl'
+                                    priority
+                                />
                             </div>
                             <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
-                                    You can&apos;t register for an event in RSVP until you sign up.
+                                <DialogTitle className='text-2xl font-black text-white text-center mb-2'>Signup Required</DialogTitle>
+                                <DialogDescription className='text-[#4cc7e8] font-semibold text-center'>
+                                    You can&apos;t access the newsletter feature until you sign up.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your registration.</p>
+                        {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your registration.</p> */}
                         <Button
                             onClick={() => router.push('/login?signup')}
                             className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'

@@ -15,6 +15,7 @@ const menuItems = [
             { name: 'Blogs', href: '/blogdirectory' },
             { name: 'FAQ', href: '/faq' },
             { name: 'Pricing', href: '/pricing' },
+            { name: 'Support', href: '/support' },
         ],
     },
     {

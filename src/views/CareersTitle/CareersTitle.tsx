@@ -45,7 +45,7 @@ function CareersTitle() {
 
             {/* Job Seekers Section */}
             <section className='relative py-20 px-8'>
-                <div className='container mx-auto max-w-6xl'>
+                <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8 animate-slide-in-left'>
                             <div>
@@ -132,6 +132,56 @@ function CareersTitle() {
             <section className='relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center'>
+                        <div className='space-y-6 sm:space-y-8 animate-slide-in-right'>
+                            <div>
+                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
+                                    FOR EMPLOYERS
+                                </Badge>
+                                <h2 className='text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight'>
+                                    <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
+                                    <br />
+                                    Inquiry
+                                </h2>
+                            </div>
+
+                            <div className='space-y-4 sm:space-y-6'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
+                                    We take pride in helping you find the best candidates nationwide and around the world. Let us assist you in talent discovery
+                                    as well as finding candidates that match your company criteria, work experience, and credentials.
+                                </p>
+                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
+                                    Whether you are a <span className='text-[#4cc7e8] font-semibold'>small business or corporation</span> we provide quality
+                                    candidates with a complimentary <span className='text-[#2c7bbe] font-semibold'>30-day guarantee</span>.
+                                </p>
+                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
+                                    Our industry-leading team of <span className='text-[#4cc7e8] font-semibold'>global HR experts</span> can help you enter new
+                                    markets in minutes, search for candidates, and hire international employees all while maintaining full compliance. Take
+                                    advantage of some of the competitive rates that we have to offer today.
+                                </p>
+                            </div>
+                            <div className='flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0'>
+                                <Link href={'/recruitmentagency'}>
+                                    <Button
+                                        size='lg'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                    >
+                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        See Opportunities
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                                <Link href={'/consultation'}>
+                                    <Button
+                                        size='lg'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                    >
+                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        Consultation
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
                         <div className='relative animate-slide-in-left'>
                             <div className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#4cc7e8]/30 shadow-2xl shadow-[#4cc7e8]/20 backdrop-blur-2xl'>
                                 <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center'>
@@ -168,64 +218,13 @@ function CareersTitle() {
                                 </div>
                             </div>
                         </div>
-
-                        <div className='space-y-6 sm:space-y-8 animate-slide-in-right'>
-                            <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
-                                    FOR EMPLOYERS
-                                </Badge>
-                                <h2 className='text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight'>
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
-                                    <br />
-                                    Inquiry
-                                </h2>
-                            </div>
-
-                            <div className='space-y-4 sm:space-y-6'>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
-                                    We take pride in helping you find the best candidates nationwide and around the world. Let us assist you in talent discovery
-                                    as well as finding candidates that match your company criteria, work experience, and credentials.
-                                </p>
-                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
-                                    Whether you are a <span className='text-[#4cc7e8] font-semibold'>small business or corporation</span> we provide quality
-                                    candidates with a complimentary <span className='text-[#2c7bbe] font-semibold'>30-day guarantee</span>.
-                                </p>
-                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
-                                    Our industry-leading team of <span className='text-[#4cc7e8] font-semibold'>global HR experts</span> can help you enter new
-                                    markets in minutes, search for candidates, and hire international employees all while maintaining full compliance. Take
-                                    advantage of some of the competitive rates that we have to offer today.
-                                </p>
-                            </div>
-                            <div className='flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0'>
-                                <Link href={'/recruitmentagency'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
-                                    >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        See Recruitment Agency Opportunities
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                    </Button>
-                                </Link>
-                                <Link href={'/consultation'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
-                                    >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Consultation
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
             <section className='relative py-24 px-8'>
-                <div className='container mx-auto max-w-6xl'>
+                <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
                         <div className='space-y-8'>
                             <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-6 py-2'>READY TO GET STARTED?</Badge>
