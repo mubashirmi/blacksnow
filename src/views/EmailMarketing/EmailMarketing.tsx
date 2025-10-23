@@ -152,7 +152,7 @@ function EmailMarketing() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative py-32 px-8'>
+            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-20 items-center'>
                         {/* Left Content */}
@@ -161,7 +161,7 @@ function EmailMarketing() {
                                 <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>
                                     POWERFUL EMAIL MARKETING
                                 </Badge>
-                                <h1 className='text-6xl lg:text-7xl font-black text-white mb-3 leading-tight'>
+                                <h1 className='text-5xl lg:text-6xl font-black text-white mb-3 leading-tight'>
                                     Email Marketing{' '}
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Features</span>
                                 </h1>
@@ -370,7 +370,7 @@ function EmailMarketing() {
             </section>
 
             {/* Call to Action Section with Mailbox Animation */}
-            <section className='relative py-24 px-8 bg-[#0a0b0f]'>
+            <section className='relative py-32 px-8 bg-[#0a0b0f]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}

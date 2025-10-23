@@ -32,6 +32,7 @@ model Auth {
   EmailJobResult            EmailJobResult[]
   AdminPayouts              AdminPayouts[]
   AdminRevenue              AdminRevenue[]
+  Notes                     Notes[]
 }
 
 model AdminPayouts {
@@ -51,6 +52,7 @@ enum Role {
   NewsLetter
   Rsvp
   DigitalBillboard
+  EmailMarketing
 }
 
 model emailMarketingCredentials {
@@ -112,7 +114,7 @@ model EmailJobResult {
   subject      String
   text         String
   runAt        DateTime?
-  timeInterval String? // time-only column in the DB
+  timeInterval Int? // time-only column in the DB
   repeated     Boolean?    @default(false)
   auth         Auth        @relation(fields: [authId], references: [id])
   emailUser    EmailUser   @relation(fields: [emailUserId], references: [id])
@@ -326,6 +328,8 @@ model Notes {
   title      String
   content    String
   authorName String?
+  auth       Auth     @relation(fields: [authId], references: [id])
+  authId     Int
 }
 
 model Advertiser {

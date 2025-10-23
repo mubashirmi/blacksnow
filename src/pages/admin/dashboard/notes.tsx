@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface Note {
     id?: number;
@@ -23,21 +23,19 @@ export default function NotesPage() {
     const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
         const fetchNotes = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('/api/v1/notes', {
+                const id = Number(localStorage.getItem('adminId'));
+                const response = await fetch(`/api/v1/notes?id=${id}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch notes');
-                }
+                if (!response.ok) throw new Error('Failed to fetch notes');
 
                 const data = await response.json();
                 if (data.success && data.data) {
@@ -45,11 +43,8 @@ export default function NotesPage() {
                 } else {
                     throw new Error('Invalid response format');
                 }
-            } catch (error) {
-                setAlert({
-                    type: 'error',
-                    message: 'Failed to load notes. Please try again.',
-                });
+            } catch {
+                setAlert({ type: 'error', message: 'Failed to load notes. Please try again.' });
             } finally {
                 setIsLoading(false);
             }
@@ -60,29 +55,17 @@ export default function NotesPage() {
 
     const validateForm = () => {
         const newErrors: { title?: string; content?: string; authorName?: string } = {};
-        if (!title.trim()) {
-            newErrors.title = 'Title is required';
-        } else if (title.length < 3) {
-            newErrors.title = 'Title must be at least 3 characters long';
-        } else if (title.length > 100) {
-            newErrors.title = 'Title cannot exceed 100 characters';
-        }
+        if (!title.trim()) newErrors.title = 'Title is required';
+        else if (title.length < 3) newErrors.title = 'Title must be at least 3 characters long';
+        else if (title.length > 100) newErrors.title = 'Title cannot exceed 100 characters';
 
-        if (!content.trim()) {
-            newErrors.content = 'Content is required';
-        } else if (content.length < 10) {
-            newErrors.content = 'Content must be at least 10 characters long';
-        } else if (content.length > 1000) {
-            newErrors.content = 'Content cannot exceed 1000 characters';
-        }
+        if (!content.trim()) newErrors.content = 'Content is required';
+        else if (content.length < 10) newErrors.content = 'Content must be at least 10 characters long';
+        else if (content.length > 1000) newErrors.content = 'Content cannot exceed 1000 characters';
 
-        if (!authorName.trim()) {
-            newErrors.authorName = 'Author name is required';
-        } else if (authorName.length < 2) {
-            newErrors.authorName = 'Author name must be at least 2 characters long';
-        } else if (authorName.length > 50) {
-            newErrors.authorName = 'Author name cannot exceed 50 characters';
-        }
+        if (!authorName.trim()) newErrors.authorName = 'Author name is required';
+        else if (authorName.length < 2) newErrors.authorName = 'Author name must be at least 2 characters long';
+        else if (authorName.length > 50) newErrors.authorName = 'Author name cannot exceed 50 characters';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -90,53 +73,43 @@ export default function NotesPage() {
 
     const handleCreateNote = async () => {
         setAlert(null);
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         try {
-            const response = await fetch('/api/v1/notes', {
+            setIsCreating(true);
+            const id = localStorage.getItem('adminId');
+            const response = await fetch(`/api/v1/notes`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: title.trim(),
                     content: content.trim(),
                     authorName: authorName.trim(),
                     deleted: false,
+                    authId: Number(id),
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to create note');
-            }
+            if (!response.ok) throw new Error('Failed to create note');
 
             const newNote = await response.json();
             setNotes((prevNotes) => [...prevNotes, newNote.data]);
-            setAlert({
-                type: 'success',
-                message: 'Note created successfully!',
-            });
+            setAlert({ type: 'success', message: 'Note created successfully!' });
             setTitle('');
             setContent('');
             setAuthorName('');
             setErrors({});
             setIsModalOpen(false);
-        } catch (error) {
-            setAlert({
-                type: 'error',
-                message: 'Failed to create note. Please try again.',
-            });
+        } catch {
+            setAlert({ type: 'error', message: 'Failed to create note. Please try again.' });
+        } finally {
+            setIsCreating(false);
         }
     };
 
     const handleDelete = async (id: number | undefined, title: string) => {
         if (!id) {
-            setAlert({
-                type: 'error',
-                message: 'Cannot delete note: Invalid ID.',
-            });
+            setAlert({ type: 'error', message: 'Cannot delete note: Invalid ID.' });
             return;
         }
 
@@ -145,29 +118,30 @@ export default function NotesPage() {
         try {
             const response = await fetch(`/api/v1/notes/?id=${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to delete note');
-            }
+            if (!response.ok) throw new Error('Failed to delete note');
 
             setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-            setAlert({
-                type: 'success',
-                message: `Note "${title}" deleted successfully!`,
-            });
-        } catch (error) {
-            setAlert({
-                type: 'error',
-                message: `Failed to delete note "${title}". Please try again.`,
-            });
+            setAlert({ type: 'success', message: `Note "${title}" deleted successfully!` });
+        } catch {
+            setAlert({ type: 'error', message: `Failed to delete note "${title}". Please try again.` });
         } finally {
             setIsDeleting(null);
         }
     };
+
+    // Close modal on Escape
+    const onKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Escape') setIsModalOpen(false);
+    }, []);
+
+    useEffect(() => {
+        if (!isModalOpen) return;
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [isModalOpen, onKeyDown]);
 
     return (
         <div className='space-y-6'>
@@ -180,7 +154,7 @@ export default function NotesPage() {
                     <h2 className='text-2xl font-bold text-white'>Notes</h2>
                     <Button
                         onClick={() => setIsModalOpen(true)}
-                        className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200'
+                        className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 cursor-pointer'
                     >
                         Add New Note
                     </Button>
@@ -268,17 +242,35 @@ export default function NotesPage() {
                 </div>
             </div>
 
-            {/* Modal for Creating Note */}
+            {/* Modal with matching dark gradient header */}
             {isModalOpen && (
-                <div className='fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50'>
-                    <div className='bg-white rounded-xl shadow-2xl p-6 w-full max-w-md'>
-                        <div className='flex justify-between items-center mb-4'>
-                            <h3 className='text-xl font-bold text-slate-800'>Create New Note</h3>
-                            <button onClick={() => setIsModalOpen(false)} className='text-slate-500 hover:text-slate-700'>
+                <div
+                    className='fixed inset-0 bg-black/70 flex items-center justify-center z-50'
+                    onClick={() => setIsModalOpen(false)} // close on overlay click
+                >
+                    <div
+                        role='dialog'
+                        aria-modal='true'
+                        aria-labelledby='create-note-title'
+                        className='bg-white rounded-[18px] shadow-2xl w-full max-w-md border border-slate-500 overflow-hidden'
+                        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+                    >
+                        {/* Header matches the page header */}
+                        <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 flex items-center justify-between rounded-t-2xl'>
+                            <h3 id='create-note-title' className='text-lg font-semibold text-white'>
+                                Create New Note
+                            </h3>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className='text-white/90 hover:text-white transition-colors cursor-pointer'
+                                aria-label='Close'
+                            >
                                 <X className='w-5 h-5' />
                             </button>
                         </div>
-                        <div className='space-y-4'>
+
+                        {/* Body */}
+                        <div className='p-6 space-y-4'>
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-1'>Title</label>
                                 <input
@@ -292,6 +284,7 @@ export default function NotesPage() {
                                 />
                                 {errors.title && <p className='text-red-500 text-sm mt-1'>{errors.title}</p>}
                             </div>
+
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-1'>Author Name</label>
                                 <input
@@ -305,6 +298,7 @@ export default function NotesPage() {
                                 />
                                 {errors.authorName && <p className='text-red-500 text-sm mt-1'>{errors.authorName}</p>}
                             </div>
+
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-1'>Content</label>
                                 <textarea
@@ -318,14 +312,37 @@ export default function NotesPage() {
                                 />
                                 {errors.content && <p className='text-red-500 text-sm mt-1'>{errors.content}</p>}
                             </div>
-                            <div className='flex justify-end space-x-2'>
-                                <Button onClick={() => setIsModalOpen(false)} className='bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg'>
-                                    Cancel
-                                </Button>
-                                <Button onClick={handleCreateNote} className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg'>
-                                    Create Note
-                                </Button>
-                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className='px-6 pb-6 flex justify-end gap-2'>
+                            <Button
+                                onClick={() => setIsModalOpen(false)}
+                                className='bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg cursor-pointer'
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleCreateNote}
+                                className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-60 cursor-pointer'
+                                disabled={isCreating}
+                            >
+                                {isCreating ? (
+                                    <>
+                                        <svg className='animate-spin w-4 h-4 mr-2' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                            <path
+                                                className='opacity-75'
+                                                fill='currentColor'
+                                                d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                            ></path>
+                                        </svg>
+                                        Creating...
+                                    </>
+                                ) : (
+                                    'Create Note'
+                                )}
+                            </Button>
                         </div>
                     </div>
                 </div>

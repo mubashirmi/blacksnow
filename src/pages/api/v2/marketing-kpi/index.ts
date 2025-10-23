@@ -10,7 +10,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     try {
         if (method === 'GET') {
             // Run all queries in parallel
-            const [latestUsers, userCounts, latestSentEmail, latestSchedules, totalEmailSent, sentEmailNumbers] = await Promise.all([
+            const [latestUsers, userCounts, latestSentEmail, latestCampains, latestSchedules, totalEmailSent, sentEmailNumbers] = await Promise.all([
                 prisma.emailUser.findMany({
                     where: { authId: Id },
                     take: 5,
@@ -23,6 +23,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     where: { authId: Id, status: 'sent' },
                     take: 5,
                     orderBy: { createdAt: 'desc' },
+                }),
+                prisma.emailJobResult.findMany({
+                    where: {
+                        authId: Id,
+                        timeInterval: { not: null },
+                        repeated: false,
+                        status: 'pending',
+                    },
                 }),
                 prisma.emailJobResult.findMany({
                     where: {
@@ -46,6 +54,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 latestUsers,
                 userCounts,
                 latestSentEmail,
+                latestCampains,
                 latestSchedules,
                 totalEmailSent,
                 sentEmailNumbers,

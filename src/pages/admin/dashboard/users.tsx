@@ -1,55 +1,198 @@
-import { AlertCircle, Loader2, Mail, Plus, User, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { AlertCircle, Info, Loader2, Lock, Mail, Plus, ShieldCheck, User, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 export default function SalesProfilePage() {
-    const [users, setUsers] = useState([]);
+    // Email users table
+    const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Create user modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({ email: '', fullName: '' });
-    const [formErrors, setFormErrors] = useState({});
+    const [formErrors, setFormErrors] = useState<{ email?: string; fullName?: string }>({});
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
 
+    // Credentials gate
+    const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+    const [checkingCredentials, setCheckingCredentials] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // generic, used by credentials check
+    const [credentialsData, setCredentialsData] = useState<{ email: string; appPassword: string }>({
+        email: '',
+        appPassword: '',
+    });
+    const [credentialsErrors, setCredentialsErrors] = useState<{ email?: string; appPassword?: string }>({});
+
     useEffect(() => {
-        fetchUsers();
+        (async () => {
+            const ok = await checkMarketingCredentials();
+            if (ok) {
+                fetchUsers();
+            } else {
+                setLoading(false); // don't leave page spinner up if blocked by credentials
+            }
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
             setError(null);
-            const userId = localStorage.getItem('userId');
-
-            if (!userId) {
-                setError('User ID not found. Please login again.');
-                setLoading(false);
+            const id = Number(localStorage.getItem('adminId'));
+            if (!id) {
+                // if no id, bounce to login
+                if (typeof window !== 'undefined') window.location.href = '/login';
                 return;
             }
 
-            const response = await fetch(`/api/v2/email-users?authId=56`);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }
+            const response = await fetch(`/api/v2/email-users?authId=${id}`);
+            if (!response.ok) throw new Error('Failed to fetch users');
 
             const data = await response.json();
-            // Sanitize data to ensure fullName is a string
             const sanitizedUsers: any[] = (data.emailUser ? [data.emailUser] : []).map((user) => ({
                 ...user,
-                fullName: user.fullName || 'Unknown', // Fallback for missing fullName
+                fullName: user.fullName || 'Unknown',
             }));
             console.log(sanitizedUsers);
-            setUsers(data.emailUser);
-        } catch (err) {
-            setError(err.message);
+            setUsers(data.emailUser || []);
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong');
         } finally {
             setLoading(false);
         }
     };
 
+    // ---------- Credentials: Check + Validate + Save ----------
+    const checkMarketingCredentials = async (): Promise<boolean> => {
+        try {
+            setCheckingCredentials(true);
+            setIsLoading(true);
+
+            const adminId = Number(localStorage.getItem('adminId'));
+            if (!adminId) {
+                if (typeof window !== 'undefined') window.location.href = '/login';
+                return false;
+            }
+
+            const response = await fetch(`/api/v2/marketingCredentials?adminId=${adminId}`);
+
+            if (!response.ok) {
+                // Not found or server rejected; require setup
+                setShowCredentialsModal(true);
+                return false;
+            }
+
+            const data = await response.json();
+            const ok =
+                data &&
+                data.policy &&
+                typeof data.policy.email === 'string' &&
+                data.policy.email.trim() &&
+                typeof data.policy.appPassword === 'string' &&
+                data.policy.appPassword.trim();
+
+            if (ok) {
+                setShowCredentialsModal(false);
+                return true;
+            } else {
+                setShowCredentialsModal(true);
+                return false;
+            }
+        } catch (e) {
+            console.error('Failed to check marketing credentials:', e);
+            setShowCredentialsModal(true);
+            return false;
+        } finally {
+            setIsLoading(false);
+            setCheckingCredentials(false);
+        }
+    };
+
+    const validateCredentialsForm = () => {
+        const errs: { email?: string; appPassword?: string } = {};
+        const email = credentialsData.email.trim();
+        const appPassword = credentialsData.appPassword.trim();
+
+        if (!email) {
+            errs.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            errs.email = 'Invalid email format';
+        }
+
+        // Accept either:
+        // - 16+ alphanumeric (no spaces), OR
+        // - 4 groups of 4 (alnum) separated by spaces e.g. "xbsr gbiv sizp twwe"
+        const noSpacePattern = /^[a-zA-Z0-9]{16,}$/;
+        const groupedPattern = /^[a-zA-Z0-9]{4}(?:\s[a-zA-Z0-9]{4}){3}$/;
+
+        if (!appPassword) {
+            errs.appPassword = 'App password is required';
+        } else if (!(noSpacePattern.test(appPassword) || groupedPattern.test(appPassword))) {
+            errs.appPassword = 'Use a valid app password format (16+ chars or 4×4 groups)';
+        }
+
+        setCredentialsErrors(errs);
+        return Object.keys(errs).length === 0;
+    };
+
+    const handleCredentialsInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setCredentialsData((prev) => ({ ...prev, [name]: value }));
+        if (credentialsErrors[name as keyof typeof credentialsErrors]) {
+            setCredentialsErrors((prev) => ({ ...prev, [name]: undefined }));
+        }
+    };
+
+    const handleCredentialsSubmit = async () => {
+        if (!validateCredentialsForm()) return;
+
+        try {
+            setError(null);
+            setSubmitting(true);
+            const adminId = Number(localStorage.getItem('adminId'));
+            if (!adminId) {
+                if (typeof window !== 'undefined') window.location.href = '/login';
+                return;
+            }
+
+            // Save credentials
+            const response = await fetch('/api/v2/marketingCredentials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: adminId,
+                    email: credentialsData.email.trim(),
+                    appPassword: credentialsData.appPassword.trim(),
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.message || 'Failed to save credentials');
+            }
+
+            // Hide modal and continue normal flow
+            setShowCredentialsModal(false);
+
+            // If the user was trying to open the create modal, open it now
+            setIsModalOpen(true);
+
+            // If we haven't loaded users yet, do it now
+            if (!users.length) {
+                fetchUsers();
+            }
+        } catch (e: any) {
+            setError(e.message || 'Failed to save credentials');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // ---------- Create User Form ----------
     const validateForm = () => {
-        const errors = {};
+        const errors: any = {};
 
         if (!formData.email.trim()) {
             errors.email = 'Email is required';
@@ -73,27 +216,24 @@ export default function SalesProfilePage() {
         try {
             setSubmitting(true);
             setError(null);
-            const userId = localStorage.getItem('userId');
-
-            if (!userId) {
-                setError('User ID not found. Please login again.');
+            const id = Number(localStorage.getItem('adminId'));
+            if (!id) {
+                if (typeof window !== 'undefined') window.location.href = '/login';
                 return;
             }
 
             const response = await fetch('/api/v2/email-users', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: formData.email.trim(),
                     fullName: formData.fullName.trim(),
-                    authId: parseInt(userId),
+                    authId: id,
                 }),
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || 'Failed to create user');
             }
 
@@ -104,28 +244,34 @@ export default function SalesProfilePage() {
                 setSuccess(false);
                 fetchUsers();
             }, 1500);
-        } catch (err) {
-            setError(err.message);
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong');
         } finally {
             setSubmitting(false);
         }
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: any) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        if (formErrors[name]) {
-            setFormErrors((prev) => ({ ...prev, [name]: '' }));
+        if ((formErrors as any)[name]) {
+            setFormErrors((prev: any) => ({ ...prev, [name]: '' }));
         }
     };
 
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: any) => {
         if (e.key === 'Enter' && !submitting) {
             handleSubmit();
         }
     };
 
-    const openModal = () => {
+    const openModal = async () => {
+        // Gate the modal behind credentials
+        const ok = await checkMarketingCredentials();
+        if (!ok) {
+            // Credentials modal will show; don't open create-user modal yet
+            return;
+        }
         setIsModalOpen(true);
         setFormData({ email: '', fullName: '' });
         setFormErrors({});
@@ -133,7 +279,7 @@ export default function SalesProfilePage() {
         setSuccess(false);
     };
 
-    if (loading) {
+    if (loading || checkingCredentials || isLoading) {
         return (
             <div className='flex items-center justify-center min-h-screen'>
                 <div className='dot-spinner'>
@@ -150,25 +296,28 @@ export default function SalesProfilePage() {
     return (
         <div className='min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8'>
             <div className='max-w-6xl mx-auto'>
-                <div className='bg-white rounded-2xl shadow-xl overflow-hidden'>
-                    <div className='bg-gradient-to-r from-blue-600 to-blue-700 p-8'>
+                {/* Card */}
+                <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                    <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-5'>
                         <div className='flex items-center justify-between'>
                             <div>
-                                <h1 className='text-3xl font-bold text-white mb-2'>Email Users</h1>
-                                <p className='text-blue-100'>Manage your email users</p>
+                                <h1 className='text-2xl font-bold text-white'>Email Users</h1>
+                                <p className='text-white/70 text-sm'>Manage your email users</p>
                             </div>
                             <button
                                 onClick={openModal}
-                                className='bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl cursor-pointer'
+                                className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-sm cursor-pointer'
                             >
-                                <Plus className='w-5 h-5' />
-                                Add Email User
+                                <span className='inline-flex items-center gap-2'>
+                                    <Plus className='w-4 h-4' />
+                                    Add Email User
+                                </span>
                             </button>
                         </div>
                     </div>
 
                     {error && (
-                        <div className='mx-8 mt-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3'>
+                        <div className='mx-6 mt-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3'>
                             <AlertCircle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
                             <div className='flex-1'>
                                 <p className='text-red-800 font-medium'>Error</p>
@@ -177,7 +326,7 @@ export default function SalesProfilePage() {
                         </div>
                     )}
 
-                    <div className='p-8'>
+                    <div className='p-6'>
                         {users.length === 0 ? (
                             <div className='text-center py-16'>
                                 <User className='w-16 h-16 text-slate-300 mx-auto mb-4' />
@@ -189,15 +338,18 @@ export default function SalesProfilePage() {
                                 <table className='w-full'>
                                     <thead>
                                         <tr className='border-b border-slate-200'>
-                                            <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>ID</th>
+                                            <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>SR #</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Full Name</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Email</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Created At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {users.map((user, index) => (
-                                            <tr key={user.id} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                                        {users.map((user: any, index: number) => (
+                                            <tr
+                                                key={user.id ?? `${user.email}-${index}`}
+                                                className='border-b border-slate-100 hover:bg-slate-50 transition-colors'
+                                            >
                                                 <td className='py-4 px-6'>
                                                     <span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm'>
                                                         {index + 1}
@@ -220,17 +372,16 @@ export default function SalesProfilePage() {
                                                     </div>
                                                 </td>
                                                 <td className='py-4 px-6'>
-                                                    <span className='text-slate-600'>{user.authId}</span>
-                                                </td>
-                                                <td className='py-4 px-6'>
                                                     <span className='text-slate-600 text-sm'>
-                                                        {new Date(user.createdAt).toLocaleDateString('en-US', {
-                                                            year: 'numeric',
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        })}
+                                                        {user.createdAt
+                                                            ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                                                  year: 'numeric',
+                                                                  month: 'short',
+                                                                  day: 'numeric',
+                                                                  hour: '2-digit',
+                                                                  minute: '2-digit',
+                                                              })
+                                                            : '--'}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -243,17 +394,129 @@ export default function SalesProfilePage() {
                 </div>
             </div>
 
-            {isModalOpen && (
+            {/* Credentials Modal (Gate) */}
+            {showCredentialsModal && (
                 <div className='fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50'>
-                    <div className='bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden'>
-                        <div className='bg-gradient-to-r from-blue-600 to-blue-700 p-6 flex items-center justify-between'>
-                            <h2 className='text-2xl font-bold text-white'>Create New User</h2>
+                    <div className='bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden'>
+                        <div className='bg-gradient-to-r from-blue-600 to-blue-700 p-6'>
+                            <div className='flex items-center gap-3'>
+                                <ShieldCheck className='w-8 h-8 text-white' />
+                                <div>
+                                    <h2 className='text-2xl font-bold text-white'>Email Credentials Required</h2>
+                                    <p className='text-blue-100 text-sm'>Setup required to send marketing emails</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='p-6 space-y-5'>
+                            <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+                                <div className='flex items-start gap-3'>
+                                    <Info className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
+                                    <div>
+                                        <p className='text-blue-900 font-medium mb-1'>Why we need this</p>
+                                        <p className='text-blue-800 text-sm'>
+                                            We need your email app password to send marketing campaigns from your account. This ensures emails are sent directly
+                                            from your email address.
+                                        </p>
+                                        <p className='text-blue-800 text-sm mt-2'>
+                                            <strong>Note:</strong> An app password is different from your regular email password. Generate one from your email
+                                            provider&apos;s security settings.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {error && (
+                                <div className='bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3'>
+                                    <AlertCircle className='w-5 h-5 text-red-600 flex-shrink-0' />
+                                    <p className='text-red-800 text-sm'>{error}</p>
+                                </div>
+                            )}
+
+                            <div>
+                                <label htmlFor='email' className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
+                                    <Mail className='w-4 h-4' />
+                                    Email Address
+                                </label>
+                                <input
+                                    type='email'
+                                    id='email'
+                                    name='email'
+                                    value={credentialsData.email}
+                                    onChange={handleCredentialsInputChange}
+                                    className={`w-full px-4 py-3 rounded-lg border ${
+                                        credentialsErrors.email ? 'border-red-300 bg-red-50' : 'border-slate-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all`}
+                                    placeholder='your.email@gmail.com'
+                                    disabled={submitting}
+                                />
+                                {credentialsErrors.email && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.email}</p>}
+                            </div>
+
+                            <div>
+                                <label htmlFor='appPassword' className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
+                                    <Lock className='w-4 h-4' />
+                                    App Password
+                                </label>
+                                <input
+                                    type='text'
+                                    id='appPassword'
+                                    name='appPassword'
+                                    value={credentialsData.appPassword}
+                                    onChange={handleCredentialsInputChange}
+                                    className={`w-full px-4 py-3 rounded-lg border ${
+                                        credentialsErrors.appPassword ? 'border-red-300 bg-red-50' : 'border-slate-300'
+                                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono`}
+                                    placeholder='xbsr gbiv sizp twwe'
+                                    disabled={submitting}
+                                />
+                                {credentialsErrors.appPassword && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.appPassword}</p>}
+                                <p className='text-slate-500 text-xs mt-1'>Enter the app password exactly as provided by your email provider</p>
+                            </div>
+
+                            <div className='pt-4'>
+                                <button
+                                    type='button'
+                                    onClick={handleCredentialsSubmit}
+                                    disabled={submitting}
+                                    className='w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <Loader2 className='w-5 h-5 animate-spin' />
+                                            Saving Credentials...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ShieldCheck className='w-5 h-5' />
+                                            Save &amp; Continue
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            <div className='bg-slate-50 rounded-lg p-4 text-center'>
+                                <p className='text-slate-600 text-xs'>
+                                    Your credentials are securely stored and encrypted. We never share your information with third parties.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create User Modal */}
+            {isModalOpen && (
+                <div className='fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50'>
+                    <div className='bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden'>
+                        <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-4 flex items-center justify-between'>
+                            <h2 className='text-lg font-bold text-white'>Create New User</h2>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className='text-white hover:bg-blue-500 rounded-lg p-2 transition-colors'
+                                className='text-white/90 hover:text-white rounded-lg p-1 transition-colors'
                                 disabled={submitting}
                             >
-                                <X className='w-6 h-6' />
+                                <X className='w-5 h-5' />
                             </button>
                         </div>
 
@@ -320,7 +583,7 @@ export default function SalesProfilePage() {
                                 <button
                                     type='button'
                                     onClick={() => setIsModalOpen(false)}
-                                    className='flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors'
+                                    className='flex-1 px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold transition-colors'
                                     disabled={submitting}
                                 >
                                     Cancel
@@ -329,7 +592,7 @@ export default function SalesProfilePage() {
                                     type='button'
                                     onClick={handleSubmit}
                                     disabled={submitting}
-                                    className='flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer'
+                                    className='flex-1 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer'
                                 >
                                     {submitting ? (
                                         <>

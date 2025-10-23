@@ -1,33 +1,20 @@
 'use client';
 
-import { BarChart3, LinkIcon, LogOut, Target, User } from 'lucide-react';
+import { BarChart3, Link2Icon, LinkIcon, LogOut, StickyNote, Target, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 const navigationItems = [
-    {
-        name: 'KPI',
-        url: '/sales/dashboard/kpi',
-        icon: BarChart3,
-    },
-    {
-        name: 'Campaign',
-        url: '/sales/dashboard/campaign',
-        icon: Target,
-    },
-    {
-        name: 'Automation',
-        url: '/sales/dashboard/automation',
-        icon: LinkIcon,
-    },
-    {
-        name: 'Email Users',
-        url: '/sales/dashboard/users',
-        icon: User,
-    },
+    { title: 'KPI', url: '/sales/dashboard/kpi', icon: BarChart3 },
+    { title: 'Links', url: '/sales/dashboard/links', icon: LinkIcon },
+    { title: 'Notes', url: '/sales/dashboard/notes', icon: StickyNote },
+    { title: 'Campaign', url: '/sales/dashboard/campaign', icon: Target },
+    { title: 'Automation', url: '/sales/dashboard/automation', icon: Link2Icon },
+    { title: 'Email Users', url: '/sales/dashboard/users', icon: User },
 ];
+
 export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
     const pathname = usePathname();
     const router = useRouter();
@@ -49,7 +36,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                     </div>
                     <div>
                         <span className='font-bold text-xl text-gray-800'>Black Snow</span>
-                        <p className='text-gray-500 text-sm'>Email Marketing Dashboard</p>
+                        <p className='text-gray-500 text-sm'>Affiliate Panel</p>
                     </div>
                 </div>
             </div>
@@ -61,7 +48,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                         const isActive = pathname === item.url;
                         const ItemIcon = item.icon;
                         return (
-                            <li key={item.name}>
+                            <li key={item.title}>
                                 <Link
                                     href={item.url}
                                     className={[
@@ -71,7 +58,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                                     aria-current={isActive ? 'page' : undefined}
                                 >
                                     <ItemIcon className='w-4 h-4' />
-                                    <span>{item.name}</span>
+                                    <span>{item.title}</span>
                                 </Link>
                             </li>
                         );
@@ -87,7 +74,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                     onClick={() => setIsModalOpen(true)}
                 >
                     <LogOut className='w-4 h-4' />
-                    <span>Logout</span>
+                    <span>Logout </span>
                 </button>
             </div>
             {isModalOpen && (
@@ -98,7 +85,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                         <div className='flex justify-end gap-4'>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className='px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer'
+                                className='px-4 py-2 text-sm cursor-pointer font-medium text-gray-700 hover:bg-gray-100 rounded-md'
                             >
                                 Cancel
                             </button>

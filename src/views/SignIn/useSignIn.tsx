@@ -130,7 +130,7 @@ const useSignIn = () => {
             console.log('Login Successful:', username, password);
 
             // Simulate the user being authenticated and redirect to a page (e.g., /dashboard)
-            router.push('/sales/dashboard'); // You can change the path as needed
+            router.push('/emailMarketing/dashboard'); // You can change the path as needed
         } catch (e) {
             if (incorrectAttempt < 2) {
                 setIncorrectAttempt((prevState) => prevState + 1);

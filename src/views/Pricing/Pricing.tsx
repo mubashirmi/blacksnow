@@ -70,8 +70,8 @@ function Pricing() {
         {
             id: 'NewsLetter',
             name: 'Newsletter',
-            price: '$100',
-            period: '',
+            price: '$10',
+            period: '/Month or $50/Year',
             description: 'Premium trading insights and market analysis delivered weekly',
             features: [
                 'Get your weekly stock picks for day trades, swing trades, options and dividends',
@@ -91,8 +91,8 @@ function Pricing() {
         {
             id: 'RSVP',
             name: 'RSVP',
-            price: '$10',
-            period: '/Month or $80/Year',
+            price: '$250',
+            period: '/ one time',
             description: 'Access to exclusive webinars and advanced trading education',
             features: [
                 'Register for Webinar',
@@ -127,8 +127,8 @@ function Pricing() {
         {
             id: 'Sales',
             name: 'Email/SMS System',
-            price: '$40',
-            period: '',
+            price: '$500',
+            period: '/Month or $4000/Year',
             description: 'Comprehensive communication platform for your business',
             features: ['Send Unlimited Emails/SMS', 'Create Custom Emails/SMS', 'Send Emails/SMS in bulk', 'Scheduled Campaigns'],
             icon: MessageSquare,
@@ -186,7 +186,7 @@ function Pricing() {
                 break;
             case 'email-sms':
             case 'EmailSMS':
-                role = 'Sales';
+                role = 'EmailMarketing';
                 break;
             default:
                 role = product.id; // Fallback to id if no match
@@ -294,13 +294,13 @@ function Pricing() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pt-28 px-8'>
+            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-6xl relative z-10'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold animate-fade-in'>
                             PREMIUM PRODUCTS & SERVICES
                         </Badge>
-                        <h1 className='text-6xl lg:text-7xl font-black text-white mb-5 apartments-tight animate-slide-in-up'>
+                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-5 apartments-tight animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Pricing</span>
                         </h1>
                         <div className='w-60 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-8 animate-slide-in-up delay-200'></div>
@@ -313,7 +313,7 @@ function Pricing() {
             </section>
 
             {/* Products Grid */}
-            <section className='relative py-20 px-8'>
+            <section className='relative py-32 px-8'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='grid lg:grid-cols-2 gap-8'>
                         {products.map((product, index) => {

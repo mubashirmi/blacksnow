@@ -3,9 +3,6 @@ import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
 import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
-
-const ADMIN_EMAIL = process.env.NEXT_PRIVATE_ADMIN_EMAIL;
-const ADMIN_PASS = process.env.NEXT_PRIVATE_ADMIN_PASS;
 const JWT_SECRET = process.env.NEXT_PRIVATE_JWT_SECRET;
 
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
@@ -15,31 +12,6 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
             if (!email || !password) {
                 return res.status(400).json({ message: 'Missing required fields' });
-            }
-
-            // ✅ Check for environment admin login first
-            if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-                const token = jwt.sign({ userId: 'env-admin', email: ADMIN_EMAIL, role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
-
-                const cookieOptions = {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict' as const,
-                    maxAge: 24 * 60 * 60 * 1000,
-                    path: '/',
-                };
-
-                res.setHeader('Set-Cookie', [
-                    serialize('token', token, cookieOptions),
-                    serialize('userId', 'env-admin', cookieOptions),
-                    serialize('role', 'admin', cookieOptions),
-                ]);
-
-                return res.status(200).json({
-                    message: 'Admin login successful',
-                    token,
-                    role: 'admin',
-                });
             }
 
             // 🔁 Else, check against database

@@ -282,7 +282,7 @@ export default function KPIPage() {
         <div className='min-h-screen bg-gray-50 p-8'>
             <div className='max-w-7xl mx-auto space-y-8'>
                 {/* Header */}
-                <div className='bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-8 text-white'>
+                <div className='bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg shadow-lg p-8 text-white'>
                     <h1 className='text-4xl font-bold mb-2'>Analytics Dashboard</h1>
                     <p className='text-blue-100'>Comprehensive KPI metrics and insights</p>
                     {isLoading && <div className='mt-4 text-sm'>Loading data...</div>}

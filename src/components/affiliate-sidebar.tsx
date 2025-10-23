@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, LinkIcon, LogOut } from 'lucide-react';
+import { BarChart3, LinkIcon, LogOut, StickyNote } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import * as React from 'react';
 const navigationItems = [
     { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
     { title: 'Links', url: '/affiliate/dashboard/links', icon: LinkIcon },
+    { title: 'Notes', url: '/affiliate/dashboard/notes', icon: StickyNote },
 ];
 
 export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {

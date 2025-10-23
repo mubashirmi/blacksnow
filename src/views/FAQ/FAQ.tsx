@@ -57,10 +57,10 @@ function FAQ() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Header */}
-            <div className='relative z-10 pt-32 pb-20 px-6'>
+            <div className='relative z-10 pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-4xl text-center'>
                     <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-8 py-3 text-sm font-bold'> SUPPORT CENTER </Badge>
-                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-6 animate-slide-in-up delay-200'>
+                    <h1 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Frequently</span>
                         <br />
                         <span className='text-white'>Asked Questions</span>

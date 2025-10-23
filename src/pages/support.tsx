@@ -101,7 +101,7 @@ export default function Page() {
                 </div>
             </div>
             {/* Hero Section */}
-            <section className='relative flex items-center justify-center px-8 py-20'>
+            <section className='relative flex items-center justify-center px-8 py-32'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center max-w-6xl mx-auto'>
                         {/* Status Badge */}
@@ -115,7 +115,7 @@ export default function Page() {
 
                         {/* Headline */}
                         <div className='space-y-8 animate-slide-in-up delay-200'>
-                            <h1 className='text-4xl lg:text-5xl xl:text-6xl font-black leading-tight tracking-tight'>
+                            <h1 className='text-5xl lg:text-6xl font-black leading-tight tracking-tight'>
                                 <div className='relative inline-block'>
                                     <span className='text-white'>We&apos;re Here to</span>
                                 </div>
@@ -163,13 +163,13 @@ export default function Page() {
             </section>
 
             {/* How We Support You */}
-            <section className='relative py-24 px-6 bg-gradient-to-br from-black via-[#0a0b0f] to-black'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-black via-[#0a0b0f] to-black'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
                             HOW WE SUPPORT YOU
                         </Badge>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 animate-slide-in-up'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] bg-clip-text text-transparent'>Elite Customer Care</span>
                         </h2>
                         <p className='text-lg text-gray-300 max-w-3xl mx-auto animate-slide-in-up delay-200'>
@@ -199,13 +199,13 @@ export default function Page() {
             </section>
 
             {/* Managing Your Subscription */}
-            <section className='relative py-24 px-6 bg-gradient-to-br from-[#0a0b0f] via-black to-[#0a0b0f]'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-black to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
                             SUBSCRIPTION MANAGEMENT
                         </Badge>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 animate-slide-in-up'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] bg-clip-text text-transparent'>Flexible Plans</span>
                         </h2>
                         <p className='text-lg text-gray-300 max-w-3xl mx-auto animate-slide-in-up delay-200'>
@@ -266,13 +266,13 @@ export default function Page() {
             </section>
 
             {/* Contact Methods */}
-            <section className='relative py-20 px-6 bg-gradient-to-br from-black via-[#0a0b0f] to-black'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-black via-[#0a0b0f] to-black'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
                             GET IN TOUCH
                         </Badge>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 animate-slide-in-up'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] bg-clip-text text-transparent'>Need Help?</span>
                         </h2>
                         <p className='text-lg text-gray-300 max-w-3xl mx-auto animate-slide-in-up delay-200'>
@@ -305,13 +305,13 @@ export default function Page() {
             </section>
 
             {/* Our Commitment */}
-            <section className='relative py-24 px-6 overflow-hidden'>
+            <section className='relative py-32 px-8 overflow-hidden'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center max-w-5xl mx-auto'>
                         <div className='w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-slide-in-up'>
                             <Shield className='w-12 h-12 text-[#259dd3]' />
                         </div>
-                        <h2 className='text-4xl lg:text-5xl xl:text-6xl font-black text-[#259dd3] mb-8 animate-slide-in-up delay-200'>Our Commitment</h2>
+                        <h2 className='text-5xl lg:text-6xl xl:text-6xl font-black text-[#259dd3] mb-8 animate-slide-in-up delay-200'>Our Commitment</h2>
                         <p className='text-xl lg:text-2xl text-blue-100 mb-12 leading-relaxed font-light animate-slide-in-up delay-400'>
                             Your trust means everything to us. We promise to deliver{' '}
                             <span className='text-[#259dd3] font-bold'>exceptional customer service</span> and to handle every request—whether big or small—with{' '}

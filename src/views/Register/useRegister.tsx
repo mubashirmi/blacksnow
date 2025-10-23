@@ -47,7 +47,7 @@ const useRegister = (props) => {
                         if (roleId === 1) {
                             router.push('/admin/dashboard');
                         } else if (roleId === 2) {
-                            router.push('/sales/dashboard');
+                            router.push('/emailMarketing/dashboard');
                         } else if (roleId === 3) {
                             router.push('/affiliate/dashboard');
                         } else if (roleId === 4) {
@@ -83,7 +83,7 @@ const useRegister = (props) => {
             const { sub } = await fetchUserAttributes();
             values.sub = sub;
             await restPut(UPDATE_SUB, values, false);
-            router.push('/sales/dashboard');
+            router.push('/emailMarketing/dashboard');
         } catch (error: any) {
             notifications.show({ title: 'Account', message: error.message, color: 'red' });
         }

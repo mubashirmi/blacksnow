@@ -46,14 +46,14 @@ export function AdminSidebar() {
             icon: Users,
         },
         {
+            title: 'Email Subscribers',
+            url: '/admin/dashboard/marketingSubscribers',
+            icon: Users,
+        },
+        {
             title: 'KPI',
             url: '/admin/dashboard/kpi',
             icon: TrendingUp,
-        },
-        {
-            title: 'Email Marketing KPI',
-            url: '/admin/dashboard/emailkpi',
-            icon: Mail,
         },
         {
             title: 'Digital Billboard',
@@ -74,6 +74,11 @@ export function AdminSidebar() {
             title: 'Blog',
             url: '/admin/dashboard/blog',
             icon: BookOpen,
+        },
+        {
+            title: 'Email Marketing KPI',
+            url: '/admin/dashboard/emailkpi',
+            icon: Mail,
         },
         {
             title: 'Automation',

@@ -97,7 +97,7 @@ const SignUp = ({ showSignUp, onCloseHandler, defaultSelected = '' }: props) => 
                 if (roleId === 1) {
                     router.push('/admin/dashboard');
                 } else if (roleId === 2) {
-                    router.push('/sales/dashboard');
+                    router.push('/emailMarketing/dashboard');
                 } else if (roleId === 3) {
                     router.push('/affiliate/dashboard');
                 } else if (roleId === 4) {
@@ -127,7 +127,7 @@ const SignUp = ({ showSignUp, onCloseHandler, defaultSelected = '' }: props) => 
                     if (roleId === 1) {
                         router.push('/admin/dashboard');
                     } else if (roleId === 2) {
-                        router.push('/sales/dashboard');
+                        router.push('/emailMarketing/dashboard');
                     } else if (roleId === 3) {
                         router.push('/affiliate/dashboard');
                     } else if (roleId === 4) {

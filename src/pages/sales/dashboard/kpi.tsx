@@ -1,28 +1,27 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Calendar, CheckCircle, Clock, Mail, TrendingUp, Users, XCircle } from 'lucide-react';
+import { Activity, DollarSign, MousePointer, Target, TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-export default function SalesKPIPage() {
-    const [data, setData] = useState(null);
+export default function KPI() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [apiData, setApiData] = useState(null);
+    const [selectedMetric, setSelectedMetric] = useState('revenue'); // Default to revenue
 
     useEffect(() => {
         fetchKPIData();
     }, []);
 
     const fetchKPIData = async () => {
+        const id = Number(localStorage.getItem('userId'));
         try {
             setLoading(true);
-            const response = await fetch(`/api/v2/marketing-kpi/?authId=${Number(localStorage.getItem('userId'))}`);
-
+            const response = await fetch(`/api/v2/affiliate-kpi/?id=${id}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch KPI data');
             }
-
-            const result = await response.json();
-            setData(result);
+            const data = await response.json();
+            setApiData(data);
             setError(null);
         } catch (err) {
             setError(err.message);
@@ -30,6 +29,95 @@ export default function SalesKPIPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const calculateMetrics = () => {
+        if (!apiData) return null;
+
+        const totalClicks = apiData.totalClicks?._sum?.clicks || 0;
+        const totalConversions = apiData.totalConversions?._sum?.conversion || 0;
+        const totalCommission = apiData.totalCommision?._sum?.comission || 0;
+
+        const conversionRate = totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(1) : 0;
+        const avgOrderValue = totalConversions > 0 ? (totalCommission / totalConversions).toFixed(2) : 0;
+
+        return {
+            conversionRate,
+            totalRevenue: totalCommission,
+            totalClicks,
+            avgOrderValue,
+            totalConversions,
+        };
+    };
+
+    const formatMonthlyData = () => {
+        if (!apiData?.monthlyStats) return [];
+
+        return apiData.monthlyStats.map((stat) => {
+            const monthName = stat.month.substring(0, 7);
+            return {
+                month: monthName,
+                revenue: stat.comission || 0,
+                clicks: stat.clicks || 0,
+                conversions: stat.conversion || 0,
+            };
+        });
+    };
+
+    const getTopProducts = () => {
+        if (!apiData?.affiliateData) return [];
+
+        return apiData.affiliateData.sort((a, b) => b.comission - a.comission).slice(0, 5);
+    };
+
+    const getProductPerformanceData = () => {
+        if (!apiData?.affiliateData) return [];
+
+        return apiData.affiliateData.map((product) => ({
+            name: product.productName.replace(/([A-Z])/g, ' $1').trim(),
+            revenue: product.comission,
+            clicks: product.clicks,
+            conversions: product.conversion,
+        }));
+    };
+
+    const getTrafficDistribution = () => {
+        if (!apiData?.affiliateData) return [];
+
+        const totalClicks = apiData.affiliateData.reduce((sum, p) => sum + p.clicks, 0);
+
+        return apiData.affiliateData
+            .filter((product) => product.clicks > 0)
+            .map((product) => ({
+                name: product.productName.replace(/([A-Z])/g, ' $1').trim(),
+                value: product.clicks,
+                percentage: totalClicks > 0 ? ((product.clicks / totalClicks) * 100).toFixed(1) : 0,
+            }));
+    };
+
+    // Get chart configuration based on selected metric
+    const getChartConfig = () => {
+        const configs = {
+            revenue: {
+                dataKey: 'revenue',
+                stroke: '#10B981',
+                name: 'Revenue ($)',
+                label: 'Monthly Revenue',
+            },
+            clicks: {
+                dataKey: 'clicks',
+                stroke: '#3B82F6',
+                name: 'Clicks',
+                label: 'Monthly Clicks',
+            },
+            conversions: {
+                dataKey: 'conversions',
+                stroke: '#8B5CF6',
+                name: 'Conversions',
+                label: 'Monthly Conversions',
+            },
+        };
+        return configs[selectedMetric];
     };
 
     if (loading) {
@@ -48,483 +136,401 @@ export default function SalesKPIPage() {
 
     if (error) {
         return (
-            <div className='flex items-center justify-center min-h-screen'>
-                <Card className='border-red-200 bg-red-50 max-w-md'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center gap-3'>
-                            <XCircle className='h-6 w-6 text-red-600' />
-                            <div>
-                                <h3 className='text-lg font-semibold text-red-800'>Error Loading Data</h3>
-                                <p className='text-red-700'>{error}</p>
-                                <button onClick={fetchKPIData} className='mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'>
-                                    Retry
-                                </button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
-    // Safe data extraction with defaults
-    const latestUsers = data?.latestUsers || [];
-    const userCounts = data?.userCounts || 0;
-    // const latestSentEmail = data?.latestSentEmail || [];
-    const latestSchedules = data?.latestSchedules || [];
-    const totalEmailSent = data?.totalEmailSent || [];
-    const sentEmailNumbers = data?.sentEmailNumbers || 0;
-
-    // Calculate email metrics safely
-    const pendingEmails = latestSchedules.filter((s) => s.status === 'pending').length;
-    const failedEmails = latestSchedules.filter((s) => s.status === 'failed').length;
-    const sentEmails = totalEmailSent.filter((e) => e.status === 'sent').length;
-
-    const emailMetrics = {
-        totalSent: sentEmailNumbers,
-        delivered: sentEmails,
-        failed: failedEmails,
-        pending: pendingEmails,
-        activeAutomations: latestSchedules.length,
-    };
-
-    // Calculate rates safely
-    const deliveryRate = emailMetrics.totalSent > 0 ? ((emailMetrics.delivered / emailMetrics.totalSent) * 100).toFixed(1) : '0.0';
-    const failureRate =
-        emailMetrics.failed + emailMetrics.delivered > 0 ? ((emailMetrics.failed / (emailMetrics.failed + emailMetrics.delivered)) * 100).toFixed(1) : '0.0';
-
-    // Process monthly data from actual emails
-    const processMonthlyData = () => {
-        const monthCounts = {};
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        // Initialize last 6 months
-        const now = new Date();
-        for (let i = 5; i >= 0; i--) {
-            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            const monthKey = `${months[date.getMonth()]}`;
-            monthCounts[monthKey] = { sent: 0, users: 0, automations: 0 };
-        }
-
-        // Count sent emails by month
-        totalEmailSent.forEach((email) => {
-            if (email.createdAt) {
-                const date = new Date(email.createdAt);
-                const monthKey = months[date.getMonth()];
-                if (monthCounts[monthKey]) {
-                    monthCounts[monthKey].sent++;
-                }
-            }
-        });
-
-        // Count users by month
-        latestUsers.forEach((user) => {
-            if (user.createdAt) {
-                const date = new Date(user.createdAt);
-                const monthKey = months[date.getMonth()];
-                if (monthCounts[monthKey]) {
-                    monthCounts[monthKey].users++;
-                }
-            }
-        });
-
-        return Object.entries(monthCounts).map(([month, data]) => ({
-            month,
-            ...data,
-        }));
-    };
-
-    const monthlyData = processMonthlyData();
-
-    // Email status distribution
-    const statusData = [
-        { name: 'Sent', value: emailMetrics.delivered, color: '#10b981' },
-        { name: 'Failed', value: emailMetrics.failed, color: '#ef4444' },
-        { name: 'Pending', value: emailMetrics.pending, color: '#f59e0b' },
-    ].filter((item) => item.value > 0); // Only show non-zero values
-
-    // Weekly activity data (sample - you can enhance this based on actual data)
-    const weeklyData = [
-        { day: 'Mon', emails: 0, opens: 0 },
-        { day: 'Tue', emails: 0, opens: 0 },
-        { day: 'Wed', emails: 0, opens: 0 },
-        { day: 'Thu', emails: 0, opens: 0 },
-        { day: 'Fri', emails: 0, opens: 0 },
-        { day: 'Sat', emails: 0, opens: 0 },
-        { day: 'Sun', emails: 0, opens: 0 },
-    ];
-
-    // Distribute recent emails across week
-    totalEmailSent.slice(0, 7).forEach((email, index) => {
-        if (weeklyData[index]) {
-            weeklyData[index].emails++;
-        }
-    });
-
-    // Performance comparison
-    const performanceData = [
-        { metric: 'Campaigns', current: emailMetrics.totalSent, target: Math.max(10, emailMetrics.totalSent + 3) },
-        { metric: 'Subscribers', current: userCounts, target: Math.max(20, userCounts + 5) },
-        { metric: 'Automations', current: emailMetrics.activeAutomations, target: Math.max(5, emailMetrics.activeAutomations + 2) },
-        { metric: 'Delivery Rate', current: parseFloat(deliveryRate), target: 95 },
-    ];
-
-    // Growth metrics
-    const calculateGrowth = (current, previous) => {
-        if (previous === 0) return current > 0 ? 100 : 0;
-        return ((current / previous) * 100 - 100).toFixed(0);
-    };
-
-    const growthRate = userCounts > 0 ? calculateGrowth(userCounts, Math.max(1, userCounts - 2)) : 0;
-    const campaignGrowth = emailMetrics.totalSent > 0 ? calculateGrowth(emailMetrics.totalSent, Math.max(1, emailMetrics.totalSent - 3)) : 0;
-
-    // Handle no data scenarios
-    if (userCounts === 0 && emailMetrics.totalSent === 0) {
-        return (
-            <div className='space-y-6 p-6 bg-gray-50'>
-                <div className='mb-8'>
-                    <h1 className='text-3xl font-semibold text-gray-900'>Email Marketing KPI </h1>
-                    <p className='text-gray-600 mt-2'>Real-time performance metrics and analytics</p>
+            <div className='flex items-center justify-center h-96'>
+                <div className='text-center'>
+                    <div className='text-red-500 mb-4'>
+                        <svg className='w-12 h-12 mx-auto' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                        </svg>
+                    </div>
+                    <p className='text-gray-900 font-semibold mb-2'>Error Loading Data</p>
+                    <p className='text-gray-600 mb-4'>{error}</p>
+                    <button onClick={fetchKPIData} className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'>
+                        Retry
+                    </button>
                 </div>
-                <Card className='border-blue-200 bg-blue-50'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center gap-3'>
-                            <AlertCircle className='h-6 w-6 text-blue-600' />
-                            <div>
-                                <h3 className='text-lg font-semibold text-blue-800'>No Data Available</h3>
-                                <p className='text-blue-700'>Start by adding subscribers and sending your first email campaign to see analytics here.</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
         );
     }
+
+    const metrics = calculateMetrics();
+    const monthlyData = formatMonthlyData();
+    const topProducts = getTopProducts();
+    const productPerformance = getProductPerformanceData();
+    const trafficDistribution = getTrafficDistribution();
+    const chartConfig = getChartConfig();
+
+    const COLORS = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444'];
+
+    const kpiCards = [
+        {
+            id: 1,
+            metric: 'Total Revenue',
+            value: `$${metrics.totalRevenue.toLocaleString()}`,
+            icon: DollarSign,
+            iconBg: 'bg-green-100',
+            iconColor: 'text-green-600',
+            change: '+12.5%',
+            trend: 'up',
+            description: 'Total commission earned',
+        },
+        {
+            id: 2,
+            metric: 'Total Clicks',
+            value: metrics.totalClicks.toLocaleString(),
+            icon: MousePointer,
+            iconBg: 'bg-blue-100',
+            iconColor: 'text-blue-600',
+            change: '+8.2%',
+            trend: 'up',
+            description: 'Affiliate link clicks',
+        },
+        {
+            id: 3,
+            metric: 'Conversions',
+            value: metrics.totalConversions.toLocaleString(),
+            icon: Target,
+            iconBg: 'bg-purple-100',
+            iconColor: 'text-purple-600',
+            change: '+15.3%',
+            trend: 'up',
+            description: 'Successful conversions',
+        },
+        {
+            id: 4,
+            metric: 'Conversion Rate',
+            value: `${metrics.conversionRate}%`,
+            icon: Activity,
+            iconBg: 'bg-orange-100',
+            iconColor: 'text-orange-600',
+            change: '+2.1%',
+            trend: 'up',
+            description: 'Click to conversion ratio',
+        },
+    ];
 
     return (
-        <div className='space-y-6 p-6 bg-gray-50'>
+        <div className='space-y-6 p-6 bg-gray-50 min-h-screen'>
             {/* Header */}
-            <div className='mb-8'>
-                <h1 className='text-3xl font-bold text-gray-900'>Email Marketing KPI Dashboard</h1>
-                <p className='text-gray-600 mt-2'>Real-time performance metrics and analytics</p>
+            <div className='flex items-center justify-between'>
+                <div>
+                    <h2 className='text-3xl font-bold text-gray-900'>Affiliate Dashboard</h2>
+                    <p className='text-gray-600 mt-1'>Track your performance and earnings</p>
+                </div>
+                <button
+                    onClick={fetchKPIData}
+                    className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm'
+                >
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                        />
+                    </svg>
+                    Refresh
+                </button>
             </div>
 
-            {/* Key Metrics Row */}
+            {/* KPI Cards */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-                <Card className='border-l-4 border-l-blue-500 shadow-md hover:shadow-lg transition-shadow'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center justify-between'>
-                            <div>
-                                <p className='text-sm font-medium text-gray-600'>Total Campaigns</p>
-                                <p className='text-3xl font-bold text-gray-900 mt-2'>{emailMetrics.totalSent}</p>
-                                {campaignGrowth > 0 && (
-                                    <p className='text-sm text-green-600 mt-2 flex items-center gap-1'>
-                                        <TrendingUp className='h-4 w-4' />+{campaignGrowth}% growth
-                                    </p>
-                                )}
+                {kpiCards.map((kpi) => (
+                    <div key={kpi.id} className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-lg transition-all duration-300'>
+                        <div className='flex items-start justify-between mb-4'>
+                            <div className={`p-3 rounded-lg ${kpi.iconBg}`}>
+                                <kpi.icon className={`w-6 h-6 ${kpi.iconColor}`} />
                             </div>
-                            <Mail className='h-12 w-12 text-blue-500 opacity-20' />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-l-4 border-l-green-500 shadow-md hover:shadow-lg transition-shadow'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center justify-between'>
-                            <div>
-                                <p className='text-sm font-medium text-gray-600'>Total Subscribers</p>
-                                <p className='text-3xl font-bold text-gray-900 mt-2'>{userCounts}</p>
-                                {growthRate > 0 && (
-                                    <p className='text-sm text-green-600 mt-2 flex items-center gap-1'>
-                                        <TrendingUp className='h-4 w-4' />+{growthRate}% growth
-                                    </p>
-                                )}
+                            <div
+                                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                    kpi.trend === 'up' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                }`}
+                            >
+                                {kpi.trend === 'up' ? <TrendingUp className='w-3 h-3' /> : <TrendingDown className='w-3 h-3' />}
+                                {kpi.change}
                             </div>
-                            <Users className='h-12 w-12 text-green-500 opacity-20' />
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-l-4 border-l-purple-500 shadow-md hover:shadow-lg transition-shadow'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center justify-between'>
-                            <div>
-                                <p className='text-sm font-medium text-gray-600'>Active Automations</p>
-                                <p className='text-3xl font-bold text-gray-900 mt-2'>{emailMetrics.activeAutomations}</p>
-                                <p className='text-sm text-blue-600 mt-2 flex items-center gap-1'>
-                                    <Clock className='h-4 w-4' />
-                                    {emailMetrics.pending} pending
-                                </p>
-                            </div>
-                            <Calendar className='h-12 w-12 text-purple-500 opacity-20' />
+                        <div>
+                            <h3 className='text-sm font-medium text-gray-600 mb-1'>{kpi.metric}</h3>
+                            <div className='text-3xl font-bold text-gray-900 mb-1'>{kpi.value}</div>
+                            <p className='text-xs text-gray-500'>{kpi.description}</p>
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card className='border-l-4 border-l-orange-500 shadow-md hover:shadow-lg transition-shadow'>
-                    <CardContent className='p-6'>
-                        <div className='flex items-center justify-between'>
-                            <div>
-                                <p className='text-sm font-medium text-gray-600'>Delivery Rate</p>
-                                <p className='text-3xl font-bold text-gray-900 mt-2'>{deliveryRate}%</p>
-                                <p className='text-sm text-gray-600 mt-2 flex items-center gap-1'>
-                                    <CheckCircle className='h-4 w-4' />
-                                    {emailMetrics.delivered} delivered
-                                </p>
-                            </div>
-                            <TrendingUp className='h-12 w-12 text-orange-500 opacity-20' />
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                ))}
             </div>
 
-            {/* Charts Row 1 */}
+            {/* Monthly Performance Line Chart */}
+            {monthlyData.length > 0 && (
+                <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4'>
+                        <div>
+                            <h3 className='text-xl font-bold text-gray-900 mb-1'>Monthly Performance Trends</h3>
+                            <p className='text-sm text-gray-600'>Track your performance metrics over time</p>
+                        </div>
+
+                        {/* Metric Selection Dropdown */}
+                        <div className='flex items-center gap-2'>
+                            <label htmlFor='metric-select' className='text-sm font-medium text-gray-700 whitespace-nowrap'>
+                                Show:
+                            </label>
+                            <select
+                                id='metric-select'
+                                value={selectedMetric}
+                                onChange={(e) => setSelectedMetric(e.target.value)}
+                                className='px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-w-[140px]'
+                            >
+                                <option value='revenue'>Revenue</option>
+                                <option value='clicks'>Clicks</option>
+                                <option value='conversions'>Conversions</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <ResponsiveContainer width='100%' height={400}>
+                        <LineChart data={monthlyData}>
+                            <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
+                            <XAxis dataKey='month' stroke='#6B7280' style={{ fontSize: '12px' }} />
+                            <YAxis stroke='#6B7280' style={{ fontSize: '12px' }} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#FFF',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                }}
+                                formatter={(value) => {
+                                    if (selectedMetric === 'revenue') {
+                                        return [`$${value.toLocaleString()}`, chartConfig.name];
+                                    }
+                                    return [value.toLocaleString(), chartConfig.name];
+                                }}
+                            />
+                            <Legend />
+                            <Line
+                                type='monotone'
+                                dataKey={chartConfig.dataKey}
+                                stroke={chartConfig.stroke}
+                                strokeWidth={3}
+                                name={chartConfig.name}
+                                dot={{ fill: chartConfig.stroke, r: 5 }}
+                                activeDot={{ r: 7 }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
+
+            {/* Charts Row */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                {/* Monthly Trends */}
-                {monthlyData.length > 0 && (
-                    <Card className='shadow-md'>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2'>
-                                <TrendingUp className='h-5 w-5 text-blue-600' />
-                                Monthly Performance Trends
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <AreaChart data={monthlyData}>
-                                    <defs>
-                                        <linearGradient id='colorSent' x1='0' y1='0' x2='0' y2='1'>
-                                            <stop offset='5%' stopColor='#3b82f6' stopOpacity={0.8} />
-                                            <stop offset='95%' stopColor='#3b82f6' stopOpacity={0} />
-                                        </linearGradient>
-                                        <linearGradient id='colorUsers' x1='0' y1='0' x2='0' y2='1'>
-                                            <stop offset='5%' stopColor='#10b981' stopOpacity={0.8} />
-                                            <stop offset='95%' stopColor='#10b981' stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='month' />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Area type='monotone' dataKey='sent' stroke='#3b82f6' fillOpacity={1} fill='url(#colorSent)' name='Emails Sent' />
-                                    <Area type='monotone' dataKey='users' stroke='#10b981' fillOpacity={1} fill='url(#colorUsers)' name='New Users' />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
+                {/* Product Performance Bar Chart */}
+                {productPerformance.length > 0 && (
+                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                        <div className='mb-6'>
+                            <h3 className='text-xl font-bold text-gray-900 mb-1'>Product Revenue</h3>
+                            <p className='text-sm text-gray-600'>Compare earnings across products</p>
+                        </div>
+
+                        <ResponsiveContainer width='100%' height={300}>
+                            <BarChart data={productPerformance}>
+                                <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
+                                <XAxis dataKey='name' stroke='#6B7280' style={{ fontSize: '11px' }} angle={-15} textAnchor='end' height={80} />
+                                <YAxis stroke='#6B7280' style={{ fontSize: '12px' }} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#FFF',
+                                        border: '1px solid #E5E7EB',
+                                        borderRadius: '8px',
+                                    }}
+                                    formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']}
+                                />
+                                <Bar dataKey='revenue' fill='#10B981' radius={[8, 8, 0, 0]} name='Revenue ($)' />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 )}
 
-                {/* Email Status Distribution */}
-                {statusData.length > 0 && (
-                    <Card className='shadow-md'>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2'>
-                                <Mail className='h-5 w-5 text-purple-600' />
-                                Email Status Distribution
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <PieChart>
-                                    <Pie
-                                        data={statusData}
-                                        cx='50%'
-                                        cy='50%'
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                        outerRadius={100}
-                                        fill='#8884d8'
-                                        dataKey='value'
-                                    >
-                                        {statusData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className='mt-4 flex justify-center gap-4 flex-wrap'>
-                                {statusData.map((item, i) => (
-                                    <div key={i} className='flex items-center gap-2'>
-                                        <div className='w-3 h-3 rounded-full' style={{ backgroundColor: item.color }}></div>
-                                        <span className='text-sm text-gray-600'>
-                                            {item.name}: {item.value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+                {/* Traffic Distribution Pie Chart */}
+                {trafficDistribution.length > 0 && (
+                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                        <div className='mb-6'>
+                            <h3 className='text-xl font-bold text-gray-900 mb-1'>Traffic Distribution</h3>
+                            <p className='text-sm text-gray-600'>Click distribution by product</p>
+                        </div>
 
-            {/* Charts Row 2 */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                {/* Weekly Activity */}
-                {weeklyData.some((d) => d.emails > 0) && (
-                    <Card className='shadow-md'>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2'>
-                                <Calendar className='h-5 w-5 text-green-600' />
-                                Weekly Email Activity
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <BarChart data={weeklyData}>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='day' />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey='emails' fill='#3b82f6' name='Emails Sent' />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Performance vs Target */}
-                {performanceData.length > 0 && (
-                    <Card className='shadow-md'>
-                        <CardHeader>
-                            <CardTitle className='flex items-center gap-2'>
-                                <TrendingUp className='h-5 w-5 text-orange-600' />
-                                Performance vs Target
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width='100%' height={300}>
-                                <BarChart data={performanceData} layout='vertical'>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis type='number' />
-                                    <YAxis dataKey='metric' type='category' width={100} />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey='current' fill='#3b82f6' name='Current' />
-                                    <Bar dataKey='target' fill='#cbd5e1' name='Target' />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
-
-            {/* Detailed Stats Row */}
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                <Card className='shadow-md'>
-                    <CardHeader>
-                        <CardTitle className='text-lg flex items-center gap-2'>
-                            <CheckCircle className='h-5 w-5 text-green-600' />
-                            Success Metrics
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-4'>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Emails Delivered</span>
-                            <span className='font-bold text-green-600'>{emailMetrics.delivered}</span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Delivery Rate</span>
-                            <span className='font-bold text-green-600'>{deliveryRate}%</span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Active Subscribers</span>
-                            <span className='font-bold text-green-600'>{userCounts}</span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className='shadow-md'>
-                    <CardHeader>
-                        <CardTitle className='text-lg flex items-center gap-2'>
-                            <AlertCircle className='h-5 w-5 text-orange-600' />
-                            Areas for Improvement
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-4'>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Failed Emails</span>
-                            <span className='font-bold text-red-600'>{emailMetrics.failed}</span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Failure Rate</span>
-                            <span className='font-bold text-red-600'>{failureRate}%</span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Pending Tasks</span>
-                            <span className='font-bold text-orange-600'>{emailMetrics.pending}</span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className='shadow-md'>
-                    <CardHeader>
-                        <CardTitle className='text-lg flex items-center gap-2'>
-                            <Clock className='h-5 w-5 text-blue-600' />
-                            Recent Activity
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-4'>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Last Campaign</span>
-                            <span className='font-bold text-blue-600'>
-                                {totalEmailSent.length > 0
-                                    ? new Date(totalEmailSent[0].createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                                    : 'N/A'}
-                            </span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>New Subscribers</span>
-                            <span className='font-bold text-blue-600'>{latestUsers.length} recent</span>
-                        </div>
-                        <div className='flex justify-between items-center'>
-                            <span className='text-gray-600'>Active Automations</span>
-                            <span className='font-bold text-blue-600'>{emailMetrics.activeAutomations}</span>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Latest Subscribers */}
-            {latestUsers.length > 0 && (
-                <Card className='shadow-md'>
-                    <CardHeader>
-                        <CardTitle className='flex items-center gap-2'>
-                            <Users className='h-5 w-5 text-blue-600' />
-                            Latest Subscribers
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className='overflow-x-auto'>
-                            <table className='w-full'>
-                                <thead>
-                                    <tr className='border-b'>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Name</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Email</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Joined Date</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {latestUsers.map((user) => (
-                                        <tr key={user.id} className='border-b hover:bg-gray-50'>
-                                            <td className='py-3 px-4'>{user.fullName || 'N/A'}</td>
-                                            <td className='py-3 px-4 text-gray-600'>{user.email || 'N/A'}</td>
-                                            <td className='py-3 px-4 text-gray-600'>
-                                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
-                                            </td>
-                                            <td className='py-3 px-4'>
-                                                <span className='px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium'>Active</span>
-                                            </td>
-                                        </tr>
+                        <ResponsiveContainer width='100%' height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={trafficDistribution}
+                                    cx='50%'
+                                    cy='50%'
+                                    labelLine={false}
+                                    label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                    outerRadius={100}
+                                    fill='#8884d8'
+                                    dataKey='value'
+                                >
+                                    {trafficDistribution.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
-                                </tbody>
-                            </table>
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#FFF',
+                                        border: '1px solid #E5E7EB',
+                                        borderRadius: '8px',
+                                    }}
+                                    formatter={(value, name) => [value, 'Clicks']}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+            </div>
+
+            {/* Top Performing Products */}
+            {topProducts.length > 0 && (
+                <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                    <div className='mb-6'>
+                        <h3 className='text-xl font-bold text-gray-900 mb-1'>Top Performing Products</h3>
+                        <p className='text-sm text-gray-600'>Your highest earning products</p>
+                    </div>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {topProducts.map((product, index) => (
+                            <div
+                                key={product.id}
+                                className='p-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-md transition-all'
+                            >
+                                <div className='flex items-start justify-between mb-3'>
+                                    <div className='w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-lg'>
+                                        {index + 1}
+                                    </div>
+                                    <div className='text-right'>
+                                        <div className='text-2xl font-bold text-green-600'>${product.comission}</div>
+                                        <div className='text-xs text-gray-500'>Revenue</div>
+                                    </div>
+                                </div>
+                                <h4 className='font-semibold text-gray-900 mb-2 capitalize'>{product.productName.replace(/([A-Z])/g, ' $1').trim()}</h4>
+                                <div className='flex items-center justify-between text-sm text-gray-600'>
+                                    <div className='flex items-center gap-1'>
+                                        <MousePointer className='w-4 h-4' />
+                                        <span>{product.clicks} clicks</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <Target className='w-4 h-4' />
+                                        <span>{product.conversion} conv.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Monthly Goals */}
+            <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                <div className='mb-6'>
+                    <h3 className='text-xl font-bold text-gray-900 mb-1'>Monthly Goals & Targets</h3>
+                    <p className='text-sm text-gray-600'>Track your progress towards monthly objectives</p>
+                </div>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                    <div className='p-6 bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-xl'>
+                        <div className='flex items-center gap-3 mb-3'>
+                            <div className='p-2 bg-green-100 rounded-lg'>
+                                <DollarSign className='w-6 h-6 text-green-600' />
+                            </div>
+                            <span className='font-semibold text-gray-900'>Revenue Goal</span>
                         </div>
-                    </CardContent>
-                </Card>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>$5,000</div>
+                        <div className='text-sm text-gray-600 mb-3'>
+                            Current: ${metrics.totalRevenue} ({Math.min((metrics.totalRevenue / 5000) * 100, 100).toFixed(0)}%)
+                        </div>
+                        <div className='w-full bg-gray-200 rounded-full h-3'>
+                            <div
+                                className='bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500'
+                                style={{ width: `${Math.min((metrics.totalRevenue / 5000) * 100, 100)}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div className='p-6 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl'>
+                        <div className='flex items-center gap-3 mb-3'>
+                            <div className='p-2 bg-blue-100 rounded-lg'>
+                                <MousePointer className='w-6 h-6 text-blue-600' />
+                            </div>
+                            <span className='font-semibold text-gray-900'>Click Goal</span>
+                        </div>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>1,000</div>
+                        <div className='text-sm text-gray-600 mb-3'>
+                            Current: {metrics.totalClicks} ({Math.min((metrics.totalClicks / 1000) * 100, 100).toFixed(0)}%)
+                        </div>
+                        <div className='w-full bg-gray-200 rounded-full h-3'>
+                            <div
+                                className='bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500'
+                                style={{ width: `${Math.min((metrics.totalClicks / 1000) * 100, 100)}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div className='p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl'>
+                        <div className='flex items-center gap-3 mb-3'>
+                            <div className='p-2 bg-purple-100 rounded-lg'>
+                                <Target className='w-6 h-6 text-purple-600' />
+                            </div>
+                            <span className='font-semibold text-gray-900'>Conversion Goal</span>
+                        </div>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>200</div>
+                        <div className='text-sm text-gray-600 mb-3'>
+                            Current: {metrics.totalConversions} ({Math.min((metrics.totalConversions / 200) * 100, 100).toFixed(0)}%)
+                        </div>
+                        <div className='w-full bg-gray-200 rounded-full h-3'>
+                            <div
+                                className='bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500'
+                                style={{ width: `${Math.min((metrics.totalConversions / 200) * 100, 100)}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Top Referred Affiliates */}
+            {apiData?.totalTop5Affiliate?.length > 0 && (
+                <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
+                    <div className='mb-6'>
+                        <h3 className='text-xl font-bold text-gray-900 mb-1'>Top Referred Affiliates</h3>
+                        <p className='text-sm text-gray-600'>Your most successful referrals</p>
+                    </div>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {apiData.totalTop5Affiliate.map((affiliate, index) => (
+                            <div
+                                key={affiliate.id}
+                                className='p-4 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl hover:shadow-md transition-all'
+                            >
+                                <div className='flex items-center gap-3 mb-3'>
+                                    <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-md'>
+                                        {index + 1}
+                                    </div>
+                                    <div className='flex-1'>
+                                        <div className='font-semibold text-gray-900'>
+                                            {affiliate.firstName} {affiliate.lastName}
+                                        </div>
+                                        <div className='text-xs text-gray-500'>{affiliate.email}</div>
+                                    </div>
+                                </div>
+                                <div className='text-xs text-gray-600 flex items-center gap-1'>
+                                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <path
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                            strokeWidth={2}
+                                            d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
+                                        />
+                                    </svg>
+                                    Joined {new Date(affiliate.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -126,7 +126,7 @@ function SubscriptionConfirmation() {
         }
 
         if (productLink === 'http://localhost:3000/emailMarketing') {
-            router.push('/sales/dashboard/kpi');
+            router.push('/emailMarketing/dashboard/kpi');
         } else if (productLink === 'http://localhost:3000/rsvp') {
             router.push('/rsvp');
         } else if (productLink === 'http://localhost:3000/advertising') {

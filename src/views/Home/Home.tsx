@@ -215,7 +215,7 @@ function Home() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            <section className='relative min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-8 py-16 sm:py-24 md:py-32'>
+            <section className='relative flex items-center justify-center pb-12 sm:pb-16 pt-16 sm:pt-24 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-[90rem] relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* LEFT */}
@@ -309,15 +309,12 @@ function Home() {
             <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
-                            MASTER THE MARKETS
-                        </Badge>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 animate-slide-in-up'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Covered Calls Vs</span>
-                            <br />
-                            Protective Puts
+                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>MASTER THE MARKETS</Badge>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                            Covered Calls Vs <br />
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Protective Puts</span>
                         </h2>
-                        <p className='text-lg text-gray-300 max-w-3xl mx-auto animate-slide-in-up delay-200'>
+                        <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
                             Understand the sophisticated differences between covered calls and protective puts with our comprehensive analysis framework
                         </p>
                     </div>
@@ -449,7 +446,7 @@ function Home() {
             </section>
 
             {/* REVOLUTIONARY: Elite Trading Mastery Framework Section */}
-            <section className='relative py-40 px-6 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f] overflow-hidden'>
+            <section className='relative py-32 px-6 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f] overflow-hidden'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     {/* Revolutionary Header */}
                     <div className='text-center mb-24 animate-slide-in-up'>
@@ -469,7 +466,7 @@ function Home() {
                             </span>
                         </h2>
 
-                        <p className='text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light'>
+                        <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light'>
                             Transform from beginner to <span className='text-[#4cc7e8] font-bold'>elite trader</span> with our revolutionary framework that has
                             generated <span className='text-[#2c7bbe] font-bold'>$12.8M+</span> in profits
                         </p>
@@ -832,17 +829,14 @@ function Home() {
             </section>
 
             {/* Newsletter Section - Enhanced with Learn More Lottie Animation */}
-            <section className='relative pt-20 pb-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='text-center mb-16'>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
-                                Subscribe to our Monthly Newsletter
-                            </span>
-                            <br />
-                            <span className='text-white'>to stay updated</span>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                            Subscribe to our Monthly{' '}
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter to stay updated</span>
                         </h2>
-                        <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
+                        <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
                             Streamline your search for market insights and get weekly updates, articles and recommended reads every week. Reduce your time by
                             staying up to date with the latest information available.
                         </p>

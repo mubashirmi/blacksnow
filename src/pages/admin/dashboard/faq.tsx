@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
@@ -22,6 +21,7 @@ export default function FAQPage() {
     const [faqs, setFaqs] = useState<FAQ[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [isCreating, setIsCreating] = useState(false);
 
     const fetchFAQs = async () => {
         try {
@@ -44,6 +44,7 @@ export default function FAQPage() {
             }
         } catch {
             setAlert({ type: 'error', message: 'Failed to load FAQs. Please try again.' });
+            setFaqs([]);
         } finally {
             setIsLoading(false);
         }
@@ -80,6 +81,7 @@ export default function FAQPage() {
         if (!validateForm()) return;
 
         try {
+            setIsCreating(true);
             const response = await fetch('/api/v1/faq', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -104,10 +106,12 @@ export default function FAQPage() {
             setTitle('');
             setDescription('');
             setErrors({});
-
+            // optional: keep the list fresh
             fetchFAQs();
         } catch {
             setAlert({ type: 'error', message: 'Failed to create FAQ. Please try again.' });
+        } finally {
+            setIsCreating(false);
         }
     };
 
@@ -134,7 +138,6 @@ export default function FAQPage() {
             setAlert({ type: 'success', message: 'FAQ deleted successfully!' });
         } catch {
             setAlert({ type: 'error', message: 'Failed to delete FAQ. Please try again.' });
-            // Refresh the list in case of error to ensure consistency
             fetchFAQs();
         } finally {
             setDeletingId(null);
@@ -143,72 +146,93 @@ export default function FAQPage() {
 
     return (
         <div className='space-y-6'>
-            <div className='flex items-center justify-between'>
-                <h1 className='text-3xl font-bold text-gray-800'>FAQ Management</h1>
-            </div>
-
             {alert && (
                 <div className={`p-4 rounded-lg ${alert.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{alert.message}</div>
             )}
 
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                {/* Create FAQ Form */}
-                <Card className='shadow-sm border-gray-200'>
-                    <CardHeader className='bg-gray-50 border-b border-gray-200'>
-                        <CardTitle className='text-xl text-gray-800'>Create New FAQ</CardTitle>
-                    </CardHeader>
-                    <CardContent className='p-6 space-y-4'>
+                {/* Create FAQ Card — matches the Notes/Newsletter card structure */}
+                <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                    <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4'>
+                        <h2 className='text-xl font-bold text-white'>Create New FAQ</h2>
+                    </div>
+                    <div className='p-6 space-y-4'>
                         <div>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>Question</label>
+                            <label className='block text-sm font-medium text-slate-700 mb-2'>Question</label>
                             <Input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 placeholder='Enter FAQ question'
-                                className={`border-gray-200 focus:ring-gray-800 focus:border-gray-800 ${errors.title ? 'border-red-500' : ''}`}
+                                className={`border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.title ? 'border-red-500' : ''}`}
                             />
                             {errors.title && <p className='text-red-500 text-sm mt-1'>{errors.title}</p>}
                         </div>
                         <div>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>Answer</label>
+                            <label className='block text-sm font-medium text-slate-700 mb-2'>Answer</label>
                             <Textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder='Enter FAQ answer'
                                 rows={4}
-                                className={`border-gray-200 focus:ring-gray-800 focus:border-gray-800 ${errors.description ? 'border-red-500' : ''}`}
+                                className={`border-slate-200 h-48 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                                    errors.description ? 'border-red-500' : ''
+                                }`}
                             />
                             {errors.description && <p className='text-red-500 text-sm mt-1'>{errors.description}</p>}
                         </div>
-                        <Button onClick={handleCreateFAQ} className='w-full cursor-pointer bg-gray-800 hover:bg-gray-900 text-white'>
-                            Create FAQ
+                        <Button
+                            onClick={handleCreateFAQ}
+                            className='w-full bg-blue-500 cursor-pointer hover:bg-blue-600 text-white rounded-lg disabled:opacity-60'
+                            disabled={isCreating}
+                        >
+                            {isCreating ? (
+                                <>
+                                    <svg className='animate-spin w-4 h-4 mr-2' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                        <path
+                                            className='opacity-75'
+                                            fill='currentColor'
+                                            d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                        ></path>
+                                    </svg>
+                                    Creating...
+                                </>
+                            ) : (
+                                'Create FAQ'
+                            )}
                         </Button>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                {/* Existing FAQs */}
-                <Card className='shadow-sm border-gray-200'>
-                    <CardHeader className='bg-gray-50 border-b border-gray-200'>
-                        <CardTitle className='text-xl text-gray-800'>Existing FAQs</CardTitle>
-                    </CardHeader>
-                    <CardContent className='p-6'>
+                {/* Existing FAQs Card — same structure + header actions */}
+                <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                    <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
+                        <h2 className='text-xl font-bold text-white'>Existing FAQs</h2>
+                    </div>
+
+                    <div className='p-6'>
                         {isLoading ? (
-                            <div className='text-gray-600'>Loading FAQs...</div>
+                            <div className='space-y-2'>
+                                <div className='h-10 w-full animate-pulse rounded bg-slate-200' />
+                                <div className='h-10 w-full animate-pulse rounded bg-slate-200' />
+                                <div className='h-10 w-full animate-pulse rounded bg-slate-200' />
+                            </div>
                         ) : faqs.length === 0 ? (
-                            <div className='text-gray-600'>No FAQs available.</div>
+                            <div className='text-slate-600'>No FAQs available.</div>
                         ) : (
                             <div className='space-y-3'>
                                 {faqs.map((faq) => (
-                                    <div key={faq.id} className='border border-gray-200 rounded-lg'>
+                                    <div key={faq.id} className='border border-slate-200 rounded-lg overflow-hidden'>
                                         <div className='flex items-center justify-between p-4'>
                                             <button
                                                 onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
-                                                className='flex-1 flex items-center justify-between text-left hover:bg-gray-50 transition-colors -m-4 p-4 rounded-l-lg'
+                                                className='flex-1 flex items-center justify-between text-left hover:bg-slate-50 transition-colors -m-4 p-4 rounded-l-lg'
                                             >
-                                                <span className='font-medium text-gray-800'>{faq.title}</span>
+                                                <span className='font-medium text-slate-800'>{faq.title}</span>
                                                 {expandedFAQ === faq.id ? (
-                                                    <ChevronDown className='w-4 h-4 text-gray-500' />
+                                                    <ChevronDown className='w-4 h-4 text-slate-500' />
                                                 ) : (
-                                                    <ChevronRight className='w-4 h-4 text-gray-500' />
+                                                    <ChevronRight className='w-4 h-4 text-slate-500' />
                                                 )}
                                             </button>
                                             <button
@@ -217,11 +241,22 @@ export default function FAQPage() {
                                                 className='ml-2 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                                                 title='Delete FAQ'
                                             >
-                                                <Trash2 className='w-4 h-4' />
+                                                {deletingId === faq.id ? (
+                                                    <svg className='animate-spin w-4 h-4' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                                        <path
+                                                            className='opacity-75'
+                                                            fill='currentColor'
+                                                            d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                                        ></path>
+                                                    </svg>
+                                                ) : (
+                                                    <Trash2 className='w-4 h-4' />
+                                                )}
                                             </button>
                                         </div>
                                         {expandedFAQ === faq.id && (
-                                            <div className='px-4 pb-4 text-gray-600 border-t border-gray-100'>
+                                            <div className='px-4 pb-4 text-slate-600 border-t border-slate-100'>
                                                 <p className='pt-3'>{faq.text}</p>
                                             </div>
                                         )}
@@ -229,8 +264,8 @@ export default function FAQPage() {
                                 ))}
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </div>
     );

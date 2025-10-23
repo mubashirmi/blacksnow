@@ -54,6 +54,7 @@ export default function BlogPage() {
     const [alerts, setAlerts] = useState<AlertType[]>([]);
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
     const [refreshing, setRefreshing] = useState<boolean>(false);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const addAlert = (type: AlertType['type'], message: string) => {
         const id = Date.now().toString();
@@ -112,25 +113,20 @@ export default function BlogPage() {
         [addAlert]
     );
 
-    useEffect(
-        () => {
-            fetchBlogs();
-        },
+    useEffect(() => {
+        fetchBlogs();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-    ); // Empty dependency array - only run on mount
+    }, []);
 
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) return;
 
         setDeletingId(id);
-
         try {
             const res = await fetch(`/api/v1/blog?id=${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
-
             if (!res.ok) throw new Error('Failed to delete blog');
 
             setBlogs((prev) => prev.filter((blog) => blog.id !== id));
@@ -168,14 +164,12 @@ export default function BlogPage() {
     const handleUpdate = async () => {
         if (!editingBlog) return;
 
-        // Validation
         if (!editForm.title.trim() || !editForm.postContent.trim()) {
             addAlert('error', 'Title and content are required');
             return;
         }
 
         setSaving(true);
-
         try {
             const res = await fetch(`/api/v1/blog?id=${editingBlog.id}`, {
                 method: 'PUT',
@@ -201,20 +195,10 @@ export default function BlogPage() {
         }
     };
 
-    const truncateText = (text: string, maxLength: number) => {
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + '...';
-    };
+    const truncateText = (text: string, maxLength: number) => (text.length <= maxLength ? text : text.substring(0, maxLength) + '...');
+    const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
-    // Loading skeleton components
+    // Loading skeletons
     const GridSkeleton = () => (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -255,7 +239,7 @@ export default function BlogPage() {
     return (
         <div className='min-h-screen bg-slate-50 py-8'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-                {/* Alert Stack */}
+                {/* Alerts */}
                 <div className='fixed top-4 right-4 z-50 space-y-2 max-w-md'>
                     {alerts.map((alert) => (
                         <div
@@ -294,65 +278,72 @@ export default function BlogPage() {
                     ))}
                 </div>
 
-                {/* Header */}
-                <div className='mb-8'>
-                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
-                        <div>
-                            <h1 className='text-3xl font-bold text-slate-900'>Blog Management</h1>
-                            <p className='mt-2 text-slate-600'>Create, edit, and manage your blog posts</p>
-                        </div>
-                        <div className='mt-4 sm:mt-0 flex items-center space-x-3'>
-                            <Button onClick={() => fetchBlogs(true)} disabled={refreshing} variant='outline' className='opacity-0'>
-                                <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-                                {refreshing ? 'Refreshing...' : 'Refresh'}
-                            </Button>
-                            <Link href='/admin/postblog'>
-                                <Button className='bg-blue-600 hover:bg-blue-700 cursor-pointer px-6'>
-                                    <Plus className='w-4 h-4 mr-2' />
-                                    New Post
+                {/* --- Main Card with shared header --- */}
+                <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                    {/* Gradient header */}
+                    <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4'>
+                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+                            <div>
+                                <h1 className='text-2xl font-bold text-white'>Blog Management</h1>
+                                <p className='text-white/70 text-sm'>Create, edit, and manage your blog posts</p>
+                            </div>
+                            <div className='flex items-center gap-3'>
+                                {/* kept as-is (hidden with opacity-0 in your original) */}
+                                <Button onClick={() => fetchBlogs(true)} disabled={refreshing} variant='outline' className='opacity-0'>
+                                    <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                                    {refreshing ? 'Refreshing...' : 'Refresh'}
                                 </Button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stats and Controls */}
-                <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
-                    <div className='flex items-center space-x-4 mb-4 sm:mb-0'>
-                        <div className='bg-white rounded-lg px-4 py-2 shadow-sm border'>
-                            <p className='text-sm text-slate-600'>Total Posts</p>
-                            <p className='text-2xl font-bold text-slate-900'>{blogs.length}</p>
-                        </div>
-                        <div className='bg-white rounded-lg px-4 py-2 shadow-sm border'>
-                            <p className='text-sm text-slate-600'>Featured</p>
-                            <p className='text-2xl font-bold text-slate-900'>{blogs.filter((blog) => blog.featured).length}</p>
+                                <Link href='/admin/postblog'>
+                                    <Button className='bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-6'>
+                                        <Plus className='w-4 h-4 mr-2' />
+                                        New Post
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='flex items-center space-x-2'>
-                        <Button variant={viewMode === 'grid' ? 'default' : 'outline'} size='sm' onClick={() => setViewMode('grid')} className='cursor-pointer'>
-                            <Grid className='w-4 h-4 mr-2' />
-                            Grid
-                        </Button>
-                        <Button
-                            variant={viewMode === 'table' ? 'default' : 'outline'}
-                            size='sm'
-                            onClick={() => setViewMode('table')}
-                            className='cursor-pointer'
-                        >
-                            <Table className='w-4 h-4 mr-2' />
-                            Table
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Main Content */}
-                <Card className='shadow-sm border-slate-200'>
+                    {/* Body */}
                     <div className='p-6'>
-                        {/* Loading State */}
+                        {/* Stats & Controls */}
+                        <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+                            <div className='flex items-center space-x-4 mb-4 sm:mb-0'>
+                                <div className='bg-white rounded-lg px-4 py-2 shadow-sm border'>
+                                    <p className='text-sm text-slate-600'>Total Posts</p>
+                                    <p className='text-2xl font-bold text-slate-900'>{blogs.length}</p>
+                                </div>
+                                <div className='bg-white rounded-lg px-4 py-2 shadow-sm border'>
+                                    <p className='text-sm text-slate-600'>Featured</p>
+                                    <p className='text-2xl font-bold text-slate-900'>{blogs.filter((b) => b.featured).length}</p>
+                                </div>
+                            </div>
+
+                            <div className='flex items-center space-x-2'>
+                                <Button
+                                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                                    size='sm'
+                                    onClick={() => setViewMode('grid')}
+                                    className='cursor-pointer'
+                                >
+                                    <Grid className='w-4 h-4 mr-2' />
+                                    Grid
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'table' ? 'default' : 'outline'}
+                                    size='sm'
+                                    onClick={() => setViewMode('table')}
+                                    className='cursor-pointer'
+                                >
+                                    <Table className='w-4 h-4 mr-2' />
+                                    Table
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Loading */}
                         {loading && !refreshing && (viewMode === 'grid' ? <GridSkeleton /> : <TableSkeleton />)}
 
-                        {/* Error State */}
+                        {/* Error */}
                         {!loading && error && (
                             <div className='text-center py-12'>
                                 <AlertCircle className='w-12 h-12 text-red-400 mx-auto mb-4' />
@@ -365,7 +356,7 @@ export default function BlogPage() {
                             </div>
                         )}
 
-                        {/* Empty State */}
+                        {/* Empty */}
                         {!loading && !error && blogs.length === 0 && (
                             <div className='text-center py-16'>
                                 <div className='w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6'>
@@ -389,7 +380,7 @@ export default function BlogPage() {
                             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                                 {blogs.map((blog) => (
                                     <Card key={blog.id} className='overflow-hidden hover:shadow-lg transition-all duration-200 border-slate-200 group'>
-                                        {/* Header Image */}
+                                        {/* Image */}
                                         <div className='h-48 bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden'>
                                             {blog.headerImage ? (
                                                 <Image
@@ -551,14 +542,15 @@ export default function BlogPage() {
                             </div>
                         )}
                     </div>
-                </Card>
+                </div>
             </div>
 
             {/* Edit Modal */}
             {editingBlog && (
                 <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm'>
-                    <Card className='w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col'>
-                        <div className='bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between'>
+                    <Card className='w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200 rounded-xl shadow-2xl'>
+                        {/* Unified gradient header */}
+                        <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
                             <h3 className='text-xl font-bold text-white'>Edit Blog Post</h3>
                             <button
                                 onClick={cancelEdit}
@@ -638,7 +630,7 @@ export default function BlogPage() {
                                 <Button
                                     onClick={handleUpdate}
                                     disabled={saving || !editForm.title.trim() || !editForm.postContent.trim()}
-                                    className='cursor-pointer bg-blue-600 hover:bg-blue-700 min-w-24'
+                                    className='cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-24 text-white'
                                 >
                                     {saving ? (
                                         <>

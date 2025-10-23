@@ -79,9 +79,9 @@ function BlogDirectory() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Header */}
-            <div className='relative z-10 pt-24 pb-20 px-6'>
+            <div className='relative z-10 pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-6 animate-slide-in-up delay-200'>
+                    <h1 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog</span>
                         <br />
                         <span className='text-white'>Directory</span>
@@ -168,8 +168,8 @@ function BlogDirectory() {
                                 </Card>
                             </div>
                         ))}
-                        {blogs[0] ? <></> : <h1 className='text-center leading-11 text-white font-medium text-4xl'>Currently, there is no blog uploaded</h1>}
                     </div>
+                    {blogs[0] ? <></> : <h1 className='text-center leading-11 text-white font-medium text-3xl'>Currently, there is no blog uploaded</h1>}
                 </div>
             </div>
         </div>

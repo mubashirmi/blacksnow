@@ -44,7 +44,7 @@ function CareersTitle() {
             </section> */}
 
             {/* Job Seekers Section */}
-            <section className='relative py-20 px-8'>
+            <section className='relative py-32 px-8'>
                 <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8 animate-slide-in-left'>
@@ -129,7 +129,7 @@ function CareersTitle() {
             </section>
 
             {/* Recruitment Agency Section */}
-            <section className='relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8 animate-slide-in-right'>
@@ -223,7 +223,7 @@ function CareersTitle() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-24 px-8'>
+            <section className='relative py-32 px-8'>
                 <div className='container mx-auto max-w-[90rem]'>
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
                         <div className='space-y-8'>

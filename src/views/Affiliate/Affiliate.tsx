@@ -60,19 +60,19 @@ function Affiliate() {
         },
         {
             title: 'Newsletter Subscriptions',
-            amount: '$5/Month',
+            amount: '$10/Month',
             description: 'Promote our newsletter and earn a recurring $5 commission for each new subscriber.',
             icon: Mail,
             color: 'from-[#2c7bbe] to-[#4cc7e8]',
-            period: 'or $40/Year',
+            period: 'or $50/Year',
         },
         {
             title: 'Basic Digital Billboard',
-            amount: '$75/Month',
+            amount: '$150/Month',
             description: 'Generate a steady stream of income with $125 monthly for each Basic Digital Billboard you refer.',
             icon: Monitor,
             color: 'from-[#4cc7e8] to-[#2a8dcc]',
-            period: 'or $300/Year',
+            period: 'or $600/Year',
         },
         {
             title: 'Premium Email/SMS Systems',
@@ -145,7 +145,7 @@ function Affiliate() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative py-32 px-8'>
+            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-20 items-center'>
                         {/* Left Content */}
@@ -168,19 +168,6 @@ function Affiliate() {
                                     <span className='text-[#2c7bbe] font-semibold'>It&apos;s quick and easy to get started.</span>
                                 </p>
                             </div>
-
-                            {/* Quick Stats */}
-                            <div className='grid grid-cols-2 gap-6'>
-                                <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
-                                    <div className='text-4xl font-black text-[#4cc7e8] mb-2'>50%</div>
-                                    <div className='text-gray-400 font-semibold'>Commission Rate</div>
-                                </div>
-                                <div className='text-center p-6 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2a8dcc]/10 rounded-2xl border border-[#4cc7e8]/20'>
-                                    <div className='text-4xl font-black text-[#2c7bbe] mb-2'>$250</div>
-                                    <div className='text-gray-400 font-semibold'>Per RSVP</div>
-                                </div>
-                            </div>
-
                             {/* CTA Buttons */}
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 {/* ⬇️ REPLACED Link to /login?signup with modal trigger */}
@@ -347,7 +334,7 @@ function Affiliate() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-20 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
                         {/* Left Content */}

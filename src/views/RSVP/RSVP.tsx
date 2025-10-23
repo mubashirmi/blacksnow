@@ -460,13 +460,13 @@ function RSVP({ initialIsLoggedIn }) {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pt-28 px-8'>
+            <section className='relative pb-8 sm:pb-10 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-6xl relative z-10'>
                     <div className='text-center mb-14'>
                         <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-7 px-8 py-3 text-sm font-bold animate-fade-in'>
                             EXCLUSIVE TRADING WEBINAR
                         </Badge>
-                        <h1 className='text-6xl lg:text-7xl font-black text-white mb-5 leading-tight animate-slide-in-up'>
+                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-5 leading-tight animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Webinar RSVP</span>
                         </h1>
                         <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto animate-slide-in-up delay-200'></div>
@@ -475,7 +475,7 @@ function RSVP({ initialIsLoggedIn }) {
             </section>
 
             {/* Main Content Section */}
-            <section className='relative py-20 px-8'>
+            <section className='relative pt-12 pb-32 px-8'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='grid lg:grid-cols-3 gap-16'>
                         {/* Left Side - Curriculum Content */}
@@ -756,13 +756,17 @@ function RSVP({ initialIsLoggedIn }) {
             </section>
 
             {/* Benefits Section with Lottie Animation */}
-            <section className='relative py-20 px-8 bg-[#0a0b0f]/50'>
+            <section className='relative py-32 px-8 bg-[#0a0b0f]/50'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='text-center mb-16'>
-                        <Badge className='bg-[#4cc7e8] text-white mb-4 px-4 py-2'>WEBINAR BENEFITS</Badge>
-                        <h2 className='text-4xl lg:text-5xl font-bold text-white mb-4'>
-                            What You&apos;ll <span className='text-[#4cc7e8]'>Gain</span>
-                        </h2>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-7 px-8 py-3 text-sm font-bold animate-fade-in'>
+                            WEBINAR BENEFITS
+                        </Badge>
+                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-5 leading-tight animate-slide-in-up'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                What You&apos;ll Gain
+                            </span>
+                        </h1>
                     </div>
 
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>

@@ -318,13 +318,13 @@ function Consultation() {
             )}
 
             {/* Hero Section */}
-            <section className='relative pt-20 px-8'>
+            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-6xl relative z-10'>
                     <div className='text-center mb-16'>
                         <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-5 px-8 py-3 text-sm font-bold animate-fade-in'>
                             PROFESSIONAL RECRUITMENT SERVICES
                         </Badge>
-                        <h1 className='text-6xl lg:text-7xl font-black text-white mb-8 leading-tight animate-slide-in-up'>
+                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-8 leading-tight animate-slide-in-up'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Black Snow</span>
                             <br />
                             Recruitment Agency
@@ -335,7 +335,7 @@ function Consultation() {
             </section>
 
             {/* Main Content Section */}
-            <section className='relative py-20 px-8'>
+            <section className='relative pt-8 pb-32 px-8'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='grid lg:grid-cols-2 gap-16 mb-32'>
                         {/* Left Side - Agency Information */}
@@ -665,7 +665,7 @@ function Consultation() {
                         </div>
                     </div>
                     {/* Services Grid */}
-                    <div className='space-y-6 container mx-auto max-w-7xl'>
+                    <div className='space-y-6 container mx-auto max-w-7xl pt-28'>
                         <h2 className='text-4xl lg:text-5xl font-black text-white mb-10 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Our Comprehensive </span>
                             Services
@@ -700,13 +700,13 @@ function Consultation() {
             </section>
 
             {/* Call to Action Section with Teamwork Animation */}
-            <section className='relative py-20 px-8 bg-[#050608]'>
+            <section className='relative py-32 px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-6xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Content */}
                         <div className='space-y-8'>
                             <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-6 py-2 text-sm font-bold'>READY TO GET STARTED?</Badge>
-                            <h2 className='text-4xl lg:text-5xl font-black text-white leading-tight'>
+                            <h2 className='text-5xl lg:text-6xl font-black text-white leading-tight'>
                                 Let&apos;s Find Your <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Perfect</span>
                                 <br />
                                 Candidates

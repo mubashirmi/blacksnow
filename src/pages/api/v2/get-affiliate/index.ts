@@ -8,7 +8,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
             const auths = await prisma.auth.findMany({
                 where: {
-                    referredById: { not: null },
+                    roles: { has: 'Affiliate' },
                 },
             });
 

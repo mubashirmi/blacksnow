@@ -95,32 +95,47 @@ function SignIn() {
                     email: data.email,
                     password: data.password,
                 };
-                const response = await axios.post('/api/v2/login', loginData);
 
-                // Check response for admin role
-                if (response.data.role === 'admin') {
-                    setCookie('admin_token', response.data.token);
-                    setCookie('role', response.data.role);
-                    setAlert({
-                        type: 'success',
-                        message: 'Admin login successful!',
-                    });
+                const response = await axios.post('/api/v2/login', loginData);
+                const { token, user, paymentRequired } = response.data || {};
+                const roles = Array.isArray(user?.roles) ? user.roles.map((r: any) => String(r).toLowerCase()) : [];
+
+                const isAdmin = roles.includes('admin');
+                const isSales = roles.includes('sales');
+
+                if (isAdmin) {
+                    // Admin flow
+                    setCookie('admin_token', token);
+                    setCookie('role', 'admin');
+                    setCookie('adminId', user.id);
+                    setCookie('id', user.id); // keep consistent with rest of app
+                    localStorage.setItem('adminId', String(user.id));
+                    localStorage.setItem('roles', JSON.stringify(user.roles || []));
+                    setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
                     router.push('/admin/dashboard');
-                } else if (response.data.paymentRequired) {
+                } else if (isSales) {
+                    // Sales flow → redirect to sales dashboard users
+                    setCookie('token', token);
+                    localStorage.setItem('roles', JSON.stringify(user.roles || []));
+                    setCookie('id', user.id);
+                    localStorage.setItem('userId', String(user.id));
+                    localStorage.setItem('roles', JSON.stringify(user.roles || []));
+                    setAlert({ type: 'success', message: 'Login successful!' });
+                    reset();
+                    router.push('/sales/dashboard/users');
+                } else if (paymentRequired) {
                     setAlert({
                         type: 'error',
                         message: 'Access denied. Please complete your payment to access the system.',
                     });
                 } else {
-                    setCookie('token', response.data.token);
-                    setCookie('id', response.data.user.id);
-                    localStorage.setItem('userId', response.data.user.id);
-                    localStorage.setItem('roles', JSON.stringify(response.data?.user?.roles));
-                    setAlert({
-                        type: 'success',
-                        message: 'Login successful!',
-                    });
+                    // Regular user flow (fallback)
+                    setCookie('token', token);
+                    setCookie('id', user.id);
+                    localStorage.setItem('userId', String(user.id));
+                    localStorage.setItem('roles', JSON.stringify(user.roles || []));
+                    setAlert({ type: 'success', message: 'Login successful!' });
                     reset();
                     router.push('/');
                 }
@@ -138,7 +153,7 @@ function SignIn() {
     return (
         <div className='min-h-screen bg-[#050608] py-10 relative overflow-hidden flex items-center justify-center'>
             <div className='relative z-10 w-full max-w-md px-6'>
-                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>
+                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>
                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
 
                     <CardHeader className='p-8 text-center'>

@@ -23,6 +23,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             if (find) {
                 return res.status(200).json('Credentials already exists.');
             }
+
             const created = await prisma.emailMarketingCredentials.create({
                 data: {
                     email,

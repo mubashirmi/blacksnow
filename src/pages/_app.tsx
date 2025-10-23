@@ -1,7 +1,8 @@
 import { CoreLayout } from '@/components';
 import AdminLayout from '@/components/AdminLayout'; // Import your AdminLayout
 import AffiliateLayout from '@/components/AffiliateDashboardLayout';
-import SalesLayout from '@/components/SalesDashboardLayout';
+import EmailMarketingLayout from '@/components/EmailMarketingLayout';
+import SalesDashboardLayout from '@/components/SalesDashboardLayout';
 import { mantineTheme } from '@/constants/mantineTheme';
 import { useGlobalState } from '@/store';
 import '@aws-amplify/ui-react/styles.css';
@@ -64,8 +65,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
     // Determine if the current route is an admin route
     const isAdminRoute = router.pathname.startsWith('/admin');
-    const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
+    const isEmailMarketingRoute = router.pathname.startsWith('/emailMarketing/dashboard');
     const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
+    const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
 
     return (
         <>
@@ -79,11 +81,16 @@ export default function App({ Component, pageProps }: AppProps) {
                         <Notifications position='top-right' />
                         <Component {...pageProps} />
                     </AdminLayout>
-                ) : isSalesRoute ? (
-                    <SalesLayout>
+                ) : isEmailMarketingRoute ? (
+                    <EmailMarketingLayout>
                         <Notifications position='top-right' />
                         <Component {...pageProps} />
-                    </SalesLayout>
+                    </EmailMarketingLayout>
+                ) : isSalesRoute ? (
+                    <SalesDashboardLayout>
+                        <Notifications position='top-right' />
+                        <Component {...pageProps} />
+                    </SalesDashboardLayout>
                 ) : isAffiliateRoute ? (
                     <AffiliateLayout>
                         <Notifications position='top-right' />

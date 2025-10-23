@@ -57,6 +57,7 @@ const api = async (req, res) => {
             logger.error(`Auth record not found for AuthId: ${id}`);
             return res.status(400).json(errorResponse(`Auth record not found for AuthId: ${id}`));
         }
+        const role = authRecord.roles[0];
 
         // Find the REFERRER (Affiliate) by their Auth.id and get their Connect account
         const affiliate = referredBy
@@ -88,7 +89,7 @@ const api = async (req, res) => {
                 },
             };
             // Route 40% to the referrer, keep 60% as platform fee
-            if (affiliateConnectId) {
+            if (affiliateConnectId && role !== 'Sales') {
                 sessionParams.subscription_data = {
                     transfer_data: { destination: affiliateConnectId },
                     application_fee_percent: 60, // platform keeps 60%, destination gets 40%

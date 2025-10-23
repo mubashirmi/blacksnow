@@ -191,8 +191,10 @@ export default function AuthModal({
                         <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6'>
                             <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
                         </div>
-                        <DialogTitle className='text-2xl font-bold text-white mb-2'>{isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}</DialogTitle>
-                        <DialogDescription className='text-gray-300 text-base'>
+                        <DialogTitle className='text-2xl font-bold text-white mb-2 text-center'>
+                            {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                        </DialogTitle>
+                        <DialogDescription className='text-gray-300 text-base text-center'>
                             {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
                         </DialogDescription>
                     </DialogHeader>

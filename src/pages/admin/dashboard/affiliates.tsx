@@ -43,7 +43,7 @@ export default function AffiliatesPage() {
                 const res = await fetch('/api/v2/get-affiliate', {
                     method: 'GET',
                     headers: { Accept: 'application/json' },
-                    credentials: 'include', // send cookies if this route uses auth cookies
+                    credentials: 'include',
                     signal: controller.signal,
                 });
 
@@ -80,7 +80,6 @@ export default function AffiliatesPage() {
     }, [rows, page]);
 
     React.useEffect(() => {
-        // If current page goes out of bounds after data loads, snap back
         if (page > totalPages) setPage(totalPages);
     }, [totalPages, page]);
 
@@ -98,109 +97,112 @@ export default function AffiliatesPage() {
 
     return (
         <div className='space-y-6'>
-            <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                <div className='flex items-center justify-between mb-6'>
-                    <h2 className='text-xl font-semibold text-gray-800'>Affiliates</h2>
-                    {!loading && <span className='text-sm text-gray-500'>{rows.length} total</span>}
+            {/* Card shell with dark gradient header (shared design) */}
+            <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
+                    <h2 className='text-2xl font-bold text-white'>Affiliates</h2>
+                    {!loading && <span className='text-sm text-white/80'>{rows.length} total</span>}
                 </div>
 
-                {/* Error state */}
-                {error && <div className='mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>{error}</div>}
+                <div className='p-6'>
+                    {/* Error state */}
+                    {error && <div className='mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>{error}</div>}
 
-                <div className='overflow-x-auto'>
-                    <table className='w-full'>
-                        <thead>
-                            <tr className='border-b border-gray-200'>
-                                <th className='text-left py-3 px-4 font-medium text-blue-600'>Name</th>
-                                <th className='text-left py-3 px-4 font-medium text-blue-600'>Email</th>
-                                <th className='text-left py-3 px-4 font-medium text-blue-600'>Status</th>
-                                <th className='text-left py-3 px-4 font-medium text-blue-600'>Join Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                // Simple skeleton rows while loading
-                                Array.from({ length: 3 }).map((_, i) => (
-                                    <tr key={`skeleton-${i}`} className='border-b border-gray-100'>
-                                        <td className='py-3 px-4'>
-                                            <div className='h-4 w-40 animate-pulse rounded bg-gray-200' />
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <div className='h-4 w-56 animate-pulse rounded bg-gray-200' />
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <div className='h-5 w-20 animate-pulse rounded-full bg-gray-200' />
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <div className='h-4 w-28 animate-pulse rounded bg-gray-200' />
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : paginated.length > 0 ? (
-                                paginated.map((affiliate) => (
-                                    <tr key={affiliate.id} className='border-b border-gray-100 hover:bg-gray-50'>
-                                        <td className='py-3 px-4'>{affiliate.name}</td>
-                                        <td className='py-3 px-4 text-blue-600'>{affiliate.email}</td>
-                                        <td className='py-3 px-4'>
-                                            <span
-                                                className={[
-                                                    'px-2 py-1 rounded-full text-xs font-medium',
-                                                    affiliate.status === 'Active'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : affiliate.status === 'Inactive'
-                                                        ? 'bg-red-100 text-red-800'
-                                                        : 'bg-gray-100 text-gray-700',
-                                                ].join(' ')}
-                                            >
-                                                {affiliate.status}
-                                            </span>
-                                        </td>
-                                        <td className='py-3 px-4'>{formatDate(affiliate.joinDate)}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4} className='py-6 text-center text-gray-500'>
-                                        No affiliates found.
-                                    </td>
+                    <div className='overflow-x-auto'>
+                        <table className='w-full'>
+                            <thead>
+                                <tr className='border-b border-slate-200'>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Name</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Join Date</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Pagination */}
-                {!loading && totalPages > 1 && (
-                    <div className='flex items-center justify-center gap-2 mt-6'>
-                        <button
-                            className='p-2 hover:bg-gray-100 rounded disabled:opacity-40'
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            aria-label='Previous page'
-                        >
-                            <ChevronLeft className='w-4 h-4' />
-                        </button>
-
-                        {pageNumbers.map((n) => (
-                            <button
-                                key={n}
-                                className={['w-8 h-8 rounded', n === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'].join(' ')}
-                                onClick={() => setPage(n)}
-                            >
-                                {n}
-                            </button>
-                        ))}
-
-                        <button
-                            className='p-2 hover:bg-gray-100 rounded disabled:opacity-40'
-                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                            disabled={page === totalPages}
-                            aria-label='Next page'
-                        >
-                            <ChevronRight className='w-4 h-4' />
-                        </button>
+                            </thead>
+                            <tbody>
+                                {loading ? (
+                                    // Skeleton rows
+                                    Array.from({ length: 3 }).map((_, i) => (
+                                        <tr key={`skeleton-${i}`} className='border-b border-slate-100'>
+                                            <td className='py-3 px-4'>
+                                                <div className='h-4 w-40 animate-pulse rounded bg-slate-200' />
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <div className='h-4 w-56 animate-pulse rounded bg-slate-200' />
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <div className='h-5 w-20 animate-pulse rounded-full bg-slate-200' />
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <div className='h-4 w-28 animate-pulse rounded bg-slate-200' />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : paginated.length > 0 ? (
+                                    paginated.map((affiliate) => (
+                                        <tr key={affiliate.id} className='border-b border-slate-100 hover:bg-slate-50'>
+                                            <td className='py-3 px-4'>{affiliate.name}</td>
+                                            <td className='py-3 px-4 text-blue-600'>{affiliate.email}</td>
+                                            <td className='py-3 px-4'>
+                                                <span
+                                                    className={[
+                                                        'px-2 py-1 rounded-full text-xs font-medium',
+                                                        affiliate.status === 'Active'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : affiliate.status === 'Inactive'
+                                                            ? 'bg-red-100 text-red-800'
+                                                            : 'bg-slate-100 text-slate-700',
+                                                    ].join(' ')}
+                                                >
+                                                    {affiliate.status}
+                                                </span>
+                                            </td>
+                                            <td className='py-3 px-4'>{formatDate(affiliate.joinDate)}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={4} className='py-6 text-center text-slate-500'>
+                                            No affiliates found.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
-                )}
+
+                    {/* Pagination */}
+                    {!loading && totalPages > 1 && (
+                        <div className='flex items-center justify-center gap-2 mt-6'>
+                            <button
+                                className='p-2 hover:bg-slate-100 rounded disabled:opacity-40'
+                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                aria-label='Previous page'
+                            >
+                                <ChevronLeft className='w-4 h-4' />
+                            </button>
+
+                            {pageNumbers.map((n) => (
+                                <button
+                                    key={n}
+                                    className={['w-8 h-8 rounded', n === page ? 'bg-blue-500 text-white' : 'hover:bg-slate-100'].join(' ')}
+                                    onClick={() => setPage(n)}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+
+                            <button
+                                className='p-2 hover:bg-slate-100 rounded disabled:opacity-40'
+                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                aria-label='Next page'
+                            >
+                                <ChevronRight className='w-4 h-4' />
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

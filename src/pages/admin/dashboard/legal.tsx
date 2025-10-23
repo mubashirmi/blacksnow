@@ -29,21 +29,18 @@ export default function LegalPage() {
                 try {
                     const response = await fetch(section.apiRoute);
                     if (response.status === 404) {
-                        return { id: section.id, content: '' }; // Set empty content for 404
+                        return { id: section.id, content: '' };
                     }
                     if (!response.ok) throw new Error(`Failed to fetch ${section.title}`);
                     const data = await response.json();
 
-                    // Fixed: Access content using the correct nested structure
-                    // For affiliate agreement: data.agreement.affiliateAgreement
-                    // For others: data[responseKey][key] (adjust responseKey as needed for other endpoints)
                     let content = '';
                     if (data[section.responseKey] && data[section.responseKey][section.key]) {
                         content = data[section.responseKey][section.key];
                     }
 
                     return { id: section.id, content };
-                } catch (error) {
+                } catch (error: any) {
                     console.error(`Error fetching ${section.title}:`, error);
                     setAlert({
                         show: true,
@@ -83,37 +80,37 @@ export default function LegalPage() {
     const handleSave = async (sectionId) => {
         const section = legalSections.find((s) => s.id === sectionId);
         try {
-            setLoading((prev) => ({ ...prev, [sectionId]: true }));
+            setLoading((prev: any) => ({ ...prev, [sectionId]: true }));
             const response = await fetch(section.apiRoute, {
-                method: sectionContents[sectionId] ? 'PUT' : 'POST',
+                method: (sectionContents as any)[sectionId] ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
-                    sectionContents[sectionId]
-                        ? { id: 1, [section.key]: editingContent[sectionId] || sectionContents[sectionId] }
-                        : { [section.key]: editingContent[sectionId] || sectionContents[sectionId] }
+                    (sectionContents as any)[sectionId]
+                        ? { id: 1, [section.key]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }
+                        : { [section.key]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }
                 ),
             });
             if (!response.ok) throw new Error('Failed to save content');
-            setSectionContents((prev) => ({ ...prev, [sectionId]: editingContent[sectionId] || sectionContents[sectionId] }));
-            setEditingContent((prev) => ({ ...prev, [sectionId]: undefined }));
+            setSectionContents((prev: any) => ({ ...prev, [sectionId]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }));
+            setEditingContent((prev: any) => ({ ...prev, [sectionId]: undefined }));
             setAlert({
                 show: true,
                 type: 'success',
                 message: `${section.title} content saved successfully`,
             });
-        } catch (error) {
+        } catch (error: any) {
             setAlert({
                 show: true,
                 type: 'error',
                 message: `Failed to save ${section.title}: ${error.message}`,
             });
         } finally {
-            setLoading((prev) => ({ ...prev, [sectionId]: false }));
+            setLoading((prev: any) => ({ ...prev, [sectionId]: false }));
         }
     };
 
     const handleContentChange = (sectionId, content) => {
-        setEditingContent((prev) => ({ ...prev, [sectionId]: content }));
+        setEditingContent((prev: any) => ({ ...prev, [sectionId]: content }));
     };
 
     // Clear alert after 5 seconds
@@ -138,45 +135,51 @@ export default function LegalPage() {
                 </Alert>
             )}
 
-            <Card className='shadow-sm border-gray-200'>
-                <CardHeader className='bg-gray-50 border-b border-gray-200'>
-                    <CardTitle className='text-xl text-gray-800'>Legal Content Management</CardTitle>
+            {/* Card styled like Notes/Newsletter: white card, rounded corners, subtle border, gradient header */}
+            <Card className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
+                <CardHeader className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4'>
+                    <CardTitle className='text-xl font-bold text-white'>Legal Content Management</CardTitle>
                 </CardHeader>
+
                 <CardContent className='p-6'>
                     <div className='space-y-4'>
                         {legalSections.map((section) => (
-                            <div key={section.id} className='border border-gray-200 rounded-lg'>
+                            <div key={section.id} className='border border-slate-200 rounded-lg'>
                                 <button
                                     onClick={() => handleToggleSection(section.id)}
-                                    className='w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors'
-                                    disabled={loading[section.id]}
+                                    className='w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors'
+                                    disabled={(loading as any)[section.id]}
                                 >
-                                    <span className='font-medium text-gray-800'>{section.title}</span>
-                                    {loading[section.id] ? (
-                                        <Loader2 className='w-4 h-4 text-gray-500 animate-spin' />
+                                    <span className='font-medium text-slate-800'>{section.title}</span>
+                                    {(loading as any)[section.id] ? (
+                                        <Loader2 className='w-4 h-4 text-slate-500 animate-spin' />
                                     ) : expandedSection === section.id ? (
-                                        <ChevronDown className='w-4 h-4 text-gray-500' />
+                                        <ChevronDown className='w-4 h-4 text-slate-500' />
                                     ) : (
-                                        <ChevronRight className='w-4 h-4 text-gray-500' />
+                                        <ChevronRight className='w-4 h-4 text-slate-500' />
                                     )}
                                 </button>
 
                                 {expandedSection === section.id && (
-                                    <div className='border-t border-gray-100 p-4'>
+                                    <div className='border-t border-slate-100 p-4'>
                                         <textarea
-                                            value={editingContent[section.id] !== undefined ? editingContent[section.id] : sectionContents[section.id] || ''}
+                                            value={
+                                                (editingContent as any)[section.id] !== undefined
+                                                    ? (editingContent as any)[section.id]
+                                                    : (sectionContents as any)[section.id] || ''
+                                            }
                                             onChange={(e) => handleContentChange(section.id, e.target.value)}
-                                            className='w-full h-32 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent resize-none'
+                                            className='w-full h-32 p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none'
                                             placeholder={`Enter ${section.title} content...`}
-                                            disabled={loading[section.id]}
+                                            disabled={(loading as any)[section.id]}
                                         />
                                         <div className='mt-4'>
                                             <Button
                                                 onClick={() => handleSave(section.id)}
-                                                className='bg-gray-800 hover:bg-gray-900 text-white'
-                                                disabled={loading[section.id]}
+                                                className='bg-blue-500 hover:bg-blue-600 text-white'
+                                                disabled={(loading as any)[section.id]}
                                             >
-                                                {loading[section.id] ? (
+                                                {(loading as any)[section.id] ? (
                                                     <>
                                                         <Loader2 className='w-4 h-4 mr-2 animate-spin' />
                                                         Saving...

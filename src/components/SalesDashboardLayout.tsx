@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
-export default function SalesLayout({ children }: { children: React.ReactNode }) {
+export default function SalesDashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
@@ -176,7 +176,7 @@ export default function SalesLayout({ children }: { children: React.ReactNode })
                 <SalesSidebar />
                 <main className='flex-1 p-8'>
                     <div className='max-w-6xl mx-auto'>
-                        <h1 className='text-4xl font-bold text-center mb-8'>Email Marketing Dashboard</h1>
+                        <h1 className='text-4xl font-bold text-center mb-8'>Sales Dashboard</h1>
                         {children}
                     </div>
                 </main>
