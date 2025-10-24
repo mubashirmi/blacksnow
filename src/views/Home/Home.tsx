@@ -216,7 +216,7 @@ function Home() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             <section className='relative flex items-center justify-center pb-12 sm:pb-16 pt-16 sm:pt-24 md:pt-24 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-[90rem] relative z-10'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* LEFT */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12'>
@@ -225,7 +225,7 @@ function Home() {
                             </Badge>
 
                             <div className='space-y-4 sm:space-y-6 animate-slide-in-left delay-200'>
-                                <h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight'>
+                                <h1 className='text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight'>
                                     <div className='relative inline-block'>
                                         <span className='text-[#f4f4f4]'>Investment &nbsp; strategies</span>
                                     </div>
@@ -240,7 +240,7 @@ function Home() {
                                 </h1>
 
                                 <div className='relative'>
-                                    <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-2xl sm:max-w-3xl font-light'>
+                                    <p className='text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl sm:max-w-3xl font-light'>
                                         Learn comprehensive trading strategies and market data analysis to make informed investment decisions in today&apos;s
                                         dynamic markets.
                                     </p>
@@ -307,7 +307,7 @@ function Home() {
 
             {/* Trading Strategies Section */}
             <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-7xl'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>MASTER THE MARKETS</Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
@@ -783,54 +783,12 @@ function Home() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Revolutionary CTA Section */}
-                    {/* <div className='text-center mt-24 animate-slide-in-up delay-600'>
-                        <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-3xl p-12 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 max-w-4xl mx-auto'>
-                            <h3 className='text-4xl font-black text-white mb-6'>
-                                Join our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliate</span> Program
-                            </h3>
-                            <p className='text-xl text-gray-300 mb-8 max-w-2xl mx-auto'>
-                                Sign up as an affiliate and earn unlimited commission for each RSVP and monthly residual income for each site advertisement sign
-                                up.
-                            </p>
-
-                            <div className='flex flex-col lg:flex-row gap-6 justify-center items-center'>
-                                <Link href={'/affiliate'}>
-                                    <Button
-                                        size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] hover:from-[#4cc7e8] hover:via-[#2a8dcc] hover:to-[#2c7bbe] text-white px-12 py-6 text-xl font-black shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-110 rounded-2xl cursor-pointer'
-                                    >
-                                        <Rocket className='w-6 h-6 mr-3 animate-pulse' />
-                                        Join us
-                                        <ArrowRight className='w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform duration-300' />
-                                    </Button>
-                                </Link>
-                                <div className='flex items-center space-x-4 text-gray-300'>
-                                    <div className='flex -space-x-2'>
-                                        {[1, 2, 3, 4].map((i) => (
-                                            <div
-                                                key={i}
-                                                className='w-10 h-10 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full border-2 border-[#050608] flex items-center justify-center'
-                                            >
-                                                <span className='text-white font-bold text-sm'>{i}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div>
-                                        <div className='text-white font-bold'>1500+ Affiliates</div>
-                                        <div className='text-sm'>Already Mastering Markets</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </section>
 
             {/* Newsletter Section - Enhanced with Learn More Lottie Animation */}
             <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-6xl'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
                             Subscribe to our Monthly{' '}
@@ -894,61 +852,6 @@ function Home() {
                     </div>
                 </div>
             </section>
-
-            {/* <section className='relative py-40 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] overflow-hidden'>
-                <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-20 items-center'>
-                        <div className='space-y-12 animate-slide-in-left'>
-                            <div className='rounded-[100px] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in uppercase inline-block'>
-                                Elite Stock Intelligence
-                            </div>
-                            <div className='space-y-8'>
-                                <h2 className='text-5xl lg:text-6xl font-black leading-tight'>
-                                    <span className='text-white'>Build and Prospect a</span>
-                                    <br />
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent animate-gradient bg-300%'>
-                                        Master Stock List
-                                    </span>
-                                </h2>
-                                <p className='text-xl lg:text-2xl text-gray-300 leading-relaxed font-light max-w-2xl'>
-                                    Enrich your stock Market Trading experience by following and setting alerts for{' '}
-                                    <span className='text-[#4cc7e8] font-bold'>Market Movers</span>
-                                </p>
-                            </div>
-                            <div className='space-y-5'>
-                                {[
-                                    'Learn To Create Options Trading Lists',
-                                    'Learn To Research Emerging Markets',
-                                    'Learn To Identify Stock Market Press Release Source',
-                                    'Learn To Set Price Movement Indicators',
-                                    'Learn To Observe Major Stock Indicators',
-                                    'Learn To Maintain Your Risk',
-                                    'Learn Limit Sell, Stop Loss, and Paper Trading',
-                                ].map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className='group relative transform hover:scale-105 transition-all duration-300'
-                                        style={{ animationDelay: `${index * 200}ms` }}
-                                    >
-                                        <div className='absolute inset-0 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
-                                        <div className='relative bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10 backdrop-blur-2xl rounded-2xl p-5 border border-[#4cc7e8]/30 hover:border-opacity-60 transition-all duration-300'>
-                                            <div className='flex items-center space-x-4'>
-                                                <div className='w-3 h-3 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full shadow-xl animate-pulse'></div>
-                                                <h3 className='text-xl font-black text-white'>{item}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className='relative animate-slide-in-right flex justify-center'>
-                            <div className='relative overflow-hidden w-full h-[600px] max-w-full max-h-full'>
-                                <LottieAnimation src='/animations/xyzicon.json' className='drop-shadow-2xl w-full h-full object-contain' />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section> */}
 
             {/* --- MODALS --- */}
 

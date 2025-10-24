@@ -28,64 +28,52 @@ function CareersTitle() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Hero Section */}
-            {/* <section className='relative pt-20 pb-7 px-8'>
-                <div className='container mx-auto max-w-6xl relative z-10'>
-                    <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold animate-fade-in'>
-                            JOIN OUR TEAM
-                        </Badge>
-                        <h1 className='text-6xl lg:text-7xl font-black text-white mb-6 leading-tight animate-slide-in-up'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Careers</span>
-                        </h1>
-                        <div className='w-40 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto animate-slide-in-up delay-200'></div>
-                    </div>
-                </div>
-            </section> */}
-
             {/* Job Seekers Section */}
-            <section className='relative py-32 px-8'>
+            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-[90rem]'>
-                    <div className='grid lg:grid-cols-2 gap-16 items-center'>
-                        <div className='space-y-8 animate-slide-in-left'>
+                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>
+                                <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     FOR JOB SEEKERS
                                 </Badge>
-                                <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 leading-tight'>
+                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     Reshape Your{' '}
                                     <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Career Future</span>
                                 </h2>
-                                <p className='text-xl text-gray-300 leading-relaxed'>
+                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-6 sm:mb-8'></div>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Join us in reshaping the future for employee job search across all 50 States in the United States. Black Snow is committed
                                     to helping you find employment through a series of job posts across many different markets.
                                 </p>
                             </div>
 
-                            <div className='space-y-4'>
-                                <p className='text-lg text-gray-300 leading-relaxed'>
+                            <div className='space-y-4 sm:space-y-6'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Our Recruiters work diligently to match your experience and credentials to jobs in{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>Sales, Finance, Trucking, Warehouse, Medicine</span>,{' '}
                                     <span className='text-[#2c7bbe] font-semibold'>Dental, Nursing, Pharmacy, Web Development</span>,{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>A.I., Retail</span> and much more.
                                 </p>
-                                <p className='text-lg text-gray-300 leading-relaxed'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     We are a growing global organization prioritizing{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>Full-time remote careers</span> with our company and job opportunities with
                                     our contracted customers.
                                 </p>
                             </div>
 
-                            <Link href={'/careeroptions'}>
-                                <Button
-                                    size='lg'
-                                    className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold shadow-2xl shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105'
-                                >
-                                    <Search className='w-6 h-6 mr-3' />
-                                    See Career Opportunities
-                                    <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                </Button>
-                            </Link>
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                                <Link href={'/careeroptions'}>
+                                    <Button
+                                        size='lg'
+                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    >
+                                        <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        See Career Opportunities
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
 
                         <div className='relative animate-slide-in-right'>
@@ -131,39 +119,40 @@ function CareersTitle() {
             {/* Recruitment Agency Section */}
             <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-[90rem]'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center'>
-                        <div className='space-y-6 sm:space-y-8 animate-slide-in-right'>
+                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-right'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
+                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     FOR EMPLOYERS
                                 </Badge>
-                                <h2 className='text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight'>
+                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
                                     <br />
                                     Inquiry
                                 </h2>
+                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-6 sm:mb-8'></div>
                             </div>
 
                             <div className='space-y-4 sm:space-y-6'>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     We take pride in helping you find the best candidates nationwide and around the world. Let us assist you in talent discovery
                                     as well as finding candidates that match your company criteria, work experience, and credentials.
                                 </p>
-                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Whether you are a <span className='text-[#4cc7e8] font-semibold'>small business or corporation</span> we provide quality
                                     candidates with a complimentary <span className='text-[#2c7bbe] font-semibold'>30-day guarantee</span>.
                                 </p>
-                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed'>
+                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Our industry-leading team of <span className='text-[#4cc7e8] font-semibold'>global HR experts</span> can help you enter new
                                     markets in minutes, search for candidates, and hire international employees all while maintaining full compliance. Take
                                     advantage of some of the competitive rates that we have to offer today.
                                 </p>
                             </div>
-                            <div className='flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0'>
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         See Opportunities
@@ -223,13 +212,15 @@ function CareersTitle() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-32 px-8'>
-                <div className='container mx-auto max-w-[90rem]'>
-                    <div className='grid lg:grid-cols-2 gap-12 items-center'>
+            <section className='relative py-32 px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+                <div className='container mx-auto max-w-8xl sm:pl-12'>
+                    <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
-                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-6 py-2'>READY TO GET STARTED?</Badge>
-                            <h2 className='text-5xl font-bold text-white'>
-                                Join the <span className='text-[#4cc7e8]'>Black Snow</span>
+                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-8 py-3 text-sm font-bold'>
+                                READY TO GET STARTED?
+                            </Badge>
+                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                                Join the <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</span>
                                 <br />
                                 Revolution
                             </h2>
@@ -237,20 +228,20 @@ function CareersTitle() {
                                 Whether you&apos;re looking for your next career opportunity or seeking top talent for your organization, we&apos;re here to
                                 make it happen. Be a first mover in your career journey.
                             </p>
-                            <div className='flex flex-col sm:flex-row gap-4'>
+                            <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Link href={'/careeroptions'}>
-                                    <Button className='cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:opacity-90 px-8 py-3'>
-                                        <Search className='w-5 h-5 mr-2' />
+                                    <Button className='cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
+                                        <Search className='w-6 h-6 mr-3' />
                                         Browse Jobs
-                                        <ArrowRight className='w-4 h-4 ml-2' />
+                                        <ArrowRight className='w-5 h-5 ml-3' />
                                     </Button>
                                 </Link>
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 py-3 bg-transparent'
+                                        className='border-2 border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
-                                        <Users className='w-5 h-5 mr-2' />
+                                        <Users className='w-6 h-6 mr-3' />
                                         Hire Talent
                                     </Button>
                                 </Link>
@@ -258,11 +249,9 @@ function CareersTitle() {
                         </div>
 
                         {/* Lottie Animation */}
-                        <div className='flex justify-center'>
-                            <div className='relative'>
-                                <div className='relative bg-[#0a0b0f]/50 rounded-2xl p-8 border border-[#2c7bbe]/30 backdrop-blur-sm'>
-                                    <LottieAnimation src='/animations/careericon.json' loop={true} autoplay={true} />
-                                </div>
+                        <div className='flex items-center justify-center'>
+                            <div className='w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                                <LottieAnimation src='/animations/careericon.json' loop={true} autoplay={true} />
                             </div>
                         </div>
                     </div>

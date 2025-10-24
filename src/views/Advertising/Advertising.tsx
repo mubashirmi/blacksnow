@@ -213,7 +213,7 @@ function Advertising() {
         <div className='min-h-screen bg-[#050608]'>
             {/* Hero Section */}
             <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-[90rem] relative z-10'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
@@ -292,7 +292,7 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
-                                    className='group cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                    className='group cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     onClick={handleAdvertiseClick}
                                     disabled={isLoading}
                                 >
@@ -313,7 +313,7 @@ function Advertising() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <Monitor className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         Digital Billboard
@@ -408,7 +408,7 @@ function Advertising() {
 
             {/* Features Section */}
             <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
-                <div className='container mx-auto max-w-7xl'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>
                             ADVERTISING EXCELLENCE
@@ -473,7 +473,7 @@ function Advertising() {
 
             {/* Call to Action Section with Lottie Animation */}
             <section className='relative py-32 px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-6xl'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
@@ -492,7 +492,7 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button
                                     size='lg'
-                                    className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300'
+                                    className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
                                     onClick={handleStartCampaignClick}
                                     disabled={isLoading}
                                 >
@@ -513,7 +513,7 @@ function Advertising() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent'
+                                        className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         <BarChart3 className='w-6 h-6 mr-3' />
                                         View Pricing

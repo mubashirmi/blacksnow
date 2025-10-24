@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface FAQItem {
@@ -25,20 +25,14 @@ function FAQ() {
             try {
                 const response = await fetch('/api/v1/faq', {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch FAQs');
-                }
+                if (!response.ok) throw new Error('Failed to fetch FAQs');
 
                 const data = await response.json();
-                if (data.success && data.data && data.data.faqs) {
+                if (data.success && data.data?.faqs) {
                     setFaqs(data.data.faqs.filter((faq: FAQItem) => !faq.deleted));
-                } else {
-                    throw new Error('Invalid response format');
                 }
             } catch (error) {
                 console.error('Error fetching FAQs:', error);
@@ -56,23 +50,27 @@ function FAQ() {
 
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
-            {/* Header */}
-            <div className='relative z-10 pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-4xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-8 py-3 text-sm font-bold'> SUPPORT CENTER </Badge>
-                    <h1 className='text-5xl lg:text-6xl font-black text-white mb-6 animate-slide-in-up delay-200'>
+            {/* Hero Section */}
+            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-4 sm:pb-10 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-7xl text-center'>
+                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-8 py-3 text-sm font-bold'>SUPPORT CENTER</Badge>
+                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Frequently</span>
                         <br />
                         <span className='text-white'>Asked Questions</span>
                     </h1>
+                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-8'></div>
+                    <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
+                        Find answers to the most common questions about our platform, products, and services.
+                    </p>
                 </div>
-            </div>
+            </section>
 
             {/* FAQ Items */}
-            <div className='relative z-10 px-6 pb-32'>
-                <div className='container mx-auto max-w-4xl'>
+            <section className='relative pb-20 sm:pb-28 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-6xl'>
                     {isLoading ? (
-                        <div className='w-full flex justify-center items-center'>
+                        <div className='flex justify-center items-center py-20'>
                             <div className='dot-spinner'>
                                 <div className='dot-spinner__dot'></div>
                                 <div className='dot-spinner__dot'></div>
@@ -82,57 +80,67 @@ function FAQ() {
                             </div>
                         </div>
                     ) : faqs.length === 0 ? (
-                        <div className='text-center py-12 text-gray-300 text-lg'>No FAQs available.</div>
+                        <div className='text-center py-16 text-gray-400 text-lg font-medium'>No FAQs available at the moment.</div>
                     ) : (
                         <div className='space-y-6'>
                             {faqs.map((faq, index) => (
-                                <div key={faq.id} className='group relative animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                    {/* Glowing Background Effect */}
-                                    <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
-
-                                    <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl shadow-[#2c7bbe]/10'>
-                                        {/* Top Border */}
+                                <div key={faq.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
+                                    <Card className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.02]'>
                                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
 
-                                        <CardHeader className='p-8 cursor-pointer' onClick={() => toggleItem(faq.id)}>
+                                        <CardHeader className='p-6 sm:p-8 cursor-pointer' onClick={() => toggleItem(faq.id)}>
                                             <div className='flex items-center justify-between'>
                                                 <div className='flex items-center space-x-4'>
-                                                    <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-lg'>
-                                                        <HelpCircle className='w-6 h-6 text-white' />
+                                                    <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
+                                                        <HelpCircle className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                                     </div>
-                                                    <CardTitle className='text-xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                                    <CardTitle className='text-lg sm:text-xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                                         {faq.title}
                                                     </CardTitle>
                                                 </div>
-                                                <div className='w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-lg flex items-center justify-center'>
+                                                <div className='w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300'>
                                                     {openItems.includes(faq.id) ? (
-                                                        <ChevronUp className='w-5 h-5 text-[#4cc7e8]' />
+                                                        <ChevronUp className='w-5 h-5 sm:w-6 sm:h-6 text-[#4cc7e8]' />
                                                     ) : (
-                                                        <ChevronDown className='w-5 h-5 text-[#4cc7e8]' />
+                                                        <ChevronDown className='w-5 h-5 sm:w-6 sm:h-6 text-[#4cc7e8]' />
                                                     )}
                                                 </div>
                                             </div>
                                         </CardHeader>
 
                                         {openItems.includes(faq.id) && (
-                                            <CardContent className='px-8 pb-8'>
-                                                <div className='ml-16'>
-                                                    <div className='bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl p-6 border border-[#4cc7e8]/20'>
-                                                        <p className='text-gray-300 leading-relaxed text-lg'>{faq.text}</p>
+                                            <CardContent className='px-6 sm:px-8 pb-6 sm:pb-8 pt-0'>
+                                                <div className='ml-0 sm:ml-20'>
+                                                    <div className='bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-2xl p-5 sm:p-6 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'>
+                                                        <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{faq.text}</p>
                                                     </div>
                                                 </div>
                                             </CardContent>
                                         )}
 
-                                        {/* Floating Elements */}
-                                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse'></div>
+                                        {/* Subtle hover glow */}
+                                        <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl blur-3xl'></div>
                                     </Card>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
-            </div>
+            </section>
+
+            {/* Optional CTA */}
+            <section className='relative px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-4xl text-center'>
+                    <p className='text-lg sm:text-xl text-gray-300 mb-6'>Still have questions?</p>
+                    <button
+                        onClick={() => (window.location.href = '/contact')}
+                        className='inline-flex items-center bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'
+                    >
+                        Contact Support
+                        <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                    </button>
+                </div>
+            </section>
         </div>
     );
 }

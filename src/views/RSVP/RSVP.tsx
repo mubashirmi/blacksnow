@@ -1,3 +1,5 @@
+'use client';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,7 +52,6 @@ export async function getServerSideProps(context) {
         initialToken = cookies.token || null;
         initialId = cookies.id || null;
         initialIsLoggedIn = !!initialId;
-        console.log('Server-side cookies:', cookies); // Debug server-side
     }
 
     return {
@@ -60,13 +61,12 @@ export async function getServerSideProps(context) {
 
 function RSVP({ initialIsLoggedIn }) {
     const router = useRouter();
-    const { isLoggedIn, loading: authLoading } = useAuth(); // Use only necessary values
+    const { isLoggedIn, loading: authLoading } = useAuth();
     const [events, setEvents] = useState([]);
     const [fetchLoading, setFetchLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
-    // Form states
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -74,56 +74,34 @@ function RSVP({ initialIsLoggedIn }) {
     const [termsChecked, setTermsChecked] = useState(false);
     const [formErrors, setFormErrors] = useState({ name: '', email: '', phone: '', checkboxes: '' });
 
-    // Modal states
     const [modalOpened, setModalOpened] = useState(false);
     const [purchaseModalOpened, setPurchaseModalOpened] = useState(false);
-
-    // Loading states
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const cookies = parseCookies();
     const id = cookies.id;
 
     useEffect(() => {
-        console.log('Auth state:', { isLoggedIn, authLoading, initialIsLoggedIn });
-    }, [isLoggedIn, authLoading, initialIsLoggedIn]);
-
-    // Track refId clicks
-    useEffect(() => {
-        const trackRefIdClick = async () => {
-            // Get the refId from URL query parameters
-            const { refId } = router.query;
-            localStorage.setItem('referredby', refId);
-
-            if (refId) {
-                try {
-                    // Get current URL without query parameters
-                    const currentUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-
-                    const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            productLink: currentUrl,
-                        }),
-                    });
-
-                    if (response.ok) {
-                        console.log('RefId click tracked successfully');
-                    } else {
-                        console.error('Failed to track refId click');
-                    }
-                } catch (error) {
-                    console.error('Error tracking refId click:', error);
-                }
-            }
-        };
-
-        // Only track when router is ready (to ensure query params are available)
         if (router.isReady) {
-            trackRefIdClick();
+            const { refId } = router.query;
+            if (refId) {
+                localStorage.setItem('referredby', refId as string);
+                const trackRefIdClick = async () => {
+                    try {
+                        const currentUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+                        const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productLink: currentUrl }),
+                        });
+                        if (response.ok) console.log('RefId click tracked successfully');
+                        else console.error('Failed to track refId click');
+                    } catch (error) {
+                        console.error('Error tracking refId click:', error);
+                    }
+                };
+                trackRefIdClick();
+            }
         }
     }, [router.isReady, router.query]);
 
@@ -134,7 +112,7 @@ function RSVP({ initialIsLoggedIn }) {
                 const data = await response.json();
                 if (data.success) {
                     setEvents(data.data);
-                    if (data.data.length > 0) setSelectedEvent(data.data[0].id); // Default to first event
+                    if (data.data.length > 0) setSelectedEvent(data.data[0].id);
                 } else {
                     setError('Failed to fetch calendar events');
                 }
@@ -144,11 +122,9 @@ function RSVP({ initialIsLoggedIn }) {
                 setFetchLoading(false);
             }
         };
-
         fetchEvents();
     }, []);
 
-    // ==== CURRICULUM (Parts 1–7) ====
     const curriculumParts = [
         {
             title: 'Part 1: Introduction to the Stock Market',
@@ -317,13 +293,8 @@ function RSVP({ initialIsLoggedIn }) {
 
     const [currentPartIndex, setCurrentPartIndex] = useState(0);
 
-    const nextPart = () => {
-        setCurrentPartIndex((prev) => (prev + 1) % curriculumParts.length);
-    };
-
-    const prevPart = () => {
-        setCurrentPartIndex((prev) => (prev === 0 ? curriculumParts.length - 1 : prev - 1));
-    };
+    const nextPart = () => setCurrentPartIndex((prev) => (prev + 1) % curriculumParts.length);
+    const prevPart = () => setCurrentPartIndex((prev) => (prev === 0 ? curriculumParts.length - 1 : prev - 1));
 
     const validateForm = () => {
         let valid = true;
@@ -373,9 +344,7 @@ function RSVP({ initialIsLoggedIn }) {
             return;
         }
 
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         setSubmitLoading(true);
 
@@ -393,9 +362,7 @@ function RSVP({ initialIsLoggedIn }) {
 
             const rsvpResponse = await fetch('/api/v2/rsvp-form', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email,
                     phone,
@@ -437,9 +404,8 @@ function RSVP({ initialIsLoggedIn }) {
         }
     };
 
-    const LottieAnimation = ({ src, loop, autoplay, style }) => {
+    const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
         const containerRef = useRef(null);
-
         useEffect(() => {
             if (containerRef.current) {
                 const animation = lottie.loadAnimation({
@@ -449,37 +415,35 @@ function RSVP({ initialIsLoggedIn }) {
                     autoplay,
                     path: src,
                 });
-
                 return () => animation.destroy();
             }
         }, [src, loop, autoplay]);
-
         return <div ref={containerRef} style={style} />;
     };
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pb-8 sm:pb-10 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-6xl relative z-10'>
-                    <div className='text-center mb-14'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-7 px-8 py-3 text-sm font-bold animate-fade-in'>
+            <section className='relative pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
+                    <div className='text-center mb-16'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>
                             EXCLUSIVE TRADING WEBINAR
                         </Badge>
-                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-5 leading-tight animate-slide-in-up'>
+                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Webinar RSVP</span>
                         </h1>
-                        <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto animate-slide-in-up delay-200'></div>
+                        <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto'></div>
                     </div>
                 </div>
             </section>
 
-            {/* Main Content Section */}
-            <section className='relative pt-12 pb-32 px-8'>
-                <div className='container mx-auto max-w-7xl'>
-                    <div className='grid lg:grid-cols-3 gap-16'>
-                        {/* Left Side - Curriculum Content */}
-                        <div className='lg:col-span-2 space-y-12 animate-slide-in-left'>
+            {/* Main Content */}
+            <section className='relative pb-24 pt-7 sm:pb-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
+                    <div className='grid lg:grid-cols-3 gap-12 lg:gap-16'>
+                        {/* Curriculum */}
+                        <div className='lg:col-span-2 space-y-12'>
                             <AnimatePresence mode='wait'>
                                 <motion.div
                                     key={currentPartIndex}
@@ -488,48 +452,42 @@ function RSVP({ initialIsLoggedIn }) {
                                     exit={{ opacity: 0, x: -50 }}
                                     transition={{ duration: 0.45 }}
                                 >
-                                    {/* Part Header */}
                                     <div className='space-y-6'>
                                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-6 py-2 text-sm font-bold'>
                                             COMPREHENSIVE CURRICULUM
                                         </Badge>
-                                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-6 leading-tight'>
+                                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 leading-tight'>
                                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
                                                 {curriculumParts[currentPartIndex].title}
                                             </span>
                                         </h2>
-                                        <p className='text-xl text-gray-300 leading-relaxed'>{curriculumParts[currentPartIndex].description}</p>
+                                        <p className='text-lg sm:text-xl text-gray-300 leading-relaxed'>{curriculumParts[currentPartIndex].description}</p>
                                     </div>
 
-                                    {/* Curriculum Items */}
-                                    <div className='space-y-6'>
+                                    <div className='space-y-6 mt-8'>
                                         {curriculumParts[currentPartIndex].items.map((item, index) => {
                                             const Icon = item.icon || CheckCircle;
                                             return (
                                                 <Card
-                                                    key={`${item.title}-${index}`}
-                                                    className='group relative bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl overflow-hidden animate-fade-in-up'
+                                                    key={index}
+                                                    className='group bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105'
                                                     style={{ animationDelay: `${index * 100}ms` }}
                                                 >
+                                                    {/* <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${item.color || 'from-[#2c7bbe] to-[#4cc7e8]'}`}></div> */}
                                                     <CardContent className='p-6'>
                                                         <div className='flex items-start space-x-4'>
-                                                            <div className='flex-shrink-0'>
-                                                                <div
-                                                                    className={`w-12 h-12 bg-gradient-to-r ${
-                                                                        item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
-                                                                    } rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                                                                >
-                                                                    <CheckCircle className='w-6 h-6 text-white' />
-                                                                </div>
+                                                            <div
+                                                                className={`w-14 h-14 bg-gradient-to-r ${
+                                                                    item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
+                                                                } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                                                            >
+                                                                <Icon className='w-7 h-7 text-white' />
                                                             </div>
                                                             <div className='space-y-2 flex-1'>
-                                                                <div className='flex items-center space-x-3'>
-                                                                    <Icon className='w-5 h-5 text-[#4cc7e8]' />
-                                                                    <h3 className='text-lg font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
-                                                                        {item.title}
-                                                                    </h3>
-                                                                </div>
-                                                                <p className='text-gray-300 leading-relaxed'>{item.description}</p>
+                                                                <h3 className='text-lg sm:text-xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                                                    {item.title}
+                                                                </h3>
+                                                                <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{item.description}</p>
                                                             </div>
                                                         </div>
                                                     </CardContent>
@@ -538,23 +496,22 @@ function RSVP({ initialIsLoggedIn }) {
                                         })}
                                     </div>
 
-                                    {/* Navigation Buttons */}
                                     <div className='flex justify-between items-center pt-8'>
                                         <Button
                                             variant='outline'
                                             onClick={prevPart}
-                                            className='border-2 cursor-pointer border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] hover:text-white px-8 py-4 text-lg font-bold transition-all duration-300'
+                                            className='border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] hover:text-white px-6 sm:px-8 py-4 text-base sm:text-lg font-bold transition-all duration-300 rounded-lg'
                                         >
                                             <ArrowLeft className='w-5 h-5 mr-2' />
                                             Previous
                                         </Button>
-                                        <div className='text-gray-400 font-semibold'>
+                                        <div className='text-gray-400 font-semibold text-sm sm:text-base'>
                                             {currentPartIndex + 1} / {curriculumParts.length}
                                         </div>
                                         <Button
                                             variant='outline'
                                             onClick={nextPart}
-                                            className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 py-4 text-lg font-bold transition-all duration-300'
+                                            className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 py-4 text-base sm:text-lg font-bold transition-all duration-300 rounded-lg'
                                         >
                                             Next
                                             <ArrowRight className='w-5 h-5 ml-2' />
@@ -564,190 +521,168 @@ function RSVP({ initialIsLoggedIn }) {
                             </AnimatePresence>
                         </div>
 
-                        {/* Right Side - RSVP Form */}
-                        <div className='relative animate-slide-in-right'>
-                            <Card className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 border-[#2c7bbe]/30 rounded-3xl shadow-xl shadow-[#2c7bbe]/20 backdrop-blur-2xl overflow-hidden sticky top-8'>
+                        {/* RSVP Form */}
+                        <div className='relative'>
+                            <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 rounded-3xl shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-xl overflow-hidden sticky top-8'>
                                 <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
-
-                                <CardHeader className='p-8 pb-6'>
-                                    <CardTitle className='text-3xl font-black text-white mb-4 flex items-center'>
-                                        <Calendar className='w-8 h-8 text-[#4cc7e8] mr-3' />
+                                <CardHeader className='p-6 sm:p-8 pb-4'>
+                                    <CardTitle className='text-2xl sm:text-3xl font-black text-white flex items-center'>
+                                        <Calendar className='w-7 h-7 sm:w-8 sm:h-8 text-[#4cc7e8] mr-3' />
                                         Reserve Your Spot
                                     </CardTitle>
-                                    <p className='text-gray-300'>
+                                    <p className='text-sm sm:text-base text-gray-300 mt-2'>
                                         Join our exclusive webinar and start your journey to trading mastery. Limited seats available!
                                     </p>
                                 </CardHeader>
 
-                                <CardContent className='p-8 pt-0 space-y-6'>
-                                    {/* Webinar Details */}
-                                    <div className='space-y-4'>
-                                        {fetchLoading ? (
-                                            <p className='text-white font-semibold'>Loading events...</p>
-                                        ) : error ? (
-                                            <p className='text-red-400 font-semibold'>{error}</p>
-                                        ) : events.length > 0 ? (
-                                            events.map((event) => {
-                                                const displayDate = new Date(event.date).toLocaleDateString('en-US', {
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                    year: 'numeric',
-                                                });
-                                                return (
-                                                    <div
-                                                        key={event.id}
-                                                        onClick={() => setSelectedEvent(event.id)}
-                                                        className={`space-y-4 p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20 cursor-pointer hover:bg-gradient-to-r hover:from-[#2c7bbe]/20 hover:to-[#4cc7e8]/20 transition-all duration-300 ${
-                                                            selectedEvent === event.id ? 'border-[#4cc7e8]' : ''
-                                                        }`}
-                                                    >
-                                                        <div className='flex items-center space-x-3'>
-                                                            <input
-                                                                type='radio'
-                                                                id={`event-${event.id}`}
-                                                                name='event'
-                                                                value={event.id}
-                                                                checked={selectedEvent === event.id}
-                                                                onChange={() => setSelectedEvent(event.id)}
-                                                                className='w-4 h-4 text-[#4cc7e8] border-[#2c7bbe] focus:ring-[#4cc7e8] cursor-pointer'
-                                                            />
-                                                            <label htmlFor={`event-${event.id}`} className='text-white font-semibold cursor-pointer'>
-                                                                Date: {displayDate}
-                                                            </label>
-                                                        </div>
-                                                        <div className='flex items-center space-x-3'>
-                                                            <Clock className='w-5 h-5 text-[#4cc7e8]' />
-                                                            <span className='text-white font-semibold'>Time: {event.time}</span>
-                                                        </div>
-                                                        <div className='flex items-center space-x-3'>
-                                                            <Users className='w-5 h-5 text-[#4cc7e8]' />
-                                                            <span className='text-white font-semibold'>Seats: {event.limit}</span>
-                                                        </div>
-                                                        <div className='flex items-center space-x-3'>
-                                                            <DollarSign className='w-5 h-5 text-green-400' />
-                                                            <span className='text-green-400 font-semibold'>Price: FREE</span>
-                                                        </div>
+                                <CardContent className='p-6 sm:p-8 pt-0 space-y-6'>
+                                    {fetchLoading ? (
+                                        <p className='text-white font-semibold text-center'>Loading events...</p>
+                                    ) : error ? (
+                                        <p className='text-red-400 font-semibold text-center'>{error}</p>
+                                    ) : events.length > 0 ? (
+                                        events.map((event) => {
+                                            const displayDate = new Date(event.date).toLocaleDateString('en-US', {
+                                                month: 'long',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                            });
+                                            return (
+                                                <div
+                                                    key={event.id}
+                                                    onClick={() => setSelectedEvent(event.id)}
+                                                    className={`p-5 sm:p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                                                        selectedEvent === event.id
+                                                            ? 'border-[#4cc7e8] bg-gradient-to-r bg-[#2c7bbe]/20 to-[#4cc7e8]/20'
+                                                            : 'border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40'
+                                                    }`}
+                                                >
+                                                    <div className='flex items-center space-x-3'>
+                                                        <input
+                                                            type='radio'
+                                                            id={`event-${event.id}`}
+                                                            name='event'
+                                                            value={event.id}
+                                                            checked={selectedEvent === event.id}
+                                                            onChange={() => setSelectedEvent(event.id)}
+                                                            className='w-4 h-4 text-[#4cc7e8] border-[#2c7bbe] focus:ring-[#4cc7e8] cursor-pointer'
+                                                        />
+                                                        <label
+                                                            htmlFor={`event-${event.id}`}
+                                                            className='text-white font-semibold cursor-pointer text-sm sm:text-base'
+                                                        >
+                                                            {displayDate}
+                                                        </label>
                                                     </div>
-                                                );
-                                            })
-                                        ) : (
-                                            <p className='text-white font-semibold'>No events available</p>
-                                        )}
-                                    </div>
+                                                    <div className='flex items-center space-x-3 mt-2 text-sm text-gray-300'>
+                                                        <Clock className='w-4 h-4 text-[#4cc7e8]' />
+                                                        <span>{event.time}</span>
+                                                    </div>
+                                                    <div className='flex items-center space-x-3 mt-1 text-sm text-gray-300'>
+                                                        <Users className='w-4 h-4 text-[#4cc7e8]' />
+                                                        <span>{event.limit} seats</span>
+                                                    </div>
+                                                    <div className='flex items-center space-x-3 mt-1 text-sm'>
+                                                        <DollarSign className='w-4 h-4 text-green-400' />
+                                                        <span className='text-green-400 font-semibold'>FREE</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <p className='text-white font-semibold text-center'>No events available</p>
+                                    )}
 
-                                    {/* RSVP Form */}
-                                    <form className='space-y-6'>
-                                        {/* Full Name */}
+                                    <form className='space-y-5'>
                                         <div className='space-y-2'>
-                                            {/* <Label htmlFor='name' className='text-white font-semibold flex items-center'>
-                                                <User className='w-4 h-4 mr-2 text-[#4cc7e8]' />
-                                                Full Name
-                                            </Label> */}
                                             <Input
                                                 id='name'
-                                                placeholder='Enter your full name'
+                                                placeholder='Full Name'
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
-                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300'
+                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-xl'
                                             />
                                             {formErrors.name && <p className='text-red-400 text-sm'>{formErrors.name}</p>}
                                         </div>
 
-                                        {/* Email */}
                                         <div className='space-y-2'>
-                                            {/* <Label htmlFor='email' className='text-white font-semibold flex items-center'>
-                                                <Mail className='w-4 h-4 mr-2 text-[#4cc7e8]' />
-                                                Email Address
-                                            </Label> */}
                                             <Input
                                                 id='email'
                                                 type='email'
-                                                placeholder='Enter your email'
+                                                placeholder='Email Address'
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300'
+                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-xl'
                                             />
                                             {formErrors.email && <p className='text-red-400 text-sm'>{formErrors.email}</p>}
                                         </div>
 
-                                        {/* Phone */}
                                         <div className='space-y-2'>
-                                            {/* <Label htmlFor='phone' className='text-white font-semibold flex items-center'>
-                                                <Phone className='w-4 h-4 mr-2 text-[#4cc7e8]' />
-                                                Phone Number
-                                            </Label> */}
                                             <Input
                                                 id='phone'
                                                 type='tel'
-                                                placeholder='Enter your phone number'
+                                                placeholder='Phone Number'
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
-                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300'
+                                                className='bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-xl'
                                             />
                                             {formErrors.phone && <p className='text-red-400 text-sm'>{formErrors.phone}</p>}
                                         </div>
 
-                                        {/* Checkboxes */}
                                         <div className='space-y-4'>
-                                            <div className='flex items-start space-x-3 p-4 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-2xl border border-[#2c7bbe]/20'>
+                                            <div className='flex items-start space-x-3 p-4 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-xl border border-[#2c7bbe]/20'>
                                                 <Checkbox
                                                     id='updates'
                                                     checked={updatesChecked}
                                                     onCheckedChange={setUpdatesChecked}
                                                     className='mt-1 border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8]'
                                                 />
-                                                <div className='space-y-1'>
-                                                    <Label htmlFor='updates' className='text-sm text-gray-300 leading-relaxed cursor-pointer'>
-                                                        I want to receive trading tips and market updates
-                                                    </Label>
-                                                </div>
+                                                <Label htmlFor='updates' className='text-sm text-gray-300 leading-relaxed cursor-pointer'>
+                                                    I want to receive trading tips and market updates
+                                                </Label>
                                             </div>
-                                            <div className='flex items-start space-x-3 p-4 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-2xl border border-[#2c7bbe]/20'>
+                                            <div className='flex items-start space-x-3 p-4 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-xl border border-[#2c7bbe]/20'>
                                                 <Checkbox
                                                     id='terms'
                                                     checked={termsChecked}
                                                     onCheckedChange={setTermsChecked}
                                                     className='mt-1 border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8]'
                                                 />
-                                                <div className='space-y-1'>
-                                                    <Label htmlFor='terms' className='text-sm text-gray-300 leading-relaxed cursor-pointer'>
-                                                        I agree to the{' '}
-                                                        <span className='text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300 underline cursor-pointer'>
-                                                            Terms & Conditions
-                                                        </span>
-                                                    </Label>
-                                                </div>
+                                                <Label htmlFor='terms' className='text-sm text-gray-300 leading-relaxed cursor-pointer'>
+                                                    I agree to the{' '}
+                                                    <span className='text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300 underline cursor-pointer'>
+                                                        Terms & Conditions
+                                                    </span>
+                                                </Label>
                                             </div>
                                             {formErrors.checkboxes && <p className='text-red-400 text-sm'>{formErrors.checkboxes}</p>}
                                         </div>
 
-                                        {/* RSVP Button */}
                                         <Button
                                             type='button'
                                             size='lg'
-                                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white py-6 text-lg font-bold shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'
+                                            className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg'
                                             onClick={handleRSVP}
                                             disabled={submitLoading}
                                         >
                                             {submitLoading ? (
                                                 <>
-                                                    <Calendar className='w-6 h-6 mr-3 animate-spin' />
+                                                    <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3 animate-spin' />
                                                     Processing...
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Calendar className='w-6 h-6 mr-3' />
+                                                    <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                                     RSVP
-                                                    <ArrowRight className='w-5 h-5 ml-3' />
+                                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3' />
                                                 </>
                                             )}
                                         </Button>
                                     </form>
 
-                                    {/* Additional Info */}
-                                    <div className='text-center pt-4'>
-                                        <p className='text-gray-400 text-sm'>You&apos;ll receive a confirmation email with webinar access details</p>
-                                    </div>
+                                    <p className='text-center text-xs sm:text-sm text-gray-400'>
+                                        You&apos;ll receive a confirmation email with webinar access details
+                                    </p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -755,14 +690,12 @@ function RSVP({ initialIsLoggedIn }) {
                 </div>
             </section>
 
-            {/* Benefits Section with Lottie Animation */}
-            <section className='relative py-32 px-8 bg-[#0a0b0f]/50'>
-                <div className='container mx-auto max-w-6xl'>
+            {/* Benefits */}
+            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-7 px-8 py-3 text-sm font-bold animate-fade-in'>
-                            WEBINAR BENEFITS
-                        </Badge>
-                        <h1 className='text-5xl lg:text-6xl font-black text-white mb-5 leading-tight animate-slide-in-up'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>WEBINAR BENEFITS</Badge>
+                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                 What You&apos;ll Gain
                             </span>
@@ -770,34 +703,24 @@ function RSVP({ initialIsLoggedIn }) {
                     </div>
 
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
-                        {/* Left Side - Benefits */}
                         <div className='space-y-6'>
                             {[
-                                {
-                                    title: 'Expert Knowledge',
-                                    description: 'Learn from professional traders with years of market experience',
-                                    icon: Brain,
-                                },
-                                {
-                                    title: 'Practical Skills',
-                                    description: 'Gain hands-on experience with real trading scenarios and strategies',
-                                    icon: Target,
-                                },
-                                {
-                                    title: 'Market Insights',
-                                    description: 'Understand current market trends and future opportunities',
-                                    icon: Eye,
-                                },
+                                { title: 'Expert Knowledge', description: 'Learn from professional traders with years of market experience', icon: Brain },
+                                { title: 'Practical Skills', description: 'Gain hands-on experience with real trading scenarios and strategies', icon: Target },
+                                { title: 'Market Insights', description: 'Understand current market trends and future opportunities', icon: Eye },
                             ].map((benefit, index) => (
-                                <Card key={index} className='bg-[#050608]/50 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-colors duration-300'>
+                                <Card
+                                    key={index}
+                                    className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105'
+                                >
                                     <CardContent className='p-6'>
                                         <div className='flex items-start space-x-4'>
-                                            <div className='w-12 h-12 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-xl flex items-center justify-center flex-shrink-0'>
-                                                <benefit.icon className='w-6 h-6 text-white' />
+                                            <div className='w-14 h-14 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-lg'>
+                                                <benefit.icon className='w-7 h-7 text-white' />
                                             </div>
                                             <div className='space-y-2'>
-                                                <h3 className='text-xl font-semibold text-white'>{benefit.title}</h3>
-                                                <p className='text-gray-300'>{benefit.description}</p>
+                                                <h3 className='text-lg sm:text-xl font-bold text-white'>{benefit.title}</h3>
+                                                <p className='text-sm sm:text-base text-gray-300'>{benefit.description}</p>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -805,70 +728,54 @@ function RSVP({ initialIsLoggedIn }) {
                             ))}
                         </div>
 
-                        {/* Right Side - Lottie Animation */}
-                        <div className='relative'>
-                            <div className='bg-gradient-to-br h-[400px] w-[400px] from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl p-8 border border-[#2c7bbe]/20'>
-                                <LottieAnimation src='/animations/rsvpicon.json' loop={true} autoplay={true} />
+                        <div className='flex justify-center'>
+                            <div className='relative'>
+                                <div className='absolute inset-0 w-96 h-96 bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-full blur-2xl'></div>
+                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center shadow-2xl backdrop-blur-xl p-8'>
+                                    <LottieAnimation src='/animations/rsvpicon.json' loop={true} autoplay={true} />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Signup Modal */}
+            {/* Modals */}
             <Dialog open={modalOpened} onOpenChange={setModalOpened}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-4xl rounded-4xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-xl'>
                     <button
                         onClick={() => setModalOpened(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group'
                     >
                         <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-
-                    <DialogHeader className='space-y-6'>
-                        <div className='flex items-center justify-center flex-col space-x-4'>
-                            <div className='w-16 h-16 mb-4 p-2 border-[#2c7bbe] border-2 rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Image
-                                    src='/logocolored.png'
-                                    alt='Black Snow Logo'
-                                    width={100}
-                                    height={100}
-                                    className='object-contain w-full h-full  drop-shadow-2xl'
-                                    priority
-                                />
+                    <DialogHeader className='space-y-6 text-center'>
+                        <div className='flex flex-col items-center'>
+                            <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
+                                <Image src='/logocolored.png' alt='Logo' width={100} height={100} className='object-contain drop-shadow-2xl' priority />
                             </div>
-                            <div>
-                                <DialogTitle className='text-2xl font-black text-white text-center mb-2'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold text-center'>
-                                    You can&apos;t access the newsletter feature until you sign up.
-                                </DialogDescription>
-                            </div>
+                            <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
+                            <DialogDescription className='text-[#4cc7e8] font-semibold'>You can&apos;t access the webinar until you sign up.</DialogDescription>
                         </div>
                     </DialogHeader>
-
-                    <div className='text-center py-4 space-y-4'>
-                        {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your registration.</p> */}
-                        <Button
-                            onClick={() => router.push('/login?signup')}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                        >
-                            Signup
-                        </Button>
-                    </div>
+                    <Button
+                        onClick={() => router.push('/login?signup')}
+                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                    >
+                        Signup
+                    </Button>
                 </DialogContent>
             </Dialog>
 
-            {/* Purchase Modal */}
             <Dialog open={purchaseModalOpened} onOpenChange={setPurchaseModalOpened}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-xl'>
                     <button
                         onClick={() => setPurchaseModalOpened(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group'
                     >
                         <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-
-                    <DialogHeader className='space-y-6 pb-6'>
+                    <DialogHeader className='space-y-6'>
                         <div className='flex items-center space-x-4'>
                             <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
                                 <Calendar className='w-6 h-6 text-white' />
@@ -876,21 +783,17 @@ function RSVP({ initialIsLoggedIn }) {
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Purchase Required</DialogTitle>
                                 <DialogDescription className='text-[#4cc7e8] font-semibold'>
-                                    You need to purchase an RSVP subscription to register for this event.
+                                    You need to purchase an RSVP subscription to register.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
-
-                    <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>Please purchase a subscription to proceed with your registration.</p>
-                        <Button
-                            onClick={() => router.push('/pricing')}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                        >
-                            Purchase Now
-                        </Button>
-                    </div>
+                    <Button
+                        onClick={() => router.push('/pricing')}
+                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                    >
+                        Purchase Now
+                    </Button>
                 </DialogContent>
             </Dialog>
         </div>
