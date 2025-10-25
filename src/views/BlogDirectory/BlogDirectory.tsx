@@ -78,15 +78,15 @@ function BlogDirectory() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Hero Section */}
-            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative pt-10 sm:pt-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-8 py-3 text-sm font-bold'>INSIGHTS & STRATEGIES</Badge>
-                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
+                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>INSIGHTS & STRATEGIES</Badge>
+                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog</span>
                         <br />
                         <span className='text-white'>Directory</span>
                     </h1>
-                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-8'></div>
+                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 sm:mb-5'></div>
                     <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                         Stay ahead with expert trading insights, market analysis, and exclusive strategies from Black Snow.
                     </p>
@@ -94,7 +94,7 @@ function BlogDirectory() {
             </section>
 
             {/* Blog Cards Grid */}
-            <section className='relative py-20 sm:py-28 px-4 sm:px-6 md:px-8'>
+            <section className='relative pt-9 pb-10 sm:pb-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     {blogs.length === 0 ? (
                         <div className='text-center py-24'>
@@ -180,7 +180,7 @@ function BlogDirectory() {
             </section>
 
             {/* Optional CTA */}
-            <section className='relative py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl text-center'>
                     <p className='text-lg sm:text-xl text-gray-300 mb-6'>Want to contribute or suggest a topic?</p>
                     <Button

@@ -113,20 +113,20 @@ function EmailMarketing() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         {/* Left Content */}
                         <div className='space-y-10 animate-slide-in-left'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-8 py-3 text-sm font-bold'>
+                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     POWERFUL EMAIL MARKETING
                                 </Badge>
-                                <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
+                                <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     Email Marketing{' '}
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Features</span>
                                 </h1>
-                                <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-8'></div>
+                                <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                                 <p className='text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl'>
                                     Transform your marketing strategy with our comprehensive email and SMS platform. Reach your audience effectively with{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>personalized campaigns</span>, advanced automation, and powerful analytics
@@ -135,7 +135,7 @@ function EmailMarketing() {
                             </div>
 
                             {/* Quick Stats */}
-                            <div className='grid grid-cols-3 gap-4 sm:gap-6'>
+                            <div className='grid grid-cols-3 gap-4 sm:gap-5'>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
                                     <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>99.9%</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Delivery Rate</div>
@@ -218,13 +218,13 @@ function EmailMarketing() {
             </section>
 
             {/* Main Features */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             CORE FEATURES
                         </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Powerful <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email Marketing</span>
                             <br />
                             Capabilities
@@ -273,13 +273,13 @@ function EmailMarketing() {
             </section>
 
             {/* Additional Features */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             ADVANCED CAPABILITIES
                         </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Enhanced <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Marketing Tools</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -308,19 +308,19 @@ function EmailMarketing() {
             </section>
 
             {/* Final CTA */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
-                        <div className='space-y-8'>
-                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <div>
+                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 START YOUR CAMPAIGN TODAY
                             </Badge>
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-6'>
+                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
                                 <br />
                                 Your Marketing?
                             </h2>
-                            <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
+                            <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed mb-4 sm:mb-5'>
                                 Join thousands of successful businesses who have chosen our email marketing platform to drive engagement, increase conversions,
                                 and grow their revenue.
                             </p>

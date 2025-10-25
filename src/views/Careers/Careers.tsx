@@ -292,11 +292,11 @@ function Careers() {
             )}
 
             {/* Header */}
-            <div className='relative z-10 pt-32 pb-20 px-6'>
+            <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 px-6 py-2 text-sm font-bold'>Elite Opportunities</Badge>
+                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>Elite Opportunities</Badge>
 
-                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-6 animate-slide-in-up delay-200'>
+                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Career </span>
                         <span className='text-white'> Opportunities</span>
                     </h1>
@@ -308,7 +308,7 @@ function Careers() {
             </div>
 
             {/* Job Cards Grid */}
-            <div className='relative z-10 px-6 pb-32'>
+            <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl'>
                     {isLoading ? (
                         <div className='flex justify-center items-center py-16'>

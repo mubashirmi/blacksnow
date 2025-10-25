@@ -51,15 +51,15 @@ function FAQ() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Hero Section */}
-            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-4 sm:pb-10 px-4 sm:px-6 md:px-8'>
+            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-4 sm:pb-8 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-8 py-3 text-sm font-bold'>SUPPORT CENTER</Badge>
-                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
+                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>SUPPORT CENTER</Badge>
+                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Frequently</span>
                         <br />
                         <span className='text-white'>Asked Questions</span>
                     </h1>
-                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-8'></div>
+                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 sm:mb-5'></div>
                     <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                         Find answers to the most common questions about our platform, products, and services.
                     </p>
@@ -67,7 +67,7 @@ function FAQ() {
             </section>
 
             {/* FAQ Items */}
-            <section className='relative pb-20 sm:pb-28 px-4 sm:px-6 md:px-8'>
+            <section className='relative pb-10 sm:pb-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-6xl'>
                     {isLoading ? (
                         <div className='flex justify-center items-center py-20'>
@@ -131,7 +131,7 @@ function FAQ() {
             {/* Optional CTA */}
             <section className='relative px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-4xl text-center'>
-                    <p className='text-lg sm:text-xl text-gray-300 mb-6'>Still have questions?</p>
+                    <p className='text-lg sm:text-xl text-gray-300 mb-4 sm:mb-5'>Still have questions?</p>
                     <button
                         onClick={() => (window.location.href = '/contact')}
                         className='inline-flex items-center bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'

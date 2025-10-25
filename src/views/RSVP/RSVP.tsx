@@ -424,13 +424,13 @@ function RSVP({ initialIsLoggedIn }) {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-16'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             EXCLUSIVE TRADING WEBINAR
                         </Badge>
-                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
+                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Webinar RSVP</span>
                         </h1>
                         <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto'></div>
@@ -439,7 +439,7 @@ function RSVP({ initialIsLoggedIn }) {
             </section>
 
             {/* Main Content */}
-            <section className='relative pb-24 pt-7 sm:pb-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-3 gap-12 lg:gap-16'>
                         {/* Curriculum */}
@@ -453,10 +453,10 @@ function RSVP({ initialIsLoggedIn }) {
                                     transition={{ duration: 0.45 }}
                                 >
                                     <div className='space-y-6'>
-                                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-6 py-2 text-sm font-bold'>
+                                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                             COMPREHENSIVE CURRICULUM
                                         </Badge>
-                                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 leading-tight'>
+                                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
                                                 {curriculumParts[currentPartIndex].title}
                                             </span>
@@ -477,9 +477,8 @@ function RSVP({ initialIsLoggedIn }) {
                                                     <CardContent className='p-6'>
                                                         <div className='flex items-start space-x-4'>
                                                             <div
-                                                                className={`w-14 h-14 bg-gradient-to-r ${
-                                                                    item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
-                                                                } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                                                                className={`w-14 h-14 bg-gradient-to-r ${item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
+                                                                    } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
                                                             >
                                                                 <Icon className='w-7 h-7 text-white' />
                                                             </div>
@@ -551,11 +550,10 @@ function RSVP({ initialIsLoggedIn }) {
                                                 <div
                                                     key={event.id}
                                                     onClick={() => setSelectedEvent(event.id)}
-                                                    className={`p-5 sm:p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                                                        selectedEvent === event.id
+                                                    className={`p-5 sm:p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${selectedEvent === event.id
                                                             ? 'border-[#4cc7e8] bg-gradient-to-r bg-[#2c7bbe]/20 to-[#4cc7e8]/20'
                                                             : 'border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className='flex items-center space-x-3'>
                                                         <input
@@ -691,11 +689,11 @@ function RSVP({ initialIsLoggedIn }) {
             </section>
 
             {/* Benefits */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>WEBINAR BENEFITS</Badge>
-                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 leading-tight'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>WEBINAR BENEFITS</Badge>
+                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                 What You&apos;ll Gain
                             </span>

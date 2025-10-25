@@ -215,16 +215,16 @@ function Home() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            <section className='relative flex items-center justify-center pb-12 sm:pb-16 pt-16 sm:pt-24 md:pt-24 px-4 sm:px-6 md:px-8'>
+            <section className='relative flex items-center justify-center py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* LEFT */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12'>
-                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold animate-fade-in'>
+                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 Live Market Analysis
                             </Badge>
 
-                            <div className='space-y-4 sm:space-y-6 animate-slide-in-left delay-200'>
+                            <div className='space-y-4 sm:space-y-5 animate-slide-in-left delay-200'>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight'>
                                     <div className='relative inline-block'>
                                         <span className='text-[#f4f4f4]'>Investment &nbsp; strategies</span>
@@ -306,11 +306,13 @@ function Home() {
             </section>
 
             {/* Trading Strategies Section */}
-            <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>MASTER THE MARKETS</Badge>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            MASTER THE MARKETS
+                        </Badge>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Covered Calls Vs <br />
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Protective Puts</span>
                         </h2>
@@ -446,15 +448,15 @@ function Home() {
             </section>
 
             {/* REVOLUTIONARY: Elite Trading Mastery Framework Section */}
-            <section className='relative py-32 px-6 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f] overflow-hidden'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f] overflow-hidden'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     {/* Revolutionary Header */}
-                    <div className='text-center mb-24 animate-slide-in-up'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in uppercase'>
+                    <div className='text-center mb-20 animate-slide-in-up'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             Elite Framework
                         </Badge>
 
-                        <h2 className='text-5xl lg:text-7xl font-black text-white mb-8 leading-tight'>
+                        <h2 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-8 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent animate-gradient bg-300%'>
                                 Learn Multiple Day
                             </span>
@@ -787,10 +789,10 @@ function Home() {
             </section>
 
             {/* Newsletter Section - Enhanced with Learn More Lottie Animation */}
-            <section className='relative py-32 px-6 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-5'>
                             Subscribe to our Monthly{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter to stay updated</span>
                         </h2>

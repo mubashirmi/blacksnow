@@ -212,7 +212,7 @@ function Advertising() {
     return (
         <div className='min-h-screen bg-[#050608]'>
             {/* Hero Section */}
-            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* Left Content */}
@@ -225,7 +225,7 @@ function Advertising() {
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Digital</span>
                                     &nbsp;Billboards
                                 </h1>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-6 sm:mb-8'></div>
+                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Placing your business advertisements across our website has never been easier. In a few easy steps, activate your robust
                                     campaign and monitor your performance in real-time.
@@ -407,13 +407,13 @@ function Advertising() {
             </section>
 
             {/* Features Section */}
-            <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-6 py-2 text-sm font-bold'>
                             ADVERTISING EXCELLENCE
                         </Badge>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Platform</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
@@ -472,15 +472,15 @@ function Advertising() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-32 px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
-                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-8 py-3 text-sm font-bold'>
+                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-8 py-3 text-sm font-bold'>
                                 START ADVERTISING TODAY
                             </Badge>
-                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
                                 <br />
                                 Your Future?

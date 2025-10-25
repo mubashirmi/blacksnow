@@ -125,11 +125,11 @@ function Partners() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Header */}
-            <div className='relative z-10 pt-32 pb-20 px-6'>
+            <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-8 px-8 py-3 text-sm font-bold'>ELITE NETWORK</Badge>
+                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>ELITE NETWORK</Badge>
 
-                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-6 animate-slide-in-up delay-200'>
+                    <h1 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Our </span>
                         <span className='text-white'>&nbsp;Partners</span>
                     </h1>
@@ -141,8 +141,8 @@ function Partners() {
             </div>
 
             {/* Partners Grid */}
-            <div className='relative z-10 px-6 pb-32'>
-                <div className='container mx-auto max-w-7xl'>
+            <div className='relative z-10 px-4 sm:px-6 md:px-8 py-16'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
                         {partners.map((partner, index) => (
                             <div key={partner.id} className='group relative animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>

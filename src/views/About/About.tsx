@@ -32,10 +32,10 @@ function About() {
     return (
         <div className='min-h-screen bg-[#050608]'>
             {/* Our Story Section - Adjusted to match Billboard hero spacing */}
-            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
+                        <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
                                 <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     OUR JOURNEY
@@ -43,10 +43,10 @@ function About() {
                                 <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Story</span>
                                 </h2>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-6 sm:mb-8'></div>
+                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                             </div>
 
-                            <div className='space-y-4 sm:space-y-6'>
+                            <div className='space-y-4 sm:space-y-5'>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     <span className='text-[#4cc7e8] font-semibold'>Black Snow started in 2024</span> as an investment firm. Our story consists
                                     of providing the best intangible products in the{' '}
@@ -60,7 +60,7 @@ function About() {
                                 </p>
                             </div>
 
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
                                 <Button
                                     onClick={() => {
                                         document.getElementById('core-values')?.scrollIntoView({
@@ -98,11 +98,13 @@ function About() {
             </section>
 
             {/* Core Values Section - Adjusted to match Features section spacing */}
-            <section className='relative py-32 px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]' id='core-values'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]' id='core-values'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 py-2 text-sm font-bold'>OUR FOUNDATION</Badge>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            OUR FOUNDATION
+                        </Badge>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6'>
                             Core <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Values</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
@@ -188,13 +190,15 @@ function About() {
             </section>
 
             {/* Call to Action Section - Adjusted to match Billboard CTA spacing */}
-            <section className='relative py-32 px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
-                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-8 py-3 text-sm font-bold'>JOIN OUR MISSION</Badge>
-                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-6'>
+                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                JOIN OUR MISSION
+                            </Badge>
+                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
                                 <br />
                                 Your Future?
@@ -203,7 +207,7 @@ function About() {
                                 Join thousands of successful traders who have chosen Black Snow to accelerate their trading journey and achieve consistent
                                 profitability.
                             </p>
-                            <div className='flex flex-col sm:flex-row gap-6 pt-8'>
+                            <div className='flex flex-col sm:flex-row gap-5 pt-8'>
                                 <AuthModalTrigger>
                                     <Button
                                         size='lg'

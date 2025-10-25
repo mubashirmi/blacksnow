@@ -95,11 +95,11 @@ export default function Page() {
             </div>
 
             {/* Hero Section */}
-            <section className='relative pb-12 sm:pb-16 pt-16 sm:pt-20 md:pt-24 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-[90rem] relative z-10'>
                     <div className='text-center max-w-8xl mx-auto'>
                         {/* Status Badge */}
-                        <div className='inline-flex items-center space-x-3 bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2c7bbe]/10 backdrop-blur-2xl border border-[#2c7bbe]/30 rounded-full px-6 sm:px-8 py-2.5 sm:py-3 shadow-2xl shadow-[#2c7bbe]/20 animate-slide-in-up mb-6 sm:mb-8'>
+                        <div className='inline-flex items-center space-x-3 bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2c7bbe]/10 backdrop-blur-2xl border border-[#2c7bbe]/30 rounded-full px-6 sm:px-8 py-2.5 sm:py-3 shadow-2xl shadow-[#2c7bbe]/20 animate-slide-in-up mb-4 sm:mb-5'>
                             <div className='relative'>
                                 <div className='w-3 h-3 bg-[#4cc7e8] rounded-full'></div>
                             </div>
@@ -147,13 +147,13 @@ export default function Page() {
             </section>
 
             {/* How We Support You */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             HOW WE SUPPORT YOU
                         </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Elite Customer Care</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -181,13 +181,13 @@ export default function Page() {
             </section>
 
             {/* Managing Your Subscription */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             SUBSCRIPTION MANAGEMENT
                         </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Flexible Plans</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -247,13 +247,13 @@ export default function Page() {
             </section>
 
             {/* Contact Methods */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-6 px-6 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             GET IN TOUCH
                         </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Need Help?</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -285,13 +285,13 @@ export default function Page() {
             </section>
 
             {/* Our Commitment */}
-            <section className='relative py-24 sm:py-32 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center max-w-5xl mx-auto'>
                         <div className='w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-slide-in-up'>
                             <Shield className='w-10 h-10 sm:w-12 sm:h-12 text-[#4cc7e8]' />
                         </div>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-[#4cc7e8] mb-6 sm:mb-8 animate-slide-in-up delay-200'>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-[#4cc7e8] mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                             Our Commitment
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 mb-10 sm:mb-12 leading-relaxed font-light animate-slide-in-up delay-400'>
