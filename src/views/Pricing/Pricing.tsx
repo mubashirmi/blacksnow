@@ -249,26 +249,30 @@ function Pricing() {
                             return (
                                 <div key={product.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 200}ms` }}>
                                     <Card
-                                        className={`bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 rounded-3xl shadow-2xl backdrop-blur-2xl overflow-hidden transform hover:scale-105 transition-all duration-500 ${isPurchased
+                                        className={`bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 rounded-3xl shadow-2xl backdrop-blur-2xl overflow-hidden transform hover:scale-105 transition-all duration-500 ${
+                                            isPurchased
                                                 ? 'border-green-500/50 shadow-green-500/20'
                                                 : product.available
-                                                    ? 'border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 cursor-pointer'
-                                                    : 'border-gray-600/30 opacity-70'
-                                            }`}
+                                                ? 'border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 cursor-pointer'
+                                                : 'border-gray-600/30 opacity-70'
+                                        }`}
                                         onClick={() => product.available && !isPurchased && handlePurchase(product)}
                                     >
                                         <div
-                                            className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${isPurchased ? 'from-green-400 to-emerald-500' : product.color
-                                                }`}
+                                            className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${
+                                                isPurchased ? 'from-green-400 to-emerald-500' : product.color
+                                            }`}
                                         ></div>
 
                                         <CardHeader className='p-6 sm:p-8 pb-4'>
                                             <div className='flex items-center justify-between mb-6'>
                                                 <div className='flex items-center space-x-4'>
                                                     <div
-                                                        className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${isPurchased ? 'from-green-400 to-emerald-500' : product.color
-                                                            } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${!product.available ? 'opacity-50' : ''
-                                                            }`}
+                                                        className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${
+                                                            isPurchased ? 'from-green-400 to-emerald-500' : product.color
+                                                        } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${
+                                                            !product.available ? 'opacity-50' : ''
+                                                        }`}
                                                     >
                                                         <product.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                                     </div>
@@ -304,8 +308,9 @@ function Pricing() {
                                                             className={`w-5 h-5 text-green-400 flex-shrink-0 ${!product.available && 'text-gray-500'}`}
                                                         />
                                                         <span
-                                                            className={`text-sm sm:text-base leading-relaxed ${product.available ? 'text-gray-300' : 'text-gray-500'
-                                                                }`}
+                                                            className={`text-sm sm:text-base leading-relaxed ${
+                                                                product.available ? 'text-gray-300' : 'text-gray-500'
+                                                            }`}
                                                         >
                                                             {feature}
                                                         </span>

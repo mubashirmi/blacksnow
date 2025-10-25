@@ -335,8 +335,9 @@ function Consultation() {
                                                 value={formData.companyName}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, companyName: e.target.value }))}
                                                 placeholder='Company Name'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.companyName ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.companyName ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.companyName && <p className='text-red-500 text-sm'>{errors.companyName}</p>}
@@ -349,8 +350,9 @@ function Consultation() {
                                                 value={formData.location}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
                                                 placeholder='Location'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.location ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.location ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.location && <p className='text-red-500 text-sm'>{errors.location}</p>}
@@ -363,8 +365,9 @@ function Consultation() {
                                                 value={formData.title}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                                                 placeholder='Your Job Title'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.title ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.title ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.title && <p className='text-red-500 text-sm'>{errors.title}</p>}
@@ -377,8 +380,9 @@ function Consultation() {
                                                 value={formData.name}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                                                 placeholder='Full Name'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.name ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.name ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.name && <p className='text-red-500 text-sm'>{errors.name}</p>}
@@ -392,8 +396,9 @@ function Consultation() {
                                                 value={formData.email}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                                                 placeholder='Work Email'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.email ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.email ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
@@ -407,8 +412,9 @@ function Consultation() {
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                                                 placeholder='Phone Number'
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.phone ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-500 focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.phone ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.phone && <p className='text-red-500 text-sm'>{errors.phone}</p>}
@@ -422,8 +428,9 @@ function Consultation() {
                                                 disabled={isLoading}
                                             >
                                                 <SelectTrigger
-                                                    className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.numOfPositions ? 'border-red-500' : ''
-                                                        }`}
+                                                    className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                        errors.numOfPositions ? 'border-red-500' : ''
+                                                    }`}
                                                 >
                                                     <SelectValue placeholder='Number of positions' />
                                                 </SelectTrigger>
@@ -445,8 +452,9 @@ function Consultation() {
                                                 type='datetime-local'
                                                 value={formData.dateTime}
                                                 onChange={(e) => setFormData((prev) => ({ ...prev, dateTime: e.target.value }))}
-                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${errors.dateTime ? 'border-red-500' : ''
-                                                    }`}
+                                                className={`bg-[#0a0b0f]/50 border-[#2c7bbe]/30 text-white focus:border-[#4cc7e8] transition-colors duration-300 rounded-2xl ${
+                                                    errors.dateTime ? 'border-red-500' : ''
+                                                }`}
                                                 disabled={isLoading}
                                             />
                                             {errors.dateTime && <p className='text-red- r500 text-sm'>{errors.dateTime}</p>}
@@ -459,8 +467,9 @@ function Consultation() {
                                                     id='terms'
                                                     checked={isTermsChecked}
                                                     onCheckedChange={(checked) => setIsTermsChecked(!!checked)}
-                                                    className={`border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8] rounded-lg ${errors.terms ? 'border-red-500' : ''
-                                                        }`}
+                                                    className={`border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8] rounded-lg ${
+                                                        errors.terms ? 'border-red-500' : ''
+                                                    }`}
                                                     disabled={isLoading}
                                                 />
                                                 <Label htmlFor='terms' className='text-gray-300 text-sm leading-tight'>
@@ -477,8 +486,9 @@ function Consultation() {
                                                     id='privacy'
                                                     checked={isPrivacyChecked}
                                                     onCheckedChange={(checked) => setIsPrivacyChecked(!!checked)}
-                                                    className={`border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8] rounded-lg ${errors.privacy ? 'border-red-500' : ''
-                                                        }`}
+                                                    className={`border-[#2c7bbe] data-[state=checked]:bg-[#4cc7e8] data-[state=checked]:border-[#4cc7e8] rounded-lg ${
+                                                        errors.privacy ? 'border-red-500' : ''
+                                                    }`}
                                                     disabled={isLoading}
                                                 />
                                                 <Label htmlFor='privacy' className='text-gray-300 text-sm leading-tight'>
@@ -571,7 +581,9 @@ function Consultation() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
-                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>READY TO GET STARTED?</Badge>
+                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                READY TO GET STARTED?
+                            </Badge>
                             <h2 className='text-5xl sm:text-6xl font-black text-white leading-tight mb-4 sm:mb-5'>
                                 Let&apos;s Find Your <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Perfect</span>
                                 <br />

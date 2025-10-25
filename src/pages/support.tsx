@@ -246,7 +246,7 @@ export default function Page() {
                 </div>
             </section>
 
-            {/* Contact Methods */}
+            {/* Contact Methogfds */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>

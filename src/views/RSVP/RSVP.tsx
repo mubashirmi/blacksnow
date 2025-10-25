@@ -477,8 +477,9 @@ function RSVP({ initialIsLoggedIn }) {
                                                     <CardContent className='p-6'>
                                                         <div className='flex items-start space-x-4'>
                                                             <div
-                                                                className={`w-14 h-14 bg-gradient-to-r ${item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
-                                                                    } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                                                                className={`w-14 h-14 bg-gradient-to-r ${
+                                                                    item.color || 'from-[#2c7bbe] to-[#4cc7e8]'
+                                                                } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
                                                             >
                                                                 <Icon className='w-7 h-7 text-white' />
                                                             </div>
@@ -550,10 +551,11 @@ function RSVP({ initialIsLoggedIn }) {
                                                 <div
                                                     key={event.id}
                                                     onClick={() => setSelectedEvent(event.id)}
-                                                    className={`p-5 sm:p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${selectedEvent === event.id
+                                                    className={`p-5 sm:p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                                                        selectedEvent === event.id
                                                             ? 'border-[#4cc7e8] bg-gradient-to-r bg-[#2c7bbe]/20 to-[#4cc7e8]/20'
                                                             : 'border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     <div className='flex items-center space-x-3'>
                                                         <input
@@ -692,7 +694,9 @@ function RSVP({ initialIsLoggedIn }) {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>WEBINAR BENEFITS</Badge>
+                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            WEBINAR BENEFITS
+                        </Badge>
                         <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                 What You&apos;ll Gain
