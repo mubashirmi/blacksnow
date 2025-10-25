@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 const stripe = require('stripe')(process.env.NEXT_PRIVATE_STRIPE_SECRET);
+console.log("test")
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req;
     const { id } = req.query;
