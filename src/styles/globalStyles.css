@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
 @import 'tailwindcss';
 
+*{
+    box-sizing: border-box;
+}
+
 .outlineButton {
     background-color: black !important;
     border: 1px solid #08fcfc;
