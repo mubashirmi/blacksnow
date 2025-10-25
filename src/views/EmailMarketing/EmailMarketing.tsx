@@ -112,7 +112,7 @@ function EmailMarketing() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Hero Section */}
+            {/* Hero Sectiond */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
