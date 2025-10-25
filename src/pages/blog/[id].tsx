@@ -133,7 +133,9 @@ export default function BlogPostPage() {
 
                                 {/* Category Badge */}
                                 <div className='absolute top-4 left-4'>
-                                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white border-0 font-bold'>{blogPost.category}</Badge>
+                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white border-0 font-bold'>
+                                        {blogPost.category}
+                                    </Badge>
                                 </div>
 
                                 {/* Views Badge */}

@@ -226,7 +226,7 @@ function Pricing() {
             {/* Hero Section */}
             <section className='relative pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         PREMIUM PRODUCTS & SERVICES
                     </Badge>
                     <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
@@ -240,7 +240,7 @@ function Pricing() {
             </section>
 
             {/* Products Grid */}
-            <section className='pb-24 sm:pb-32 px-4 sm:px-6 md:px-8'>
+            <section className='pb-10 sm:pb-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8'>
                         {products.map((product, index) => {
@@ -282,7 +282,7 @@ function Pricing() {
                                                     </div>
                                                 </div>
                                                 {product.popular && (
-                                                    <Badge className='bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>
+                                                    <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>
                                                         POPULAR
                                                     </Badge>
                                                 )}
@@ -323,7 +323,7 @@ function Pricing() {
                                                     isPurchased ? (
                                                         <Button
                                                             size='lg'
-                                                            className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-800 text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
+                                                            className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-800 text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-lg'
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleUnsubscribe(product);
@@ -350,7 +350,7 @@ function Pricing() {
                                                     )
                                                 ) : (
                                                     <div className='w-full py-5 sm:py-6 text-center'>
-                                                        <Badge className='bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-bold'>
+                                                        <Badge className='uppercase bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-bold'>
                                                             <Clock className='w-5 h-5 mr-2' />
                                                             Coming Soon!
                                                         </Badge>
@@ -371,10 +371,10 @@ function Pricing() {
             </section>
 
             {/* Features Comparison */}
-            <section className='relative py-32 sm:py-32 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             WHY CHOOSE BLACK SNOW
                         </Badge>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>

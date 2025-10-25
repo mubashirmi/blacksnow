@@ -213,7 +213,7 @@ function CareersTitle() {
 
             {/* Call to Action Section with Lottie Animation */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-8xl sm:pl-12'>
+                <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
                             <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
@@ -230,7 +230,7 @@ function CareersTitle() {
                             </p>
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Link href={'/careeroptions'}>
-                                    <Button className='cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
+                                    <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
                                         <Search className='w-6 h-6 mr-3' />
                                         Browse Jobs
                                         <ArrowRight className='w-5 h-5 ml-3' />
@@ -239,7 +239,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-2 border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                        className='border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         <Users className='w-6 h-6 mr-3' />
                                         Hire Talent

@@ -220,7 +220,7 @@ function Home() {
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* LEFT */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12'>
-                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 Live Market Analysis
                             </Badge>
 
@@ -309,7 +309,7 @@ function Home() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             MASTER THE MARKETS
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
@@ -452,7 +452,7 @@ function Home() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     {/* Revolutionary Header */}
                     <div className='text-center mb-20 animate-slide-in-up'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             Elite Framework
                         </Badge>
 

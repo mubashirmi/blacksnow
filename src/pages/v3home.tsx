@@ -63,7 +63,7 @@ function Page() {
                     <div className='grid lg:grid-cols-2 gap-20 items-center'>
                         {/* LEFT: Content from image */}
                         <div className='space-y-12'>
-                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
                                 Live Market Analysis
                             </Badge>
 
@@ -144,7 +144,7 @@ function Page() {
             <section className='relative py-32 px-6 bg-[#fff]'>
                 <div className='container mx-auto max-w-7xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in'>
                             MASTER THE MARKETS
                         </Badge>
                         <h2 className='text-4xl lg:text-5xl font-black text-black/80 mb-6 animate-slide-in-up'>
@@ -288,7 +288,7 @@ function Page() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     {/* Revolutionary Header */}
                     <div className='text-center mb-24 animate-slide-in-up'>
-                        <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in uppercase'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-6 px-6 py-2 text-sm font-bold animate-fade-in uppercase'>
                             Elite Framework
                         </Badge>
 

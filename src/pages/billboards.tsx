@@ -125,7 +125,7 @@ export default function Page() {
             {/* Hero (compact) */}
             <section className='relative pt-24 pb-6 px-6'>
                 <div className='container mx-auto max-w-6xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-xs font-bold tracking-widest'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-xs font-bold tracking-widest'>
                         DIGITAL BILLBOARD SHOWCASE
                     </Badge>
                     <h1 className='text-4xl md:text-5xl font-black text-white mb-3 leading-tight'>
@@ -171,7 +171,9 @@ export default function Page() {
             {/* CTA (unchanged sizing) */}
             <section className='relative py-20 px-6'>
                 <div className='container mx-auto max-w-4xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-5 px-6 py-2 text-sm font-bold'>JOIN OUR BILLBOARD</Badge>
+                    <Badge className='uppercase bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-5 px-6 py-2 text-sm font-bold'>
+                        JOIN OUR BILLBOARD
+                    </Badge>
                     <h2 className='text-4xl md:text-5xl font-black text-white mb-4'>
                         Ready to <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Showcase</span>?
                     </h2>

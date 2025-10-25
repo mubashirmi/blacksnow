@@ -127,7 +127,7 @@ function Partners() {
             {/* Header */}
             <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         ELITE NETWORK
                     </Badge>
 

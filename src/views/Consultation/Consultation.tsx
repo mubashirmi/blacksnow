@@ -278,7 +278,7 @@ function Consultation() {
             {/* Hero Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         PROFESSIONAL RECRUITMENT SERVICES
                     </Badge>
                     <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
@@ -581,7 +581,7 @@ function Consultation() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
-                            <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 READY TO GET STARTED?
                             </Badge>
                             <h2 className='text-5xl sm:text-6xl font-black text-white leading-tight mb-4 sm:mb-5'>

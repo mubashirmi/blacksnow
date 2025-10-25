@@ -218,7 +218,7 @@ function Advertising() {
                         {/* Left Content */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     PREMIUM ADVERTISING
                                 </Badge>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
@@ -292,7 +292,7 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
-                                    className='group cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     onClick={handleAdvertiseClick}
                                     disabled={isLoading}
                                 >
@@ -410,7 +410,7 @@ function Advertising() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-6 py-2 text-sm font-bold'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-6 py-2 text-sm font-bold'>
                             ADVERTISING EXCELLENCE
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
@@ -477,7 +477,7 @@ function Advertising() {
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
-                            <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-8 py-3 text-sm font-bold'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-8 py-3 text-sm font-bold'>
                                 START ADVERTISING TODAY
                             </Badge>
                             <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
@@ -492,7 +492,7 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button
                                     size='lg'
-                                    className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
+                                    className='bg-gradient-to-r border-2 box-border border-[#4cc7e8] from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
                                     onClick={handleStartCampaignClick}
                                     disabled={isLoading}
                                 >

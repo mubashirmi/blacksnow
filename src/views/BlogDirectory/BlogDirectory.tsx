@@ -80,7 +80,7 @@ function BlogDirectory() {
             {/* Hero Section */}
             <section className='relative pt-10 sm:pt-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl text-center'>
-                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         INSIGHTS & STRATEGIES
                     </Badge>
                     <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
@@ -123,7 +123,7 @@ function BlogDirectory() {
 
                                             {/* Category Badge */}
                                             <div className='absolute top-4 left-4'>
-                                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white font-bold text-xs px-3 py-1 rounded-full'>
+                                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white font-bold text-xs px-3 py-1 rounded-full'>
                                                     {blog.category || 'INSIGHTS'}
                                                 </Badge>
                                             </div>
