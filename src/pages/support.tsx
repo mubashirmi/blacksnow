@@ -222,7 +222,7 @@ export default function Page() {
                                 <p className='text-sm sm:text-base text-gray-300 mb-6 leading-relaxed'>
                                     If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance.
                                 </p>
-                                <div className='flex flex-col sm:flex-row gap-4'>
+                                <div className='flex flex-col sm:flex-row gap-4 mt-[1px]'>
                                     {!id ? (
                                         <Button
                                             className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px]'
