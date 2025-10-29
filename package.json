@@ -3,7 +3,7 @@
     "version": "0.9.5",
     "private": true,
     "scripts": {
-        "dev": "concurrently -k -n WEB,CRON -c auto \"next dev\" \"ts-node -r tsconfig-paths/register scripts/email-cron.ts\"",
+        "dev": "concurrently -n WEB,CRON -c auto \"next dev\" \"ts-node --esm scripts/email-cron.ts\"",
         "build": "next build",
         "start": "concurrently -k -n WEB,CRON -c auto \"next start\" \"ts-node -r tsconfig-paths/register scripts/email-cron.ts\"",
         "cron:dev": "ts-node scripts/email-cron.ts",

@@ -223,12 +223,12 @@ export default function Page() {
                                     If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance.
                                 </p>
                                 <div className='flex flex-col sm:flex-row gap-4'>
-                                    {id ? (
+                                    {!id ? (
                                         <Button
                                             className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px]'
                                             onClick={handlePricingClick}
                                         >
-                                            Pricing
+                                            Login / Sign Up
                                         </Button>
                                     ) : (
                                         <Button
@@ -265,7 +265,7 @@ export default function Page() {
                         {contactMethods.map((method, index) => (
                             <div key={index} className='group animate-slide-in-up max-w-md w-full' style={{ animationDelay: `${index * 200}ms` }}>
                                 <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-[#2c7bbe]/20 h-full flex flex-col'>
-                                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe]'></div>
+                                    {/* <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe]'></div> */}
                                     <CardContent className='p-8 text-center flex-1 flex flex-col'>
                                         <div className='w-16 h-16 bg-gradient-to-br from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300'>
                                             <method.icon className='w-8 h-8 text-white' />
