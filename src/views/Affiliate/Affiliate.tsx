@@ -181,7 +181,7 @@ function Affiliate() {
                                         Join Now
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
-                                    {/* <div className='bg-[#24a8cc] block sm:hidden uppercase relative rounded-2xl  p-7 text-center text-3xl text-amber-50 font-semibold [text-shadow:_4px_4px_8px_rgba(0,0,0,0.5)] backdrop-blur-mxl'>Join Now</div> */}
+                                    {/* <div className='bg-[#24a8cc] block sm:hidden uppercase relative rounded-2xl p-6 text-center text-3xl text-amber-50  font-semibold [text-shadow:_4px_4px_8px_rgba(0,0,0,0.5)] backdrop-blur-mxl'>Join Now</div> */}
                                 </AuthModalTrigger>
 
                                 {showDashboardButton && (
