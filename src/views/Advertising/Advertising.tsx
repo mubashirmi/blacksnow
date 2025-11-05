@@ -524,7 +524,7 @@ function Advertising() {
 
                         {/* Right Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/advretisingicon.json' loop={true} autoplay={true} />
                             </div>
                         </div>

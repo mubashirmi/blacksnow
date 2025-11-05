@@ -1,21 +1,25 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertTriangle, ArrowRight, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, MessageCircle, Phone, Shield, Users } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertTriangle, ArrowRight, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, MessageCircle, Phone, Shield, Users, X } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
+import { useState } from 'react';
 
 export default function Page() {
     const cookies = parseCookies();
+    const [modalOpened, setModalOpened] = useState(false);
     const id = cookies.id;
     const router = useRouter();
 
-    const handlePricingClick = () => {
-        router.push('/pricing');
-    };
-
     const handleUnsubscribeClick = () => {
-        router.push('/pricing');
+        if (id) {
+            router.push('/pricing');
+        } else {
+            setModalOpened(true);
+        }
     };
 
     const supportFeatures = [
@@ -223,22 +227,13 @@ export default function Page() {
                                     If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance.
                                 </p>
                                 <div className='flex flex-col sm:flex-row gap-4 mt-[1px]'>
-                                    {!id ? (
-                                        <Button
-                                            className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px]'
-                                            onClick={handlePricingClick}
-                                        >
-                                            Login / Sign Up
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            className='bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
-                                            onClick={handleUnsubscribeClick}
-                                        >
-                                            <CreditCard className='mr-2 h-5 w-5' />
-                                            Unsubscribe
-                                        </Button>
-                                    )}
+                                    <Button
+                                        className='bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
+                                        onClick={handleUnsubscribeClick}
+                                    >
+                                        <CreditCard className='mr-2 h-5 w-5' />
+                                        Unsubscribe
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -320,6 +315,31 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+            <Dialog open={modalOpened} onOpenChange={setModalOpened}>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-xl'>
+                    <button
+                        onClick={() => setModalOpened(false)}
+                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group'
+                    >
+                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                    </button>
+                    <DialogHeader className='space-y-6 text-center'>
+                        <div className='flex flex-col items-center'>
+                            <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
+                                <Image src='/logocolored.png' alt='Logo' width={100} height={100} className='object-contain drop-shadow-2xl' priority />
+                            </div>
+                            <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
+                            <DialogDescription className='text-[#4cc7e8] font-semibold'>You can&apos;t access the webinar until you sign up.</DialogDescription>
+                        </div>
+                    </DialogHeader>
+                    <Button
+                        onClick={() => router.push('/login?signup')}
+                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                    >
+                        Signup
+                    </Button>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

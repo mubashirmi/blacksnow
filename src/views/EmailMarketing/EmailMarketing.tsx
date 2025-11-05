@@ -112,7 +112,7 @@ function EmailMarketing() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Hero Sectiond */}
+            {/* Hero Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
@@ -122,11 +122,11 @@ function EmailMarketing() {
                                 <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     POWERFUL EMAIL MARKETING
                                 </Badge>
-                                <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     Email Marketing{' '}
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Features</span>
                                 </h1>
-                                <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                                 <p className='text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl'>
                                     Transform your marketing strategy with our comprehensive email and SMS platform. Reach your audience effectively with{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>personalized campaigns</span>, advanced automation, and powerful analytics
@@ -137,15 +137,15 @@ function EmailMarketing() {
                             {/* Quick Stats */}
                             <div className='grid grid-cols-3 gap-4 sm:gap-5'>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
-                                    <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>99.9%</div>
+                                    <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>99.9%</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Delivery Rate</div>
                                 </div>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2a8dcc]/10 rounded-2xl border border-[#4cc7e8]/20'>
-                                    <div className='text-3xl sm:text-4xl font-black text-[#2c7bbe] mb-2'>50K+</div>
+                                    <div className='text-2xl sm:text-4xl font-black text-[#2c7bbe] mb-2'>50K+</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Emails/Hour</div>
                                 </div>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#2a8dcc]/10 to-[#2c7bbe]/10 rounded-2xl border border-[#2a8dcc]/20'>
-                                    <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>24/7</div>
+                                    <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>24/7</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Support</div>
                                 </div>
                             </div>

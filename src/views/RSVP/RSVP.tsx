@@ -424,22 +424,22 @@ function RSVP({ initialIsLoggedIn }) {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative pt-10 sm:pb:7 sm:pt-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='text-center mb-16'>
+                    <div className='sm:text-center mb-6'>
                         <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             EXCLUSIVE TRADING WEBINAR
                         </Badge>
-                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Webinar RSVP</span>
+                        <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'> Webinar&nbsp;</span>RSVP
                         </h1>
-                        <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto'></div>
+                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 sm:mx-auto'></div>
                     </div>
                 </div>
             </section>
 
             {/* Main Content */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative pb-10 sm:pb-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-3 gap-12 lg:gap-16'>
                         {/* Curriculum */}

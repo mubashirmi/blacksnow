@@ -281,23 +281,23 @@ function Consultation() {
                     <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         PROFESSIONAL RECRUITMENT SERVICES
                     </Badge>
-                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                    <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Black Snow</span>
                         <br />
                         Recruitment Agency
                     </h1>
-                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto'></div>
+                    <div className='w-72 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                 </div>
             </section>
 
             {/* Main Content */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative pb-10 sm:pb-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 mb-32'>
                         {/* Left: Agency Info */}
                         <div className='space-y-10 animate-slide-in-left'>
                             <div className='space-y-8'>
-                                <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight'>
+                                <h2 className='text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight'>
                                     <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Connecting Companies</span>
                                     <br />
                                     with Exceptional Talent

@@ -181,6 +181,7 @@ function Affiliate() {
                                         Join Now
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
+                                    {/* <div className='bg-[#24a8cc] block sm:hidden uppercase relative rounded-2xl  p-7 text-center text-3xl text-amber-50 font-semibold [text-shadow:_4px_4px_8px_rgba(0,0,0,0.5)] backdrop-blur-mxl'>Join Now</div> */}
                                 </AuthModalTrigger>
 
                                 {showDashboardButton && (
@@ -199,7 +200,7 @@ function Affiliate() {
                         </div>
 
                         {/* Right Visual - Dollar Sign */}
-                        <div className='relative animate-slide-in-right'>
+                        <div className='hidden sm:block relative animate-slide-in-right'>
                             <div className='relative flex items-center justify-center'>
                                 <div className='absolute inset-0 flex items-center justify-center'>
                                     <div className='absolute w-80 h-80 border-4 border-[#4cc7e8]/20 rounded-full animate-spin-slow'></div>
@@ -363,7 +364,7 @@ function Affiliate() {
                         </div>
 
                         <div className='flex items-center justify-center'>
-                            <div className='w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/affiliateicon.json' loop={true} autoplay={true} />
                             </div>
                         </div>
