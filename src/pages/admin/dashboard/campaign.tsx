@@ -1,27 +1,48 @@
-import { AlertCircle, Calendar, CheckCircle2, Info, Loader2, Lock, Mail, Send, ShieldCheck, Users } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { AlertCircle, Calendar, CheckCircle2, ChevronDown, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+
+type EmailUser = {
+    id: number;
+    email: string;
+    fullName: string | null;
+    emailUserCSVId: number | null;
+    emailUserCSV?: { id: number; name: string };
+};
 
 export default function SalesCampaignPage() {
-    const [emailUsers, setEmailUsers] = useState<any[]>([]);
+    const [emailUsers, setEmailUsers] = useState<EmailUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
+
+    // Result modal (success/error)
+    const [resultModal, setResultModal] = useState<{
+        open: boolean;
+        type: 'success' | 'error';
+        title: string;
+        message: string;
+    }>({ open: false, type: 'success', title: '', message: '' });
 
     // Campaign form
     const [formData, setFormData] = useState({
-        subject: '',
-        text: '',
         fromName: '',
-        selectedUsers: [] as number[],
+        subject: '',
         runAt: '',
+        selectedUsers: [] as number[],
     });
     const [formErrors, setFormErrors] = useState<any>({});
+
+    // Multiple emails (max 5)
+    const [emails, setEmails] = useState<string[]>(['']);
+
+    // Collapsible groups (manual + csv lists)
+    const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
 
     // Credentials gate
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
     const [checkingCredentials, setCheckingCredentials] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // for credentials flow
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasCredentialsOk, setHasCredentialsOk] = useState<boolean>(false);
+
     const [credentialsData, setCredentialsData] = useState<{ email: string; appPassword: string }>({
         email: '',
         appPassword: '',
@@ -31,10 +52,11 @@ export default function SalesCampaignPage() {
     useEffect(() => {
         (async () => {
             const ok = await checkMarketingCredentials();
+            setHasCredentialsOk(ok);
             if (ok) {
                 fetchEmailUsers();
             } else {
-                setLoading(false); // don't leave main spinner up if gated by credentials
+                setLoading(false); // don't leave spinner if gated
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,27 +65,94 @@ export default function SalesCampaignPage() {
     const fetchEmailUsers = async () => {
         try {
             setLoading(true);
-            setError(null);
             const id = Number(localStorage.getItem('adminId'));
             if (!id) {
                 if (typeof window !== 'undefined') window.location.href = '/login';
                 return;
             }
             const response = await fetch(`/api/v2/email-users?authId=${id}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch email users');
-            }
+            if (!response.ok) throw new Error('Failed to fetch email users');
+
             const data = await response.json();
-            const users = Array.isArray(data.emailUser) ? data.emailUser : data.emailUser ? [data.emailUser] : [];
-            setEmailUsers(users.filter(Boolean));
-        } catch (err: any) {
-            setError(err.message || 'Something went wrong');
+            const usersRaw: EmailUser[] = Array.isArray(data.emailUser) ? data.emailUser : data.emailUser ? [data.emailUser] : [];
+
+            const users = usersRaw.map((u) => ({
+                ...u,
+                fullName: (u.fullName && u.fullName.trim()) || (u.email ? u.email.split('@')[0] : ''),
+            }));
+
+            setEmailUsers(users);
+
+            // open csv groups by default
+            const flags: Record<string, boolean> = {};
+            users.forEach((u) => {
+                if (u.emailUserCSV?.id) flags[`csv-${u.emailUserCSV.id}`] = true;
+            });
+            setExpanded((prev) => ({ ...prev, ...flags }));
+        } catch (e: any) {
+            // show as modal
+            setResultModal({
+                open: true,
+                type: 'error',
+                title: 'Failed to Load Users',
+                message: e?.message || 'Something went wrong while fetching users.',
+            });
         } finally {
             setLoading(false);
         }
     };
 
-    // ---------- Credentials: Check + Validate + Save ----------
+    // ---------- Grouping & selection ----------
+    const groups = useMemo(() => {
+        const manual = emailUsers.filter((u) => !u.emailUserCSVId);
+        const map = new Map<number, { id: number; name: string; users: EmailUser[] }>();
+        emailUsers.forEach((u) => {
+            if (u.emailUserCSVId && u.emailUserCSV) {
+                const key = u.emailUserCSV.id;
+                if (!map.has(key)) map.set(key, { id: key, name: u.emailUserCSV.name, users: [] });
+                map.get(key)!.users.push(u);
+            }
+        });
+        const csvGroups = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+        return { manual, csvGroups, totalCount: emailUsers.length };
+    }, [emailUsers]);
+
+    const allIds = useMemo(() => emailUsers.map((u) => u.id), [emailUsers]);
+    const isAllSelected = formData.selectedUsers.length > 0 && formData.selectedUsers.length === allIds.length;
+
+    const toggleExpanded = (key: string) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+
+    const toggleSelectAll = () => {
+        setFormData((prev) => ({
+            ...prev,
+            selectedUsers: isAllSelected ? [] : allIds,
+        }));
+        if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
+    };
+
+    const groupChecked = (ids: number[]) => ids.length > 0 && ids.every((id) => formData.selectedUsers.includes(id));
+
+    const toggleGroup = (ids: number[]) => {
+        const allChecked = groupChecked(ids);
+        setFormData((prev) => {
+            if (allChecked) {
+                return { ...prev, selectedUsers: prev.selectedUsers.filter((id) => !ids.includes(id)) };
+            }
+            const set = new Set(prev.selectedUsers.concat(ids));
+            return { ...prev, selectedUsers: Array.from(set) };
+        });
+        if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
+    };
+
+    const toggleUser = (id: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            selectedUsers: prev.selectedUsers.includes(id) ? prev.selectedUsers.filter((x) => x !== id) : [...prev.selectedUsers, id],
+        }));
+        if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
+    };
+
+    // ---------- Credentials: Check + Save ----------
     const checkMarketingCredentials = async (): Promise<boolean> => {
         try {
             setCheckingCredentials(true);
@@ -76,7 +165,6 @@ export default function SalesCampaignPage() {
             }
 
             const response = await fetch(`/api/v2/marketingCredentials?adminId=${adminId}`);
-
             if (!response.ok) {
                 setShowCredentialsModal(true);
                 return false;
@@ -94,7 +182,6 @@ export default function SalesCampaignPage() {
             setShowCredentialsModal(!ok);
             return !!ok;
         } catch (e) {
-            console.error('Failed to check marketing credentials:', e);
             setShowCredentialsModal(true);
             return false;
         } finally {
@@ -114,7 +201,6 @@ export default function SalesCampaignPage() {
             errs.email = 'Invalid email format';
         }
 
-        // Accept 16+ alphanum OR 4 groups of 4 alphanum separated by spaces
         const noSpacePattern = /^[a-zA-Z0-9]{16,}$/;
         const groupedPattern = /^[a-zA-Z0-9]{4}(?:\s[a-zA-Z0-9]{4}){3}$/;
 
@@ -140,7 +226,6 @@ export default function SalesCampaignPage() {
         if (!validateCredentialsForm()) return;
 
         try {
-            setError(null);
             setSubmitting(true);
             const adminId = Number(localStorage.getItem('adminId'));
             if (!adminId) {
@@ -163,49 +248,37 @@ export default function SalesCampaignPage() {
                 throw new Error(data.message || 'Failed to save credentials');
             }
 
+            setHasCredentialsOk(true);
             setShowCredentialsModal(false);
+            if (!emailUsers.length) fetchEmailUsers();
 
-            // If we haven't loaded users yet, do it now
-            if (!emailUsers.length) {
-                fetchEmailUsers();
-            }
+            setResultModal({
+                open: true,
+                type: 'success',
+                title: 'Credentials Saved',
+                message: 'Your email credentials have been saved successfully.',
+            });
         } catch (e: any) {
-            setError(e.message || 'Failed to save credentials');
+            setResultModal({
+                open: true,
+                type: 'error',
+                title: 'Credentials Error',
+                message: e?.message || 'Failed to save credentials.',
+            });
         } finally {
             setSubmitting(false);
         }
     };
 
-    // ---------- Campaign Form ----------
-    const handleInputChange = (e: any) => {
+    // ---------- Helpers ----------
+    const handleBasicInput = (e: any) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        if ((formErrors as any)[name]) {
-            setFormErrors((prev: any) => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const handleUserToggle = (userId: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            selectedUsers: prev.selectedUsers.includes(userId) ? prev.selectedUsers.filter((id) => id !== userId) : [...prev.selectedUsers, userId],
-        }));
-        if ((formErrors as any).selectedUsers) {
-            setFormErrors((prev: any) => ({ ...prev, selectedUsers: '' }));
-        }
-    };
-
-    const handleSelectAll = () => {
-        if (formData.selectedUsers.length === emailUsers.length) {
-            setFormData((prev) => ({ ...prev, selectedUsers: [] }));
-        } else {
-            setFormData((prev) => ({ ...prev, selectedUsers: emailUsers.map((u: any) => u.id) }));
-        }
+        if ((formErrors as any)[name]) setFormErrors((prev: any) => ({ ...prev, [name]: '' }));
     };
 
     const formatDateTimeForAPI = (dateTimeString: string) => {
         if (!dateTimeString) return '';
-
         const [datePart, timePart] = dateTimeString.split('T');
         const [year, month, day] = datePart.split('-');
         const [hours, minutes] = timePart.split(':');
@@ -217,45 +290,46 @@ export default function SalesCampaignPage() {
         const offsetMinutes = Math.abs(offset) % 60;
         const offsetSign = offset >= 0 ? '+' : '-';
 
-        const paddedMonth = String(date.getMonth() + 1).padStart(2, '0');
-        const paddedDay = String(date.getDate()).padStart(2, '0');
-        const paddedHours = String(date.getHours()).padStart(2, '0');
-        const paddedMinutes = String(date.getMinutes()).padStart(2, '0');
-        const paddedSeconds = String(date.getSeconds()).padStart(2, '0');
+        const pad = (n: number) => String(n).padStart(2, '0');
 
-        return `${date.getFullYear()}-${paddedMonth}-${paddedDay}T${paddedHours}:${paddedMinutes}:${paddedSeconds}${offsetSign}${String(offsetHours).padStart(
-            2,
-            '0'
-        )}:${String(offsetMinutes).padStart(2, '0')}`;
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+            date.getSeconds()
+        )}${offsetSign}${pad(offsetHours)}:${pad(offsetMinutes)}`;
     };
 
+    // ---------- Multiple Emails UI ----------
+    const addEmail = () => {
+        if (emails.length >= 5) return;
+        setEmails((prev) => [...prev, '']);
+    };
+
+    const removeEmail = (idx: number) => {
+        setEmails((prev) => prev.filter((_, i) => i !== idx));
+    };
+
+    const updateEmail = (idx: number, val: string) => {
+        setEmails((prev) => prev.map((v, i) => (i === idx ? val : v)));
+    };
+
+    // ---------- Validation & Submit ----------
     const validateForm = () => {
         const errors: any = {};
 
-        if (!formData.fromName.trim()) {
-            errors.fromName = 'From name is required';
-        }
+        if (!formData.fromName.trim()) errors.fromName = 'From name is required';
+        if (!formData.subject.trim()) errors.subject = 'Subject is required';
 
-        if (!formData.subject.trim()) {
-            errors.subject = 'Subject is required';
-        }
+        // At least one non-empty email, max 5 already enforced by UI
+        const nonEmptyEmails = emails.map((e) => e.trim()).filter((e) => e.length > 0);
+        if (nonEmptyEmails.length === 0) errors.emails = 'Please write at least one email message';
 
-        if (!formData.text.trim()) {
-            errors.text = 'Email message is required';
-        }
-
-        if (formData.selectedUsers.length === 0) {
-            errors.selectedUsers = 'Please select at least one recipient';
-        }
+        if (formData.selectedUsers.length === 0) errors.selectedUsers = 'Please select at least one recipient';
 
         if (!formData.runAt) {
             errors.runAt = 'Please select a date and time';
         } else {
             const selectedDate = new Date(formData.runAt);
             const now = new Date();
-            if (selectedDate < now) {
-                errors.runAt = 'Please select a future date and time';
-            }
+            if (selectedDate < now) errors.runAt = 'Please select a future date and time';
         }
 
         setFormErrors(errors);
@@ -263,31 +337,37 @@ export default function SalesCampaignPage() {
     };
 
     const handleSubmit = async () => {
-        // Ensure credentials exist before allowing submit
-        const credsOk = await checkMarketingCredentials();
-        if (!credsOk) return;
+        // Do NOT hit credentials API here. If creds missing, open modal and stop.
+        if (!hasCredentialsOk) {
+            setShowCredentialsModal(true);
+            return;
+        }
 
         if (!validateForm()) return;
 
         try {
             setSubmitting(true);
-            setError(null);
-            const id = Number(localStorage.getItem('adminId'));
-            if (!id) {
+            const adminId = Number(localStorage.getItem('adminId'));
+            if (!adminId) {
                 if (typeof window !== 'undefined') window.location.href = '/login';
                 return;
             }
 
-            const payload = {
-                adminId: id,
-                subject: formData.subject.trim(),
-                text: formData.text.trim(),
-                fromName: formData.fromName.trim(),
-                ids: formData.selectedUsers,
-                runAt: formatDateTimeForAPI(formData.runAt),
-                timeInterval: '0',
-                repeated: false,
-            };
+            const runAtISO = formatDateTimeForAPI(formData.runAt);
+            const messageBodies = emails.map((e) => e.trim()).filter((e) => e.length > 0);
+
+            // Build items per selected user × per email message
+            const items = formData.selectedUsers.flatMap((uid) =>
+                messageBodies.map((bodyText) => ({
+                    id: uid,
+                    subject: formData.subject.trim(),
+                    text: bodyText,
+                    runAt: runAtISO,
+                    repeated: false,
+                }))
+            );
+
+            const payload = { adminId, items };
 
             const response = await fetch('/api/v2/send-email', {
                 method: 'POST',
@@ -300,18 +380,29 @@ export default function SalesCampaignPage() {
                 throw new Error(errorData.message || 'Failed to create campaign');
             }
 
-            setSuccess(true);
-            setFormData({
-                subject: '',
-                text: '',
-                fromName: '',
-                selectedUsers: [],
-                runAt: '',
+            // Success modal
+            setResultModal({
+                open: true,
+                type: 'success',
+                title: 'Campaign Scheduled',
+                message: `Your campaign has been scheduled for ${new Date(formData.runAt).toLocaleString()}.`,
             });
 
-            setTimeout(() => setSuccess(false), 5000);
-        } catch (err: any) {
-            setError(err.message || 'Something went wrong');
+            // Reset form (keep users loaded and group expanded state)
+            setFormData({
+                fromName: '',
+                subject: '',
+                runAt: '',
+                selectedUsers: [],
+            });
+            setEmails(['']);
+        } catch (e: any) {
+            setResultModal({
+                open: true,
+                type: 'error',
+                title: 'Campaign Error',
+                message: e?.message || 'Something went wrong while creating the campaign.',
+            });
         } finally {
             setSubmitting(false);
         }
@@ -346,27 +437,8 @@ export default function SalesCampaignPage() {
                 </div>
             </div>
 
-            {success && (
-                <div className='bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 mt-4'>
-                    <CheckCircle2 className='w-5 h-5 text-green-600 flex-shrink-0' />
-                    <div>
-                        <p className='text-green-800 font-medium'>Campaign Created Successfully!</p>
-                        <p className='text-green-700 text-sm'>Your email campaign has been scheduled and will be sent at the specified time.</p>
-                    </div>
-                </div>
-            )}
-
-            {error && (
-                <div className='bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 mt-4'>
-                    <AlertCircle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
-                    <div>
-                        <p className='text-red-800 font-medium'>Error</p>
-                        <p className='text-red-600 text-sm'>{error}</p>
-                    </div>
-                </div>
-            )}
-
             <div className='bg-white shadow-lg border border-slate-200 p-8 space-y-6'>
+                {/* From Name */}
                 <div>
                     <label className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
                         <Mail className='w-4 h-4' />
@@ -376,7 +448,7 @@ export default function SalesCampaignPage() {
                         type='text'
                         name='fromName'
                         value={formData.fromName}
-                        onChange={handleInputChange}
+                        onChange={handleBasicInput}
                         className={`w-full px-4 py-3 rounded-lg border ${
                             formErrors.fromName ? 'border-red-300 bg-red-50' : 'border-slate-300'
                         } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
@@ -386,6 +458,7 @@ export default function SalesCampaignPage() {
                     {formErrors.fromName && <p className='text-red-600 text-sm mt-1'>{formErrors.fromName}</p>}
                 </div>
 
+                {/* Subject */}
                 <div>
                     <label className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
                         <Mail className='w-4 h-4' />
@@ -395,7 +468,7 @@ export default function SalesCampaignPage() {
                         type='text'
                         name='subject'
                         value={formData.subject}
-                        onChange={handleInputChange}
+                        onChange={handleBasicInput}
                         className={`w-full px-4 py-3 rounded-lg border ${
                             formErrors.subject ? 'border-red-300 bg-red-50' : 'border-slate-300'
                         } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
@@ -405,25 +478,56 @@ export default function SalesCampaignPage() {
                     {formErrors.subject && <p className='text-red-600 text-sm mt-1'>{formErrors.subject}</p>}
                 </div>
 
+                {/* Multiple Emails (max 5) */}
                 <div>
-                    <label className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
-                        <Mail className='w-4 h-4' />
-                        Email Message
-                    </label>
-                    <textarea
-                        name='text'
-                        value={formData.text}
-                        onChange={handleInputChange}
-                        rows={6}
-                        className={`w-full px-4 py-3 rounded-lg border ${
-                            formErrors.text ? 'border-red-300 bg-red-50' : 'border-slate-300'
-                        } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all resize-none`}
-                        placeholder='Write your email message here...'
-                        disabled={submitting}
-                    />
-                    {formErrors.text && <p className='text-red-600 text-sm mt-1'>{formErrors.text}</p>}
+                    <div className='flex items-center justify-between mb-2'>
+                        <label className='flex items-center gap-2 text-sm font-semibold text-slate-700'>
+                            <Mail className='w-4 h-4' />
+                            Email Message(s)
+                        </label>
+                        <button
+                            type='button'
+                            onClick={addEmail}
+                            disabled={submitting || emails.length >= 5}
+                            className='inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50'
+                        >
+                            <Plus className='w-4 h-4' />
+                            Add another (max 5)
+                        </button>
+                    </div>
+
+                    <div className='space-y-4'>
+                        {emails.map((val, idx) => (
+                            <div key={idx} className='relative'>
+                                <label className='block text-xs font-semibold text-slate-600 mb-1'>Email #{idx + 1}</label>
+                                <textarea
+                                    value={val}
+                                    onChange={(e) => updateEmail(idx, e.target.value)}
+                                    rows={5}
+                                    className={`w-full px-4 py-3 rounded-lg border ${
+                                        formErrors.emails ? 'border-red-300 bg-red-50' : 'border-slate-300'
+                                    } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all resize-none`}
+                                    placeholder='Write your email message here...'
+                                    disabled={submitting}
+                                />
+                                {emails.length > 1 && (
+                                    <button
+                                        type='button'
+                                        onClick={() => removeEmail(idx)}
+                                        disabled={submitting}
+                                        className='absolute top-6 right-2 text-slate-500 hover:text-red-600'
+                                        title='Remove this email'
+                                    >
+                                        <Trash2 className='w-5 h-5' />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    {formErrors.emails && <p className='text-red-600 text-sm mt-1'>{formErrors.emails}</p>}
                 </div>
 
+                {/* Schedule */}
                 <div>
                     <label className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
                         <Calendar className='w-4 h-4' />
@@ -433,7 +537,7 @@ export default function SalesCampaignPage() {
                         type='datetime-local'
                         name='runAt'
                         value={formData.runAt}
-                        onChange={handleInputChange}
+                        onChange={handleBasicInput}
                         className={`w-full px-4 py-3 rounded-lg border ${
                             formErrors.runAt ? 'border-red-300 bg-red-50' : 'border-slate-300'
                         } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
@@ -442,6 +546,7 @@ export default function SalesCampaignPage() {
                     {formErrors.runAt && <p className='text-red-600 text-sm mt-1'>{formErrors.runAt}</p>}
                 </div>
 
+                {/* Recipients grouped (manual + each CSV) */}
                 <div>
                     <div className='flex items-center justify-between mb-3'>
                         <label className='flex items-center gap-2 text-sm font-semibold text-slate-700'>
@@ -450,11 +555,11 @@ export default function SalesCampaignPage() {
                         </label>
                         <button
                             type='button'
-                            onClick={handleSelectAll}
+                            onClick={toggleSelectAll}
                             className='text-sm text-slate-700 hover:text-slate-800 font-medium'
-                            disabled={submitting}
+                            disabled={submitting || emailUsers.length === 0}
                         >
-                            {formData.selectedUsers.length === emailUsers.length ? 'Deselect All' : 'Select All'}
+                            {isAllSelected ? 'Deselect All' : 'Select All'}
                         </button>
                     </div>
 
@@ -465,39 +570,121 @@ export default function SalesCampaignPage() {
                             <p className='text-slate-500 text-sm'>Please add email users first</p>
                         </div>
                     ) : (
-                        <div
-                            className={`border ${
-                                formErrors.selectedUsers ? 'border-red-300 bg-red-50' : 'border-slate-200'
-                            } rounded-lg divide-y divide-slate-200 max-h-64 overflow-y-auto`}
-                        >
-                            {emailUsers.map((user: any) => (
-                                <label key={user.id} className='flex items-center gap-3 p-4 hover:bg-slate-50 cursor-pointer transition-colors'>
-                                    <input
-                                        type='checkbox'
-                                        checked={formData.selectedUsers.includes(user.id)}
-                                        onChange={() => handleUserToggle(user.id)}
-                                        className='w-5 h-5 text-slate-600 rounded focus:ring-2 focus:ring-slate-500'
-                                        disabled={submitting}
-                                    />
-                                    <div className='flex-1'>
-                                        <div className='flex items-center gap-2'>
-                                            <div className='w-8 h-8 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white text-sm font-semibold'>
-                                                {typeof user.fullName === 'string' && user.fullName.trim() ? user.fullName.charAt(0).toUpperCase() : '?'}
+                        <div className={`border ${formErrors.selectedUsers ? 'border-red-300 bg-red-50' : 'border-slate-300'} rounded-lg divide-y`}>
+                            {/* Manual group */}
+                            <div className='p-4'>
+                                <div className='flex items-center justify-between mb-2'>
+                                    <button
+                                        type='button'
+                                        onClick={() => toggleExpanded('manual')}
+                                        className='flex items-center gap-2 font-semibold text-slate-800'
+                                    >
+                                        <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} />
+                                        Manually created users
+                                        <span className='text-slate-500 font-normal'>({groups.manual.length})</span>
+                                    </button>
+
+                                    <label className='inline-flex items-center gap-2 text-sm'>
+                                        <input
+                                            type='checkbox'
+                                            className='w-5 h-5'
+                                            checked={groups.manual.length > 0 && groups.manual.every((u) => formData.selectedUsers.includes(u.id))}
+                                            onChange={() => toggleGroup(groups.manual.map((u) => u.id))}
+                                            disabled={submitting}
+                                        />
+                                        <span>Select group</span>
+                                    </label>
+                                </div>
+
+                                {expanded.manual && (
+                                    <>
+                                        {groups.manual.length === 0 ? (
+                                            <p className='text-slate-500 text-sm'>No manual users</p>
+                                        ) : (
+                                            <div className='grid md:grid-cols-2 gap-2'>
+                                                {groups.manual.map((u) => (
+                                                    <label
+                                                        key={u.id}
+                                                        className='flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors'
+                                                    >
+                                                        <input
+                                                            type='checkbox'
+                                                            checked={formData.selectedUsers.includes(u.id)}
+                                                            onChange={() => toggleUser(u.id)}
+                                                            className='w-5 h-5 text-slate-600 rounded focus:ring-2 focus:ring-slate-500'
+                                                            disabled={submitting}
+                                                        />
+                                                        <div className='flex-1'>
+                                                            <p className='font-medium text-slate-800'>{u.fullName || '—'}</p>
+                                                            <p className='text-sm text-slate-500'>{u.email}</p>
+                                                        </div>
+                                                    </label>
+                                                ))}
                                             </div>
-                                            <div>
-                                                <p className='font-medium text-slate-800'>{user.fullName || 'Unknown'}</p>
-                                                <p className='text-sm text-slate-600'>{user.email}</p>
-                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            {/* CSV groups */}
+                            {groups.csvGroups.map((g) => {
+                                const key = `csv-${g.id}`;
+                                return (
+                                    <div key={g.id} className='p-4'>
+                                        <div className='flex items-center justify-between mb-2'>
+                                            <button
+                                                type='button'
+                                                onClick={() => toggleExpanded(key)}
+                                                className='flex items-center gap-2 font-semibold text-slate-800'
+                                            >
+                                                <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} />
+                                                {g.name}
+                                                <span className='text-slate-500 font-normal'>({g.users.length})</span>
+                                            </button>
+
+                                            <label className='inline-flex items-center gap-2 text-sm'>
+                                                <input
+                                                    type='checkbox'
+                                                    className='w-5 h-5'
+                                                    checked={g.users.length > 0 && g.users.every((u) => formData.selectedUsers.includes(u.id))}
+                                                    onChange={() => toggleGroup(g.users.map((u) => u.id))}
+                                                    disabled={submitting}
+                                                />
+                                                <span>Select list</span>
+                                            </label>
                                         </div>
+
+                                        {expanded[key] && (
+                                            <div className='grid md:grid-cols-2 gap-2'>
+                                                {g.users.map((u) => (
+                                                    <label
+                                                        key={u.id}
+                                                        className='flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors'
+                                                    >
+                                                        <input
+                                                            type='checkbox'
+                                                            checked={formData.selectedUsers.includes(u.id)}
+                                                            onChange={() => toggleUser(u.id)}
+                                                            className='w-5 h-5 text-slate-600 rounded focus:ring-2 focus:ring-slate-500'
+                                                            disabled={submitting}
+                                                        />
+                                                        <div className='flex-1'>
+                                                            <p className='font-medium text-slate-800'>{u.fullName || '—'}</p>
+                                                            <p className='text-sm text-slate-500'>{u.email}</p>
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                </label>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                     {formErrors.selectedUsers && <p className='text-red-600 text-sm mt-1'>{formErrors.selectedUsers}</p>}
                 </div>
 
-                <div className='pt-4'>
+                <div className='pt-2'>
                     <button
                         type='button'
                         onClick={handleSubmit}
@@ -507,17 +694,47 @@ export default function SalesCampaignPage() {
                         {submitting ? (
                             <>
                                 <Loader2 className='w-5 h-5 animate-spin' />
-                                Creating Campaign...
+                                Creating Schedule Campaign...
                             </>
                         ) : (
                             <>
                                 <Send className='w-5 h-5' />
-                                Create & Schedule Campaign
+                                Create &amp; Schedule Campaign
                             </>
                         )}
                     </button>
                 </div>
             </div>
+
+            {/* Result Modal (success/error) */}
+            {resultModal.open && (
+                <div className='fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50'>
+                    <div className='bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden'>
+                        <div className={`p-4 ${resultModal.type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white flex items-center justify-between`}>
+                            <div className='flex items-center gap-2'>
+                                {resultModal.type === 'success' ? <CheckCircle2 className='w-6 h-6' /> : <AlertCircle className='w-6 h-6' />}
+                                <h3 className='text-lg font-semibold'>{resultModal.title}</h3>
+                            </div>
+                            <button onClick={() => setResultModal((p) => ({ ...p, open: false }))}>
+                                <X className='w-6 h-6 text-white/90 hover:text-white' />
+                            </button>
+                        </div>
+                        <div className='p-6'>
+                            <p className='text-slate-800'>{resultModal.message}</p>
+                            <div className='mt-6 text-right'>
+                                <button
+                                    className={`px-4 py-2 rounded-lg font-semibold ${
+                                        resultModal.type === 'success' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-red-600 text-white hover:bg-red-700'
+                                    }`}
+                                    onClick={() => setResultModal((p) => ({ ...p, open: false }))}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Credentials Modal Gate */}
             {showCredentialsModal && (
@@ -551,13 +768,6 @@ export default function SalesCampaignPage() {
                                 </div>
                             </div>
 
-                            {error && (
-                                <div className='bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3'>
-                                    <AlertCircle className='w-5 h-5 text-red-600 flex-shrink-0' />
-                                    <p className='text-red-800 text-sm'>{error}</p>
-                                </div>
-                            )}
-
                             <div>
                                 <label htmlFor='email' className='flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2'>
                                     <Mail className='w-4 h-4' />
@@ -573,7 +783,6 @@ export default function SalesCampaignPage() {
                                         credentialsErrors.email ? 'border-red-300 bg-red-50' : 'border-slate-300'
                                     } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all`}
                                     placeholder='your.email@gmail.com'
-                                    disabled={submitting}
                                 />
                                 {credentialsErrors.email && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.email}</p>}
                             </div>
@@ -593,18 +802,17 @@ export default function SalesCampaignPage() {
                                         credentialsErrors.appPassword ? 'border-red-300 bg-red-50' : 'border-slate-300'
                                     } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono`}
                                     placeholder='xbsr gbiv sizp twwe'
-                                    disabled={submitting}
                                 />
                                 {credentialsErrors.appPassword && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.appPassword}</p>}
                                 <p className='text-slate-500 text-xs mt-1'>Enter the app password exactly as provided by your email provider</p>
                             </div>
 
-                            <div className='pt-4'>
+                            <div className='pt-2 flex gap-2'>
                                 <button
                                     type='button'
                                     onClick={handleCredentialsSubmit}
                                     disabled={submitting}
-                                    className='w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
+                                    className='flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
                                 >
                                     {submitting ? (
                                         <>
@@ -617,6 +825,13 @@ export default function SalesCampaignPage() {
                                             Save &amp; Continue
                                         </>
                                     )}
+                                </button>
+                                <button
+                                    type='button'
+                                    onClick={() => setShowCredentialsModal(false)}
+                                    className='px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold transition-colors'
+                                >
+                                    Cancel
                                 </button>
                             </div>
 

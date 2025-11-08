@@ -26,7 +26,7 @@ const api = async (req, res) => {
                     const authId = Number(authIdStr);
 
                     if (!Number.isInteger(authId)) {
-                        return res.status(400).json(errorResponse('id must be an integer'));
+                        return res.status(400).json(errorResponse('`id` must be an integer'));
                     }
 
                     const result = await prisma.notes.findMany({

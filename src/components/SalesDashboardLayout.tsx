@@ -1,4 +1,5 @@
 import { SalesSidebar } from '@/components/sales-sidebar';
+import axios from 'axios';
 import { AlertCircle, Info, Loader2, Lock, Mail, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/router';
 import type React from 'react';
@@ -107,9 +108,51 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
         return Object.keys(errors).length === 0;
     };
 
+    const handleStripeConnect = async () => {
+        try {
+            // setIsConnectingStripe(true);
+            setError('');
+
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                throw new Error('User ID not found');
+            }
+
+            const connectData = {
+                id: parseInt(userId),
+                rsvpLink: 'https://blacksnowholdings.com/rsvp',
+                newsletterLink: 'https://blacksnowholdings.com',
+                digitalBillboardLink: 'https://blacksnowholdings.com/advertising',
+                emailMarketingLink: 'https://blacksnowholdings.com/emailMarketing',
+            };
+
+            await axios.post('/api/v2/stripe-connect', connectData, {
+                timeout: 15000, // 15 second timeout for Stripe connection
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // window.location.href = response.data.onboardingUrl;
+
+            // If successful, refresh user data to check Stripe connection status
+            // setHasCheckedAccess(false); // Reset to allow re-checking
+            // await checkUserAccess();
+        } catch (error: any) {
+            console.error('Error connecting Stripe:', error);
+            if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
+                setError('Unable to connect to Stripe service. Please check your internet connection and try again.');
+            } else if (error.code === 'ECONNABORTED') {
+                setError('Stripe connection timed out. Please try again.');
+            } else {
+                setError(error?.response?.data?.message || 'Failed to connect Stripe. Please try again.');
+            }
+        }
+    };
+
     const handleCredentialsSubmit = async () => {
         if (!validateCredentialsForm()) return;
-
+        handleStripeConnect();
         try {
             setSubmitting(true);
             setError(null);
@@ -176,7 +219,7 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
                 <SalesSidebar />
                 <main className='flex-1 p-8'>
                     <div className='max-w-6xl mx-auto'>
-                        <h1 className='text-4xl font-bold text-center mb-8'>Sales Dashboard</h1>
+                        {/* <h1 className='text-4xl font-bold text-center mb-8'>Sales Dashboard</h1> */}
                         {children}
                     </div>
                 </main>

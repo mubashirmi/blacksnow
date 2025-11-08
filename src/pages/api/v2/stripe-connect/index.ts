@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // User exists but no Stripe Connect ID (not onboarded)
             if (!user.adminStripeConnectId) {
-                return res.status(204).send(); // No content - triggers modal on frontend
+                return res.status(204).send('Stripe Connected id not exist.'); // No content - triggers modal on frontend
             }
 
             // User exists with Stripe Connect ID
@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!accountId) {
                 const account = await stripe.accounts.create({
                     type: 'express',
-                    capabilities: { transfers: { requested: true } },
+                    capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
                 });
 
                 accountId = account.id;

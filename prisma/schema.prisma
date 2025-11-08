@@ -18,7 +18,7 @@ model Auth {
   lastName                  String
   password                  String
   // was: role String?
-  roles                     Role[]                      @default([]) // 👈 multiple roles
+  roles                     Role[]                      @default([])
   referralProducts          ReferralProducts[]
   adminStripeConnectId      String?                     @unique
   Checkouts                 Checkout[]
@@ -33,6 +33,7 @@ model Auth {
   AdminPayouts              AdminPayouts[]
   AdminRevenue              AdminRevenue[]
   Notes                     Notes[]
+  emailSentHistories        EmailSentHistory[]
 }
 
 model AdminPayouts {
@@ -60,10 +61,11 @@ model emailMarketingCredentials {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   email       String
-  appPassword String // (typo fixed)
-  authId      Int      @unique // 👈 makes it one-to-one
+  appPassword String
+  authId      Int      @unique
 
-  Auth Auth @relation(fields: [authId], references: [id])
+  Auth               Auth               @relation(fields: [authId], references: [id])
+  emailSentHistories EmailSentHistory[]
 }
 
 model ReferralProducts {
@@ -94,36 +96,65 @@ model AdminRevenue {
 }
 
 model EmailUser {
-  id             Int              @id @default(autoincrement())
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  email          String
-  fullName       String
-  auth           Auth             @relation(fields: [authId], references: [id])
-  authId         Int
-  EmailJobResult EmailJobResult[]
+  id                 Int                @id @default(autoincrement())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  email              String
+  fullName           String
+  auth               Auth               @relation(fields: [authId], references: [id])
+  authId             Int
+  emailUserCSV       EmailUserCSV?      @relation(fields: [emailUserCSVId], references: [id], onDelete: SetNull)
+  emailUserCSVId     Int? // nullable during backfill
+  EmailJobResult     EmailJobResult[]
+  emailSentHistories EmailSentHistory[]
 
-  @@unique([authId, email]) // optional: prevent duplicates per auth
+  @@unique([authId, email])
   @@index([authId])
+  @@index([emailUserCSVId]) // helpful for ?csvId= queries
+}
+
+model EmailUserCSV {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  name       String
+  emailUsers EmailUser[]
 }
 
 model EmailJobResult {
-  id           String      @id @default(cuid())
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime?   @updatedAt
-  subject      String
-  text         String
-  runAt        DateTime?
-  timeInterval Int? // time-only column in the DB
-  repeated     Boolean?    @default(false)
-  auth         Auth        @relation(fields: [authId], references: [id])
-  emailUser    EmailUser   @relation(fields: [emailUserId], references: [id])
-  authId       Int
-  emailUserId  Int
-  status       EmailStatus @default(pending)
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  // content
+  subject String
+  text    String?
+  html    String? // <— added, optional HTML
+
+  // scheduling
+  runAt        DateTime? // if null, not yet scheduled (we usually set it)
+  repeated     Boolean?  @default(false)
+  timeInterval Int? // seconds (interval cadence) — keeps your existing field
+
+  // NEW: schedule helpers (all optional, non-breaking)
+  // For weekly specific days (BY_WEEKDAY) — 0=Sun..6=Sat
+  weekdays Int[] // e.g. [0,3,5] => Sun/Wed/Fri
+
+  // For rotation trick (weekly or interval):
+  // After sending, if rotationSpanSeconds is set, next runAt = last runAt + rotationSpanSeconds
+  rotationSpanSeconds Int?
+
+  // bookkeeping
+  auth               Auth               @relation(fields: [authId], references: [id])
+  emailUser          EmailUser          @relation(fields: [emailUserId], references: [id])
+  authId             Int
+  emailUserId        Int
+  status             EmailStatus        @default(pending)
+  emailSentHistories EmailSentHistory[]
 
   @@index([authId])
   @@index([emailUserId])
+  @@index([status, runAt])
 }
 
 enum EmailStatus {
@@ -131,6 +162,37 @@ enum EmailStatus {
   processing
   sent
   failed
+}
+
+model EmailSentHistory {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now()) // when it was logged
+  sentAt       DateTime? // actual send time
+  subject      String
+  text         String?
+  html         String?
+  status       EmailStatus @default(sent)
+  messageId    String? // from nodemailer
+  errorMessage String? // if failed
+
+  // Relations
+  auth   Auth @relation(fields: [authId], references: [id])
+  authId Int
+
+  emailUser   EmailUser @relation(fields: [emailUserId], references: [id])
+  emailUserId Int
+
+  credentials   emailMarketingCredentials? @relation(fields: [credentialsId], references: [id])
+  credentialsId Int?
+
+  jobResult   EmailJobResult? @relation(fields: [jobResultId], references: [id])
+  jobResultId String?
+
+  @@index([authId])
+  @@index([emailUserId])
+  @@index([credentialsId])
+  @@index([jobResultId])
+  @@index([status])
 }
 
 model User {

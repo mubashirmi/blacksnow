@@ -1,6 +1,7 @@
 'use client';
 
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 type UserRow = {
@@ -12,6 +13,7 @@ type UserRow = {
 };
 
 export default function SalesPage() {
+    const router = useRouter();
     const [salesData, setSalesData] = useState<UserRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -57,6 +59,7 @@ export default function SalesPage() {
                 email: user.email,
                 role: user.roles.join(', '),
                 status: 'Active',
+                id: user.id,
             }));
             setSalesData(formattedData);
             setSuccess('Data loaded successfully!');
@@ -186,7 +189,7 @@ export default function SalesPage() {
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Last Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
                                     {/* <th className='text-left py-3 px-4 font-medium text-slate-700'>Role</th> */}
-                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th>
+                                    {/* <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -197,14 +200,23 @@ export default function SalesPage() {
                                         <td className='py-3 px-4'>{person.lastName}</td>
                                         <td className='py-3 px-4 text-blue-600'>{person.email}</td>
                                         {/* <td className='py-3 px-4'>{person.role}</td> */}
-                                        <td className='py-3 px-4'>
+                                        {/* <td className='py-3 px-4'>
                                             <span
-                                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                    person.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                                }`}
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${person.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                    }`}
                                             >
                                                 {person.status}
                                             </span>
+                                        </td> */}
+                                        <td className='py-3 px-4'>
+                                            <button
+                                                onClick={() =>
+                                                    router.push({ pathname: `/admin/dashboard/sales/kpi/${person.id}` }, undefined, { shallow: true })
+                                                }
+                                                className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all'
+                                            >
+                                                View KPI
+                                            </button>{' '}
                                         </td>
                                     </tr>
                                 ))}

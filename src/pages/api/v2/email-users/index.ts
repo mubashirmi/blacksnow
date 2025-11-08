@@ -47,7 +47,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             // GET by authId
             if (authId) {
                 // Use findFirst if authId is expected to be unique; switch to findMany if not.
-                const emailUser = await prisma.emailUser.findMany({ where: { authId } });
+                const emailUser = await prisma.emailUser.findMany({ where: { authId }, include: { emailUserCSV: true } });
                 if (!emailUser) return res.status(404).json({ message: 'Email user not found' });
                 return res.status(200).json({ emailUser });
             }

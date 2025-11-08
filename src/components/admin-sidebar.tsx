@@ -131,7 +131,7 @@ export function AdminSidebar() {
             <div className='flex-1 overflow-y-auto p-4'>
                 <div className='space-y-1'>
                     {navigationItems.map((item) => {
-                        const isActive = pathname === item.url || (item.url !== '/admin/dashboard' && pathname.startsWith(item.url));
+                        const isActive = pathname === item.url || (item.url !== '/admin/dashboard' && pathname?.startsWith(item.url));
 
                         return (
                             <Link
