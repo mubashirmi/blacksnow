@@ -18,24 +18,6 @@ const Page = (props: any) => <Confirmation {...props} />;
 //                 },
 //             },
 //         });
-
-//         if (checkout?.length > 0) {
-//             const singleCheckout = checkout[0];
-//             if (singleCheckout?.signUp?.affiliate) {
-//                 const {
-//                     signUp: { affiliate },
-//                 } = singleCheckout;
-//                 await prisma.affiliate.update({
-//                     where: {
-//                         id: affiliate.id,
-//                     },
-//                     data: {
-//                         rsvpCount: affiliate?.rsvpCount ? affiliate.rsvpCount + 1 : 1,
-//                     },
-//                 });
-//             }
-//         }
-
 //         if (checkout && checkout.length > 0) {
 //             returnCheckout = await prisma.checkout.update({
 //                 where: {
