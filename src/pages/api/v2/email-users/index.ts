@@ -21,7 +21,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(400).json({ message: 'email, fullName and authId are required' });
             }
 
-            const findEmail = await prisma.emailUser.findFirst({ where: { email } });
+            const findEmail = await prisma.emailUser.findFirst({ where: { email, authId } });
             if (findEmail) {
                 return res.status(200).json({ message: 'Email already exist.' });
             }

@@ -50,8 +50,9 @@ export default function UnifiedSalesKPI() {
     const [retryCount, setRetryCount] = useState({ affiliate: 0, marketing: 0 });
 
     const router = useRouter();
-    const { id } = router.query;
+    const { id, name } = router.query;
     console.log(retryCount);
+
     useEffect(() => {
         initializeDashboard();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -370,31 +371,10 @@ export default function UnifiedSalesKPI() {
     }
 
     const metrics = calculateUnifiedMetrics();
-
-    if (!metrics && (affiliateData || marketingData)) {
-        return (
-            <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4'>
-                <div className='bg-white rounded-2xl border-2 border-orange-200 p-8 max-w-md shadow-xl'>
-                    <div className='text-center'>
-                        <AlertTriangle className='w-20 h-20 text-orange-500 mx-auto mb-4' />
-                        <h3 className='text-2xl font-bold text-gray-900 mb-2'>Data Processing Error</h3>
-                        <p className='text-gray-600 mb-6'>Unable to process dashboard metrics. Please try again.</p>
-                        <button
-                            onClick={() => handleRetry('general')}
-                            className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md hover:shadow-lg'
-                        >
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     const monthlyData = formatCombinedMonthlyData();
     const topProducts = getTopProducts();
     const productComparison = getProductPerformanceComparison();
-    const funnelData = getConversionFunnelData();
+    // const funnelData = getConversionFunnelData();
     const emailDistribution = getEmailStatusDistribution();
     const performanceGauge = getPerformanceGaugeData();
     const chartConfig = getChartConfig();
@@ -471,7 +451,7 @@ export default function UnifiedSalesKPI() {
                 {/* Header */}
                 <div className='flex items-center justify-between'>
                     <div>
-                        <h1 className='text-4xl font-bold text-gray-900 bg-clip-text'>Sales Dashboard</h1>
+                        <h1 className='text-4xl font-bold text-gray-900 bg-clip-text'>{name ? `${name} Sales Dashboard` : 'Sales Dashboard'}</h1>
                         <p className='text-gray-600 mt-2'>Unified Affiliate & Email Marketing Analytics</p>
                     </div>
                 </div>
@@ -709,7 +689,7 @@ export default function UnifiedSalesKPI() {
 
                 {/* Conversion Funnel & Email Distribution */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                    {funnelData.length > 0 ? (
+                    {getConversionFunnelData().length > 0 ? (
                         <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
                             <div className='mb-6'>
                                 <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
@@ -719,7 +699,7 @@ export default function UnifiedSalesKPI() {
                                 <p className='text-sm text-gray-600'>Track the conversion journey</p>
                             </div>
                             <ResponsiveContainer width='100%' height={300}>
-                                <BarChart data={funnelData} layout='vertical'>
+                                <BarChart data={getConversionFunnelData()} layout='vertical'>
                                     <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
                                     <XAxis type='number' stroke='#6B7280' style={{ fontSize: '12px' }} />
                                     <YAxis dataKey='stage' type='category' width={100} stroke='#6B7280' style={{ fontSize: '12px' }} />
@@ -728,7 +708,7 @@ export default function UnifiedSalesKPI() {
                                         formatter={(value: any) => [Number(value).toLocaleString(), 'Count']}
                                     />
                                     <Bar dataKey='value' radius={[0, 8, 8, 0]}>
-                                        {funnelData.map((entry, index) => (
+                                        {getConversionFunnelData().map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.fill} />
                                         ))}
                                     </Bar>
@@ -971,7 +951,7 @@ export default function UnifiedSalesKPI() {
                                 <div
                                     className='bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500'
                                     style={{ width: `${Math.min(((metrics?.totalRevenue ?? 0) / 5000) * 100, 100)}%` }}
-                                ></div>
+                                />
                             </div>
                         </div>
 
@@ -991,7 +971,7 @@ export default function UnifiedSalesKPI() {
                                 <div
                                     className='bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500'
                                     style={{ width: `${Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 1000) * 100, 100)}%` }}
-                                ></div>
+                                />
                             </div>
                         </div>
 
@@ -1011,7 +991,7 @@ export default function UnifiedSalesKPI() {
                                 <div
                                     className='bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500'
                                     style={{ width: `${Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 500) * 100, 100)}%` }}
-                                ></div>
+                                />
                             </div>
                         </div>
                     </div>

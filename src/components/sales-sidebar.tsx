@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Link2Icon, LinkIcon, LogOut, StickyNote, Target, User } from 'lucide-react';
+import { BarChart3, CalendarCheck, Link2Icon, LinkIcon, LogOut, StickyNote, Target, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ const navigationItems = [
     { title: 'KPI', url: '/sales/dashboard/kpi', icon: BarChart3 },
     { title: 'Links', url: '/sales/dashboard/links', icon: LinkIcon },
     { title: 'Notes', url: '/sales/dashboard/notes', icon: StickyNote },
+    { title: 'Email Schedules', url: '/sales/dashboard/emailSchedule', icon: CalendarCheck },
     { title: 'Campaign', url: '/sales/dashboard/campaign', icon: Target },
     { title: 'Automation', url: '/sales/dashboard/automation', icon: Link2Icon },
     { title: 'Email Users', url: '/sales/dashboard/users', icon: User },
@@ -36,7 +37,7 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                     </div>
                     <div>
                         <span className='font-bold text-xl text-gray-800'>Black Snow</span>
-                        <p className='text-gray-500 text-sm'>Affiliate Panel</p>
+                        <p className='text-gray-500 text-sm'>Sales Panel</p>
                     </div>
                 </div>
             </div>

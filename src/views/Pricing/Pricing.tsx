@@ -457,7 +457,7 @@ function Pricing() {
 
                     <div className='py-4'>
                         <Button
-                            onClick={() => router.push('/login?signup')}
+                            onClick={() => router.push('/login')}
                             className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
                         >
                             Signup Now

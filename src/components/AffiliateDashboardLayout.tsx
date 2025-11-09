@@ -166,8 +166,8 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
             window.location.href = response.data.onboardingUrl;
 
             // If successful, refresh user data to check Stripe connection status
-            setHasCheckedAccess(false); // Reset to allow re-checking
-            await checkUserAccess();
+            // setHasCheckedAccess(false); // Reset to allow re-checking
+            // await checkUserAccess();
         } catch (error: any) {
             console.error('Error connecting Stripe:', error);
             if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {

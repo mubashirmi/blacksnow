@@ -26,7 +26,7 @@ export default function SalesCampaignPage() {
     const [formData, setFormData] = useState({
         fromName: '',
         subject: '',
-        runAt: '',
+        runAt: '', // datetime-local string
         selectedUsers: [] as number[],
     });
     const [formErrors, setFormErrors] = useState<any>({});
@@ -181,7 +181,7 @@ export default function SalesCampaignPage() {
 
             setShowCredentialsModal(!ok);
             return !!ok;
-        } catch (e) {
+        } catch {
             setShowCredentialsModal(true);
             return false;
         } finally {
@@ -277,24 +277,17 @@ export default function SalesCampaignPage() {
         if ((formErrors as any)[name]) setFormErrors((prev: any) => ({ ...prev, [name]: '' }));
     };
 
-    const formatDateTimeForAPI = (dateTimeString: string) => {
-        if (!dateTimeString) return '';
-        const [datePart, timePart] = dateTimeString.split('T');
-        const [year, month, day] = datePart.split('-');
-        const [hours, minutes] = timePart.split(':');
+    const pad2 = (n: number) => String(n).padStart(2, '0');
 
-        const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10), parseInt(hours, 10), parseInt(minutes, 10), 0);
-
+    // Accepts a Date and returns `YYYY-MM-DDTHH:mm:ss.000+HH:MM`
+    const formatDateObjForAPI = (date: Date) => {
         const offset = -date.getTimezoneOffset();
-        const offsetHours = Math.floor(Math.abs(offset) / 60);
-        const offsetMinutes = Math.abs(offset) % 60;
-        const offsetSign = offset >= 0 ? '+' : '-';
-
-        const pad = (n: number) => String(n).padStart(2, '0');
-
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+        const sign = offset >= 0 ? '+' : '-';
+        const oh = Math.floor(Math.abs(offset) / 60);
+        const om = Math.abs(offset) % 60;
+        return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}T${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(
             date.getSeconds()
-        )}${offsetSign}${pad(offsetHours)}:${pad(offsetMinutes)}`;
+        )}.000${sign}${pad2(oh)}:${pad2(om)}`;
     };
 
     // ---------- Multiple Emails UI ----------
@@ -318,7 +311,6 @@ export default function SalesCampaignPage() {
         if (!formData.fromName.trim()) errors.fromName = 'From name is required';
         if (!formData.subject.trim()) errors.subject = 'Subject is required';
 
-        // At least one non-empty email, max 5 already enforced by UI
         const nonEmptyEmails = emails.map((e) => e.trim()).filter((e) => e.length > 0);
         if (nonEmptyEmails.length === 0) errors.emails = 'Please write at least one email message';
 
@@ -353,22 +345,28 @@ export default function SalesCampaignPage() {
                 return;
             }
 
-            const runAtISO = formatDateTimeForAPI(formData.runAt);
+            const recipients = formData.selectedUsers.slice();
             const messageBodies = emails.map((e) => e.trim()).filter((e) => e.length > 0);
 
-            // Build items per selected user × per email message
-            const items = formData.selectedUsers.flatMap((uid) =>
-                messageBodies.map((bodyText) => ({
-                    id: uid,
+            // Base time from input (datetime-local is local time)
+            const base = new Date(formData.runAt);
+
+            // B) One-time scheduled to many (no repeat)
+            // Create one item per message, same recipients; nudge runAt +1s per item to avoid backend dedupe
+            const items = messageBodies.map((text, idx) => {
+                const dt = new Date(base.getTime() + idx * 1000);
+                return {
+                    recipients,
                     subject: formData.subject.trim(),
-                    text: bodyText,
-                    runAt: runAtISO,
+                    text,
+                    runAt: formatDateObjForAPI(dt),
                     repeated: false,
-                }))
-            );
+                };
+            });
 
             const payload = { adminId, items };
 
+            // NOTE: match your spec endpoint exactly
             const response = await fetch('/api/v2/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -472,7 +470,7 @@ export default function SalesCampaignPage() {
                         className={`w-full px-4 py-3 rounded-lg border ${
                             formErrors.subject ? 'border-red-300 bg-red-50' : 'border-slate-300'
                         } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
-                        placeholder='e.g., Big Sale Tomorrow'
+                        placeholder='e.g., Your report'
                         disabled={submitting}
                     />
                     {formErrors.subject && <p className='text-red-600 text-sm mt-1'>{formErrors.subject}</p>}

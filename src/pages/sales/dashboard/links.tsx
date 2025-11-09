@@ -175,7 +175,7 @@ export default function AffiliateLinks() {
                                         <div className='flex items-center gap-2 text-gray-600 mb-3'>
                                             <span className='text-sm'>URL:</span>
                                             <a
-                                                href={link.productLink}
+                                                href={link.productLink + `?refId=${id}`}
                                                 target='_blank'
                                                 rel='noopener noreferrer'
                                                 className='text-blue-600 hover:text-blue-800 text-sm font-mono flex items-center gap-1 break-all'

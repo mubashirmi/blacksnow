@@ -1,7 +1,11 @@
 import { AlertCircle, Calendar, CheckCircle, ChevronDown, Clock, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
-type ScheduleMode = 'weekdays' | 'weeklyRotation' | 'intervalRotation';
+// ──────────────────────────────────────────────────────────────────────────────
+// Types
+// ──────────────────────────────────────────────────────────────────────────────
+
+type ScheduleMode = 'weekdays' | 'weeklyRotation' | 'intervalRotation' | 'simpleInterval';
 
 type EmailUser = {
     id: number;
@@ -12,6 +16,14 @@ type EmailUser = {
     createdAt?: string;
 };
 
+type EmailBlock = {
+    subject?: string;
+    body: string;
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Component
+// ──────────────────────────────────────────────────────────────────────────────
 export default function Automation() {
     const [users, setUsers] = useState<EmailUser[]>([]);
     const [loading, setLoading] = useState(true);
@@ -39,9 +51,11 @@ export default function Automation() {
     }>({ open: false, type: 'success', title: '', message: '' });
 
     // Core form
-    const [subject, setSubject] = useState('');
-    const [fromName, setFromName] = useState('');
-    const [emails, setEmails] = useState<string[]>(['']); // 1..5
+    const [subject, setSubject] = useState(''); // default subject used when a block subject is empty
+    const [fromName, setFromName] = useState(''); // optional, not sent to API (kept for display)
+
+    // Each step can have its own subject (matches examples D/E)
+    const [emails, setEmails] = useState<EmailBlock[]>([{ subject: '', body: '' }]); // 1..5
     const MAX_EMAILS = 5;
 
     // Recipient selection
@@ -66,6 +80,16 @@ export default function Automation() {
     const [intervalDays, setIntervalDays] = useState<string>('2');
     const [intervalHours, setIntervalHours] = useState<string>('0');
 
+    // Simple interval repeat
+    const [siRunAtDate, setSiRunAtDate] = useState('');
+    const [siRunAtTime, setSiRunAtTime] = useState('');
+    const [siDays, setSiDays] = useState<string>('0');
+    const [siHours, setSiHours] = useState<string>('12');
+    const [siMinutes, setSiMinutes] = useState<string>('0');
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // Effects
+    // ────────────────────────────────────────────────────────────────────────────
     useEffect(() => {
         (async () => {
             const ok = await checkMarketingCredentials();
@@ -78,6 +102,9 @@ export default function Automation() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // ────────────────────────────────────────────────────────────────────────────
+    // API
+    // ────────────────────────────────────────────────────────────────────────────
     const fetchUsers = async () => {
         try {
             setLoading(true);
@@ -248,7 +275,9 @@ export default function Automation() {
         }
     };
 
-    // ---------- Recipient Grouping ----------
+    // ────────────────────────────────────────────────────────────────────────────
+    // Recipient Grouping
+    // ────────────────────────────────────────────────────────────────────────────
     const groups = useMemo(() => {
         const manual = users.filter((u) => !u.emailUserCSVId);
         const map = new Map<number, { id: number; name: string; users: EmailUser[] }>();
@@ -266,7 +295,6 @@ export default function Automation() {
     const allIds = useMemo(() => users.map((u) => u.id), [users]);
 
     const isAllSelected = selectedUsers.length > 0 && selectedUsers.length === allIds.length;
-    // const someSelected = selectedUsers.length > 0 && selectedUsers.length < allIds.length;
 
     const toggleSelectAll = () => {
         setSelectedUsers(isAllSelected ? [] : allIds);
@@ -286,26 +314,40 @@ export default function Automation() {
         setSelectedUsers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
     };
 
-    // ---------- Email blocks ----------
+    // ────────────────────────────────────────────────────────────────────────────
+    // Email blocks helpers
+    // ────────────────────────────────────────────────────────────────────────────
     const addEmail = () => {
         if (emails.length >= MAX_EMAILS) return;
-        setEmails((e) => [...e, '']);
+        setEmails((e) => [...e, { subject: '', body: '' }]);
     };
     const removeEmail = (idx: number) => {
         setEmails((e) => e.filter((_, i) => i !== idx));
     };
-    const updateEmail = (idx: number, value: string) => {
-        setEmails((e) => e.map((v, i) => (i === idx ? value : v)));
+    const updateEmailSubject = (idx: number, value: string) => {
+        setEmails((e) => e.map((v, i) => (i === idx ? { ...v, subject: value } : v)));
+    };
+    const updateEmailBody = (idx: number, value: string) => {
+        setEmails((e) => e.map((v, i) => (i === idx ? { ...v, body: value } : v)));
     };
 
-    // ---------- Validation ----------
+    // ────────────────────────────────────────────────────────────────────────────
+    // Validation & helpers
+    // ────────────────────────────────────────────────────────────────────────────
+    const todayLocalISODate = () => {
+        const d = new Date();
+        const tzoffset = d.getTimezoneOffset() * 60000;
+        return new Date(d.getTime() - tzoffset).toISOString().slice(0, 10);
+    };
+
     const validate = () => {
         const errs: any = {};
-        if (!fromName.trim()) errs.fromName = 'From name is required';
-        if (!subject.trim()) errs.subject = 'Subject is required';
 
-        const nonEmptyEmails = emails.map((t) => t.trim()).filter((t) => t.length > 0);
-        if (nonEmptyEmails.length === 0) errs.emails = 'Write at least one email message';
+        if (!subject.trim()) errs.subject = 'Default subject is required (used when a block subject is empty)';
+
+        const blocks = emails.map((b) => ({ subject: (b.subject || '').trim(), body: (b.body || '').trim() })).filter((b) => b.body.length > 0);
+
+        if (blocks.length === 0) errs.emails = 'Write at least one email message';
         if (emails.length > MAX_EMAILS) errs.emails = `Maximum ${MAX_EMAILS} emails allowed`;
 
         if (selectedUsers.length === 0) errs.selectedUsers = 'Please select at least one recipient';
@@ -313,29 +355,43 @@ export default function Automation() {
         if (scheduleMode === 'weekdays') {
             if (!runAtDate) errs.runAtDate = 'Date is required';
             if (!runAtTime) errs.runAtTime = 'Time is required';
+            if (!selectedWeekdays.length) errs.weekdays = 'Pick at least one weekday';
             if (runAtDate && runAtTime) {
                 const dt = new Date(`${runAtDate}T${runAtTime}`);
                 if (dt < new Date()) errs.runAtTime = 'Please choose a future time';
             }
-            // NOTE: we intentionally removed the "one email only" validation per your request
         }
 
         if (scheduleMode === 'weeklyRotation') {
             if (rotationDayOfWeek === '' || rotationDayOfWeek === null) errs.rotationDayOfWeek = 'Pick a weekday';
             if (!rotationTime) errs.rotationTime = 'Time is required';
+            // No minimum steps enforcement — 1+ allowed
         }
 
         if (scheduleMode === 'intervalRotation') {
             const d = parseInt(intervalDays || '0', 10);
             const h = parseInt(intervalHours || '0', 10);
             if (!(d > 0 || h > 0)) errs.interval = 'Interval must be at least 1 hour or 1 day';
+            // No minimum steps enforcement — 1+ allowed
+        }
+
+        if (scheduleMode === 'simpleInterval') {
+            const d = parseInt(siDays || '0', 10);
+            const h = parseInt(siHours || '0', 10);
+            const m = parseInt(siMinutes || '0', 10);
+            if (!siRunAtDate) errs.siRunAtDate = 'Start date is required';
+            if (!siRunAtTime) errs.siRunAtTime = 'Start time is required';
+            if (!(d > 0 || h > 0 || m > 0)) errs.siInterval = 'Repeat every must be at least 1 minute';
+
+            // For simple repeat, enforce exactly one email to avoid many perpetual items by mistake
+            const nonEmpty = emails.filter((b) => (b.body || '').trim().length > 0);
+            if (nonEmpty.length !== 1) errs.emails = 'For simple repeat, provide exactly one email message';
         }
 
         setFormErrors(errs);
         return Object.keys(errs).length === 0;
     };
 
-    // ---------- Helpers ----------
     const formatDateTimeWithTZ = (date: string, time: string) => {
         const dateTime = new Date(`${date}T${time}`);
         const offset = -dateTime.getTimezoneOffset();
@@ -353,14 +409,34 @@ export default function Automation() {
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
     };
 
+    // Formats a Date object (already adjusted) with timezone offset
+    const formatDateObjectWithTZ = (dateObj: Date) => {
+        const offset = -dateObj.getTimezoneOffset();
+        const offsetHours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+        const offsetMinutes = String(Math.abs(offset) % 60).padStart(2, '0');
+        const offsetSign = offset >= 0 ? '+' : '-';
+
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const hours = String(dateObj.getHours()).padStart(2, '0');
+        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
+    };
+
     const parseHourMinute = (hhmm: string) => {
         const [h, m] = hhmm.split(':').map((n) => parseInt(n || '0', 10));
         return { hour: isNaN(h) ? 0 : h, minute: isNaN(m) ? 0 : m };
     };
 
-    // ---------- Submit ----------
+    const secondsFromDHMS = (d: number, h: number, m: number, s: number = 0) => d * 86400 + h * 3600 + m * 60 + s;
+
+    // ────────────────────────────────────────────────────────────────────────────
+    // Submit → Build payload per mode (C, D, E, F)
+    // ────────────────────────────────────────────────────────────────────────────
     const handleSubmit = async () => {
-        // IMPORTANT FIX #1: do NOT re-check credentials here (it was causing an extra /api/v2/marketingCredentials hit)
         if (!validate()) return;
 
         try {
@@ -372,62 +448,86 @@ export default function Automation() {
                 return;
             }
 
-            const trimmedEmails = emails.map((t) => t.trim()).filter((t) => t.length > 0);
+            // Normalize blocks (trim + drop-empty)
+            const blocks = emails.map((b) => ({ subject: (b.subject || '').trim(), body: (b.body || '').trim() })).filter((b) => b.body.length > 0);
+
             const items: any[] = [];
+            const recipients = selectedUsers.slice();
 
             if (scheduleMode === 'weekdays') {
-                const runAt = formatDateTimeWithTZ(runAtDate, runAtTime);
-                // Now supports MULTIPLE emails: we’ll create an item per email per user with same weekdays/runAt
-                selectedUsers.forEach((id) => {
-                    trimmedEmails.forEach((text) => {
-                        items.push({
-                            id,
-                            subject: subject.trim(),
-                            text,
-                            runAt,
-                            weekdays: selectedWeekdays, // e.g., [3,5,0]
-                        });
+                // C) Repeat by specific weekdays to many (one item per email block)
+                // Nudge runAt by +idx seconds to avoid backend de-dupe when runAt+weekdays are identical.
+                const base = new Date(`${runAtDate}T${runAtTime}`);
+                const weekdays = [...selectedWeekdays].sort();
+                blocks.forEach((b, idx) => {
+                    const dt = new Date(base.getTime() + idx * 1000);
+                    const runAt = formatDateObjectWithTZ(dt);
+                    const sub = b.subject && b.subject.length > 0 ? b.subject : blocks.length > 1 ? `${subject.trim()} (Email ${idx + 1})` : subject.trim();
+
+                    items.push({
+                        recipients,
+                        subject: sub,
+                        text: b.body,
+                        runAt,
+                        weekdays,
                     });
                 });
             }
 
             if (scheduleMode === 'weeklyRotation') {
-                const totalSteps = trimmedEmails.length;
+                // D) Weekly rotation on a specific weekday to many (one item per step)
+                const totalSteps = blocks.length;
                 const { hour, minute } = parseHourMinute(rotationTime);
-                selectedUsers.forEach((id) => {
-                    trimmedEmails.forEach((text, idx) => {
-                        items.push({
-                            id,
-                            subject: subject.trim(),
-                            text,
-                            weeklyRotation: {
-                                dayOfWeek: rotationDayOfWeek, // 0..6
-                                totalSteps,
-                                position: idx + 1,
-                                hour,
-                                minute,
-                            },
-                            repeated: true,
-                        });
+                blocks.forEach((b, idx) => {
+                    items.push({
+                        recipients,
+                        subject: b.subject || `${subject.trim()} (Week ${idx + 1})`,
+                        text: b.body,
+                        weeklyRotation: {
+                            dayOfWeek: rotationDayOfWeek, // 0..6
+                            totalSteps,
+                            position: idx + 1,
+                            hour,
+                            minute,
+                        },
+                        repeated: true,
                     });
                 });
             }
 
             if (scheduleMode === 'intervalRotation') {
+                // E) Interval rotation every N days/hours to many (one item per step)
                 const d = parseInt(intervalDays || '0', 10);
                 const h = parseInt(intervalHours || '0', 10);
-                const intervalSeconds = d * 86400 + h * 3600;
-                const totalSteps = trimmedEmails.length;
-                selectedUsers.forEach((id) => {
-                    trimmedEmails.forEach((text, idx) => {
-                        items.push({
-                            id,
-                            subject: subject.trim(),
-                            text,
-                            intervalRotation: { intervalSeconds, totalSteps, position: idx + 1 },
-                            repeated: true,
-                        });
+                const intervalSeconds = secondsFromDHMS(d, h, 0);
+                const totalSteps = blocks.length;
+                blocks.forEach((b, idx) => {
+                    items.push({
+                        recipients,
+                        subject: b.subject || `${subject.trim()} (Step ${idx + 1})`,
+                        text: b.body,
+                        intervalRotation: { intervalSeconds, totalSteps, position: idx + 1 },
+                        repeated: true,
                     });
+                });
+            }
+
+            if (scheduleMode === 'simpleInterval') {
+                // F) Simple interval repeat (same message repeats) to many
+                const d = parseInt(siDays || '0', 10);
+                const h = parseInt(siHours || '0', 10);
+                const m = parseInt(siMinutes || '0', 10);
+                const timeInterval = secondsFromDHMS(d, h, m);
+                const runAt = formatDateTimeWithTZ(siRunAtDate, siRunAtTime);
+
+                const only = blocks[0];
+                items.push({
+                    recipients,
+                    subject: only.subject || subject.trim(),
+                    text: only.body,
+                    runAt,
+                    repeated: true,
+                    timeInterval,
                 });
             }
 
@@ -444,7 +544,6 @@ export default function Automation() {
                 throw new Error(errorData.message || 'Failed to create automation');
             }
 
-            // open success modal
             setFeedbackModal({
                 open: true,
                 type: 'success',
@@ -455,7 +554,7 @@ export default function Automation() {
             // Reset minimal fields; keep users loaded
             setSubject('');
             setFromName('');
-            setEmails(['']);
+            setEmails([{ subject: '', body: '' }]);
             setSelectedUsers([]);
             setRunAtDate('');
             setRunAtTime('');
@@ -464,8 +563,12 @@ export default function Automation() {
             setRotationTime('09:00');
             setIntervalDays('2');
             setIntervalHours('0');
+            setSiRunAtDate('');
+            setSiRunAtTime('');
+            setSiDays('0');
+            setSiHours('12');
+            setSiMinutes('0');
         } catch (err: any) {
-            // open error modal
             setFeedbackModal({
                 open: true,
                 type: 'error',
@@ -477,7 +580,9 @@ export default function Automation() {
         }
     };
 
-    // ---------- UI helpers ----------
+    // ────────────────────────────────────────────────────────────────────────────
+    // UI helpers
+    // ────────────────────────────────────────────────────────────────────────────
     const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const toggleWeekday = (d: number) => {
         setSelectedWeekdays((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
@@ -488,6 +593,9 @@ export default function Automation() {
         setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
     };
 
+    // ────────────────────────────────────────────────────────────────────────────
+    // Render
+    // ────────────────────────────────────────────────────────────────────────────
     if (loading || checkingCredentials || isLoading) {
         return (
             <div className='flex items-center justify-center min-h-screen'>
@@ -528,18 +636,15 @@ export default function Automation() {
                                     value={fromName}
                                     onChange={(e) => {
                                         setFromName(e.target.value);
-                                        if (formErrors.fromName) setFormErrors((p: any) => ({ ...p, fromName: '' }));
                                     }}
-                                    className={`w-full px-4 py-3 rounded-lg border ${
-                                        formErrors.fromName ? 'border-red-300 bg-red-50' : 'border-slate-300'
-                                    } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
+                                    className={`w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
                                     placeholder='e.g., Demo Store'
                                     disabled={submitting}
                                 />
-                                {formErrors.fromName && <p className='text-red-600 text-sm mt-1'>{formErrors.fromName}</p>}
+                                <p className='text-slate-500 text-xs mt-1'>Shown in your emails (not sent to API).</p>
                             </div>
                             <div>
-                                <label className='block text-sm font-semibold text-slate-700 mb-2'>Email Subject</label>
+                                <label className='block text-sm font-semibold text-slate-700 mb-2'>Default Subject</label>
                                 <input
                                     type='text'
                                     value={subject}
@@ -560,7 +665,7 @@ export default function Automation() {
                         {/* Email blocks (1..5) */}
                         <div className='space-y-4'>
                             <div className='flex items-center justify-between'>
-                                <label className='text-sm font-semibold text-slate-700'>Email Content (up to 5)</label>
+                                <label className='text-sm font-semibold text-slate-700'>Email Steps (up to 5)</label>
                                 <button
                                     type='button'
                                     onClick={addEmail}
@@ -568,7 +673,7 @@ export default function Automation() {
                                     className='inline-flex items-center gap-2 px-3 py-2 rounded-md bg-slate-800 text-white text-sm hover:bg-slate-700 disabled:opacity-50'
                                 >
                                     <Plus className='w-4 h-4' />
-                                    Add email
+                                    Add Another Email
                                 </button>
                             </div>
 
@@ -591,10 +696,25 @@ export default function Automation() {
                                                 </button>
                                             )}
                                         </div>
+
+                                        <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-3'>
+                                            <div>
+                                                <label className='block text-xs font-semibold text-slate-600 mb-1'>Subject (optional)</label>
+                                                <input
+                                                    type='text'
+                                                    value={val.subject || ''}
+                                                    onChange={(e) => updateEmailSubject(idx, e.target.value)}
+                                                    className='w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all'
+                                                    placeholder='Overrides the default subject for this step'
+                                                    disabled={submitting}
+                                                />
+                                            </div>
+                                        </div>
+
                                         <textarea
                                             rows={4}
-                                            value={val}
-                                            onChange={(e) => updateEmail(idx, e.target.value)}
+                                            value={val.body}
+                                            onChange={(e) => updateEmailBody(idx, e.target.value)}
                                             className='w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all resize-none'
                                             placeholder='Write the email body...'
                                             disabled={submitting}
@@ -740,12 +860,13 @@ export default function Automation() {
                             </h3>
 
                             {/* Mode toggles */}
-                            <div className='flex gap-2 p-1 bg-slate-100 rounded-lg w-full md:w-fit mb-4'>
+                            <div className='flex flex-wrap gap-2 p-1 bg-slate-100 rounded-lg w-full md:w-fit mb-4'>
                                 {(
                                     [
-                                        { key: 'weekdays', label: 'Specific weekdays' },
-                                        { key: 'weeklyRotation', label: 'Weekly rotation' },
-                                        { key: 'intervalRotation', label: 'Interval rotation' },
+                                        { key: 'weekdays', label: 'Specific weekdays' }, // C
+                                        { key: 'weeklyRotation', label: 'Weekly rotation' }, // D
+                                        { key: 'intervalRotation', label: 'Interval rotation' }, // E
+                                        { key: 'simpleInterval', label: 'Simple interval repeat' }, // F
                                     ] as { key: ScheduleMode; label: string }[]
                                 ).map((m) => (
                                     <button
@@ -753,7 +874,20 @@ export default function Automation() {
                                         type='button'
                                         onClick={() => {
                                             setScheduleMode(m.key);
-                                            setFormErrors((p: any) => (p ? { ...p, weekdays: '', rotationDayOfWeek: '', rotationTime: '', interval: '' } : {}));
+                                            setFormErrors((p: any) =>
+                                                p
+                                                    ? {
+                                                          ...p,
+                                                          weekdays: '',
+                                                          rotationDayOfWeek: '',
+                                                          rotationTime: '',
+                                                          interval: '',
+                                                          siInterval: '',
+                                                          siRunAtDate: '',
+                                                          siRunAtTime: '',
+                                                      }
+                                                    : {}
+                                            );
                                         }}
                                         className={`py-2.5 px-4 rounded-md font-medium transition-all ${
                                             scheduleMode === m.key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-800'
@@ -780,7 +914,7 @@ export default function Automation() {
                                                     setRunAtDate(e.target.value);
                                                     if (formErrors.runAtDate) setFormErrors((p: any) => ({ ...p, runAtDate: '' }));
                                                 }}
-                                                min={new Date().toISOString().split('T')[0]}
+                                                min={todayLocalISODate()}
                                                 className={`w-full px-4 py-3 rounded-lg border ${
                                                     formErrors.runAtDate ? 'border-red-300 bg-red-50' : 'border-slate-300'
                                                 } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
@@ -832,6 +966,13 @@ export default function Automation() {
                                         </div>
                                         {formErrors.weekdays && <p className='text-red-600 text-sm mt-1'>{formErrors.weekdays}</p>}
                                     </div>
+
+                                    <div className='text-sm text-slate-600'>
+                                        <p>
+                                            This mode creates one item per email step with the same recipients and weekday rules. Example payload matches{' '}
+                                            <strong>Case C</strong>.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
 
@@ -882,14 +1023,11 @@ export default function Automation() {
 
                                     <div className='text-sm text-slate-600'>
                                         <p>
-                                            We’ll create <strong>{emails.filter((t) => t.trim()).length}</strong> rotating steps (positions 1…
-                                            {emails.filter((t) => t.trim()).length || 1}) for the chosen weekday/time.
+                                            We’ll create <strong>{emails.filter((t) => (t.body || '').trim()).length}</strong> rotating steps (positions 1…
+                                            {emails.filter((t) => (t.body || '').trim()).length || 1}) for the chosen weekday/time.
                                         </p>
                                         <p className='mt-1 text-slate-500'>
-                                            Example per user item:{' '}
-                                            <code>
-                                                weeklyRotation: {'{'} dayOfWeek, totalSteps, position, hour, minute {'}'}
-                                            </code>
+                                            Each step becomes its own item with <code>weeklyRotation</code> (matches <strong>Case D</strong>).
                                         </p>
                                     </div>
                                 </div>
@@ -941,11 +1079,116 @@ export default function Automation() {
                                     </div>
 
                                     <p className='text-sm text-slate-500'>
-                                        Example per user item:{' '}
-                                        <code>
-                                            intervalRotation: {'{'} intervalSeconds, totalSteps, position {'}'}
-                                        </code>
+                                        Each step becomes its own item with <code>intervalRotation</code> (matches <strong>Case E</strong>).
                                     </p>
+                                </div>
+                            )}
+
+                            {scheduleMode === 'simpleInterval' && (
+                                <div className='space-y-6'>
+                                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                                        <div>
+                                            <label className='block text-sm font-semibold text-slate-700 mb-2'>
+                                                <Calendar className='w-4 h-4 inline mr-2' />
+                                                Start Date
+                                            </label>
+                                            <input
+                                                type='date'
+                                                value={siRunAtDate}
+                                                onChange={(e) => {
+                                                    setSiRunAtDate(e.target.value);
+                                                    if (formErrors.siRunAtDate) setFormErrors((p: any) => ({ ...p, siRunAtDate: '' }));
+                                                }}
+                                                min={todayLocalISODate()}
+                                                className={`w-full px-4 py-3 rounded-lg border ${
+                                                    formErrors.siRunAtDate ? 'border-red-300 bg-red-50' : 'border-slate-300'
+                                                } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
+                                                disabled={submitting}
+                                            />
+                                            {formErrors.siRunAtDate && <p className='text-red-600 text-sm mt-1'>{formErrors.siRunAtDate}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className='block text-sm font-semibold text-slate-700 mb-2'>
+                                                <Clock className='w-4 h-4 inline mr-2' />
+                                                Time
+                                            </label>
+                                            <input
+                                                type='time'
+                                                value={siRunAtTime}
+                                                onChange={(e) => {
+                                                    setSiRunAtTime(e.target.value);
+                                                    if (formErrors.siRunAtTime) setFormErrors((p: any) => ({ ...p, siRunAtTime: '' }));
+                                                }}
+                                                className={`w-full px-4 py-3 rounded-lg border ${
+                                                    formErrors.siRunAtTime ? 'border-red-300 bg-red-50' : 'border-slate-300'
+                                                } focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all`}
+                                                disabled={submitting}
+                                            />
+                                            {formErrors.siRunAtTime && <p className='text-red-600 text-sm mt-1'>{formErrors.siRunAtTime}</p>}
+                                        </div>
+                                    </div>
+
+                                    <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                                        <div>
+                                            <label className='block text-sm font-semibold text-slate-700 mb-2'>Repeat every (days)</label>
+                                            <input
+                                                type='number'
+                                                min='0'
+                                                value={siDays}
+                                                onChange={(e) => {
+                                                    setSiDays(e.target.value);
+                                                    if (formErrors.siInterval) setFormErrors((p: any) => ({ ...p, siInterval: '' }));
+                                                }}
+                                                className='w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all'
+                                                placeholder='0'
+                                                disabled={submitting}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className='block text-sm font-semibold text-slate-700 mb-2'>Repeat every (hours)</label>
+                                            <input
+                                                type='number'
+                                                min='0'
+                                                value={siHours}
+                                                onChange={(e) => {
+                                                    setSiHours(e.target.value);
+                                                    if (formErrors.siInterval) setFormErrors((p: any) => ({ ...p, siInterval: '' }));
+                                                }}
+                                                className='w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all'
+                                                placeholder='12'
+                                                disabled={submitting}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className='block text-sm font-semibold text-slate-700 mb-2'>Repeat every (minutes)</label>
+                                            <input
+                                                type='number'
+                                                min='0'
+                                                value={siMinutes}
+                                                onChange={(e) => {
+                                                    setSiMinutes(e.target.value);
+                                                    if (formErrors.siInterval) setFormErrors((p: any) => ({ ...p, siInterval: '' }));
+                                                }}
+                                                className='w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all'
+                                                placeholder='0'
+                                                disabled={submitting}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className='text-sm text-slate-600'>
+                                        {formErrors.siInterval && <p className='text-red-600'>{formErrors.siInterval}</p>}
+                                        {!formErrors.siInterval && (
+                                            <p className='text-slate-500'>
+                                                Interval seconds ={' '}
+                                                {parseInt(siDays || '0') * 86400 + parseInt(siHours || '0') * 3600 + parseInt(siMinutes || '0') * 60}
+                                            </p>
+                                        )}
+                                        <p className='text-slate-500 mt-1'>
+                                            This creates a single item that repeats forever (matches <strong>Case F</strong>).
+                                        </p>
+                                    </div>
                                 </div>
                             )}
                         </div>

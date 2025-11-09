@@ -152,38 +152,43 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
 
     const handleCredentialsSubmit = async () => {
         if (!validateCredentialsForm()) return;
-        handleStripeConnect();
+        await handleStripeConnect();
         try {
             setSubmitting(true);
             setError(null);
-            const userId = localStorage.getItem('userId');
 
+            const userId = localStorage.getItem('userId');
             if (!userId) {
                 setError('User ID not found. Please login again.');
                 return;
             }
 
+            // Save credentials first
             const response = await fetch('/api/v2/marketingCredentials', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: credentialsData.email.trim(),
                     appPassword: credentialsData.appPassword.trim(),
-                    id: parseInt(userId),
+                    id: parseInt(userId, 10),
                 }),
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || 'Failed to save credentials');
             }
 
-            // Success - close modal and reload
+            // Refresh server state to avoid the modal being set back to true
+            await checkMarketingCredentials();
+
+            // Local UI cleanup
             setShowCredentialsModal(false);
             setCredentialsData({ email: '', appPassword: '' });
             setIsLoading(false);
+
+            // (Optional) Do Stripe connect AFTER saving, and don't block closing the modal
+            // void handleStripeConnect(); // fire-and-forget, or await inside its own try/catch
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {

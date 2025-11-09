@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, LinkIcon, LogOut, StickyNote, Target, User } from 'lucide-react';
+import { BarChart3, CalendarCheck, LinkIcon, LogOut, StickyNote, Target, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -12,6 +12,7 @@ const navigationItems = [
         url: '/emailMarketing/dashboard/kpi',
         icon: BarChart3,
     },
+    { name: 'Email Schedules', url: '/emailMarketing/dashboard/emailSchedule', icon: CalendarCheck },
     {
         name: 'Campaign',
         url: '/emailMarketing/dashboard/campaign',

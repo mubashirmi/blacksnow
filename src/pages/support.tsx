@@ -328,15 +328,15 @@ export default function Page() {
                             <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
                                 <Image src='/logocolored.png' alt='Logo' width={100} height={100} className='object-contain drop-shadow-2xl' priority />
                             </div>
-                            <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                            <DialogDescription className='text-[#4cc7e8] font-semibold'>You can&apos;t access the webinar until you sign up.</DialogDescription>
+                            <DialogTitle className='text-2xl font-black text-white'>Sign In Required</DialogTitle>
+                            <DialogDescription className='text-[#4cc7e8] font-semibold'>You can&apos;t unsubscribe until you sign in.</DialogDescription>
                         </div>
                     </DialogHeader>
                     <Button
                         onClick={() => router.push('/login?signup')}
                         className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
                     >
-                        Signup
+                        Sign In Now
                     </Button>
                 </DialogContent>
             </Dialog>

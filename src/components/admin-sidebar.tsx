@@ -4,6 +4,7 @@ import {
     BarChart3,
     BookOpen,
     Calendar,
+    CalendarCheck,
     FileText,
     HelpCircle,
     LinkIcon,
@@ -79,6 +80,11 @@ export function AdminSidebar() {
             title: 'Email Marketing KPI',
             url: '/admin/dashboard/emailkpi',
             icon: Mail,
+        },
+        {
+            title: 'Email Schedules',
+            url: '/admin/dashboard/emailSchedule',
+            icon: CalendarCheck,
         },
         {
             title: 'Automation',

@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 // Shape coming back from /api/v2/get-affiliate (based on sample provided)
@@ -28,6 +29,7 @@ type AffiliateRow = {
 const PAGE_SIZE = 10;
 
 export default function AffiliatesPage() {
+    const router = useRouter();
     const [rows, setRows] = React.useState<AffiliateRow[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
@@ -114,7 +116,6 @@ export default function AffiliatesPage() {
                                 <tr className='border-b border-slate-200'>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
-                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Join Date</th>
                                 </tr>
                             </thead>
@@ -142,21 +143,24 @@ export default function AffiliatesPage() {
                                         <tr key={affiliate.id} className='border-b border-slate-100 hover:bg-slate-50'>
                                             <td className='py-3 px-4'>{affiliate.name}</td>
                                             <td className='py-3 px-4 text-blue-600'>{affiliate.email}</td>
-                                            <td className='py-3 px-4'>
-                                                <span
-                                                    className={[
-                                                        'px-2 py-1 rounded-full text-xs font-medium',
-                                                        affiliate.status === 'Active'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : affiliate.status === 'Inactive'
-                                                            ? 'bg-red-100 text-red-800'
-                                                            : 'bg-slate-100 text-slate-700',
-                                                    ].join(' ')}
-                                                >
-                                                    {affiliate.status}
-                                                </span>
-                                            </td>
                                             <td className='py-3 px-4'>{formatDate(affiliate.joinDate)}</td>
+                                            <td className='py-3 px-4'>
+                                                <button
+                                                    onClick={() =>
+                                                        router.push(
+                                                            {
+                                                                pathname: `/admin/dashboard/affiliate/kpi/${affiliate.id}`,
+                                                                query: { name: affiliate.name }, // ⬅️ add this
+                                                            },
+                                                            undefined,
+                                                            { shallow: true }
+                                                        )
+                                                    }
+                                                    className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all'
+                                                >
+                                                    View KPI
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
