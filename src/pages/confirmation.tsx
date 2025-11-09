@@ -40,11 +40,5 @@ const Page = (props: any) => <Confirmation {...props} />;
 //         }
 //     }
 
-//     return {
-//         props: {
-//             returnCheckout,
-//         },
-//     };
-// }
 
 export default Page;
