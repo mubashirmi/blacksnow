@@ -174,7 +174,7 @@ function Pricing() {
             if (!email) return;
 
             let productType = product.id;
-            if (product.id === 'Sales') productType = 'EmailSMS';
+            if (product.id === 'Sales') productType = 'EmailMarketing';
 
             const stripeResponse = await axios.post('/api/v1/stripe', {
                 id: Number(userId),
