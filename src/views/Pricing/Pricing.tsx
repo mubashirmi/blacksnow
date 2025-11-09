@@ -125,7 +125,7 @@ function Pricing() {
             const response = await axios.get(`/api/v2/getUserMail/?id=${userId}`);
             return response.data.email;
         } catch (error) {
-            console.error('Error fetching user email:', error);
+            console.error('Error fetching:', error);
             return null;
         } finally {
             setIsLoadingEmail(false);
