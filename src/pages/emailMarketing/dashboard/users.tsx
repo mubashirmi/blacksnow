@@ -441,6 +441,7 @@ export default function SalesProfilePage() {
         try {
             setSubmitting(true);
             setError(null);
+
             const id = Number(localStorage.getItem('userId'));
             if (!id) {
                 if (typeof window !== 'undefined') window.location.href = '/login';
@@ -457,11 +458,32 @@ export default function SalesProfilePage() {
                 }),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Failed to create user');
+            // Try to read JSON once (works for both success & error responses)
+            let data: any = null;
+            try {
+                data = await response.json();
+            } catch {
+                /* some endpoints may return empty body; that's fine */
             }
 
+            // Special-case: backend may reply 200 with duplication message,
+            // or reply non-200 with the same message. Handle it uniformly.
+            const dupMsg = typeof data?.message === 'string' && /email already exist/i.test(data.message);
+
+            if (dupMsg) {
+                // Show error inside the modal, pinned to the Email field
+                setFormErrors((prev: any) => ({ ...prev, email: 'Email already exists.' }));
+                console.log(formErrors);
+                setError(null); // avoid the generic banner for this case
+                return; // don't proceed to success state
+            }
+
+            if (!response.ok) {
+                // Fall back to existing error flow
+                throw new Error(data?.message || 'Failed to create user');
+            }
+
+            // Success flow (unchanged)
             setSuccess(true);
             setFormData({ email: '', fullName: '' });
             setTimeout(() => {
@@ -470,7 +492,13 @@ export default function SalesProfilePage() {
                 fetchUsers();
             }, 1500);
         } catch (err: any) {
-            setError(err.message || 'Something went wrong');
+            // If the thrown error carried the duplicate message, show it as field error
+            if (typeof err?.message === 'string' && /email already exist/i.test(err.message)) {
+                setFormErrors((prev: any) => ({ ...prev, email: 'Email already exists.' }));
+                setError(null);
+            } else {
+                setError(err?.message || 'Something went wrong');
+            }
         } finally {
             setSubmitting(false);
         }

@@ -23,14 +23,16 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function EmailMarketing() {
+    const [userId, setUserId] = useState<string | null>(null);
     const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
         const containerRef = useRef<HTMLDivElement>(null);
         const router = useRouter();
 
         useEffect(() => {
+            setUserId(localStorage.getItem('userId'));
             const trackRefIdClick = async () => {
                 const { refId } = router.query;
                 if (refId) {
@@ -152,16 +154,29 @@ function EmailMarketing() {
 
                             {/* CTA */}
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4'>
-                                <Link href={'/login'}>
-                                    <Button
-                                        size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
-                                    >
-                                        <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Join Now
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                    </Button>
-                                </Link>
+                                {userId ? (
+                                    <Link href={'/pricing'}>
+                                        <Button
+                                            size='lg'
+                                            className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
+                                        >
+                                            <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                            View Pricing
+                                            <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link href={'/login'}>
+                                        <Button
+                                            size='lg'
+                                            className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
+                                        >
+                                            <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                            Join Now
+                                            <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        </Button>
+                                    </Link>
+                                )}
                             </div>
                         </div>
 
