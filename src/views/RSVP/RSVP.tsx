@@ -88,7 +88,7 @@ function RSVP({ initialIsLoggedIn }) {
                 localStorage.setItem('referredby', refId as string);
                 const trackRefIdClick = async () => {
                     try {
-                        const currentUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+                        const currentUrl = `https://blacksnowholdings.com/rsvp`;
                         const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },

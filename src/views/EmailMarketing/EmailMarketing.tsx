@@ -38,7 +38,7 @@ function EmailMarketing() {
                 if (refId) {
                     localStorage.setItem('referredby', refId as string);
                     try {
-                        const currentUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+                        const currentUrl = `https://blacksnowholdings.com/emailMarketing`;
                         const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },

@@ -68,7 +68,7 @@ function Home() {
             if (refId) {
                 try {
                     // Get current URL without query parameters
-                    const currentUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+                    const currentUrl = `https://blacksnowholdings.com`;
 
                     const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
                         method: 'PUT',
