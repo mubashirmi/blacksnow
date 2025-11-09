@@ -12,6 +12,7 @@ const Page = (props: any) => <Legal {...props} />;
 //             content: true,
 //         },
 //     });
+//     console.log('test');
 //     return { props: { legal } };
 // };
 
