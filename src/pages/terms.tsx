@@ -7,12 +7,5 @@ const Page = (props: any) => <Legal {...props} />;
 //         where: {
 //             id: 3,
 //         },
-//         select: {
-//             title: true,
-//             content: true,
-//         },
-//     });
-//     return { props: { legal } };
-// };
 
 export default Page;
