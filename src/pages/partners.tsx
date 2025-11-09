@@ -15,9 +15,6 @@ const Page = (props: any) => <Partners {...props} />;
 //             linkedIn: true,
 //             instagram: true,
 //         },
-//     });
 
-//     return { props: { advertisers } };
-// };
 
 export default Page;
