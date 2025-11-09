@@ -125,11 +125,11 @@ function SubscriptionConfirmation() {
             return;
         }
 
-        if (productLink === 'http://localhost:3000/emailMarketing') {
+        if (productLink === 'https://blacksnowholdings.com/emailMarketing') {
             router.push('/emailMarketing/dashboard/kpi');
-        } else if (productLink === 'http://localhost:3000/rsvp') {
+        } else if (productLink === 'https://blacksnowholdings.com/rsvp') {
             router.push('/rsvp');
-        } else if (productLink === 'http://localhost:3000/advertising') {
+        } else if (productLink === 'https://blacksnowholdings.com/advertising') {
             router.push('/advertising');
         } else {
             router.push('/');

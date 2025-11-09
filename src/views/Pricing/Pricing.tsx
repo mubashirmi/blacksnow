@@ -63,7 +63,7 @@ function Pricing() {
             available: true,
             popular: true,
             apiName: 'NewsLetter',
-            productLink: 'http://localhost:3000',
+            productLink: 'https://blacksnowholdings.com',
             productComission: '100',
         },
         {
@@ -84,7 +84,7 @@ function Pricing() {
             available: true,
             popular: false,
             apiName: 'RSVP',
-            productLink: 'http://localhost:3000/rsvp',
+            productLink: 'https://blacksnowholdings.com/rsvp',
             productComission: '10',
         },
         {
@@ -99,7 +99,7 @@ function Pricing() {
             available: true,
             popular: false,
             apiName: 'DigitalBillboard',
-            productLink: 'http://localhost:3000/advertising',
+            productLink: 'https://blacksnowholdings.com/advertising',
             productComission: '150',
         },
         {
@@ -114,7 +114,7 @@ function Pricing() {
             available: true,
             popular: false,
             apiName: 'EmailMarketing',
-            productLink: 'http://localhost:3000/emailMarketing',
+            productLink: 'https://blacksnowholdings.com/emailMarketing',
             productComission: '100',
         },
     ];
