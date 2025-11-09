@@ -113,7 +113,7 @@ function Pricing() {
             color: 'from-[#2a8dcc] to-[#2c7bbe]',
             available: true,
             popular: false,
-            apiName: 'EmailSMS',
+            apiName: 'EmailMarketing',
             productLink: 'http://localhost:3000/emailMarketing',
             productComission: '100',
         },
