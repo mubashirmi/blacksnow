@@ -61,7 +61,7 @@ function FAQ() {
                         <br />
                         <span className='text-white'>Asked Questions</span>
                     </h1>
-                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 sm:mb-5'></div>
+                    <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                     <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                         Find answers to the most common questions about our platform, products, and services.
                     </p>
@@ -132,10 +132,10 @@ function FAQ() {
 
             {/* Optional CTA */}
             <section className='relative px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
-                <div className='container mx-auto max-w-4xl text-center'>
+                <div className='container mx-auto max-w-4xl text-center mb-4'>
                     <p className='text-lg sm:text-xl text-gray-300 mb-4 sm:mb-5'>Still have questions?</p>
                     <button
-                        onClick={() => (window.location.href = '/contact')}
+                        onClick={() => (window.location.href = '/support')}
                         className='inline-flex items-center bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'
                     >
                         Contact Support

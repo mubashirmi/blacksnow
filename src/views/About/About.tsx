@@ -74,7 +74,7 @@ function About() {
                                     Learn More
                                     <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                 </Button>
-                                <AuthModalTrigger>
+                                {/* <AuthModalTrigger>
                                     <Button
                                         size='lg'
                                         variant='outline'
@@ -83,7 +83,7 @@ function About() {
                                         <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         Join Us
                                     </Button>
-                                </AuthModalTrigger>
+                                </AuthModalTrigger> */}
                             </div>
                         </div>
 

@@ -7,9 +7,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 const navigationItems = [
-    { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
-    { title: 'Links', url: '/affiliate/dashboard/links', icon: LinkIcon },
     { title: 'Notes', url: '/affiliate/dashboard/notes', icon: StickyNote },
+    { title: 'Links', url: '/affiliate/dashboard/links', icon: LinkIcon },
+    { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
 ];
 
 export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {

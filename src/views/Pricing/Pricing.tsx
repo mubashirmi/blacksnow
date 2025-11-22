@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
-// import Cookies from 'js-cookie';
 import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -21,6 +20,7 @@ function Pricing() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isLoadingEmail, setIsLoadingEmail] = useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
+    const [billingPeriod, setBillingPeriod] = useState('monthly'); // 'monthly' or 'yearly'
     const router = useRouter();
 
     useEffect(() => {
@@ -48,12 +48,12 @@ function Pricing() {
         {
             id: 'NewsLetter',
             name: 'Newsletter',
-            price: '$10',
-            period: '/Month or $50/Year',
+            monthlyPrice: 10,
+            yearlyPrice: 50,
             description: 'Premium trading insights and market analysis delivered weekly',
             features: [
                 'Get your weekly stock picks for day trades, swing trades, options and dividends',
-                'Receive trading strategy from the best performances in top market sectors including AI, EV and Tech',
+                'Receive trading strategy from the best performances in top market sectors',
                 'Catch blog updates from every week',
                 'Get detailed time special offers and sponsorships',
                 'Read Featured News Articles',
@@ -65,12 +65,13 @@ function Pricing() {
             apiName: 'NewsLetter',
             productLink: 'https://blacksnowholdings.com',
             productComission: '100',
+            hasSubscription: true,
         },
         {
             id: 'RSVP',
             name: 'RSVP',
-            price: '$250',
-            period: '/ one time',
+            price: 250,
+            period: 'one time',
             description: 'Access to exclusive webinars and advanced trading education',
             features: [
                 'Register for Webinar',
@@ -86,12 +87,13 @@ function Pricing() {
             apiName: 'RSVP',
             productLink: 'https://blacksnowholdings.com/rsvp',
             productComission: '10',
+            hasSubscription: false,
         },
         {
             id: 'DigitalBillboard',
             name: 'Digital Billboard',
-            price: '$150',
-            period: '/Month or $600/Year',
+            monthlyPrice: 150,
+            yearlyPrice: 600,
             description: 'Premium advertising placement across our platform',
             features: ['Simple and Quick Setup', 'Global Exposure', 'Real-Time Performance Tracking', 'Enhanced Visibility'],
             icon: Monitor,
@@ -101,12 +103,13 @@ function Pricing() {
             apiName: 'DigitalBillboard',
             productLink: 'https://blacksnowholdings.com/advertising',
             productComission: '150',
+            hasSubscription: true,
         },
         {
             id: 'Sales',
             name: 'Email/SMS System',
-            price: '$500',
-            period: '/Month or $4000/Year',
+            monthlyPrice: 500,
+            yearlyPrice: 4000,
             description: 'Comprehensive communication platform for your business',
             features: ['Send Unlimited Emails/SMS', 'Create Custom Emails/SMS', 'Send Emails/SMS in bulk', 'Scheduled Campaigns'],
             icon: MessageSquare,
@@ -116,8 +119,30 @@ function Pricing() {
             apiName: 'EmailMarketing',
             productLink: 'https://blacksnowholdings.com/emailMarketing',
             productComission: '100',
+            hasSubscription: true,
         },
     ];
+
+    const getProductPrice = (product) => {
+        if (!product.hasSubscription) {
+            return `$${product.price}`;
+        }
+        return billingPeriod === 'monthly' ? `$${product.monthlyPrice}` : `$${product.yearlyPrice}`;
+    };
+
+    const getProductPeriod = (product) => {
+        if (!product.hasSubscription) {
+            return `/ ${product.period}`;
+        }
+        return billingPeriod === 'monthly' ? '/Month' : '/Year';
+    };
+
+    const getSavingsPercentage = (product) => {
+        if (!product.hasSubscription) return 0;
+        const monthlyCost = product.monthlyPrice * 12;
+        const yearlyCost = product.yearlyPrice;
+        return Math.round(((monthlyCost - yearlyCost) / monthlyCost) * 100);
+    };
 
     const fetchUserEmail = async (userId) => {
         setIsLoadingEmail(true);
@@ -176,11 +201,18 @@ function Pricing() {
             let productType = product.id;
             if (product.id === 'Sales') productType = 'EmailMarketing';
 
-            const stripeResponse = await axios.post('/api/v1/stripe', {
+            const requestBody = {
                 id: Number(userId),
                 email,
                 productType,
-            });
+            };
+
+            // Add period only for products with subscription
+            if (product.hasSubscription) {
+                requestBody.period = billingPeriod;
+            }
+
+            const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
 
             window.location.href = stripeResponse.data.data;
         } catch (error) {
@@ -233,9 +265,42 @@ function Pricing() {
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Pricing</span>
                     </h1>
                     <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 sm:mb-5'></div>
-                    <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
+                    <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8'>
                         Discover our comprehensive suite of trading tools, educational resources, and premium services designed to elevate your trading success.
                     </p>
+
+                    {/* Billing Toggle */}
+                    <div className='flex items-center justify-center gap-4 mt-8'>
+                        <span
+                            className={`text-base font-semibold transition-colors duration-300 ${
+                                billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                            }`}
+                        >
+                            Monthly
+                        </span>
+                        <button
+                            onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
+                            className='relative w-16 h-8 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#4cc7e8]/30'
+                        >
+                            <div
+                                className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ease-in-out ${
+                                    billingPeriod === 'yearly' ? 'translate-x-8' : 'translate-x-0'
+                                }`}
+                            ></div>
+                        </button>
+                        <span
+                            className={`text-base font-semibold transition-colors duration-300 ${
+                                billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                            }`}
+                        >
+                            Yearly
+                        </span>
+                        {billingPeriod === 'yearly' && (
+                            <Badge className='ml-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-3 py-1 text-xs font-bold animate-pulse'>
+                                SAVE UP TO 58%
+                            </Badge>
+                        )}
+                    </div>
                 </div>
             </section>
 
@@ -245,6 +310,7 @@ function Pricing() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8'>
                         {products.map((product, index) => {
                             const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
+                            const savings = getSavingsPercentage(product);
 
                             return (
                                 <div key={product.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 200}ms` }}>
@@ -289,10 +355,15 @@ function Pricing() {
                                             </div>
 
                                             <div className='text-center mb-6'>
-                                                <div className={`text-4xl sm:text-5xl font-black ${isPurchased ? 'text-green-400' : 'text-[#4cc7e8]'}`}>
-                                                    {product.price}
-                                                    {product.period && <span className='text-lg sm:text-2xl text-gray-400 ml-1'>{product.period}</span>}
+                                                <div className='flex items-center justify-center gap-3'>
+                                                    <div className={`text-4xl sm:text-5xl font-black ${isPurchased ? 'text-green-400' : 'text-[#4cc7e8]'}`}>
+                                                        {getProductPrice(product)}
+                                                        <span className='text-lg sm:text-2xl text-gray-400 ml-1'>{getProductPeriod(product)}</span>
+                                                    </div>
                                                 </div>
+                                                {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
+                                                    <p className='text-sm text-green-400 mt-2 font-semibold'>Save {savings}% with yearly billing</p>
+                                                )}
                                                 {product.available && <p className='text-xs sm:text-sm text-gray-500 mt-2'>VAT & local taxes may apply</p>}
                                             </div>
                                         </CardHeader>

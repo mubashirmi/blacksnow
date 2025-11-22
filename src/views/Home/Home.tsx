@@ -290,7 +290,7 @@ function Home() {
                         <div className='relative animate-slide-in-right'>
                             <div className='relative overflow-hidden'>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center w-full sm: w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='flex items-center justify-center w-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                         <LottieAnimation
                                             src='/animations/growthChartIcon.json'
                                             className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
@@ -794,7 +794,7 @@ function Home() {
                     <div className='text-center mb-16'>
                         <h2 className='text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-5'>
                             Subscribe to our Monthly{' '}
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter to stay updated</span>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
                             Streamline your search for market insights and get weekly updates, articles and recommended reads every week. Reduce your time by
@@ -811,11 +811,12 @@ function Home() {
                                 'View limited time special offers and sponsorships',
                                 'Read Featured News Articles',
                             ].map((item, index) => (
-                                <div key={index} className='flex items-start space-x-4'>
-                                    <div className='w-6 h-6 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full flex items-center justify-center mt-1 flex-shrink-0'>
-                                        <CheckCircle className='w-4 h-4 text-white' />
-                                    </div>
-                                    <p className='text-gray-300 leading-relaxed'>{item}</p>
+                                <div
+                                    key={index}
+                                    className='flex items-center space-x-3 p-4 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'
+                                >
+                                    <CheckCircle className={`w-5 h-5 text-green-400 flex-shrink-0 `} />
+                                    <span className={`text-sm sm:text-base leading-relaxed text-gray-300`}>{item}</span>
                                 </div>
                             ))}
                         </div>
@@ -826,14 +827,14 @@ function Home() {
                             <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
                                 <LottieAnimation
                                     src='/animations/LearnMore2.json'
-                                    className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
+                                    className='w-[90%] h-full sm:w-[400px] sm:h-[380px] md:w-[500px] md:h-[420px] lg:w-[550px] lg:h-[450px]'
                                     loop={true}
                                     autoplay={true}
                                 />
                             </div>
 
                             {/* Newsletter Signup Form */}
-                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20'>
+                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 w-[90%] sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto'>
                                 <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
                                     <Input
                                         placeholder='Join our Newsletter'

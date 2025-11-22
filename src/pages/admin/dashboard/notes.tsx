@@ -18,7 +18,6 @@ export default function NotesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [authorName, setAuthorName] = useState('');
     const [errors, setErrors] = useState<{ title?: string; content?: string; authorName?: string }>({});
     const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +53,7 @@ export default function NotesPage() {
     }, []);
 
     const validateForm = () => {
-        const newErrors: { title?: string; content?: string; authorName?: string } = {};
+        const newErrors: { title?: string; content?: string } = {};
         if (!title.trim()) newErrors.title = 'Title is required';
         else if (title.length < 3) newErrors.title = 'Title must be at least 3 characters long';
         else if (title.length > 100) newErrors.title = 'Title cannot exceed 100 characters';
@@ -62,10 +61,6 @@ export default function NotesPage() {
         if (!content.trim()) newErrors.content = 'Content is required';
         else if (content.length < 10) newErrors.content = 'Content must be at least 10 characters long';
         else if (content.length > 1000) newErrors.content = 'Content cannot exceed 1000 characters';
-
-        if (!authorName.trim()) newErrors.authorName = 'Author name is required';
-        else if (authorName.length < 2) newErrors.authorName = 'Author name must be at least 2 characters long';
-        else if (authorName.length > 50) newErrors.authorName = 'Author name cannot exceed 50 characters';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -84,7 +79,7 @@ export default function NotesPage() {
                 body: JSON.stringify({
                     title: title.trim(),
                     content: content.trim(),
-                    authorName: authorName.trim(),
+                    authorName: ' ',
                     deleted: false,
                     authId: Number(id),
                 }),
@@ -97,7 +92,7 @@ export default function NotesPage() {
             setAlert({ type: 'success', message: 'Note created successfully!' });
             setTitle('');
             setContent('');
-            setAuthorName('');
+            // setAuthorName('');
             setErrors({});
             setIsModalOpen(false);
         } catch {
@@ -166,7 +161,7 @@ export default function NotesPage() {
                             <thead>
                                 <tr className='border-b border-slate-200'>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Title</th>
-                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Author</th>
+                                    {/* <th className='text-left py-3 px-4 font-medium text-slate-700'>Author</th> */}
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Date</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Content</th>
                                     <th className='text-center py-3 px-4 font-medium text-slate-700'>Actions</th>
@@ -189,7 +184,7 @@ export default function NotesPage() {
                                     notes.map((note, index) => (
                                         <tr key={note.id || index} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
                                             <td className='py-4 px-4 text-slate-800 font-medium'>{note.title}</td>
-                                            <td className='py-4 px-4 text-slate-600'>{note.authorName}</td>
+                                            {/* <td className='py-4 px-4 text-slate-600'>{note.authorName}</td> */}
                                             <td className='py-4 px-4 text-slate-600'>
                                                 {note.createdAt ? new Date(note.createdAt).toLocaleDateString() : 'N/A'}
                                             </td>
@@ -285,7 +280,7 @@ export default function NotesPage() {
                                 {errors.title && <p className='text-red-500 text-sm mt-1'>{errors.title}</p>}
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-1'>Author Name</label>
                                 <input
                                     type='text'
@@ -297,7 +292,7 @@ export default function NotesPage() {
                                     }`}
                                 />
                                 {errors.authorName && <p className='text-red-500 text-sm mt-1'>{errors.authorName}</p>}
-                            </div>
+                            </div> */}
 
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-1'>Content</label>

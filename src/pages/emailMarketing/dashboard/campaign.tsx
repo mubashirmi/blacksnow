@@ -1,4 +1,4 @@
-import { AlertCircle, Calendar, CheckCircle2, ChevronDown, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle2, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 type EmailUser = {
@@ -35,7 +35,7 @@ export default function SalesCampaignPage() {
     const [emails, setEmails] = useState<string[]>(['']);
 
     // Collapsible groups (manual + csv lists)
-    const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
+    // const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
 
     // Credentials gate
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
@@ -88,7 +88,7 @@ export default function SalesCampaignPage() {
             users.forEach((u) => {
                 if (u.emailUserCSV?.id) flags[`csv-${u.emailUserCSV.id}`] = true;
             });
-            setExpanded((prev) => ({ ...prev, ...flags }));
+            // setExpanded((prev) => ({ ...prev, ...flags }));
         } catch (e: any) {
             // show as modal
             setResultModal({
@@ -120,7 +120,7 @@ export default function SalesCampaignPage() {
     const allIds = useMemo(() => emailUsers.map((u) => u.id), [emailUsers]);
     const isAllSelected = formData.selectedUsers.length > 0 && formData.selectedUsers.length === allIds.length;
 
-    const toggleExpanded = (key: string) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+    // const toggleExpanded = (key: string) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
     const toggleSelectAll = () => {
         setFormData((prev) => ({
@@ -144,13 +144,13 @@ export default function SalesCampaignPage() {
         if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
     };
 
-    const toggleUser = (id: number) => {
-        setFormData((prev) => ({
-            ...prev,
-            selectedUsers: prev.selectedUsers.includes(id) ? prev.selectedUsers.filter((x) => x !== id) : [...prev.selectedUsers, id],
-        }));
-        if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
-    };
+    // const toggleUser = (id: number) => {
+    //     setFormData((prev) => ({
+    //         ...prev,
+    //         selectedUsers: prev.selectedUsers.includes(id) ? prev.selectedUsers.filter((x) => x !== id) : [...prev.selectedUsers, id],
+    //     }));
+    //     if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
+    // };
 
     // ---------- Credentials: Check + Save ----------
     const checkMarketingCredentials = async (): Promise<boolean> => {
@@ -574,10 +574,10 @@ export default function SalesCampaignPage() {
                                 <div className='flex items-center justify-between mb-2'>
                                     <button
                                         type='button'
-                                        onClick={() => toggleExpanded('manual')}
+                                        // onClick={() => toggleExpanded('manual')}
                                         className='flex items-center gap-2 font-semibold text-slate-800'
                                     >
-                                        <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} />
+                                        {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} /> */}
                                         Manually created users
                                         <span className='text-slate-500 font-normal'>({groups.manual.length})</span>
                                     </button>
@@ -594,7 +594,7 @@ export default function SalesCampaignPage() {
                                     </label>
                                 </div>
 
-                                {expanded.manual && (
+                                {/* {expanded.manual && (
                                     <>
                                         {groups.manual.length === 0 ? (
                                             <p className='text-slate-500 text-sm'>No manual users</p>
@@ -621,21 +621,21 @@ export default function SalesCampaignPage() {
                                             </div>
                                         )}
                                     </>
-                                )}
+                                )} */}
                             </div>
 
                             {/* CSV groups */}
                             {groups.csvGroups.map((g) => {
-                                const key = `csv-${g.id}`;
+                                // const key = `csv-${g.id}`;
                                 return (
                                     <div key={g.id} className='p-4'>
                                         <div className='flex items-center justify-between mb-2'>
                                             <button
                                                 type='button'
-                                                onClick={() => toggleExpanded(key)}
+                                                // onClick={() => toggleExpanded(key)}
                                                 className='flex items-center gap-2 font-semibold text-slate-800'
                                             >
-                                                <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} />
+                                                {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} /> */}
                                                 {g.name}
                                                 <span className='text-slate-500 font-normal'>({g.users.length})</span>
                                             </button>
@@ -652,7 +652,7 @@ export default function SalesCampaignPage() {
                                             </label>
                                         </div>
 
-                                        {expanded[key] && (
+                                        {/* {expanded[key] && (
                                             <div className='grid md:grid-cols-2 gap-2'>
                                                 {g.users.map((u) => (
                                                     <label
@@ -673,7 +673,7 @@ export default function SalesCampaignPage() {
                                                     </label>
                                                 ))}
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 );
                             })}

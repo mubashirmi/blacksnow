@@ -10,44 +10,52 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     try {
         if (method === 'GET') {
             // Run all queries in parallel
-            const [latestUsers, userCounts, latestSentEmail, latestCampains, latestSchedules, totalEmailSent, sentEmailNumbers] = await Promise.all([
-                prisma.emailUser.findMany({
-                    where: { authId: Id },
-                    take: 5,
-                    orderBy: { createdAt: 'desc' },
-                }),
-                prisma.emailUser.count({
-                    where: { authId: Id },
-                }),
-                prisma.emailJobResult.findMany({
-                    where: { authId: Id, status: 'sent' },
-                    take: 5,
-                    orderBy: { createdAt: 'desc' },
-                }),
-                prisma.emailJobResult.findMany({
-                    where: {
-                        authId: Id,
-                        timeInterval: { not: null },
-                        repeated: false,
-                        status: 'pending',
-                    },
-                }),
-                prisma.emailJobResult.findMany({
-                    where: {
-                        authId: Id,
-                        timeInterval: { not: null },
-                        repeated: true,
-                    },
-                }),
+            const [latestUsers, userCounts, latestSentEmail, latestCampains, latestSchedules, totalEmailSent, sentEmailNumbers, emailMarketingUsers] =
+                await Promise.all([
+                    prisma.emailUser.findMany({
+                        where: { authId: Id },
+                        take: 5,
+                        orderBy: { createdAt: 'desc' },
+                    }),
+                    prisma.emailUser.count({
+                        where: { authId: Id },
+                    }),
+                    prisma.emailJobResult.findMany({
+                        where: { authId: Id, status: 'sent' },
+                        take: 5,
+                        orderBy: { createdAt: 'desc' },
+                    }),
+                    prisma.emailJobResult.findMany({
+                        where: {
+                            authId: Id,
+                            timeInterval: { not: null },
+                            repeated: false,
+                            status: 'pending',
+                        },
+                    }),
+                    prisma.emailJobResult.findMany({
+                        where: {
+                            authId: Id,
+                            timeInterval: { not: null },
+                            repeated: true,
+                        },
+                    }),
 
-                prisma.emailJobResult.findMany({
-                    where: { authId: Id, status: 'sent' },
-                    orderBy: { createdAt: 'desc' },
-                }),
-                prisma.emailJobResult.count({
-                    where: { authId: Id, status: 'sent' },
-                }),
-            ]);
+                    prisma.emailJobResult.findMany({
+                        where: { authId: Id, status: 'sent' },
+                        orderBy: { createdAt: 'desc' },
+                    }),
+                    prisma.emailJobResult.count({
+                        where: { authId: Id, status: 'sent' },
+                    }),
+                    prisma.auth.findMany({
+                        where: {
+                            roles: {
+                                has: 'EmailMarketing',
+                            },
+                        },
+                    }),
+                ]);
 
             return res.status(200).json({
                 message: 'Affiliate Data',
@@ -58,6 +66,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 latestSchedules,
                 totalEmailSent,
                 sentEmailNumbers,
+                emailMarketingUsers,
             });
         }
 

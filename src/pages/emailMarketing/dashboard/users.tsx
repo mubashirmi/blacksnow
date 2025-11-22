@@ -1,27 +1,21 @@
-import { AlertCircle, Check, FileText, Info, Loader2, Lock, Mail, Plus, ShieldCheck, Upload, User, X } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown, ChevronRight, FileText, Info, Loader2, Lock, Mail, Plus, ShieldCheck, Upload, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 export default function SalesProfilePage() {
-    // Email users table
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Create user modal
+    const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({ email: '', fullName: '' });
     const [formErrors, setFormErrors] = useState<{ email?: string; fullName?: string }>({});
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
-
-    // CSV Upload
     const [uploadMode, setUploadMode] = useState<'single' | 'csv'>('single');
     const [csvData, setCsvData] = useState<{ name: string; file: File | null }>({ name: '', file: null });
     const [csvErrors, setCsvErrors] = useState<{ name?: string; file?: string }>({});
     const [csvParsedData, setCsvParsedData] = useState<any[]>([]);
     const [csvParseError, setCsvParseError] = useState<string | null>(null);
-
-    // Credentials gate
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
     const [checkingCredentials, setCheckingCredentials] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +36,6 @@ export default function SalesProfilePage() {
         })();
     }, []);
 
-    // ---------- Helpers for CSV parsing ----------
     const splitRespectingQuotes = (line: string, delim: string): string[] => {
         const out: string[] = [];
         let cur = '';
@@ -82,7 +75,6 @@ export default function SalesProfilePage() {
         return best;
     };
 
-    // ---------- Fetch users (only ONE API) ----------
     const fetchUsers = async () => {
         try {
             setLoading(true);
@@ -97,25 +89,19 @@ export default function SalesProfilePage() {
             if (!response.ok) throw new Error('Failed to fetch users');
 
             const data = await response.json();
-
-            // API shape: { emailUser: [ ... ] } OR sometimes a single object in emailUser
             const list = Array.isArray(data?.emailUser) ? data.emailUser : data?.emailUser ? [data.emailUser] : [];
 
-            // Normalize (do not fabricate a dummy row; if empty, users stays empty)
             const normalized = list
                 .map((u: any) => ({
                     id: u.id,
                     email: u.email,
-                    // fallback to the local-part of email instead of "Unknown", but only for display
                     fullName:
                         (typeof u.fullName === 'string' && u.fullName.trim()) ||
                         (typeof u.email === 'string' && u.email.includes('@') ? u.email.split('@')[0] : ''),
                     createdAt: u.createdAt,
                     fromCSV: !!u.emailUserCSVId,
-                    // we might not have the nested object; show an identifier if present
                     csvListName: u.emailUserCSV?.name ?? (u.emailUserCSVId ? `List #${u.emailUserCSVId}` : null),
                 }))
-                // ensure we only keep rows that actually have an email
                 .filter((u: any) => typeof u.email === 'string' && u.email.trim());
 
             setUsers(normalized);
@@ -131,13 +117,13 @@ export default function SalesProfilePage() {
             setCheckingCredentials(true);
             setIsLoading(true);
 
-            const adminId = Number(localStorage.getItem('userId'));
-            if (!adminId) {
+            const id = Number(localStorage.getItem('userId'));
+            if (!id) {
                 if (typeof window !== 'undefined') window.location.href = '/login';
                 return false;
             }
 
-            const response = await fetch(`/api/v2/marketingCredentials?adminId=${adminId}`);
+            const response = await fetch(`/api/v2/marketingCredentials?adminId=${id}`);
 
             if (!response.ok) {
                 setShowCredentialsModal(true);
@@ -242,9 +228,7 @@ export default function SalesProfilePage() {
         }
     };
 
-    // ---------- CSV Upload (more robust + creative validation) ----------
     const parseCSV = (raw: string): any[] => {
-        // strip BOM and normalize newlines
         const text = raw.replace(/^\uFEFF/, '');
         const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
         if (lines.length < 2) throw new Error('CSV must contain a header row and at least one data row');
@@ -264,7 +248,7 @@ export default function SalesProfilePage() {
         const nameIndex = idxOf(['fullname', 'full name', 'name']);
 
         if (emailIndex === -1) {
-            throw new Error('No “email” column found. Include a column named email.');
+            throw new Error('No "email" column found. Include a column named email.');
         }
 
         const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -293,10 +277,9 @@ export default function SalesProfilePage() {
 
         const dataRows = Math.max(lines.length - 1, 1);
         const invalidShare = invalidRows / dataRows;
-        // If most rows are junk, give a friendlier, “creative” nudge:
         if (invalidShare > 0.6) {
             throw new Error(
-                "This file doesn't look like a contact list. Most rows lack valid emails. Tips: keep a column literally named “email”, export to CSV (not Excel), and avoid mixed delimiters."
+                'This file does not look like a contact list. Most rows lack valid emails. Tips: keep a column literally named "email", export to CSV (not Excel), and avoid mixed delimiters.'
             );
         }
 
@@ -307,7 +290,6 @@ export default function SalesProfilePage() {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Tighten file checks
         const isCSVExt = /\.csv$/i.test(file.name);
         const looksCSVType = !file.type || /csv|plain|text/i.test(file.type);
 
@@ -458,32 +440,23 @@ export default function SalesProfilePage() {
                 }),
             });
 
-            // Try to read JSON once (works for both success & error responses)
             let data: any = null;
             try {
                 data = await response.json();
-            } catch {
-                /* some endpoints may return empty body; that's fine */
-            }
+            } catch {}
 
-            // Special-case: backend may reply 200 with duplication message,
-            // or reply non-200 with the same message. Handle it uniformly.
             const dupMsg = typeof data?.message === 'string' && /email already exist/i.test(data.message);
 
             if (dupMsg) {
-                // Show error inside the modal, pinned to the Email field
                 setFormErrors((prev: any) => ({ ...prev, email: 'Email already exists.' }));
-                console.log(formErrors);
-                setError(null); // avoid the generic banner for this case
-                return; // don't proceed to success state
+                setError(null);
+                return;
             }
 
             if (!response.ok) {
-                // Fall back to existing error flow
                 throw new Error(data?.message || 'Failed to create user');
             }
 
-            // Success flow (unchanged)
             setSuccess(true);
             setFormData({ email: '', fullName: '' });
             setTimeout(() => {
@@ -492,7 +465,6 @@ export default function SalesProfilePage() {
                 fetchUsers();
             }, 1500);
         } catch (err: any) {
-            // If the thrown error carried the duplicate message, show it as field error
             if (typeof err?.message === 'string' && /email already exist/i.test(err.message)) {
                 setFormErrors((prev: any) => ({ ...prev, email: 'Email already exists.' }));
                 setError(null);
@@ -516,6 +488,38 @@ export default function SalesProfilePage() {
         if (e.key === 'Enter' && !submitting && uploadMode === 'single') {
             handleSubmit();
         }
+    };
+
+    const groupedUsers = React.useMemo(() => {
+        const groups: { [key: string]: any[] } = {
+            manual: [],
+        };
+
+        users.forEach((user) => {
+            if (user.fromCSV && user.csvListName) {
+                const key = user.csvListName;
+                if (!groups[key]) {
+                    groups[key] = [];
+                }
+                groups[key].push(user);
+            } else {
+                groups.manual.push(user);
+            }
+        });
+
+        return groups;
+    }, [users]);
+
+    const toggleGroup = (groupKey: string) => {
+        setExpandedGroups((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(groupKey)) {
+                newSet.delete(groupKey);
+            } else {
+                newSet.add(groupKey);
+            }
+            return newSet;
+        });
     };
 
     const openModal = async () => {
@@ -593,71 +597,92 @@ export default function SalesProfilePage() {
                                 <table className='w-full'>
                                     <thead>
                                         <tr className='border-b border-slate-200'>
-                                            <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>SR #</th>
+                                            <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Group</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Full Name</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Email</th>
-                                            <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Source</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Created At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {users.map((user: any, index: number) => (
-                                            <tr
-                                                key={user.id ?? `${user.email}-${index}`}
-                                                className='border-b border-slate-100 hover:bg-slate-50 transition-colors'
-                                            >
-                                                <td className='py-4 px-6'>
-                                                    <span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm'>
-                                                        {index + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-4 px-6'>
-                                                    <div className='flex items-center gap-3'>
-                                                        <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold'>
-                                                            {typeof user.fullName === 'string' && user.fullName.trim()
-                                                                ? user.fullName.charAt(0).toUpperCase()
-                                                                : user.email?.charAt(0)?.toUpperCase() || '?'}
-                                                        </div>
-                                                        <span className='font-medium text-slate-800'>{user.fullName || user.email?.split('@')[0] || '—'}</span>
-                                                    </div>
-                                                </td>
-                                                <td className='py-4 px-6'>
-                                                    <div className='flex items-center gap-2 text-slate-600'>
-                                                        <Mail className='w-4 h-4 text-slate-400' />
-                                                        {user.email}
-                                                    </div>
-                                                </td>
-                                                <td className='py-4 px-6'>
-                                                    {user.fromCSV ? (
-                                                        <div className='flex items-center gap-2'>
-                                                            <span className='inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium'>
-                                                                <FileText className='w-3 h-3' />
-                                                                CSV
-                                                            </span>
-                                                            {user.csvListName ? <span className='text-slate-500 text-xs'>({user.csvListName})</span> : null}
-                                                        </div>
-                                                    ) : (
-                                                        <span className='inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium'>
-                                                            <User className='w-3 h-3' />
-                                                            Manual
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className='py-4 px-6'>
-                                                    <span className='text-slate-600 text-sm'>
-                                                        {user.createdAt
-                                                            ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                                                                  year: 'numeric',
-                                                                  month: 'short',
-                                                                  day: 'numeric',
-                                                                  hour: '2-digit',
-                                                                  minute: '2-digit',
-                                                              })
-                                                            : '--'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {Object.entries(groupedUsers).map(([groupKey, groupUsers]) => {
+                                            const isExpanded = expandedGroups.has(groupKey);
+                                            const isManual = groupKey === 'manual';
+                                            const groupName = isManual ? 'Manually Created Users' : groupKey;
+                                            const groupCount = groupUsers.length;
+
+                                            return (
+                                                <React.Fragment key={groupKey}>
+                                                    <tr
+                                                        className='bg-slate-50 hover:bg-slate-100 cursor-pointer border-b border-slate-200'
+                                                        onClick={() => toggleGroup(groupKey)}
+                                                    >
+                                                        <td colSpan={4} className='py-4 px-6'>
+                                                            <div className='flex items-center gap-3'>
+                                                                {isExpanded ? (
+                                                                    <ChevronDown className='w-5 h-5 text-slate-600' />
+                                                                ) : (
+                                                                    <ChevronRight className='w-5 h-5 text-slate-600' />
+                                                                )}
+                                                                {isManual ? (
+                                                                    <User className='w-5 h-5 text-blue-600' />
+                                                                ) : (
+                                                                    <FileText className='w-5 h-5 text-green-600' />
+                                                                )}
+                                                                <span className='font-semibold text-slate-800 text-base'>{groupName}</span>
+                                                                <span className='inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium'>
+                                                                    {groupCount} {groupCount === 1 ? 'user' : 'users'}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                    {isExpanded &&
+                                                        groupUsers.map((user: any, index: number) => (
+                                                            <tr
+                                                                key={user.id ?? `${user.email}-${index}`}
+                                                                className='border-b border-slate-100 hover:bg-slate-50 transition-colors'
+                                                            >
+                                                                <td className='py-4 px-6 pl-16'>
+                                                                    <span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm'>
+                                                                        {index + 1}
+                                                                    </span>
+                                                                </td>
+                                                                <td className='py-4 px-6'>
+                                                                    <div className='flex items-center gap-3'>
+                                                                        <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold'>
+                                                                            {typeof user.fullName === 'string' && user.fullName.trim()
+                                                                                ? user.fullName.charAt(0).toUpperCase()
+                                                                                : user.email?.charAt(0)?.toUpperCase() || '?'}
+                                                                        </div>
+                                                                        <span className='font-medium text-slate-800'>
+                                                                            {user.fullName || user.email?.split('@')[0] || '—'}
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className='py-4 px-6'>
+                                                                    <div className='flex items-center gap-2 text-slate-600'>
+                                                                        <Mail className='w-4 h-4 text-slate-400' />
+                                                                        {user.email}
+                                                                    </div>
+                                                                </td>
+                                                                <td className='py-4 px-6'>
+                                                                    <span className='text-slate-600 text-sm'>
+                                                                        {user.createdAt
+                                                                            ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                                                                  year: 'numeric',
+                                                                                  month: 'short',
+                                                                                  day: 'numeric',
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                              })
+                                                                            : '--'}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                </React.Fragment>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -666,7 +691,6 @@ export default function SalesProfilePage() {
                 </div>
             </div>
 
-            {/* Credentials Modal */}
             {showCredentialsModal && (
                 <div className='fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50'>
                     <div className='bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden'>
@@ -777,7 +801,6 @@ export default function SalesProfilePage() {
                 </div>
             )}
 
-            {/* Create User Modal */}
             {isModalOpen && (
                 <div className='fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50'>
                     <div className='bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden'>
@@ -793,7 +816,6 @@ export default function SalesProfilePage() {
                         </div>
 
                         <div className='p-6 space-y-5'>
-                            {/* Mode Toggle */}
                             <div className='flex gap-2 p-1 bg-slate-100 rounded-lg'>
                                 <button
                                     type='button'
@@ -966,10 +988,10 @@ export default function SalesProfilePage() {
                                         {csvErrors.file && <p className='text-red-600 text-sm mt-1'>{csvErrors.file}</p>}
                                         {csvParseError && (
                                             <div className='mt-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-3'>
-                                                <p className='font-medium mb-1'>We couldn’t read that file as a contact list.</p>
+                                                <p className='font-medium mb-1'>We couldn&apos;t read that file as a contact list.</p>
                                                 <ul className='list-disc pl-5 space-y-1'>
                                                     <li>
-                                                        Ensure there’s a column literally named <code>email</code>.
+                                                        Ensure there&apos;s a column literally named <code>email</code>.
                                                     </li>
                                                     <li>
                                                         Export as <strong>CSV</strong> (not .xlsx).

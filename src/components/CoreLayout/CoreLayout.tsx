@@ -90,6 +90,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
+                                    { name: 'Consultation', href: '/consultation' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}
@@ -112,8 +113,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Affiliate Program', href: '/affiliate' },
                                     { name: 'Webinar RSVP', href: '/rsvp' },
                                     { name: 'Digital Billboard', href: '/advertising' },
-                                    { name: 'Email/SMS Marketing', href: '/emailMarketing' },
-                                    { name: 'Consultation', href: '/consultation' },
+                                    { name: 'Email CRM', href: '/emailMarketing' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}

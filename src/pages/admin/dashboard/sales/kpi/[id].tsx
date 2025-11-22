@@ -929,10 +929,10 @@ export default function UnifiedSalesKPI() {
                     </div>
                 )}
 
-                {/* Monthly Goals */}
+                {/* Weekly Goals */}
                 <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
                     <div className='mb-6'>
-                        <h3 className='text-xl font-bold text-gray-900 mb-1'>Monthly Goals & Targets</h3>
+                        <h3 className='text-xl font-bold text-gray-900 mb-1'>Weekly Goals & Targets</h3>
                         <p className='text-sm text-gray-600'>Track your progress towards monthly objectives</p>
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
@@ -943,14 +943,14 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Revenue Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>$5,000</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>$1,250</div>
                             <div className='text-sm text-gray-600 mb-3'>
-                                Current: ${metrics?.totalRevenue ?? 0} ({Math.min(((metrics?.totalRevenue ?? 0) / 5000) * 100, 100).toFixed(0)}%)
+                                Current: ${metrics?.totalRevenue ?? 0} ({Math.min(((metrics?.totalRevenue ?? 0) / 1250) * 100, 100).toFixed(0)}%)
                             </div>
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.totalRevenue ?? 0) / 5000) * 100, 100)}%` }}
+                                    style={{ width: `${Math.min(((metrics?.totalRevenue ?? 0) / 1250) * 100, 100)}%` }}
                                 />
                             </div>
                         </div>
@@ -962,15 +962,15 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Click Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>1,000</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>250</div>
                             <div className='text-sm text-gray-600 mb-3'>
                                 Current: {metrics?.affiliate?.totalClicks ?? 0} (
-                                {Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 1000) * 100, 100).toFixed(0)}%)
+                                {Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 250) * 100, 100).toFixed(0)}%)
                             </div>
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 1000) * 100, 100)}%` }}
+                                    style={{ width: `${Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 250) * 100, 100)}%` }}
                                 />
                             </div>
                         </div>
@@ -982,15 +982,15 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Subscriber Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>500</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>125</div>
                             <div className='text-sm text-gray-600 mb-3'>
                                 Current: {metrics?.marketing?.totalSubscribers ?? 0} (
-                                {Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 500) * 100, 100).toFixed(0)}%)
+                                {Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 125) * 100, 100).toFixed(0)}%)
                             </div>
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 500) * 100, 100)}%` }}
+                                    style={{ width: `${Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 125) * 100, 100)}%` }}
                                 />
                             </div>
                         </div>

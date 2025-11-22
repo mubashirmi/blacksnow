@@ -37,10 +37,7 @@ function CareersTitle() {
                                 <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     FOR JOB SEEKERS
                                 </Badge>
-                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    Reshape Your{' '}
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Career Future</span>
-                                </h2>
+                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>Careers</h2>
                                 <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Join us in reshaping the future for employee job search across all 50 States in the United States. Black Snow is committed
@@ -62,7 +59,7 @@ function CareersTitle() {
                                 </p>
                             </div>
 
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
+                            <div className='hidden lg:flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
                                 <Link href={'/careeroptions'}>
                                     <Button
                                         size='lg'
@@ -111,6 +108,18 @@ function CareersTitle() {
                                     ))}
                                 </div>
                             </div>
+                            <div className='flex mt-7 lg:hidden flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
+                                <Link href={'/careeroptions'}>
+                                    <Button
+                                        size='lg'
+                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    >
+                                        <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        See Career Opportunities
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,7 +157,7 @@ function CareersTitle() {
                                     advantage of some of the competitive rates that we have to offer today.
                                 </p>
                             </div>
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
+                            <div className='hidden lg:flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
@@ -206,6 +215,28 @@ function CareersTitle() {
                                     ))}
                                 </div>
                             </div>
+                            <div className='lg:hidden mt-7 flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
+                                <Link href={'/recruitmentagency'}>
+                                    <Button
+                                        size='lg'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    >
+                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        See Opportunities
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                                <Link href={'/consultation'}>
+                                    <Button
+                                        size='lg'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                    >
+                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        Consultation
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </Button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -250,7 +281,7 @@ function CareersTitle() {
 
                         {/* Lottie Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/careericon.json' loop={true} autoplay={true} />
                             </div>
                         </div>

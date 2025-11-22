@@ -2,24 +2,43 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import lottie from 'lottie-web';
 import { AlertTriangle, ArrowRight, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, MessageCircle, Phone, Shield, Users, X } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { parseCookies } from 'nookies';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Page() {
-    const cookies = parseCookies();
     const [modalOpened, setModalOpened] = useState(false);
-    const id = cookies.id;
     const router = useRouter();
 
     const handleUnsubscribeClick = () => {
+        const id = localStorage.getItem('userId');
         if (id) {
             router.push('/pricing');
         } else {
             setModalOpened(true);
         }
+    };
+
+    const LottieAnimation = ({ src, loop, autoplay, style }) => {
+        const containerRef = useRef<HTMLDivElement | null>(null);
+
+        useEffect(() => {
+            if (containerRef.current) {
+                const animation = lottie.loadAnimation({
+                    container: containerRef.current,
+                    renderer: 'svg',
+                    loop,
+                    autoplay,
+                    path: src,
+                });
+                return () => animation.destroy();
+            }
+        }, [src, loop, autoplay]);
+
+        return <div ref={containerRef} style={style} />;
     };
 
     const supportFeatures = [
@@ -70,15 +89,15 @@ export default function Page() {
         },
     ];
 
-    const contactMethods = [
-        {
-            icon: Mail,
-            title: 'Email Support',
-            value: 'support@support.com',
-            description: 'Get detailed help via email',
-            action: 'Send Email',
-        },
-    ];
+    // const contactMethods = [
+    //     {
+    //         icon: Mail,
+    //         title: 'Email Support',
+    //         value: 'support@support.com',
+    //         description: 'Get detailed help via email',
+    //         action: 'Send Email',
+    //     },
+    // ];
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
@@ -215,7 +234,7 @@ export default function Page() {
                         ))}
                     </div>
 
-                    <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl shadow-amber-500/20 max-w-5xl mx-auto animate-slide-in-up delay-600'>
+                    <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl shadow-amber-500/20 max-w-5xl mx-auto animate-slide-in-up delay-600 overflow-hidden'>
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-700 rounded-t-3xl'></div>
                         <div className='flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6'>
                             <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-400/20 to-amber-600/20 rounded-2xl flex items-center justify-center flex-shrink-0'>
@@ -228,7 +247,7 @@ export default function Page() {
                                 </p>
                                 <div className='flex flex-col sm:flex-row gap-4 mt-[1px]'>
                                     <Button
-                                        className='bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-xl shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
+                                        className='bg-red-700 hover:bg-red-800 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-md shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
                                         onClick={handleUnsubscribeClick}
                                     >
                                         <CreditCard className='mr-2 h-5 w-5' />
@@ -242,7 +261,7 @@ export default function Page() {
             </section>
 
             {/* Contact Methogfds */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
@@ -260,7 +279,6 @@ export default function Page() {
                         {contactMethods.map((method, index) => (
                             <div key={index} className='group animate-slide-in-up max-w-md w-full' style={{ animationDelay: `${index * 200}ms` }}>
                                 <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-[#2c7bbe]/20 h-full flex flex-col'>
-                                    {/* <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe]'></div> */}
                                     <CardContent className='p-8 text-center flex-1 flex flex-col'>
                                         <div className='w-16 h-16 bg-gradient-to-br from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300'>
                                             <method.icon className='w-8 h-8 text-white' />
@@ -277,10 +295,10 @@ export default function Page() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Our Commitment */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center max-w-5xl mx-auto'>
                         <div className='w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-slide-in-up'>
@@ -309,14 +327,54 @@ export default function Page() {
                                 className='group border-2 border-white text-white hover:bg-white/10 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold backdrop-blur-sm rounded-lg w-full sm:w-[300px] bg-transparent transition-all duration-300 cursor-pointer'
                             >
                                 <Eye className='w-5 h-5 sm:w-6 sm:h-6 mr-3 group-hover:scale-110 transition-transform duration-300' />
-                                View FAQ
+                                Were here to support you
                             </Button>
                         </div>
                     </div>
                 </div>
+            </section> */}
+
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
+                    <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
+                        <div className='space-y-6 sm:space-y-8'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                SERVICE YOU DESERVE
+                            </Badge>
+                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                                Our&nbsp;<span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Commitment</span>
+                                <br />
+                            </h2>
+                            <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
+                                Your trust means everything to us. We promise to deliver exceptional customer service and to handle every request—whether big or
+                                small—with professionalism and care.
+                            </p>
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4'>
+                                <Link href={'/faq'}>
+                                    <Button
+                                        size='lg'
+                                        variant='outline'
+                                        className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
+                                    >
+                                        <Eye className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        Were here to support you
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                        <div className='flex items-center justify-center'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                                <LottieAnimation src='/animations/supportpage.json' loop={true} autoplay={true} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
+
             <Dialog open={modalOpened} onOpenChange={setModalOpened}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-xl'>
+                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-amber-500/50 shadow-2xl shadow-amber-500/20 rounded-3xl backdrop-blur-xl overflow-hidden pb-8 p'>
+                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-700 rounded-t-3xl'></div>
                     <button
                         onClick={() => setModalOpened(false)}
                         className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group'
@@ -333,8 +391,8 @@ export default function Page() {
                         </div>
                     </DialogHeader>
                     <Button
-                        onClick={() => router.push('/login?signup')}
-                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                        onClick={() => router.push('/login')}
+                        className='w-full bg-red-700 hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-md shadow-red-600/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
                     >
                         Sign In Now
                     </Button>

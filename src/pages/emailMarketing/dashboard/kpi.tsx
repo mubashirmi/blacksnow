@@ -488,7 +488,7 @@ export default function SalesKPIPage() {
             </div>
 
             {/* Latest Subscribers */}
-            {latestUsers.length > 0 && (
+            {/* {latestUsers.length > 0 && (
                 <Card className='shadow-md'>
                     <CardHeader>
                         <CardTitle className='flex items-center gap-2'>
@@ -525,7 +525,7 @@ export default function SalesKPIPage() {
                         </div>
                     </CardContent>
                 </Card>
-            )}
+            )} */}
         </div>
     );
 }

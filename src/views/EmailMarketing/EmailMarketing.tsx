@@ -181,7 +181,7 @@ function EmailMarketing() {
                         </div>
 
                         {/* Right Visual */}
-                        <div className='relative animate-slide-in-right'>
+                        <div className='relative animate-slide-in-right mt-7 sm:mt-0'>
                             <div className='relative flex items-center justify-center'>
                                 {/* Animated Background */}
                                 <div className='absolute inset-0 flex items-center justify-center'>
@@ -193,16 +193,16 @@ function EmailMarketing() {
                                     <div className='absolute w-48 h-48 sm:w-64 sm:h-64 border-4 border-[#2a8dcc]/40 rounded-full animate-spin-slow delay-2000'></div>
 
                                     {/* Floating Icons */}
-                                    <div className='absolute -top-8 sm:-top-12 -left-8 sm:-left-12 w-16 h-16 bg-gradient-to-br from-[#4cc7e8]/90 to-[#2c7bbe]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow'>
+                                    <div className='absolute -top-5 sm:-top-12 -left-1 sm:-left-12 w-16 h-16 bg-gradient-to-br from-[#4cc7e8]/90 to-[#2c7bbe]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow'>
                                         <Send className='w-8 h-8 text-white' />
                                     </div>
-                                    <div className='absolute -bottom-8 sm:-bottom-12 -right-8 sm:-right-12 w-20 h-20 bg-gradient-to-br from-[#2a8dcc]/90 to-[#4cc7e8]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow delay-1000'>
+                                    <div className='absolute -bottom-16 sm:-bottom-12 right-0 sm:-right-12 w-20 h-20 bg-gradient-to-br from-[#2a8dcc]/90 to-[#4cc7e8]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow delay-1000'>
                                         <MessageSquare className='w-10 h-10 text-white' />
                                     </div>
-                                    <div className='absolute top-12 sm:top-16 -right-16 sm:-right-20 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-500'>
+                                    <div className='absolute top-12 sm:top-16 -right-1 sm:-right-20 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-500'>
                                         <CheckCircle className='w-6 h-6 text-white' />
                                     </div>
-                                    <div className='absolute bottom-16 sm:bottom-20 -left-16 sm:-left-20 w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-1500'>
+                                    <div className='absolute bottom-0 sm:bottom-20 -left-1 sm:-left-20 w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-1500'>
                                         <Calendar className='w-7 h-7 text-white' />
                                     </div>
                                 </div>

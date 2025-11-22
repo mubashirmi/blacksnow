@@ -21,9 +21,26 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export function AdminSidebar() {
+    const router = useRouter();
     const pathname = usePathname();
+
+    const handleAdminLogout = () => {
+        // Clear admin_token cookie
+        document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+
+        // (Optional) clear any admin-related localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('roles');
+            localStorage.removeItem('referredby');
+        }
+
+        // Redirect to login
+        router.push('/');
+    };
 
     const navigationItems = [
         {
@@ -47,7 +64,7 @@ export function AdminSidebar() {
             icon: Users,
         },
         {
-            title: 'Email Subscribers',
+            title: 'Email Users',
             url: '/admin/dashboard/marketingSubscribers',
             icon: Users,
         },
@@ -77,7 +94,22 @@ export function AdminSidebar() {
             icon: BookOpen,
         },
         {
-            title: 'Email Marketing KPI',
+            title: 'Email Upload',
+            url: '/admin/dashboard/users',
+            icon: Users,
+        },
+        {
+            title: 'Email Compose',
+            url: '/admin/dashboard/automation',
+            icon: LinkIcon,
+        },
+        {
+            title: 'Email Campaign',
+            url: '/admin/dashboard/campaign',
+            icon: Target,
+        },
+        {
+            title: 'Email KPI',
             url: '/admin/dashboard/emailkpi',
             icon: Mail,
         },
@@ -85,21 +117,6 @@ export function AdminSidebar() {
             title: 'Email Schedules',
             url: '/admin/dashboard/emailSchedule',
             icon: CalendarCheck,
-        },
-        {
-            title: 'Automation',
-            url: '/admin/dashboard/automation',
-            icon: LinkIcon,
-        },
-        {
-            title: 'Campaign',
-            url: '/admin/dashboard/campaign',
-            icon: Target,
-        },
-        {
-            title: 'Email Users',
-            url: '/admin/dashboard/users',
-            icon: Users,
         },
         {
             title: 'Notes',
@@ -158,7 +175,10 @@ export function AdminSidebar() {
 
             {/* Sidebar Footer */}
             <div className='p-4 border-t border-gray-100'>
-                <button className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium'>
+                <button
+                    onClick={handleAdminLogout}
+                    className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
+                >
                     <LogOut className='w-4 h-4' />
                     <span>Logout</span>
                 </button>

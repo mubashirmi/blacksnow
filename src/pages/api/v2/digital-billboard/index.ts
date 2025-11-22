@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (method === 'GET') {
             let item;
             if (id) {
-                item = await prisma.digitalBillboard.findUnique({ where: { id: billboardId } });
+                item = await prisma.digitalBillboard.findFirst({ where: { authId: billboardId, status: 'Approved' } });
                 return item ? res.status(200).json({ message: 'Fetched by ID', data: item }) : res.status(404).json({ message: 'Not found' });
             } else {
                 item = await prisma.digitalBillboard.findMany();

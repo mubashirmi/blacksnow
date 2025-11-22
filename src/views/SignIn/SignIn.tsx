@@ -81,6 +81,7 @@ function SignIn() {
                 const userId = response.data.user.id;
 
                 localStorage.setItem('userId', userId);
+                // localStorage.setItem('validator', 'true');
                 setCookie('id', response.data.user.id);
 
                 setAlert({
@@ -137,7 +138,7 @@ function SignIn() {
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setAlert({ type: 'success', message: 'Login successful!' });
                     reset();
-                    router.push('/');
+                    router.push('/pricing');
                 }
             }
         } catch (error) {
@@ -151,7 +152,7 @@ function SignIn() {
     };
 
     return (
-        <div className='min-h-screen bg-[#050608] py-10 relative overflow-hidden flex items-center justify-center'>
+        <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] py-10 relative overflow-hidden flex items-center justify-center'>
             <div className='relative z-10 w-full max-w-md px-6'>
                 <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>
                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>

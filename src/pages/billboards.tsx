@@ -125,12 +125,13 @@ export default function Page() {
             {/* Hero (compact) */}
             <section className='relative pt-24 pb-6 px-6'>
                 <div className='container mx-auto max-w-6xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#259dd3] to-[#259dd3] text-white mb-6 px-6 py-2 text-xs font-bold tracking-widest'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         DIGITAL BILLBOARD SHOWCASE
                     </Badge>
-                    <h1 className='text-4xl md:text-5xl font-black text-white mb-3 leading-tight'>
+                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                         Premium <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Billboards</span>
                     </h1>
+                    <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                     <p className='text-base md:text-lg text-gray-300 max-w-3xl mx-auto'>Wide, readable, and elegant — not oversized.</p>
                 </div>
             </section>
@@ -177,10 +178,10 @@ export default function Page() {
                     <h2 className='text-4xl md:text-5xl font-black text-white mb-4'>
                         Ready to <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Showcase</span>?
                     </h2>
-                    <p className='text-lg text-gray-300 max-w-3xl mx-auto'>Big impact without overwhelming the page.</p>
+                    {/* <p className='text-lg text-gray-300 max-w-3xl mx-auto'>Big impact without overwhelming the page.</p> */}
                     <div className='flex flex-col sm:flex-row gap-6 justify-center pt-8'>
                         <Link href='/login?signup'>
-                            <Button className='group bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white px-10 py-6 text-base font-bold shadow-2xl shadow-[#259dd3]/40 transition-all duration-300 transform hover:scale-[1.02] cursor-pointer'>
+                            <Button className='group bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white px-10 py-6 text-base font-bold shadow-2xl shadow-[#259dd3]/40 transition-all duration-300 transform hover:scale-[1.02] cursor-pointer w-full sm:w-[300px]'>
                                 <Monitor className='w-5 h-5 mr-3' />
                                 Get Featured
                                 <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
@@ -189,7 +190,7 @@ export default function Page() {
                         <Link href='/advertising'>
                             <Button
                                 variant='outline'
-                                className='border-2 border-[#259dd3] text-[#259dd3] hover:bg-[#259dd3] hover:text-black px-10 py-6 text-base font-bold transition-all duration-300 cursor-pointer transform hover:scale-[1.02] bg-transparent'
+                                className='border-2 border-[#259dd3] text-[#259dd3] hover:bg-[#259dd3] hover:text-black px-10 py-6 text-base font-bold transition-all duration-300 cursor-pointer transform hover:scale-[1.02] bg-transparent w-full sm:w-[300px]'
                             >
                                 <Users className='w-5 h-5 mr-3' />
                                 Learn More

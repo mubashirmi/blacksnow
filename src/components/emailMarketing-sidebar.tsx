@@ -8,26 +8,26 @@ import * as React from 'react';
 
 const navigationItems = [
     {
-        name: 'KPI',
-        url: '/emailMarketing/dashboard/kpi',
-        icon: BarChart3,
-    },
-    { name: 'Email Schedules', url: '/emailMarketing/dashboard/emailSchedule', icon: CalendarCheck },
-    {
-        name: 'Campaign',
-        url: '/emailMarketing/dashboard/campaign',
-        icon: Target,
+        name: 'Email Upload',
+        url: '/emailMarketing/dashboard/users',
+        icon: User,
     },
     {
-        name: 'Automation',
+        name: 'Email Compose',
         url: '/emailMarketing/dashboard/automation',
         icon: LinkIcon,
     },
     {
-        name: 'Email Users',
-        url: '/emailMarketing/dashboard/users',
-        icon: User,
+        name: 'Email Campaign',
+        url: '/emailMarketing/dashboard/campaign',
+        icon: Target,
     },
+    {
+        name: 'Email KPI',
+        url: '/emailMarketing/dashboard/kpi',
+        icon: BarChart3,
+    },
+    { name: 'Email Schedules', url: '/emailMarketing/dashboard/emailSchedule', icon: CalendarCheck },
     {
         name: 'Notes',
         url: '/emailMarketing/dashboard/notes',
@@ -55,7 +55,7 @@ export function EmailMarketingSidebar(props: React.HTMLAttributes<HTMLElement>) 
                     </div>
                     <div>
                         <span className='font-bold text-xl text-gray-800'>Black Snow</span>
-                        <p className='text-gray-500 text-sm'>Email Marketing Dashboard</p>
+                        <p className='text-gray-500 text-sm'>Email Marketing CRM</p>
                     </div>
                 </div>
             </div>

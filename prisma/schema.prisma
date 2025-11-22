@@ -132,16 +132,10 @@ model EmailJobResult {
   html    String? // <— added, optional HTML
 
   // scheduling
-  runAt        DateTime? // if null, not yet scheduled (we usually set it)
-  repeated     Boolean?  @default(false)
-  timeInterval Int? // seconds (interval cadence) — keeps your existing field
-
-  // NEW: schedule helpers (all optional, non-breaking)
-  // For weekly specific days (BY_WEEKDAY) — 0=Sun..6=Sat
-  weekdays Int[] // e.g. [0,3,5] => Sun/Wed/Fri
-
-  // For rotation trick (weekly or interval):
-  // After sending, if rotationSpanSeconds is set, next runAt = last runAt + rotationSpanSeconds
+  runAt               DateTime? // if null, not yet scheduled (we usually set it)
+  repeated            Boolean?  @default(false)
+  timeInterval        Int? // seconds (interval cadence) — keeps your existing field
+  weekdays            Int[] // e.g. [0,3,5] => Sun/Wed/Fri
   rotationSpanSeconds Int?
 
   // bookkeeping
@@ -280,6 +274,7 @@ model Checkout {
   AuthId            Int
   amount            Float
   paid              Boolean  @default(false)
+  period            String   @default("")
   auth              Auth     @relation(fields: [AuthId], references: [id])
   product           String?
   cancelSubscripton Boolean

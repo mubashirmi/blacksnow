@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { destroyCookie } from 'nookies';
@@ -24,32 +25,89 @@ const menuItems = [
             { name: 'Affiliate Program', href: '/affiliate' },
             { name: 'Webinar RSVP', href: '/rsvp' },
             { name: 'Digital Billboard', href: '/advertising' },
-            { name: 'Email/SMS Marketing', href: '/emailMarketing' },
-            { name: 'Consultation', href: '/consultation' },
+            { name: 'Email Marketing', href: '/emailMarketing' },
+            // { name: 'Consultation', href: '/consultation' },
         ],
     },
 ];
 
+const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing', { label: string; path: string }> = {
+    Affiliate: {
+        label: 'Affiliate Dashboard',
+        path: '/affiliate/dashboard/links',
+    },
+    Sales: {
+        label: 'Sales Dashboard',
+        path: '/sales/dashboard/links',
+    },
+    EmailMarketing: {
+        label: 'Email Marketing Dashboard',
+        path: '/emailMarketing/dashboard/users',
+    },
+    DigitalBillboard: {
+        label: 'Digital Billboard Dashboard',
+        path: '/digitalBillboard/dashboard',
+    },
+    Admin: {
+        label: 'Admin Dashboard',
+        path: '/admin/dashboard',
+    },
+};
+
+const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Affiliate', 'DigitalBillboard', 'EmailMarketing'];
+
 // Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [userid, setUserid] = useState(false);
+    const [userid, setUserid] = useState<string | null>(userId ?? null);
+    const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
+    const [showDashboardMenu, setShowDashboardMenu] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+
     const router = useRouter();
 
-    // Prevent body scroll when menu is open
+    // Prevent body scroll when menu is open + load userId / roles
     useEffect(() => {
-        const iid = localStorage.getItem('userId');
+        const iid = localStorage.getItem('userId') || userId || null;
         setUserid(iid);
+
+        const storedRoles = localStorage.getItem('roles');
+
+        if (iid && storedRoles) {
+            try {
+                const parsedRoles: string[] = JSON.parse(storedRoles);
+                const roleSet = new Set(parsedRoles);
+                const availableDashboards: { label: string; path: string }[] = [];
+
+                ROLE_PRIORITY.forEach((role) => {
+                    if (roleSet.has(role)) {
+                        const cfg = roleDashboardMap[role];
+                        if (cfg && !availableDashboards.some((d) => d.path === cfg.path)) {
+                            availableDashboards.push(cfg);
+                        }
+                    }
+                });
+
+                setDashboards(availableDashboards);
+            } catch (error) {
+                console.error('Error parsing roles from localStorage', error);
+                setDashboards([]);
+            }
+        } else {
+            setDashboards([]);
+        }
+
         if (isOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
+            setShowDashboardMenu(false);
         }
+
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen]);
+    }, [isOpen, userId]);
 
     // Close menu on escape key
     useEffect(() => {
@@ -57,15 +115,18 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
             if (e.key === 'Escape') {
                 setIsOpen(false);
                 setShowLogoutModal(false);
+                setShowDashboardMenu(false);
             }
         };
-        if (isOpen) {
+
+        if (isOpen || showLogoutModal) {
             document.addEventListener('keydown', handleEscape);
         }
+
         return () => {
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isOpen]);
+    }, [isOpen, showLogoutModal]);
 
     const handleLogout = () => {
         setShowLogoutModal(true);
@@ -79,11 +140,33 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         localStorage.removeItem('referredby');
         setShowLogoutModal(false);
         setIsOpen(false);
+        setUserid(null);
+        setDashboards([]);
+        setShowDashboardMenu(false);
         router.push('/');
     };
 
     const cancelLogout = () => {
         setShowLogoutModal(false);
+    };
+
+    const handleDashboardClick = () => {
+        if (!userid || dashboards.length === 0) return;
+
+        // If only one dashboard, go directly
+        if (dashboards.length === 1) {
+            setIsOpen(false);
+            router.push(dashboards[0].path);
+        } else {
+            // If multiple, toggle the small dashboard menu
+            setShowDashboardMenu((prev) => !prev);
+        }
+    };
+
+    const goToDashboard = (path: string) => {
+        setShowDashboardMenu(false);
+        setIsOpen(false);
+        router.push(path);
     };
 
     return (
@@ -119,6 +202,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     onClick={() => {
                         setIsOpen(false);
                         setShowLogoutModal(false);
+                        setShowDashboardMenu(false);
                     }}
                 />
 
@@ -133,9 +217,10 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         <h2
                             className={`text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-                            }`}
+                            } flex justify-center items-center mx-auto gap-x-1`}
                         >
-                            Menu
+                            <Image width={33} height={33} src='/logocolored.png' className='' alt='Logo' />
+                            <span>Menu</span>
                         </h2>
                     </div>
 
@@ -188,12 +273,35 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 <div className='text-lg font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</div>
                                 <div className='text-sm text-gray-400 mt-1'>Professional Trading Solutions</div>
                             </div>
-                            <Link href='/rsvp'>
-                                <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer mb-2.5'>
-                                    RSVP
-                                </Button>
-                            </Link>
-                            {/* Login/Logout Button */}
+
+                            {/* Dashboard Button – only if userId AND at least one allowed dashboard */}
+                            {userid && dashboards.length > 0 && (
+                                <div className='space-y-2'>
+                                    <Button
+                                        onClick={handleDashboardClick}
+                                        className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                    >
+                                        Dashboard
+                                    </Button>
+
+                                    {/* If multiple dashboards, show a small selector under the same button */}
+                                    {dashboards.length > 1 && showDashboardMenu && (
+                                        <div className='mt-2 space-y-2'>
+                                            {dashboards.map((dash) => (
+                                                <Button
+                                                    key={dash.path}
+                                                    variant='outline'
+                                                    onClick={() => goToDashboard(dash.path)}
+                                                    className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer'
+                                                >
+                                                    {dash.label}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div
                                 className={`transform transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
                                 style={{
@@ -212,8 +320,8 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                         asChild
                                         className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
                                     >
-                                        <Link href='/login?signup' onClick={() => setIsOpen(false)}>
-                                            Sign Up
+                                        <Link href='/login' onClick={() => setIsOpen(false)}>
+                                            Sign in
                                         </Link>
                                     </Button>
                                 )}
@@ -221,37 +329,32 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Logout Confirmation Modal */}
-                {showLogoutModal && (
-                    <div className='fixed inset-0 z-50 flex items-center justify-center'>
-                        <div
-                            className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100'
-                            onClick={cancelLogout}
-                        />
-                        <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
-                            <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>
-                                Confirm Logout
-                            </h2>
-                            <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
-                            <div className='flex justify-end space-x-4'>
-                                <Button
-                                    onClick={cancelLogout}
-                                    className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={confirmLogout}
-                                    className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
-                                >
-                                    Logout
-                                </Button>
-                            </div>
+            {/* Logout Confirmation Modal */}
+            {showLogoutModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
+                    <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
+                        <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>Confirm Logout</h2>
+                        <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
+                        <div className='flex justify-end space-x-4'>
+                            <Button
+                                onClick={cancelLogout}
+                                className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={confirmLogout}
+                                className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                            >
+                                Logout
+                            </Button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

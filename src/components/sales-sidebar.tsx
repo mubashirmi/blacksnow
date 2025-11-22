@@ -7,13 +7,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 const navigationItems = [
-    { title: 'KPI', url: '/sales/dashboard/kpi', icon: BarChart3 },
-    { title: 'Links', url: '/sales/dashboard/links', icon: LinkIcon },
-    { title: 'Notes', url: '/sales/dashboard/notes', icon: StickyNote },
+    { title: 'Email Upload', url: '/sales/dashboard/users', icon: User },
+    { title: 'Email Compose', url: '/sales/dashboard/automation', icon: Link2Icon },
+    { title: 'Email Campaign', url: '/sales/dashboard/campaign', icon: Target },
     { title: 'Email Schedules', url: '/sales/dashboard/emailSchedule', icon: CalendarCheck },
-    { title: 'Campaign', url: '/sales/dashboard/campaign', icon: Target },
-    { title: 'Automation', url: '/sales/dashboard/automation', icon: Link2Icon },
-    { title: 'Email Users', url: '/sales/dashboard/users', icon: User },
+    { title: 'Notes', url: '/sales/dashboard/notes', icon: StickyNote },
+    { title: 'Links', url: '/sales/dashboard/links', icon: LinkIcon },
+    { title: 'KPI', url: '/sales/dashboard/kpi', icon: BarChart3 },
 ];
 
 export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {

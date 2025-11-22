@@ -4,20 +4,71 @@ import Stripe from 'stripe';
 import logger from '../../../../lib/logger';
 
 const stripe = require('stripe')(process.env.NEXT_PRIVATE_STRIPE_SECRET);
-type ProductType = 'NewsLetter' | 'RSVP' | 'DigitalBillboard' | 'Affiliate' | 'Sales';
 
-function getProductPriceKey(productType: ProductType) {
+type ProductType = 'NewsLetter' | 'RSVP' | 'DigitalBillboard' | 'Affiliate' | 'Sales' | 'EmailMarketing';
+
+const NEWSLETTER_MONTHLY_PRICE = 10.0;
+const NEWSLETTER_YEARLY_PRICE = 50.0;
+
+const DIGITAL_BILLBOARD_MONTHLY_PRICE = 150.0;
+const DIGITAL_BILLBOARD_YEARLY_PRICE = 600.0;
+
+const RSVP_PRICE = 250.0;
+const AFFILIATE_PRICE = 30.0;
+const SALES_PRICE = 40.0;
+
+const EMAIL_MARKETING_MONTHLY_PRICE = 500.0;
+const EMAIL_MARKETING_YEARLY_PRICE = 4000.0;
+
+function normalizePeriod(raw?: string): 'monthly' | 'yearly' {
+    const value = (raw || 'monthly').toLowerCase();
+    if (['yearly', 'annual', 'annually', 'year'].includes(value)) {
+        return 'yearly';
+    }
+    return 'monthly';
+}
+
+function getProductPriceKey(productType: ProductType, periodInput?: string) {
+    const period = normalizePeriod(periodInput);
+
     switch (productType) {
-        case 'NewsLetter':
-            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_NEWSLETTER, price: 100.0 };
+        case 'NewsLetter': {
+            const isYearly = period === 'yearly';
+            const priceId = isYearly
+                ? process.env.NEXT_PRIVATE_STRIPE_PRICE_NEWSLETTER_YEARLY
+                : process.env.NEXT_PRIVATE_STRIPE_PRICE_NEWSLETTER_MONTHLY || process.env.NEXT_PRIVATE_STRIPE_PRICE_NEWSLETTER;
+
+            // Use explicit monthly / yearly values instead of 12x
+            const price = isYearly ? NEWSLETTER_YEARLY_PRICE : NEWSLETTER_MONTHLY_PRICE;
+
+            return { priceId, price };
+        }
         case 'RSVP':
-            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_RSVP, price: 10.0 };
-        case 'DigitalBillboard':
-            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_DIGITALBILLBOARD, price: 100.0 };
+            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_RSVP, price: RSVP_PRICE };
+        case 'DigitalBillboard': {
+            const isYearly = period === 'yearly';
+            const priceId = isYearly
+                ? process.env.NEXT_PRIVATE_STRIPE_PRICE_DIGITALBILLBOARD_YEARLY
+                : process.env.NEXT_PRIVATE_STRIPE_PRICE_DIGITALBILLBOARD_MONTHLY || process.env.NEXT_PRIVATE_STRIPE_PRICE_DIGITALBILLBOARD;
+
+            const price = isYearly ? DIGITAL_BILLBOARD_YEARLY_PRICE : DIGITAL_BILLBOARD_MONTHLY_PRICE;
+
+            return { priceId, price };
+        }
         case 'Affiliate':
-            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_AFFILIATE, price: 30.0 };
+            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_AFFILIATE, price: AFFILIATE_PRICE };
         case 'Sales':
-            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_SALES, price: 40.0 };
+            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_SALES, price: SALES_PRICE };
+        case 'EmailMarketing': {
+            const isYearly = period === 'yearly';
+            const priceId = isYearly
+                ? process.env.NEXT_PRIVATE_STRIPE_PRICE_EMAILMARKETING_YEARLY
+                : process.env.NEXT_PRIVATE_STRIPE_PRICE_EMAILMARKETING_MONTHLY;
+
+            const price = isYearly ? EMAIL_MARKETING_YEARLY_PRICE : EMAIL_MARKETING_MONTHLY_PRICE;
+
+            return { priceId, price };
+        }
         default:
             return undefined;
     }
@@ -27,11 +78,12 @@ const api = async (req, res) => {
     logger.defaultMeta.service = 'stripe-checkout';
 
     try {
-        const { id, email, productType, referredBy } = req.body as {
+        const { id, email, productType, referredBy, period } = req.body as {
             id: string | number;
             email: string;
             productType: ProductType;
             referredBy?: number | string | null; // Auth.id of the referrer (Affiliate)
+            period?: string; // 'monthly' | 'yearly'
         };
 
         if (!id || !email) {
@@ -39,15 +91,16 @@ const api = async (req, res) => {
             return res.status(400).json(errorResponse('Missing required fields: id or email'));
         }
 
-        const productPriceInfo = getProductPriceKey(productType);
+        const normalizedPeriod = normalizePeriod(period);
+        const productPriceInfo = getProductPriceKey(productType, normalizedPeriod);
         if (!productPriceInfo) {
             throw new Error('Unknown product type');
         }
 
         const { priceId, price } = productPriceInfo;
         if (!priceId) {
-            logger.error('Stripe price ID not found for newsletter');
-            return res.status(500).json(errorResponse('Stripe price ID not configured for newsletter'));
+            logger.error(`Stripe price ID not configured for productType=${productType}, period=${normalizedPeriod}`);
+            return res.status(500).json(errorResponse('Stripe price ID not configured for this product/period'));
         }
 
         const authRecord = await prisma.auth.findUnique({
@@ -71,7 +124,11 @@ const api = async (req, res) => {
 
         if (req.method === 'POST') {
             const origin = req.headers.origin || 'http://localhost:3000';
-            const successUrl = `${origin}/subscriptionConfirmation?session_id={CHECKOUT_SESSION_ID}&product=newsletter&email=${encodeURIComponent(email)}`;
+
+            // Keep existing "product=newsletter" behavior, just add period
+            const successUrl = `${origin}/subscriptionConfirmation?session_id={CHECKOUT_SESSION_ID}&product=newsletter&period=${encodeURIComponent(
+                normalizedPeriod
+            )}&email=${encodeURIComponent(email)}`;
             const cancelUrl = `${origin}/cancel`;
 
             const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -86,8 +143,10 @@ const api = async (req, res) => {
                     productType, // keep it consistent with your enum
                     paymentType: 'recurring',
                     referredBy: referredBy ? String(referredBy) : '',
+                    period: normalizedPeriod,
                 },
             };
+
             // Route 40% to the referrer, keep 60% as platform fee
             if (affiliateConnectId && role !== 'Sales') {
                 sessionParams.subscription_data = {
@@ -98,7 +157,7 @@ const api = async (req, res) => {
 
             const session = await stripe.checkout.sessions.create(sessionParams);
 
-            let filterProduct;
+            let filterProduct: ProductType | null;
             if (productType === 'Affiliate' || productType === 'Sales') {
                 filterProduct = null;
             } else {
@@ -108,7 +167,7 @@ const api = async (req, res) => {
             await prisma.checkout.create({
                 data: {
                     transactionId: session.id,
-                    amount: price, // store your display price; consider storing currency + unit_amount too
+                    amount: price, // this now reflects monthly or yearly based on `period`
                     AuthId: Number(id),
                     paid: false,
                     deleted: false,
@@ -116,7 +175,8 @@ const api = async (req, res) => {
                     cancelSubscripton: false,
                 },
             });
-            logger.info(`Checkout session created for Newsletter - AuthId: ${id}`);
+
+            logger.info(`Checkout session created for Newsletter - AuthId: ${id}, productType=${productType}, period=${normalizedPeriod}`);
             return res.status(200).json(baseResponse('Checkout Created', session.url));
         }
 

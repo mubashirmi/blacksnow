@@ -1,4 +1,4 @@
-import { AlertCircle, Calendar, CheckCircle, ChevronDown, Clock, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, Clock, Info, Loader2, Lock, Mail, Plus, Send, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ export default function Automation() {
     const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 
     // Collapsible groups state
-    const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
+    // const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
 
     // Scheduling mode
     const [scheduleMode, setScheduleMode] = useState<ScheduleMode>('weekdays');
@@ -136,7 +136,7 @@ export default function Automation() {
             list.forEach((u) => {
                 if (u.emailUserCSV?.id) csvFlags[`csv-${u.emailUserCSV.id}`] = true;
             });
-            setExpanded((prev) => ({ ...prev, ...csvFlags }));
+            // setExpanded((prev) => ({ ...prev, ...csvFlags }));
         } catch (err: any) {
             // also show as modal
             setFeedbackModal({
@@ -310,9 +310,9 @@ export default function Automation() {
         });
     };
 
-    const toggleUser = (id: number) => {
-        setSelectedUsers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-    };
+    // const toggleUser = (id: number) => {
+    //     setSelectedUsers((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    // };
 
     // ────────────────────────────────────────────────────────────────────────────
     // Email blocks helpers
@@ -548,7 +548,7 @@ export default function Automation() {
                 open: true,
                 type: 'success',
                 title: 'Automation created!',
-                message: 'Your email campaign has been scheduled.',
+                message: 'Your email automation has been scheduled.',
             });
 
             // Reset minimal fields; keep users loaded
@@ -589,9 +589,9 @@ export default function Automation() {
         if (formErrors.weekdays) setFormErrors((p: any) => ({ ...p, weekdays: '' }));
     };
 
-    const toggleExpanded = (key: string) => {
-        setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
+    // const toggleExpanded = (key: string) => {
+    //     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+    // };
 
     // ────────────────────────────────────────────────────────────────────────────
     // Render
@@ -748,10 +748,10 @@ export default function Automation() {
                                     <div className='flex items-center justify-between mb-2'>
                                         <button
                                             type='button'
-                                            onClick={() => toggleExpanded('manual')}
+                                            // onClick={() => toggleExpanded('manual')}
                                             className='flex items-center gap-2 font-semibold text-slate-800'
                                         >
-                                            <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} />
+                                            {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} /> */}
                                             Manually created users
                                             <span className='text-slate-500 font-normal'>({groups.manual.length})</span>
                                         </button>
@@ -767,7 +767,7 @@ export default function Automation() {
                                         </label>
                                     </div>
 
-                                    {expanded.manual && (
+                                    {/* {expanded.manual && (
                                         <>
                                             {groups.manual.length === 0 ? (
                                                 <p className='text-slate-500 text-sm'>No manual users</p>
@@ -794,21 +794,21 @@ export default function Automation() {
                                                 </div>
                                             )}
                                         </>
-                                    )}
+                                    )} */}
                                 </div>
 
                                 {/* CSV groups */}
                                 {groups.csvGroups.map((g) => {
-                                    const key = `csv-${g.id}`;
+                                    // const key = `csv-${g.id}`;
                                     return (
                                         <div key={g.id} className='p-4'>
                                             <div className='flex items-center justify-between mb-2'>
                                                 <button
                                                     type='button'
-                                                    onClick={() => toggleExpanded(key)}
+                                                    // onClick={() => toggleExpanded(key)}
                                                     className='flex items-center gap-2 font-semibold text-slate-800'
                                                 >
-                                                    <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} />
+                                                    {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} /> */}
                                                     {g.name}
                                                     <span className='text-slate-500 font-normal'>({g.users.length})</span>
                                                 </button>
@@ -824,7 +824,7 @@ export default function Automation() {
                                                 </label>
                                             </div>
 
-                                            {expanded[key] && (
+                                            {/* {expanded[key] && (
                                                 <div className='grid md:grid-cols-2 gap-2'>
                                                     {g.users.map((u) => (
                                                         <label
@@ -845,7 +845,7 @@ export default function Automation() {
                                                         </label>
                                                     ))}
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     );
                                 })}

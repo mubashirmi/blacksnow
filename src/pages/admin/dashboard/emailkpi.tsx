@@ -184,7 +184,7 @@ export default function SalesKPIPage() {
     }
 
     // Safe data extraction with defaults
-    const latestUsers = data?.latestUsers || [];
+    const emailMarketingUsers = data?.emailMarketingUsers || [];
     const userCounts = data?.userCounts || 0;
     const latestSchedules = data?.latestSchedules || [];
     const totalEmailSent = data?.totalEmailSent || [];
@@ -225,13 +225,13 @@ export default function SalesKPIPage() {
             }
         });
 
-        latestUsers.forEach((user: any) => {
-            if (user.createdAt) {
-                const date = new Date(user.createdAt);
-                const monthKey = months[date.getMonth()];
-                if (monthCounts[monthKey]) monthCounts[monthKey].users++;
-            }
-        });
+        // latestUsers.forEach((user: any) => {
+        //     if (user.createdAt) {
+        //         const date = new Date(user.createdAt);
+        //         const monthKey = months[date.getMonth()];
+        //         if (monthCounts[monthKey]) monthCounts[monthKey].users++;
+        //     }
+        // });
 
         return Object.entries(monthCounts).map(([month, data]) => ({ month, ...data }));
     };
@@ -634,7 +634,7 @@ export default function SalesKPIPage() {
                         </div>
                         <div className='flex justify-between items-center'>
                             <span className='text-gray-600'>New Subscribers</span>
-                            <span className='font-bold text-blue-600'>{latestUsers.length} recent</span>
+                            <span className='font-bold text-blue-600'>{emailMarketingUsers.length} recent</span>
                         </div>
                         <div className='flex justify-between items-center'>
                             <span className='text-gray-600'>Active Automations</span>
@@ -645,12 +645,12 @@ export default function SalesKPIPage() {
             </div>
 
             {/* Latest Subscribers */}
-            {latestUsers.length > 0 && (
+            {emailMarketingUsers.length > 0 && (
                 <Card className='shadow-md'>
                     <CardHeader>
                         <CardTitle className='flex items-center gap-2'>
                             <Users className='h-5 w-5 text-blue-600' />
-                            Latest Subscribers
+                            Latest Email Marketing Subscribers
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -665,9 +665,9 @@ export default function SalesKPIPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {latestUsers.map((user: any) => (
+                                    {emailMarketingUsers.map((user: any) => (
                                         <tr key={user.id} className='border-b hover:bg-gray-50'>
-                                            <td className='py-3 px-4'>{user.fullName || 'N/A'}</td>
+                                            <td className='py-3 px-4'>{user.firstName + ' ' + user.lastName}</td>
                                             <td className='py-3 px-4 text-gray-600'>{user.email || 'N/A'}</td>
                                             <td className='py-3 px-4 text-gray-600'>
                                                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}

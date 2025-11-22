@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, CheckCircle, Clock, Eye, Globe, Loader2, Megaphone, Monitor, Play, Rocket, Star, Target, Users, X, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, CheckCircle, Clock, Eye, Globe, Loader2, Megaphone, Monitor, Rocket, Star, Target, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -322,82 +322,17 @@ function Advertising() {
                             </div>
                         </div>
 
-                        {/* Right Visual */}
-                        <div className='relative animate-slide-in-right'>
-                            {/* Main Play Button with Decorative Elements */}
-                            <div className='relative flex items-center justify-center'>
-                                {/* Decorative Background Elements */}
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    {/* Curved Lines */}
-                                    <svg className='w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 opacity-20' viewBox='0 0 400 400'>
-                                        <path d='M50,200 Q200,50 350,200' stroke='url(#curveGradient1)' strokeWidth='8' fill='none' className='animate-pulse' />
-                                        <path
-                                            d='M50,250 Q200,100 350,250'
-                                            stroke='url(#curveGradient2)'
-                                            strokeWidth='6'
-                                            fill='none'
-                                            className='animate-pulse delay-500'
+                        {/* RIGHT */}
+                        <div className='relative animate-slide-in-right '>
+                            <div className='relative overflow-hidden '>
+                                <div className='relative flex items-center justify-center w-full h-full'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                        <LottieAnimation
+                                            src='/animations/billboardherosection.json'
+                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
+                                            loop={true}
+                                            autoplay={true}
                                         />
-                                        <path
-                                            d='M100,300 Q200,150 300,300'
-                                            stroke='url(#curveGradient3)'
-                                            strokeWidth='4'
-                                            fill='none'
-                                            className='animate-pulse delay-1000'
-                                        />
-                                        <defs>
-                                            <linearGradient id='curveGradient1' x1='0%' y1='0%' x2='100%' y2='0%'>
-                                                <stop offset='0%' stopColor='#4cc7e8' stopOpacity='0.6' />
-                                                <stop offset='100%' stopColor='#2c7bbe' stopOpacity='0.3' />
-                                            </linearGradient>
-                                            <linearGradient id='curveGradient2' x1='0%' y1='0%' x2='100%' y2='0%'>
-                                                <stop offset='0%' stopColor='#2a8dcc' stopOpacity='0.5' />
-                                                <stop offset='100%' stopColor='#4cc7e8' stopOpacity='0.2' />
-                                            </linearGradient>
-                                            <linearGradient id='curveGradient3' x1='0%' y1='0%' x2='100%' y2='0%'>
-                                                <stop offset='0%' stopColor='#2c7bbe' stopOpacity='0.4' />
-                                                <stop offset='100%' stopColor='#2a8dcc' stopOpacity='0.1' />
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-
-                                    {/* Floating Dots */}
-                                    <div className='absolute top-12 sm:top-16 left-12 sm:left-16 w-3 sm:w-4 h-3 sm:h-4 bg-[#4cc7e8] rounded-full animate-bounce opacity-60'></div>
-                                    <div className='absolute top-24 sm:top-32 right-16 sm:right-20 w-2 sm:w-3 h-2 sm:h-3 bg-[#2c7bbe] rounded-full animate-pulse delay-300 opacity-70'></div>
-                                    <div className='absolute bottom-20 sm:bottom-24 left-20 sm:left-24 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-[#2a8dcc] rounded-full animate-ping delay-700 opacity-50'></div>
-                                    <div className='absolute bottom-12 sm:bottom-16 right-12 sm:right-16 w-4 sm:w-5 h-4 sm:h-5 bg-[#4cc7e8] rounded-full animate-bounce delay-1000 opacity-40'></div>
-                                    <div className='absolute top-16 sm:top-20 right-24 sm:right-32 w-2 sm:w-3 h-2 sm:h-3 bg-[#2c7bbe] rounded-full animate-pulse delay-1500 opacity-60'></div>
-                                    <div className='absolute bottom-24 sm:bottom-32 left-24 sm:left-32 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-[#2a8dcc] rounded-full animate-ping delay-2000 opacity-50'></div>
-                                </div>
-
-                                {/* Main Play Button */}
-                                <div className='relative group'>
-                                    <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl sm:rounded-3xl blur-xl sm:blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-500 animate-pulse'></div>
-                                    <div className='relative w-40 sm:w-44 md:w-48 h-40 sm:h-44 md:h-48 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] rounded-2xl sm:rounded-3xl border-4 border-[#4cc7e8]/30 flex items-center justify-center shadow-xl sm:shadow-2xl shadow-[#2c7bbe]/40 transform group-hover:scale-105 sm:group-hover:scale-110 transition-transform duration-500'>
-                                        <div className='w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg sm:shadow-xl transform group-hover:rotate-12 transition-transform duration-500'>
-                                            <Play className='w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-white ml-1 sm:ml-2' />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Floating Stats Cards */}
-                            <div className='absolute -top-6 sm:-top-8 -left-6 sm:-left-8 bg-gradient-to-br from-[#4cc7e8]/90 to-[#2c7bbe]/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 border border-white/20 shadow-xl sm:shadow-2xl animate-float-slow'>
-                                <div className='flex items-center space-x-2 sm:space-x-3'>
-                                    <Users className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
-                                    <div>
-                                        <div className='text-xl sm:text-2xl font-bold text-white'>50K+</div>
-                                        <div className='text-white/80 text-xs sm:text-sm'>Daily Views</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className='absolute -bottom-6 sm:-bottom-8 -right-6 sm:-right-8 bg-gradient-to-br from-[#2a8dcc]/90 to-[#4cc7e8]/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 border border-white/20 shadow-xl sm:shadow-2xl animate-float-slow delay-1000'>
-                                <div className='flex items-center space-x-2 sm:space-x-3'>
-                                    <Target className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
-                                    <div>
-                                        <div className='text-xl sm:text-2xl font-bold text-white'>98%</div>
-                                        <div className='text-white/80 text-xs sm:text-sm'>Reach Rate</div>
                                     </div>
                                 </div>
                             </div>
