@@ -12,7 +12,7 @@ const Page = (props: any) => <Legal {...props} />;
 //             content: true,
 //         },
 //     });
-//     console.log('test');
+//     console.log('tesjghjkkt');
 //     return { props: { legal } };
 // };
 
