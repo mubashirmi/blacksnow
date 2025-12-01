@@ -213,19 +213,18 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     }`}
                 >
                     {/* Header */}
-                    <div className='flex items-center justify-between p-6 border-b border-[#2c7bbe]/20'>
+                    <div className='p-6 border-b border-[#2c7bbe]/20'>
                         <h2
                             className={`text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-                            } flex justify-center items-center mx-auto gap-x-1`}
+                            } gap-x-1`}
                         >
-                            <Image width={33} height={33} src='/logocolored.png' className='' alt='Logo' />
                             <span>Menu</span>
                         </h2>
                     </div>
 
                     {/* Menu Content */}
-                    <div className='p-6 space-y-8 overflow-y-auto h-full pb-72'>
+                    <div className='p-6 space-y-8 overflow-y-auto h-full pb-[370px]'>
                         {menuItems.map((section, sectionIndex) => (
                             <div
                                 key={sectionIndex}
@@ -270,6 +269,9 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     >
                         <div className='space-y-4'>
                             <div className='text-center'>
+                                <div className='w-full flex items-center justify-center mb-1'>
+                                    <Image width={50} height={50} src='/logocolored.png' className='' alt='Logo' />
+                                </div>
                                 <div className='text-lg font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</div>
                                 <div className='text-sm text-gray-400 mt-1'>Professional Trading Solutions</div>
                             </div>
@@ -292,7 +294,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                                     key={dash.path}
                                                     variant='outline'
                                                     onClick={() => goToDashboard(dash.path)}
-                                                    className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer'
+                                                    className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
                                                 >
                                                     {dash.label}
                                                 </Button>

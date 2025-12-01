@@ -51,7 +51,9 @@ export function EmailMarketingSidebar(props: React.HTMLAttributes<HTMLElement>) 
             <div className='p-6 border-b border-gray-100'>
                 <div className='flex items-center gap-3'>
                     <div className='relative transform hover:scale-105 transition-transform duration-300'>
-                        <Image src='/logoblack.png' alt='Black Snow Logo' width={40} height={40} className='object-contain drop-shadow-md' />
+                        <Link href={'/'}>
+                            <Image src='/logoblack.png' alt='Black Snow Logo' width={40} height={40} className='object-contain drop-shadow-md' />
+                        </Link>
                     </div>
                     <div>
                         <span className='font-bold text-xl text-gray-800'>Black Snow</span>

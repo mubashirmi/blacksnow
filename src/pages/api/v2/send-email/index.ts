@@ -4,8 +4,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 
 type BodyItem = {
-    id?: number; // EmailUser.id (single)
-    recipients?: number[]; // NEW: many EmailUser.id in one item
+    id?: number; // EmailUser.id (single) OR Auth.id for newsletter
+    recipients?: number[]; // NEW: many EmailUser.id OR Auth.id in one item
     subject?: string;
     text?: string;
     html?: string;
@@ -49,14 +49,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             repeated, // legacy schedule
             timeInterval, // legacy schedule
             items, // new flexible
+            isNewsletter, // NEW: flag to indicate newsletter mode
         } = req.body ?? {};
 
         // ---- Validation ----
         if (!adminId) return res.status(400).json({ message: '"adminId" is required' });
 
-        // Sender credentials (ReferralProducts account)
-        const adminMail = await prisma.emailMarketingCredentials.findUnique({ where: { authId: Number(adminId) } });
-        if (!adminMail) return res.status(404).json({ message: 'Admin not found' });
+        // Determine credentials based on mode
+        let senderEmail: string;
+        let senderPassword: string;
+        let credentialsId: number | null = null;
+
+        if (isNewsletter) {
+            // Use hardcoded newsletter credentials
+            senderEmail = 'malikmubashir.3175709877@gmail.com';
+            senderPassword = 'fhwd vueu fbnl agao';
+        } else {
+            // Use admin's email marketing credentials
+            const adminMail = await prisma.emailMarketingCredentials.findUnique({
+                where: { authId: Number(adminId) },
+            });
+            if (!adminMail) return res.status(404).json({ message: 'Admin email credentials not found' });
+            senderEmail = adminMail.email;
+            senderPassword = adminMail.appPassword;
+            credentialsId = adminMail.id;
+        }
 
         // ---------- Helpers ----------
         const toDate = (d?: string | Date) => (d ? new Date(d) : undefined);
@@ -88,22 +105,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // ---------- IMMEDIATE MANY-TO-MANY via items[] ----------
         if (Array.isArray(items) && items.length > 0 && items.every((it) => !hasSchedulingHints(it))) {
-            // Collect all unique recipients referenced by all items
             const allTargetIds = [...new Set(items.flatMap((it: BodyItem) => getTargetsFromItem(it)))];
             if (allTargetIds.length === 0) {
                 return res.status(400).json({ message: 'Provide at least one "id" or "recipients" in items.' });
             }
 
-            const users = await prisma.emailUser.findMany({ where: { id: { in: allTargetIds } } });
-            const mapUser = new Map(users.map((u) => [u.id, u]));
-            if (users.length === 0) return res.status(404).json({ message: 'No users found for provided recipients.' });
+            // Fetch recipients based on mode
+            let recipientsMap: Map<number, { id: number; email: string }>;
+
+            if (isNewsletter) {
+                const authUsers = await prisma.auth.findMany({
+                    where: {
+                        id: { in: allTargetIds },
+                        roles: { has: 'NewsLetter' },
+                    },
+                });
+                recipientsMap = new Map(authUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                if (authUsers.length === 0) {
+                    return res.status(404).json({ message: 'No newsletter users found for provided recipients.' });
+                }
+            } else {
+                const emailUsers = await prisma.emailUser.findMany({
+                    where: { id: { in: allTargetIds } },
+                });
+                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                if (emailUsers.length === 0) {
+                    return res.status(404).json({ message: 'No email users found for provided recipients.' });
+                }
+            }
 
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 465,
                 secure: true,
                 pool: true,
-                auth: { user: adminMail.email, pass: adminMail.appPassword },
+                auth: { user: senderEmail, pass: senderPassword },
             });
 
             const results: Array<any> = [];
@@ -120,7 +156,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
                 if (!bodyText && !bodyHtml) {
                     for (const rid of targets) {
-                        const user = mapUser.get(rid);
+                        const user = recipientsMap.get(rid);
                         results.push({
                             userId: rid,
                             userEmail: user?.email,
@@ -131,9 +167,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     continue;
                 }
 
-                // send to each recipient for this item
                 for (const rid of targets) {
-                    const u = mapUser.get(rid);
+                    const u = recipientsMap.get(rid);
                     if (!u) {
                         results.push({ userId: rid, status: 'failed', error: 'Recipient not found' });
                         continue;
@@ -141,14 +176,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     try {
                         const info = await transporter.sendMail({
-                            from: fromName ? { name: fromName, address: adminMail.email } : adminMail.email,
+                            from: fromName ? { name: fromName, address: senderEmail } : senderEmail,
                             to: u.email,
                             subject: subj,
                             text: bodyText,
                             html: bodyHtml,
                         });
 
-                        // immutable history
+                        // Save to history
                         await prisma.emailSentHistory.create({
                             data: {
                                 subject: subj,
@@ -158,23 +193,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 messageId: info.messageId ?? null,
                                 sentAt: new Date(),
                                 authId: Number(adminId),
-                                emailUserId: u.id,
-                                credentialsId: adminMail.id,
+                                emailUserId: isNewsletter ? null : u.id,
+                                newsletterAuthId: isNewsletter ? u.id : null,
+                                credentialsId: credentialsId,
                                 jobResultId: null,
                             },
                         });
 
-                        // keep legacy sent log
-                        await prisma.emailJobResult.create({
-                            data: {
-                                text: bodyText ?? null,
-                                html: bodyHtml ?? null,
-                                subject: subj,
-                                authId: Number(adminId),
-                                emailUserId: u.id,
-                                status: 'sent',
-                            },
-                        });
+                        // Keep legacy sent log (only for email users)
+                        if (!isNewsletter) {
+                            await prisma.emailJobResult.create({
+                                data: {
+                                    text: bodyText ?? null,
+                                    html: bodyHtml ?? null,
+                                    subject: subj,
+                                    authId: Number(adminId),
+                                    emailUserId: u.id,
+                                    status: 'sent',
+                                },
+                            });
+                        }
 
                         results.push({
                             userId: u.id,
@@ -185,7 +223,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             rejected: (info.rejected as string[]) ?? [],
                         });
                     } catch (e: any) {
-                        // record failed history, keep going
                         await prisma.emailSentHistory.create({
                             data: {
                                 subject: subj,
@@ -195,20 +232,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 errorMessage: e?.message ?? 'Unknown error',
                                 sentAt: null,
                                 authId: Number(adminId),
-                                emailUserId: u?.id ?? targets[0],
-                                credentialsId: adminMail.id,
+                                emailUserId: isNewsletter ? null : targets[0],
+                                newsletterAuthId: isNewsletter ? targets[0] : null,
+                                credentialsId: credentialsId,
                                 jobResultId: null,
                             },
                         });
 
-                        results.push({ userId: u?.id ?? targets[0], userEmail: u?.email, status: 'failed', error: e?.message ?? 'Unknown error' });
+                        results.push({
+                            userId: u?.id ?? targets[0],
+                            userEmail: u?.email,
+                            status: 'failed',
+                            error: e?.message ?? 'Unknown error',
+                        });
                     }
                 }
             }
 
             transporter.close();
             const anySent = results.some((r) => r.status === 'sent');
-            return res.status(anySent ? 200 : 500).json({ message: anySent ? 'Processed' : 'Failed to send', results });
+            return res.status(anySent ? 200 : 500).json({
+                message: anySent ? 'Processed' : 'Failed to send',
+                results,
+            });
         }
 
         // ---------- IMMEDIATE (legacy broadcast with ids[]) ----------
@@ -220,22 +266,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).json({ message: '"ids" must be a non-empty array.' });
             }
 
-            const users = await prisma.emailUser.findMany({ where: { id: { in: ids } } });
-            if (users.length === 0) return res.status(404).json({ message: 'No users found for provided ids.' });
+            let recipients: Array<{ id: number; email: string }>;
 
-            const transporter = nodemailer.createTransport({
+            if (isNewsletter) {
+                const authUsers = await prisma.auth.findMany({
+                    where: {
+                        id: { in: ids },
+                        roles: { has: 'NewsLetter' },
+                    },
+                });
+                recipients = authUsers.map((u) => ({ id: u.id, email: u.email }));
+                if (recipients.length === 0) {
+                    return res.status(404).json({ message: 'No newsletter users found for provided ids.' });
+                }
+            } else {
+                const emailUsers = await prisma.emailUser.findMany({ where: { id: { in: ids } } });
+                recipients = emailUsers;
+                if (recipients.length === 0) {
+                    return res.status(404).json({ message: 'No email users found for provided ids.' });
+                }
+            }
+
+            const transporter = nodemailer.createTransporter({
                 host: 'smtp.gmail.com',
                 port: 465,
                 secure: true,
                 pool: true,
-                auth: { user: adminMail.email, pass: adminMail.appPassword },
+                auth: { user: senderEmail, pass: senderPassword },
             });
 
             const results = await Promise.all(
-                users.map(async (u) => {
+                recipients.map(async (u) => {
                     try {
                         const info = await transporter.sendMail({
-                            from: fromName ? { name: fromName, address: adminMail.email } : adminMail.email,
+                            from: fromName ? { name: fromName, address: senderEmail } : senderEmail,
                             to: u.email,
                             subject: subject ?? '(no subject)',
                             text: text ?? undefined,
@@ -251,21 +315,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 messageId: info.messageId,
                                 sentAt: new Date(),
                                 authId: Number(adminId),
-                                emailUserId: u.id,
-                                credentialsId: adminMail.id,
+                                emailUserId: isNewsletter ? null : u.id,
+                                newsletterAuthId: isNewsletter ? u.id : null,
+                                credentialsId: credentialsId,
                             },
                         });
 
-                        await prisma.emailJobResult.create({
-                            data: {
-                                text: text ?? null,
-                                html: html ?? null,
-                                subject: subject ?? '(no subject)',
-                                authId: Number(adminId),
-                                emailUserId: u.id,
-                                status: 'sent',
-                            },
-                        });
+                        if (!isNewsletter) {
+                            await prisma.emailJobResult.create({
+                                data: {
+                                    text: text ?? null,
+                                    html: html ?? null,
+                                    subject: subject ?? '(no subject)',
+                                    authId: Number(adminId),
+                                    emailUserId: u.id,
+                                    status: 'sent',
+                                },
+                            });
+                        }
 
                         return {
                             userId: u.id,
@@ -276,18 +343,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             rejected: (info.rejected as string[]) ?? [],
                         };
                     } catch (e: any) {
-                        return { userId: u.id, userEmail: u.email, status: 'failed', error: e?.message ?? 'Unknown error' };
+                        return {
+                            userId: u.id,
+                            userEmail: u.email,
+                            status: 'failed',
+                            error: e?.message ?? 'Unknown error',
+                        };
                     }
                 })
             );
 
             transporter.close();
             const anySent = results.some((r) => r.status === 'sent');
-            return res.status(anySent ? 200 : 500).json({ message: anySent ? 'Processed' : 'Failed to send', results });
+            return res.status(anySent ? 200 : 500).json({
+                message: anySent ? 'Processed' : 'Failed to send',
+                results,
+            });
         }
 
         // ---------- SCHEDULED/AUTOMATION ----------
-        const rowsToCreate: Array<Omit<Parameters<typeof prisma.emailJobResult.create>[0]['data'], 'id' | 'createdAt'>> = [];
+        const rowsToCreate: Array<any> = [];
 
         const pushRow = (data: any) => rowsToCreate.push(data);
 
@@ -299,11 +374,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const allIdsReferenced = Array.isArray(items) && items.length > 0 ? [...new Set(items.flatMap((it: BodyItem) => expandTargets(it)))] : [];
 
-        let usersMap = new Map<number, { id: number; email: string }>();
+        let recipientsMap = new Map<number, { id: number; email: string }>();
         if (allIdsReferenced.length > 0) {
-            const users = await prisma.emailUser.findMany({ where: { id: { in: allIdsReferenced } } });
-            usersMap = new Map(users.map((u) => [u.id, u]));
-            if (users.length === 0) return res.status(404).json({ message: 'No users found for provided ids in "items".' });
+            if (isNewsletter) {
+                const authUsers = await prisma.auth.findMany({
+                    where: {
+                        id: { in: allIdsReferenced },
+                        roles: { has: 'NewsLetter' },
+                    },
+                });
+                recipientsMap = new Map(authUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                if (authUsers.length === 0) {
+                    return res.status(404).json({ message: 'No newsletter users found for provided ids in "items".' });
+                }
+            } else {
+                const emailUsers = await prisma.emailUser.findMany({
+                    where: { id: { in: allIdsReferenced } },
+                });
+                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                if (emailUsers.length === 0) {
+                    return res.status(404).json({ message: 'No email users found for provided ids in "items".' });
+                }
+            }
         }
 
         if (Array.isArray(items) && items.length > 0) {
@@ -318,7 +410,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (it.weeklyRotation) {
                     const { dayOfWeek, totalSteps, position, startAt, hour, minute } = it.weeklyRotation;
                     if (!(totalSteps >= 1) || !(position >= 1 && position <= totalSteps)) {
-                        return res.status(400).json({ message: 'weeklyRotation requires valid totalSteps and position' });
+                        return res.status(400).json({
+                            message: 'weeklyRotation requires valid totalSteps and position',
+                        });
                     }
                     const base = toDate(startAt) ?? toDate(it.runAt) ?? new Date();
                     const first = nextWeekdayAt(base, dayOfWeek, hour ?? 9, minute ?? 0);
@@ -326,18 +420,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const rotationSpanSeconds = totalSteps * 7 * 24 * 3600;
 
                     for (const rid of targets) {
-                        if (!usersMap.get(rid)) continue;
+                        if (!recipientsMap.get(rid)) continue;
                         pushRow({
                             text: bodyText,
                             html: bodyHtml,
                             subject: subj,
                             authId: Number(adminId),
-                            emailUserId: rid,
+                            emailUserId: isNewsletter ? null : rid,
+                            newsletterAuthId: isNewsletter ? rid : null,
                             runAt: runAtCalc,
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
                             status: 'pending',
+                            isNewsletter: !!isNewsletter,
                         });
                     }
                     continue;
@@ -347,25 +443,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (it.intervalRotation) {
                     const { intervalSeconds, totalSteps, position, startAt } = it.intervalRotation;
                     if (!(intervalSeconds > 0) || !(totalSteps >= 1) || !(position >= 1 && position <= totalSteps)) {
-                        return res.status(400).json({ message: 'intervalRotation requires intervalSeconds>0 and valid totalSteps/position' });
+                        return res.status(400).json({
+                            message: 'intervalRotation requires intervalSeconds>0 and valid totalSteps/position',
+                        });
                     }
                     const base = toDate(startAt) ?? toDate(it.runAt) ?? new Date();
                     const runAtCalc = addSeconds(base, (position - 1) * intervalSeconds);
                     const rotationSpanSeconds = totalSteps * intervalSeconds;
 
                     for (const rid of targets) {
-                        if (!usersMap.get(rid)) continue;
+                        if (!recipientsMap.get(rid)) continue;
                         pushRow({
                             text: bodyText,
                             html: bodyHtml,
                             subject: subj,
                             authId: Number(adminId),
-                            emailUserId: rid,
+                            emailUserId: isNewsletter ? null : rid,
+                            newsletterAuthId: isNewsletter ? rid : null,
                             runAt: runAtCalc,
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
                             status: 'pending',
+                            isNewsletter: !!isNewsletter,
                         });
                     }
                     continue;
@@ -381,18 +481,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const first = candidates[0];
 
                     for (const rid of targets) {
-                        if (!usersMap.get(rid)) continue;
+                        if (!recipientsMap.get(rid)) continue;
                         pushRow({
                             text: bodyText,
                             html: bodyHtml,
                             subject: subj,
                             authId: Number(adminId),
-                            emailUserId: rid,
+                            emailUserId: isNewsletter ? null : rid,
+                            newsletterAuthId: isNewsletter ? rid : null,
                             runAt: first,
                             repeated: true,
                             timeInterval: null,
                             weekdays: it.weekdays,
                             status: 'pending',
+                            isNewsletter: !!isNewsletter,
                         });
                     }
                     continue;
@@ -402,17 +504,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const runAtFinal = it.runAt ? new Date(it.runAt) : runAt ? new Date(runAt) : null;
 
                 for (const rid of targets) {
-                    if (!usersMap.get(rid)) continue;
+                    if (!recipientsMap.get(rid)) continue;
                     pushRow({
                         text: bodyText,
                         html: bodyHtml,
                         subject: subj,
                         authId: Number(adminId),
-                        emailUserId: rid,
+                        emailUserId: isNewsletter ? null : rid,
+                        newsletterAuthId: isNewsletter ? rid : null,
                         runAt: runAtFinal,
                         repeated: it.repeated ?? repeated ?? false,
                         timeInterval: it.timeInterval ?? timeInterval ?? null,
                         status: 'pending',
+                        isNewsletter: !!isNewsletter,
                     });
                 }
             }
@@ -428,11 +532,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     html: html ?? null,
                     subject: subject ?? '(no subject)',
                     authId: Number(adminId),
-                    emailUserId: Number(uid),
+                    emailUserId: isNewsletter ? null : Number(uid),
+                    newsletterAuthId: isNewsletter ? Number(uid) : null,
                     runAt: runAt ? new Date(runAt) : null,
                     repeated: !!repeated,
                     timeInterval: timeInterval ?? null,
                     status: 'pending',
+                    isNewsletter: !!isNewsletter,
                 });
             }
         }

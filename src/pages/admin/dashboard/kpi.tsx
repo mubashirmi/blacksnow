@@ -104,6 +104,31 @@ type RsvpEvent = {
     userBroughtProduct: any[];
 };
 
+type Checkout = {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    deleted: boolean;
+    transactionId: string;
+    AuthId: number;
+    amount: number;
+    paid: boolean;
+    product: string;
+    cancelSubscripton: boolean;
+};
+
+type CheckoutRevenue = {
+    _sum: {
+        amount: number | null;
+    };
+    product: string;
+};
+
+type ProductUser = User & {
+    roles?: string[];
+    Checkouts?: Checkout[];
+};
+
 type KPIResponse = {
     message: string;
     salesUsers: User[];
@@ -116,6 +141,8 @@ type KPIResponse = {
     latestBillBoardApprovels: Billboard[];
     totalProfit?: { _sum: { amount: number | null } };
     rsvpEvents?: RsvpEvent[];
+    checkoutRevenues?: CheckoutRevenue[];
+    userProducts?: ProductUser[];
 };
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -125,6 +152,12 @@ export default function KPIPage() {
     const [data, setData] = useState<KPIResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+    // Pagination and sorting for paying customers
+    const [currentPage, setCurrentPage] = useState(1);
+    const [sortBy, setSortBy] = useState<'revenue' | 'date'>('revenue');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const itemsPerPage = 10;
 
     const toggleSection = (sectionName: string) => {
         setExpandedSections((prev) => (prev.includes(sectionName) ? prev.filter((s) => s !== sectionName) : [...prev, sectionName]));
@@ -161,7 +194,8 @@ export default function KPIPage() {
     const latestJob = data?.latestJob ?? null;
     const latestApplicants = data?.latestJobApplicants ?? [];
     const rsvpEvents = data?.rsvpEvents ?? [];
-    const totalProfit = data?.totalProfit?._sum?.amount ?? 0;
+    const checkoutRevenues = (data?.checkoutRevenues ?? []) as CheckoutRevenue[];
+    const userProducts = (data?.userProducts ?? []) as ProductUser[];
 
     // Analytics calculations
     const getGrowthData = (users: User[]) => {
@@ -175,18 +209,6 @@ export default function KPIPage() {
         });
         return monthlyData;
     };
-
-    // const getWeeklyGrowth = (users: User[]) => {
-    //     const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-    //     return weeks.map((week, idx) => {
-    //         const count = users.filter((u) => {
-    //             const date = new Date(u.createdAt);
-    //             const day = date.getDate();
-    //             return day >= idx * 7 + 1 && day <= (idx + 1) * 7;
-    //         }).length;
-    //         return { week, affiliates: 0, sales: 0, count };
-    //     });
-    // };
 
     const getBillboardStatusData = () => {
         const statuses = ['Approved', 'NotApproved', 'Rejected'];
@@ -218,6 +240,123 @@ export default function KPIPage() {
         }));
     };
 
+    function formatProductName(product?: string) {
+        if (!product) return 'Unknown';
+        switch (product) {
+            case 'DigitalBillboard':
+                return 'Digital Billboard';
+            case 'NewsLetter':
+                return 'Newsletter';
+            case 'RSVP':
+                return 'RSVP';
+            default:
+                return product;
+        }
+    }
+
+    function getRevenueBreakdownFromUsers(users: ProductUser[]) {
+        const productMap: Record<string, { revenue: number; transactions: number; customers: Set<number> }> = {};
+
+        users.forEach((user) => {
+            const checkouts = Array.isArray(user.Checkouts) ? user.Checkouts : [];
+            checkouts.forEach((checkout) => {
+                if (!checkout || checkout.deleted || !checkout.paid) return;
+                const key = checkout.product || 'Unknown';
+                if (!productMap[key]) {
+                    productMap[key] = { revenue: 0, transactions: 0, customers: new Set<number>() };
+                }
+                productMap[key].revenue += checkout.amount || 0;
+                productMap[key].transactions += 1;
+                productMap[key].customers.add(user.id);
+            });
+        });
+
+        return Object.entries(productMap)
+            .map(([product, info]) => ({
+                product: formatProductName(product),
+                revenue: info.revenue,
+                transactions: info.transactions,
+                customers: info.customers.size,
+            }))
+            .sort((a, b) => b.revenue - a.revenue);
+    }
+
+    function getAllPayingCustomers(users: ProductUser[]) {
+        const rows: {
+            id: number;
+            name: string;
+            email: string;
+            totalRevenue: number;
+            productsBought: string[];
+            lastPurchaseDate: string | null;
+        }[] = [];
+
+        users.forEach((user) => {
+            const checkouts = Array.isArray(user.Checkouts) ? user.Checkouts : [];
+            let total = 0;
+            const products = new Set<string>();
+            let lastPurchase: string | null = null;
+
+            checkouts.forEach((checkout) => {
+                if (!checkout || checkout.deleted || !checkout.paid) return;
+                total += checkout.amount || 0;
+                products.add(formatProductName(checkout.product));
+                if (!lastPurchase || new Date(checkout.createdAt) > new Date(lastPurchase)) {
+                    lastPurchase = checkout.createdAt;
+                }
+            });
+
+            if (total > 0) {
+                rows.push({
+                    id: user.id,
+                    name: `${user.firstName} ${user.lastName}`.trim(),
+                    email: user.email,
+                    totalRevenue: total,
+                    productsBought: Array.from(products),
+                    lastPurchaseDate: lastPurchase,
+                });
+            }
+        });
+
+        return rows;
+    }
+
+    function sortCustomers(customers: ReturnType<typeof getAllPayingCustomers>) {
+        return customers.sort((a, b) => {
+            if (sortBy === 'revenue') {
+                return sortOrder === 'desc' ? b.totalRevenue - a.totalRevenue : a.totalRevenue - b.totalRevenue;
+            } else {
+                const dateA = a.lastPurchaseDate ? new Date(a.lastPurchaseDate).getTime() : 0;
+                const dateB = b.lastPurchaseDate ? new Date(b.lastPurchaseDate).getTime() : 0;
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            }
+        });
+    }
+
+    function getRevenuePieData(revenues: CheckoutRevenue[]) {
+        return revenues
+            .filter((item) => item._sum?.amount && item._sum.amount > 0)
+            .map((item) => ({
+                name: formatProductName(item.product),
+                value: item._sum.amount || 0,
+            }));
+    }
+
+    function getProductComparisons(revenues: CheckoutRevenue[]) {
+        const products = revenues.map((r) => ({ product: formatProductName(r.product), revenue: r._sum.amount || 0 }));
+        // Example comparison: highest vs lowest
+        if (products.length < 2) return null;
+        const sorted = [...products].sort((a, b) => b.revenue - a.revenue);
+        const highest = sorted[0];
+        const lowest = sorted[sorted.length - 1];
+        const avg = products.reduce((sum, p) => sum + p.revenue, 0) / products.length;
+        return { highest, lowest, average: avg };
+    }
+
+    function getNewsletterSubscribers(users: ProductUser[]) {
+        return users.filter((user) => user.roles?.includes('NewsLetter') ?? false);
+    }
+
     const currency = (n?: number | null) =>
         typeof n === 'number' ? n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) : '$0';
 
@@ -243,6 +382,62 @@ export default function KPIPage() {
     const billboardStatus = getBillboardStatusData();
     const recentActivity = getRecentActivity();
     const rsvpUtilization = getRsvpUtilization();
+
+    const revenueBreakdown = getRevenueBreakdownFromUsers(userProducts);
+    const allPayingCustomersRaw = getAllPayingCustomers(userProducts);
+    const sortedCustomers = sortCustomers(allPayingCustomersRaw);
+    const totalPages = Math.ceil(sortedCustomers.length / itemsPerPage);
+    const paginatedCustomers = sortedCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const productRevenueChartData = checkoutRevenues
+        .filter((item) => item && typeof item.product === 'string')
+        .map((item) => {
+            const rawProduct = item.product;
+            const amount = item._sum?.amount ?? 0;
+            return {
+                productKey: rawProduct,
+                product: formatProductName(rawProduct),
+                revenue: typeof amount === 'number' && !Number.isNaN(amount) ? amount : 0,
+            };
+        })
+        .filter((item) => item.revenue > 0);
+
+    const revenuePieData = getRevenuePieData(checkoutRevenues);
+    const productComparisons = getProductComparisons(checkoutRevenues);
+
+    const derivedTotalRevenue = productRevenueChartData.reduce((sum, item) => sum + item.revenue, 0);
+    const apiTotalProfit = data?.totalProfit?._sum?.amount;
+    const totalProfit = typeof apiTotalProfit === 'number' && !Number.isNaN(apiTotalProfit) ? apiTotalProfit : derivedTotalRevenue;
+
+    const totalPayingCustomers = userProducts.filter(
+        (user) => Array.isArray(user.Checkouts) && user.Checkouts.some((checkout) => checkout && checkout.paid && !checkout.deleted)
+    ).length;
+
+    const totalPaidTransactions = userProducts.reduce((sum, user) => {
+        if (!Array.isArray(user.Checkouts)) return sum;
+        const paidCount = user.Checkouts.filter((checkout) => checkout && checkout.paid && !checkout.deleted).length;
+        return sum + paidCount;
+    }, 0);
+
+    const avgRevenuePerCustomer = totalPayingCustomers > 0 ? totalProfit / totalPayingCustomers : 0;
+
+    const getRevenueForProduct = (productKey: string) => productRevenueChartData.find((item) => item.productKey === productKey)?.revenue ?? 0;
+
+    const newsletterRevenue = getRevenueForProduct('NewsLetter');
+    const billboardRevenue = getRevenueForProduct('DigitalBillboard');
+    const rsvpRevenue = getRevenueForProduct('RSVP');
+
+    const newsletterSubscribers = getNewsletterSubscribers(userProducts);
+
+    const handleSort = (column: 'revenue' | 'date') => {
+        if (sortBy === column) {
+            setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+        } else {
+            setSortBy(column);
+            setSortOrder('desc');
+        }
+        setCurrentPage(1);
+    };
 
     const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }: any) => (
         <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
@@ -404,6 +599,187 @@ export default function KPIPage() {
                     </div>
                 </div>
 
+                {/* Revenue Analytics */}
+                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                        <div className='flex items-center justify-between mb-4'>
+                            <h3 className='text-lg font-semibold text-gray-800'>Revenue by Product</h3>
+                            {!isLoading && (
+                                <div className='text-right text-sm text-gray-500'>
+                                    <div className='font-semibold text-gray-900'>{currency(totalProfit)}</div>
+                                    <div className='text-xs'>Total checkout revenue</div>
+                                </div>
+                            )}
+                        </div>
+
+                        {isLoading ? (
+                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading revenue...</div>
+                        ) : productRevenueChartData.length > 0 ? (
+                            <>
+                                <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-sm'>
+                                    <div>
+                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Paying customers</div>
+                                        <div className='text-lg font-semibold text-gray-900'>{totalPayingCustomers}</div>
+                                    </div>
+                                    <div>
+                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Paid checkouts</div>
+                                        <div className='text-lg font-semibold text-gray-900'>{totalPaidTransactions}</div>
+                                    </div>
+                                    <div>
+                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Avg / customer</div>
+                                        <div className='text-lg font-semibold text-gray-900'>{currency(avgRevenuePerCustomer)}</div>
+                                    </div>
+                                </div>
+
+                                <ResponsiveContainer width='100%' height={260}>
+                                    <BarChart data={productRevenueChartData}>
+                                        <CartesianGrid strokeDasharray='3 3' />
+                                        <XAxis dataKey='product' />
+                                        <YAxis />
+                                        <Tooltip formatter={(value) => currency(value as number)} labelFormatter={(label) => `Product: ${label}`} />
+                                        <Legend />
+                                        <Bar dataKey='revenue' name='Revenue' fill='#6366f1' />
+                                    </BarChart>
+                                </ResponsiveContainer>
+
+                                {revenueBreakdown.length > 0 && (
+                                    <div className='mt-4 space-y-1 text-xs text-gray-600'>
+                                        {revenueBreakdown.map((row) => (
+                                            <div key={row.product} className='flex items-center justify-between'>
+                                                <span className='font-medium text-gray-700'>{row.product}</span>
+                                                <span>
+                                                    {currency(row.revenue)} · {row.customers} customers · {row.transactions} tx
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className='h-64 flex items-center justify-center text-gray-400'>No revenue data</div>
+                        )}
+                    </div>
+
+                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>Revenue Breakdown Pie</h3>
+                        {isLoading ? (
+                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
+                        ) : revenuePieData.length > 0 ? (
+                            <ResponsiveContainer width='100%' height={300}>
+                                <PieChart>
+                                    <Pie
+                                        data={revenuePieData}
+                                        cx='50%'
+                                        cy='50%'
+                                        labelLine={false}
+                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                        outerRadius={80}
+                                        fill='#8884d8'
+                                        dataKey='value'
+                                    >
+                                        {revenuePieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip formatter={(value) => currency(value as number)} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className='h-64 flex items-center justify-center text-gray-400'>No revenue data</div>
+                        )}
+                        {productComparisons && (
+                            <div className='mt-4 space-y-2 text-sm text-gray-600'>
+                                <div className='flex justify-between'>
+                                    <span>Highest Revenue Product:</span>
+                                    <span className='font-medium'>
+                                        {productComparisons.highest.product} ({currency(productComparisons.highest.revenue)})
+                                    </span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span>Lowest Revenue Product:</span>
+                                    <span className='font-medium'>
+                                        {productComparisons.lowest.product} ({currency(productComparisons.lowest.revenue)})
+                                    </span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span>Average Revenue per Product:</span>
+                                    <span className='font-medium'>{currency(productComparisons.average)}</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* All Paying Customers */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex justify-between items-center mb-4'>
+                        <h3 className='text-lg font-semibold text-gray-800'>
+                            All Paying Customers (Sorted by {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)})
+                        </h3>
+                        <div className='space-x-2'>
+                            <button onClick={() => handleSort('revenue')} className='px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300'>
+                                Sort by Revenue {sortBy === 'revenue' ? (sortOrder === 'desc' ? '↓' : '↑') : ''}
+                            </button>
+                            <button onClick={() => handleSort('date')} className='px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300'>
+                                Sort by Date {sortBy === 'date' ? (sortOrder === 'desc' ? '↓' : '↑') : ''}
+                            </button>
+                        </div>
+                    </div>
+                    {isLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading customers...</div>
+                    ) : paginatedCustomers.length > 0 ? (
+                        <>
+                            <div className='overflow-x-auto'>
+                                <table className='w-full text-sm'>
+                                    <thead className='bg-gray-50'>
+                                        <tr>
+                                            <th className='px-4 py-2 text-left font-medium text-gray-500'>Customer</th>
+                                            <th className='px-4 py-2 text-left font-medium text-gray-500'>Email</th>
+                                            <th className='px-4 py-2 text-left font-medium text-gray-500'>Products</th>
+                                            <th className='px-4 py-2 text-right font-medium text-gray-500'>Revenue</th>
+                                            <th className='px-4 py-2 text-right font-medium text-gray-500'>Last purchase</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className='divide-y'>
+                                        {paginatedCustomers.map((customer) => (
+                                            <tr key={customer.id} className='hover:bg-gray-50'>
+                                                <td className='px-4 py-2 font-medium text-gray-900'>{customer.name}</td>
+                                                <td className='px-4 py-2 text-gray-600'>{customer.email}</td>
+                                                <td className='px-4 py-2 text-gray-600'>{customer.productsBought.join(', ')}</td>
+                                                <td className='px-4 py-2 text-right text-gray-900'>{currency(customer.totalRevenue)}</td>
+                                                <td className='px-4 py-2 text-right text-gray-500'>
+                                                    {customer.lastPurchaseDate ? formatDate(customer.lastPurchaseDate) : '-'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className='mt-4 flex justify-between items-center'>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className='px-4 py-2 bg-gray-200 rounded text-sm disabled:opacity-50 hover:bg-gray-300'
+                                >
+                                    Previous
+                                </button>
+                                <span className='text-sm text-gray-600'>
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className='px-4 py-2 bg-gray-200 rounded text-sm disabled:opacity-50 hover:bg-gray-300'
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No paying customers yet</div>
+                    )}
+                </div>
+
                 {/* Recent Activity Table */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <h3 className='text-lg font-semibold text-gray-800 mb-4'>Recent Activity</h3>
@@ -453,7 +829,7 @@ export default function KPIPage() {
 
                 {/* Detailed Sections */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
-                    {['Newsletter', 'Billboard', 'Affiliate', 'Sales', 'Events'].map((section) => (
+                    {['Newsletter', 'Billboard', 'Affiliate', 'Sales', 'Events', 'Blogs', 'Notes'].map((section) => (
                         <div key={section} className='border-b border-gray-200 last:border-b-0'>
                             <button
                                 onClick={() => toggleSection(section)}
@@ -471,9 +847,50 @@ export default function KPIPage() {
                                 <div className='px-6 pb-6'>
                                     {section === 'Newsletter' && (
                                         <div className='space-y-6'>
+                                            <div className='flex flex-wrap gap-4'>
+                                                <div className='px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm'>
+                                                    <span className='font-semibold'>Newsletter revenue: </span>
+                                                    <span>{currency(newsletterRevenue)}</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h4 className='font-semibold text-gray-800 mb-3'>Newsletter Subscribers</h4>
+                                                {newsletterSubscribers.length > 0 ? (
+                                                    <div className='overflow-x-auto'>
+                                                        <table className='w-full text-sm'>
+                                                            <thead className='bg-gray-50'>
+                                                                <tr>
+                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Name</th>
+                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Email</th>
+                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Subscribed On</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className='divide-y'>
+                                                                {newsletterSubscribers.map((user) => (
+                                                                    <tr key={user.id}>
+                                                                        <td className='px-4 py-2 font-medium text-gray-900'>
+                                                                            {user.firstName} {user.lastName}
+                                                                        </td>
+                                                                        <td className='px-4 py-2 text-gray-600'>{user.email}</td>
+                                                                        <td className='px-4 py-2 text-gray-500'>{formatDate(user.createdAt)}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                ) : (
+                                                    <p className='text-gray-500'>No subscribers yet</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {section === 'Blogs' && (
+                                        <div className='space-y-6'>
                                             {latestBlog ? (
                                                 <div className='border rounded-lg p-4'>
-                                                    <h4 className='font-semibold text-gray-800 mb-2'>{latestBlog.title}</h4>
+                                                    <h4 className='font-semibold text-gray-800 mb-2'>Latest Blog: {latestBlog.title}</h4>
                                                     <div className='flex gap-4 text-sm text-gray-500 mb-3'>
                                                         <span>Category: {latestBlog.category}</span>
                                                         <span>Views: {latestBlog.views}</span>
@@ -484,7 +901,11 @@ export default function KPIPage() {
                                             ) : (
                                                 <p className='text-gray-500'>No blog posts available</p>
                                             )}
+                                        </div>
+                                    )}
 
+                                    {section === 'Notes' && (
+                                        <div className='space-y-6'>
                                             {latestNotes.length > 0 ? (
                                                 <div>
                                                     <h4 className='font-semibold text-gray-800 mb-3'>Recent Notes</h4>
@@ -579,6 +1000,10 @@ export default function KPIPage() {
 
                                     {section === 'Billboard' && (
                                         <div>
+                                            <div className='mb-4'>
+                                                <span className='text-sm font-semibold text-gray-700'>Digital billboard revenue:</span>
+                                                <span className='ml-2 text-sm text-gray-900'>{currency(billboardRevenue)}</span>
+                                            </div>
                                             {billboardApprovals.length > 0 ? (
                                                 <div className='grid md:grid-cols-2 gap-4'>
                                                     {billboardApprovals.map((billboard) => (
@@ -610,6 +1035,10 @@ export default function KPIPage() {
 
                                     {section === 'Events' && (
                                         <div>
+                                            <div className='mb-4'>
+                                                <span className='text-sm font-semibold text-gray-700'>RSVP revenue:</span>
+                                                <span className='ml-2 text-sm text-gray-900'>{currency(rsvpRevenue)}</span>
+                                            </div>
                                             {rsvpEvents.length > 0 ? (
                                                 <div className='overflow-x-auto'>
                                                     <table className='w-full'>

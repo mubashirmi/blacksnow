@@ -7,46 +7,73 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
     try {
         if (method === 'GET') {
-            const [salesUsers, affiliateUsers, latestThreeNotes, latestJob, latestBlog, latestBillboard, latestBillBoardApprovels, totalProfit, rsvpEvents] =
-                await Promise.all([
-                    prisma.auth.findMany({
-                        where: {
-                            roles: { has: Role.Sales },
-                        },
-                    }),
-                    prisma.auth.findMany({
-                        where: {
-                            roles: { has: Role.Affiliate },
-                        },
-                    }),
-                    prisma.notes.findMany({
-                        orderBy: { createdAt: 'desc' },
-                        take: 3,
-                    }),
-                    prisma.careers.findFirst({
-                        orderBy: { createdAt: 'desc' },
-                    }),
-                    prisma.blogpost.findFirst({
-                        orderBy: { createdAt: 'desc' },
-                    }),
-                    prisma.digitalBillboard.findFirst({
-                        orderBy: { createdAt: 'desc' },
-                    }),
-                    prisma.digitalBillboard.findMany({
-                        where: { status: 'NotApproved' },
-                        orderBy: { createdAt: 'desc' },
-                        take: 3,
-                    }),
+            const [
+                salesUsers,
+                affiliateUsers,
+                latestThreeNotes,
+                latestJob,
+                latestBlog,
+                latestBillboard,
+                latestBillBoardApprovels,
+                totalProfit,
+                rsvpEvents,
+                checkoutRevenues,
+                userProducts,
+            ] = await Promise.all([
+                prisma.auth.findMany({
+                    where: {
+                        roles: { has: Role.Sales },
+                    },
+                }),
+                prisma.auth.findMany({
+                    where: {
+                        roles: { has: Role.Affiliate },
+                    },
+                }),
+                prisma.notes.findMany({
+                    orderBy: { createdAt: 'desc' },
+                    take: 3,
+                }),
+                prisma.careers.findFirst({
+                    orderBy: { createdAt: 'desc' },
+                }),
+                prisma.blogpost.findFirst({
+                    orderBy: { createdAt: 'desc' },
+                }),
+                prisma.digitalBillboard.findFirst({
+                    orderBy: { createdAt: 'desc' },
+                }),
+                prisma.digitalBillboard.findMany({
+                    where: { status: 'NotApproved' },
+                    orderBy: { createdAt: 'desc' },
+                    take: 3,
+                }),
 
-                    prisma.checkout.aggregate({
-                        _sum: { amount: true },
-                    }),
-                    prisma.calendar.findMany({
-                        include: {
-                            userBroughtProduct: true,
+                prisma.checkout.aggregate({
+                    _sum: { amount: true },
+                }),
+                prisma.calendar.findMany({
+                    include: {
+                        userBroughtProduct: true,
+                    },
+                }),
+
+                prisma.checkout.groupBy({
+                    by: ['product'],
+                    _sum: { amount: true },
+                }),
+
+                prisma.auth.findMany({
+                    where: {
+                        Checkouts: {
+                            some: {},
                         },
-                    }),
-                ]);
+                    },
+                    include: {
+                        Checkouts: true,
+                    },
+                }),
+            ]);
 
             let latestJobApplicants: any[] = [];
             if (latestJob) {
@@ -75,6 +102,8 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 latestBillBoardApprovels,
                 totalProfit,
                 rsvpEvents,
+                checkoutRevenues,
+                userProducts,
             });
         } else {
             return res.status(405).json({ message: 'Method Not Allowed' });

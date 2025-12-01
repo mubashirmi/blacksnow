@@ -17,7 +17,6 @@ model Auth {
   firstName                 String
   lastName                  String
   password                  String
-  // was: role String?
   roles                     Role[]                      @default([])
   referralProducts          ReferralProducts[]
   adminStripeConnectId      String?                     @unique
@@ -26,24 +25,18 @@ model Auth {
   referredSales             Auth[]                      @relation("AffiliateToSales")
   referredBy                Auth?                       @relation("AffiliateToSales", fields: [referredById], references: [id])
   referredById              Int?
-  digitalBillboards         DigitalBillboard[] // many billboards per Auth
+  digitalBillboards         DigitalBillboard[]
   emailMarketingCredentials emailMarketingCredentials[]
-  emailUsers                EmailUser[] // <— updated type name
+  emailUsers                EmailUser[]
   EmailJobResult            EmailJobResult[]
   AdminPayouts              AdminPayouts[]
   AdminRevenue              AdminRevenue[]
   Notes                     Notes[]
   emailSentHistories        EmailSentHistory[]
-}
 
-model AdminPayouts {
-  id                   Int      @id @default(autoincrement())
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  amount               String
-  adminStripeConnectId String
-  auth                 Auth     @relation(fields: [authId], references: [id])
-  authId               Int
+  // NEW: Newsletter relations
+  newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
+  newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
 }
 
 enum Role {
@@ -54,6 +47,16 @@ enum Role {
   Rsvp
   DigitalBillboard
   EmailMarketing
+}
+
+model AdminPayouts {
+  id                   Int      @id @default(autoincrement())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  amount               String
+  adminStripeConnectId String
+  auth                 Auth     @relation(fields: [authId], references: [id])
+  authId               Int
 }
 
 model emailMarketingCredentials {
@@ -129,25 +132,36 @@ model EmailJobResult {
   // content
   subject String
   text    String?
-  html    String? // <— added, optional HTML
+  html    String?
 
   // scheduling
-  runAt               DateTime? // if null, not yet scheduled (we usually set it)
+  runAt               DateTime?
   repeated            Boolean?  @default(false)
-  timeInterval        Int? // seconds (interval cadence) — keeps your existing field
-  weekdays            Int[] // e.g. [0,3,5] => Sun/Wed/Fri
+  timeInterval        Int? // seconds
+  weekdays            Int[]
   rotationSpanSeconds Int?
 
+  // NEW: newsletter flag
+  isNewsletter Boolean @default(false)
+
   // bookkeeping
-  auth               Auth               @relation(fields: [authId], references: [id])
-  emailUser          EmailUser          @relation(fields: [emailUserId], references: [id])
-  authId             Int
-  emailUserId        Int
+  auth   Auth @relation(fields: [authId], references: [id])
+  authId Int
+
+  // For email users (existing)
+  emailUser   EmailUser? @relation(fields: [emailUserId], references: [id])
+  emailUserId Int?
+
+  // NEW: For newsletter (Auth users with NewsLetter role)
+  newsletterAuth   Auth? @relation("NewsletterRecipient", fields: [newsletterAuthId], references: [id])
+  newsletterAuthId Int?
+
   status             EmailStatus        @default(pending)
   emailSentHistories EmailSentHistory[]
 
   @@index([authId])
   @@index([emailUserId])
+  @@index([newsletterAuthId])
   @@index([status, runAt])
 }
 
@@ -160,21 +174,26 @@ enum EmailStatus {
 
 model EmailSentHistory {
   id           String      @id @default(cuid())
-  createdAt    DateTime    @default(now()) // when it was logged
-  sentAt       DateTime? // actual send time
+  createdAt    DateTime    @default(now())
+  sentAt       DateTime?
   subject      String
   text         String?
   html         String?
   status       EmailStatus @default(sent)
-  messageId    String? // from nodemailer
-  errorMessage String? // if failed
+  messageId    String?
+  errorMessage String?
 
   // Relations
   auth   Auth @relation(fields: [authId], references: [id])
   authId Int
 
-  emailUser   EmailUser @relation(fields: [emailUserId], references: [id])
-  emailUserId Int
+  // For email users
+  emailUser   EmailUser? @relation(fields: [emailUserId], references: [id])
+  emailUserId Int?
+
+  // NEW: For newsletter recipients
+  newsletterAuth   Auth? @relation("NewsletterHistory", fields: [newsletterAuthId], references: [id])
+  newsletterAuthId Int?
 
   credentials   emailMarketingCredentials? @relation(fields: [credentialsId], references: [id])
   credentialsId Int?
@@ -184,6 +203,7 @@ model EmailSentHistory {
 
   @@index([authId])
   @@index([emailUserId])
+  @@index([newsletterAuthId])
   @@index([credentialsId])
   @@index([jobResultId])
   @@index([status])

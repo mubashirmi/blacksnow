@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
+import lottie from 'lottie-web';
 import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function Pricing() {
     const [isClient, setIsClient] = useState(false);
@@ -22,6 +23,26 @@ function Pricing() {
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState('monthly'); // 'monthly' or 'yearly'
     const router = useRouter();
+
+    const LottieAnimation = ({ src, loop, autoplay, style }) => {
+        const containerRef = useRef(null);
+
+        useEffect(() => {
+            if (typeof window !== 'undefined' && containerRef.current) {
+                const animation = lottie.loadAnimation({
+                    container: containerRef.current,
+                    renderer: 'svg',
+                    loop,
+                    autoplay,
+                    path: src,
+                });
+
+                return () => animation.destroy(); // Cleanup
+            }
+        }, [src, loop, autoplay]);
+
+        return <div ref={containerRef} style={style} />;
+    };
 
     useEffect(() => {
         setIsClient(true);
@@ -257,17 +278,37 @@ function Pricing() {
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
             <section className='relative pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                        PREMIUM PRODUCTS & SERVICES
-                    </Badge>
-                    <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Pricing</span>
-                    </h1>
-                    <div className='w-96 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 sm:mb-5'></div>
-                    <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8'>
-                        Discover our comprehensive suite of trading tools, educational resources, and premium services designed to elevate your trading success.
-                    </p>
+                <div className='container max-w-8xl mx-auto'>
+                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                        <div>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                PREMIUM PRODUCTS & SERVICES
+                            </Badge>
+                            <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Pricing</span>
+                            </h1>
+                            <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                            <p className='text-lg sm:text-xl text-gray-300 max-w-3xl leading-relaxed mb-8'>
+                                Discover our comprehensive suite of trading tools, educational resources, and premium services designed to elevate your trading
+                                success.
+                            </p>
+                        </div>
+                        {/* RIGHT */}
+                        <div className='relative animate-slide-in-right '>
+                            <div className='relative overflow-hidden '>
+                                <div className='relative flex items-center justify-center w-full h-full'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                        <LottieAnimation
+                                            src='/animations/pricingicon.json'
+                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:max-w-[250px] lg:max-h-[250px]'
+                                            loop={true}
+                                            autoplay={true}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Billing Toggle */}
                     <div className='flex items-center justify-center gap-4 mt-8'>
@@ -340,7 +381,7 @@ function Pricing() {
                                                             !product.available ? 'opacity-50' : ''
                                                         }`}
                                                     >
-                                                        <product.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
+                                                        <product.icon className='min-w-7 min-h-7 sm:min-w-8 sm:min-h-8 text-white' />
                                                     </div>
                                                     <div>
                                                         <CardTitle className='text-xl sm:text-2xl font-black text-white'>{product.name}</CardTitle>
