@@ -9,8 +9,19 @@ type EmailUser = {
     emailUserCSV?: { id: number; name: string };
 };
 
+type NewsletterUser = {
+    id: number;
+    email: string;
+    fullName: string;
+};
+
+type RecipientMode = 'newsletter' | 'emailUsers';
+
 export default function SalesCampaignPage() {
     const [emailUsers, setEmailUsers] = useState<EmailUser[]>([]);
+    const [newsletterUsers, setNewsletterUsers] = useState<NewsletterUser[]>([]);
+    const [recipientMode, setRecipientMode] = useState<RecipientMode>('emailUsers');
+
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
@@ -34,9 +45,6 @@ export default function SalesCampaignPage() {
     // Multiple emails (max 5)
     const [emails, setEmails] = useState<string[]>(['']);
 
-    // Collapsible groups (manual + csv lists)
-    // const [expanded, setExpanded] = useState<Record<string, boolean>>({ manual: true });
-
     // Credentials gate
     const [showCredentialsModal, setShowCredentialsModal] = useState(false);
     const [checkingCredentials, setCheckingCredentials] = useState(false);
@@ -54,7 +62,7 @@ export default function SalesCampaignPage() {
             const ok = await checkMarketingCredentials();
             setHasCredentialsOk(ok);
             if (ok) {
-                fetchEmailUsers();
+                fetchEmailUsersAndNewsletters();
             } else {
                 setLoading(false); // don't leave spinner if gated
             }
@@ -62,7 +70,7 @@ export default function SalesCampaignPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const fetchEmailUsers = async () => {
+    const fetchEmailUsersAndNewsletters = async () => {
         try {
             setLoading(true);
             const id = Number(localStorage.getItem('adminId'));
@@ -70,10 +78,12 @@ export default function SalesCampaignPage() {
                 if (typeof window !== 'undefined') window.location.href = '/login';
                 return;
             }
-            const response = await fetch(`/api/v2/email-users?authId=${id}`);
-            if (!response.ok) throw new Error('Failed to fetch email users');
 
-            const data = await response.json();
+            const [emailRes, newsletterRes] = await Promise.all([fetch(`/api/v2/email-users?authId=${id}`), fetch('/api/v2/newsLetterMail')]);
+
+            // ----- Email users -----
+            if (!emailRes.ok) throw new Error('Failed to fetch email users');
+            const data = await emailRes.json();
             const usersRaw: EmailUser[] = Array.isArray(data.emailUser) ? data.emailUser : data.emailUser ? [data.emailUser] : [];
 
             const users = usersRaw.map((u) => ({
@@ -83,14 +93,22 @@ export default function SalesCampaignPage() {
 
             setEmailUsers(users);
 
-            // open csv groups by default
-            const flags: Record<string, boolean> = {};
-            users.forEach((u) => {
-                if (u.emailUserCSV?.id) flags[`csv-${u.emailUserCSV.id}`] = true;
-            });
-            // setExpanded((prev) => ({ ...prev, ...flags }));
+            // ----- Newsletter subscribers -----
+            if (newsletterRes.ok) {
+                const nData = await newsletterRes.json();
+                const policy: any[] = Array.isArray(nData?.policy) ? nData.policy : [];
+                const nlUsers: NewsletterUser[] = policy
+                    .filter((u) => u.email)
+                    .map((u) => ({
+                        id: u.id,
+                        email: u.email,
+                        fullName: `${(u.firstName || '').trim()} ${(u.lastName || '').trim()}`.trim() || (u.email ? u.email.split('@')[0] : ''),
+                    }));
+                setNewsletterUsers(nlUsers);
+            } else {
+                console.error('Failed to fetch newsletter subscribers');
+            }
         } catch (e: any) {
-            // show as modal
             setResultModal({
                 open: true,
                 type: 'error',
@@ -102,7 +120,7 @@ export default function SalesCampaignPage() {
         }
     };
 
-    // ---------- Grouping & selection ----------
+    // ---------- Grouping & selection (for email users only) ----------
     const groups = useMemo(() => {
         const manual = emailUsers.filter((u) => !u.emailUserCSVId);
         const map = new Map<number, { id: number; name: string; users: EmailUser[] }>();
@@ -117,15 +135,31 @@ export default function SalesCampaignPage() {
         return { manual, csvGroups, totalCount: emailUsers.length };
     }, [emailUsers]);
 
-    const allIds = useMemo(() => emailUsers.map((u) => u.id), [emailUsers]);
-    const isAllSelected = formData.selectedUsers.length > 0 && formData.selectedUsers.length === allIds.length;
+    const allNewsletterIds = useMemo(() => newsletterUsers.map((u) => u.id), [newsletterUsers]);
+    const allEmailIds = useMemo(() => emailUsers.map((u) => u.id), [emailUsers]);
 
-    // const toggleExpanded = (key: string) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+    const isAllSelected =
+        formData.selectedUsers.length > 0 &&
+        (recipientMode === 'newsletter' ? formData.selectedUsers.length === allNewsletterIds.length : formData.selectedUsers.length === allEmailIds.length);
+
+    const handleChangeRecipientMode = (mode: RecipientMode) => {
+        setRecipientMode((prev) => {
+            if (prev !== mode) {
+                // Clear selection when switching between newsletter & email users
+                setFormData((p) => ({ ...p, selectedUsers: [] }));
+                if (formErrors.selectedUsers) {
+                    setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
+                }
+            }
+            return mode;
+        });
+    };
 
     const toggleSelectAll = () => {
+        const ids = recipientMode === 'newsletter' ? allNewsletterIds : allEmailIds;
         setFormData((prev) => ({
             ...prev,
-            selectedUsers: isAllSelected ? [] : allIds,
+            selectedUsers: prev.selectedUsers.length === ids.length && ids.length > 0 ? [] : ids,
         }));
         if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
     };
@@ -143,14 +177,6 @@ export default function SalesCampaignPage() {
         });
         if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
     };
-
-    // const toggleUser = (id: number) => {
-    //     setFormData((prev) => ({
-    //         ...prev,
-    //         selectedUsers: prev.selectedUsers.includes(id) ? prev.selectedUsers.filter((x) => x !== id) : [...prev.selectedUsers, id],
-    //     }));
-    //     if (formErrors.selectedUsers) setFormErrors((p: any) => ({ ...p, selectedUsers: '' }));
-    // };
 
     // ---------- Credentials: Check + Save ----------
     const checkMarketingCredentials = async (): Promise<boolean> => {
@@ -250,7 +276,7 @@ export default function SalesCampaignPage() {
 
             setHasCredentialsOk(true);
             setShowCredentialsModal(false);
-            if (!emailUsers.length) fetchEmailUsers();
+            if (!emailUsers.length && !newsletterUsers.length) fetchEmailUsersAndNewsletters();
 
             setResultModal({
                 open: true,
@@ -364,9 +390,10 @@ export default function SalesCampaignPage() {
                 };
             });
 
-            const payload = { adminId, items };
+            const isNewsletter = recipientMode === 'newsletter';
 
-            // NOTE: match your spec endpoint exactly
+            const payload = { adminId, isNewsletter, items };
+
             const response = await fetch('/api/v2/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -378,7 +405,6 @@ export default function SalesCampaignPage() {
                 throw new Error(errorData.message || 'Failed to create campaign');
             }
 
-            // Success modal
             setResultModal({
                 open: true,
                 type: 'success',
@@ -386,7 +412,7 @@ export default function SalesCampaignPage() {
                 message: `Your campaign has been scheduled for ${new Date(formData.runAt).toLocaleString()}.`,
             });
 
-            // Reset form (keep users loaded and group expanded state)
+            // Reset form (keep loaded users)
             setFormData({
                 fromName: '',
                 subject: '',
@@ -419,6 +445,10 @@ export default function SalesCampaignPage() {
             </div>
         );
     }
+
+    const selectedCount = formData.selectedUsers.length;
+
+    const noRecipients = emailUsers.length === 0 && newsletterUsers.length === 0;
 
     return (
         <div className='max-w-4xl mx-auto rounded-xl overflow-hidden'>
@@ -544,40 +574,83 @@ export default function SalesCampaignPage() {
                     {formErrors.runAt && <p className='text-red-600 text-sm mt-1'>{formErrors.runAt}</p>}
                 </div>
 
-                {/* Recipients grouped (manual + each CSV) */}
+                {/* Recipients */}
                 <div>
-                    <div className='flex items-center justify-between mb-3'>
-                        <label className='flex items-center gap-2 text-sm font-semibold text-slate-700'>
-                            <Users className='w-4 h-4' />
-                            Select Recipients ({formData.selectedUsers.length} selected)
-                        </label>
+                    <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3'>
+                        <div className='flex flex-wrap items-center gap-3'>
+                            <label className='flex items-center gap-2 text-sm font-semibold text-slate-700'>
+                                <Users className='w-4 h-4' />
+                                Select Recipients ({selectedCount} selected)
+                            </label>
+
+                            {/* Audience switch: newsletter vs email users */}
+                            <div className='inline-flex items-center gap-1 bg-slate-100 rounded-lg p-1 text-xs font-medium'>
+                                <button
+                                    type='button'
+                                    onClick={() => handleChangeRecipientMode('newsletter')}
+                                    className={`px-3 py-1.5 rounded-md transition-all ${
+                                        recipientMode === 'newsletter' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:text-slate-900'
+                                    }`}
+                                >
+                                    Newsletter subscribers
+                                </button>
+                                <button
+                                    type='button'
+                                    onClick={() => handleChangeRecipientMode('emailUsers')}
+                                    className={`px-3 py-1.5 rounded-md transition-all ${
+                                        recipientMode === 'emailUsers' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-600 hover:text-slate-900'
+                                    }`}
+                                >
+                                    Email users (manual / CSV)
+                                </button>
+                            </div>
+                        </div>
+
                         <button
                             type='button'
                             onClick={toggleSelectAll}
                             className='text-sm text-slate-700 hover:text-slate-800 font-medium'
-                            disabled={submitting || emailUsers.length === 0}
+                            disabled={submitting || (recipientMode === 'newsletter' ? newsletterUsers.length === 0 : emailUsers.length === 0)}
                         >
-                            {isAllSelected ? 'Deselect All' : 'Select All'}
+                            {isAllSelected ? 'Deselect All' : recipientMode === 'newsletter' ? 'Select All Newsletter' : 'Select All Email Users'}
                         </button>
                     </div>
 
-                    {emailUsers.length === 0 ? (
+                    {noRecipients ? (
                         <div className='border border-slate-200 rounded-lg p-6 text-center'>
                             <Users className='w-12 h-12 text-slate-300 mx-auto mb-2' />
-                            <p className='text-slate-600'>No email users found</p>
-                            <p className='text-slate-500 text-sm'>Please add email users first</p>
+                            <p className='text-slate-600'>No recipients found</p>
+                            <p className='text-slate-500 text-sm'>Please add email users or collect newsletter subscribers first.</p>
                         </div>
                     ) : (
                         <div className={`border ${formErrors.selectedUsers ? 'border-red-300 bg-red-50' : 'border-slate-300'} rounded-lg divide-y`}>
-                            {/* Manual group */}
+                            {/* Newsletter group (always on top) */}
                             <div className='p-4'>
                                 <div className='flex items-center justify-between mb-2'>
-                                    <button
-                                        type='button'
-                                        // onClick={() => toggleExpanded('manual')}
-                                        className='flex items-center gap-2 font-semibold text-slate-800'
-                                    >
-                                        {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded.manual ? 'rotate-0' : '-rotate-90'}`} /> */}
+                                    <div className='flex items-center gap-2 font-semibold text-slate-800'>
+                                        Newsletter subscribers
+                                        <span className='text-slate-500 font-normal'>({newsletterUsers.length})</span>
+                                    </div>
+                                    <label className='inline-flex items-center gap-2 text-sm'>
+                                        <input
+                                            type='checkbox'
+                                            className='w-5 h-5'
+                                            disabled={submitting || recipientMode !== 'newsletter'}
+                                            checked={
+                                                recipientMode === 'newsletter' && newsletterUsers.length > 0 && groupChecked(newsletterUsers.map((u) => u.id))
+                                            }
+                                            onChange={() => toggleGroup(newsletterUsers.map((u) => u.id))}
+                                        />
+                                        <span>Select list</span>
+                                    </label>
+                                </div>
+                                {newsletterUsers.length === 0 && <p className='text-slate-500 text-sm'>No newsletter subscribers available.</p>}
+                            </div>
+
+                            {/* Manual email users */}
+                            <div className='p-4'>
+                                <div className='flex items-center justify-between mb-2'>
+                                    <button type='button' className='flex items-center gap-2 font-semibold text-slate-800'>
                                         Manually created users
                                         <span className='text-slate-500 font-normal'>({groups.manual.length})</span>
                                     </button>
@@ -586,56 +659,25 @@ export default function SalesCampaignPage() {
                                         <input
                                             type='checkbox'
                                             className='w-5 h-5'
-                                            checked={groups.manual.length > 0 && groups.manual.every((u) => formData.selectedUsers.includes(u.id))}
+                                            disabled={submitting || recipientMode !== 'emailUsers'}
+                                            checked={
+                                                recipientMode === 'emailUsers' &&
+                                                groups.manual.length > 0 &&
+                                                groups.manual.every((u) => formData.selectedUsers.includes(u.id))
+                                            }
                                             onChange={() => toggleGroup(groups.manual.map((u) => u.id))}
-                                            disabled={submitting}
                                         />
                                         <span>Select group</span>
                                     </label>
                                 </div>
-
-                                {/* {expanded.manual && (
-                                    <>
-                                        {groups.manual.length === 0 ? (
-                                            <p className='text-slate-500 text-sm'>No manual users</p>
-                                        ) : (
-                                            <div className='grid md:grid-cols-2 gap-2'>
-                                                {groups.manual.map((u) => (
-                                                    <label
-                                                        key={u.id}
-                                                        className='flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors'
-                                                    >
-                                                        <input
-                                                            type='checkbox'
-                                                            checked={formData.selectedUsers.includes(u.id)}
-                                                            onChange={() => toggleUser(u.id)}
-                                                            className='w-5 h-5 text-slate-600 rounded focus:ring-2 focus:ring-slate-500'
-                                                            disabled={submitting}
-                                                        />
-                                                        <div className='flex-1'>
-                                                            <p className='font-medium text-slate-800'>{u.fullName || '—'}</p>
-                                                            <p className='text-sm text-slate-500'>{u.email}</p>
-                                                        </div>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </>
-                                )} */}
                             </div>
 
                             {/* CSV groups */}
                             {groups.csvGroups.map((g) => {
-                                // const key = `csv-${g.id}`;
                                 return (
                                     <div key={g.id} className='p-4'>
                                         <div className='flex items-center justify-between mb-2'>
-                                            <button
-                                                type='button'
-                                                // onClick={() => toggleExpanded(key)}
-                                                className='flex items-center gap-2 font-semibold text-slate-800'
-                                            >
-                                                {/* <ChevronDown className={`w-5 h-5 transition-transform ${expanded[key] ? 'rotate-0' : '-rotate-90'}`} /> */}
+                                            <button type='button' className='flex items-center gap-2 font-semibold text-slate-800'>
                                                 {g.name}
                                                 <span className='text-slate-500 font-normal'>({g.users.length})</span>
                                             </button>
@@ -644,36 +686,17 @@ export default function SalesCampaignPage() {
                                                 <input
                                                     type='checkbox'
                                                     className='w-5 h-5'
-                                                    checked={g.users.length > 0 && g.users.every((u) => formData.selectedUsers.includes(u.id))}
+                                                    disabled={submitting || recipientMode !== 'emailUsers'}
+                                                    checked={
+                                                        recipientMode === 'emailUsers' &&
+                                                        g.users.length > 0 &&
+                                                        g.users.every((u) => formData.selectedUsers.includes(u.id))
+                                                    }
                                                     onChange={() => toggleGroup(g.users.map((u) => u.id))}
-                                                    disabled={submitting}
                                                 />
                                                 <span>Select list</span>
                                             </label>
                                         </div>
-
-                                        {/* {expanded[key] && (
-                                            <div className='grid md:grid-cols-2 gap-2'>
-                                                {g.users.map((u) => (
-                                                    <label
-                                                        key={u.id}
-                                                        className='flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors'
-                                                    >
-                                                        <input
-                                                            type='checkbox'
-                                                            checked={formData.selectedUsers.includes(u.id)}
-                                                            onChange={() => toggleUser(u.id)}
-                                                            className='w-5 h-5 text-slate-600 rounded focus:ring-2 focus:ring-slate-500'
-                                                            disabled={submitting}
-                                                        />
-                                                        <div className='flex-1'>
-                                                            <p className='font-medium text-slate-800'>{u.fullName || '—'}</p>
-                                                            <p className='text-sm text-slate-500'>{u.email}</p>
-                                                        </div>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        )} */}
                                     </div>
                                 );
                             })}
@@ -686,7 +709,7 @@ export default function SalesCampaignPage() {
                     <button
                         type='button'
                         onClick={handleSubmit}
-                        disabled={submitting || emailUsers.length === 0}
+                        disabled={submitting || (emailUsers.length === 0 && newsletterUsers.length === 0)}
                         className='w-full px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer'
                     >
                         {submitting ? (

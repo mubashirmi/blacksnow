@@ -104,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             !!it.intervalRotation;
 
         // ---------- IMMEDIATE MANY-TO-MANY via items[] ----------
-        if (Array.isArray(items) && items.length > 0 && items.every((it) => !hasSchedulingHints(it))) {
+        if (Array.isArray(items) && items.length > 0 && items.every((it: BodyItem) => !hasSchedulingHints(it))) {
             const allTargetIds = [...new Set(items.flatMap((it: BodyItem) => getTargetsFromItem(it)))];
             if (allTargetIds.length === 0) {
                 return res.status(400).json({ message: 'Provide at least one "id" or "recipients" in items.' });
@@ -232,15 +232,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 errorMessage: e?.message ?? 'Unknown error',
                                 sentAt: null,
                                 authId: Number(adminId),
-                                emailUserId: isNewsletter ? null : targets[0],
-                                newsletterAuthId: isNewsletter ? targets[0] : null,
+                                emailUserId: isNewsletter ? null : u.id,
+                                newsletterAuthId: isNewsletter ? u.id : null,
                                 credentialsId: credentialsId,
                                 jobResultId: null,
                             },
                         });
 
                         results.push({
-                            userId: u?.id ?? targets[0],
+                            userId: u?.id ?? rid,
                             userEmail: u?.email,
                             status: 'failed',
                             error: e?.message ?? 'Unknown error',
@@ -287,7 +287,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             }
 
-            const transporter = nodemailer.createTransporter({
+            // FIX: createTransporter -> createTransport
+            const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 465,
                 secure: true,
@@ -308,9 +309,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                         await prisma.emailSentHistory.create({
                             data: {
-                                subject,
-                                text,
-                                html,
+                                subject: subject ?? '(no subject)',
+                                text: text ?? null,
+                                html: html ?? null,
                                 status: 'sent',
                                 messageId: info.messageId,
                                 sentAt: new Date(),
@@ -432,6 +433,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
+                            weekdays: [], // explicitly empty for rotation
                             status: 'pending',
                             isNewsletter: !!isNewsletter,
                         });
@@ -464,6 +466,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
+                            weekdays: [], // explicitly empty for rotation
                             status: 'pending',
                             isNewsletter: !!isNewsletter,
                         });
@@ -515,6 +518,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         runAt: runAtFinal,
                         repeated: it.repeated ?? repeated ?? false,
                         timeInterval: it.timeInterval ?? timeInterval ?? null,
+                        weekdays: [], // no specific weekdays
                         status: 'pending',
                         isNewsletter: !!isNewsletter,
                     });
@@ -537,6 +541,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     runAt: runAt ? new Date(runAt) : null,
                     repeated: !!repeated,
                     timeInterval: timeInterval ?? null,
+                    weekdays: [], // no specific weekdays
                     status: 'pending',
                     isNewsletter: !!isNewsletter,
                 });
@@ -547,10 +552,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Nothing to schedule. Provide "items" or "ids".' });
         }
 
-        await prisma.$transaction(async (tx) => {
-            for (const row of rowsToCreate) {
-                await tx.emailJobResult.create({ data: row as any });
-            }
+        // ---- FIX: avoid interactive transaction, use createMany (single round-trip) ----
+        await prisma.emailJobResult.createMany({
+            data: rowsToCreate,
         });
 
         return res.status(200).json({ message: 'Scheduled', count: rowsToCreate.length });
