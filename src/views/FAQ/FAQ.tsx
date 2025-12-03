@@ -131,7 +131,7 @@ function FAQ() {
             </section>
 
             {/* Optional CTA */}
-            <section className='relative px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-4xl text-center mb-4'>
                     <p className='text-lg sm:text-xl text-gray-300 mb-4 sm:mb-5'>Still have questions?</p>
                     <button

@@ -10,7 +10,35 @@ import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Mo
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+// Memoized Lottie Animation Component
+const LottieAnimation = memo(({ src, loop, autoplay, className }) => {
+    const containerRef = useRef(null);
+    const animationRef = useRef(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && containerRef.current) {
+            animationRef.current = lottie.loadAnimation({
+                container: containerRef.current,
+                renderer: 'svg',
+                loop,
+                autoplay,
+                path: src,
+            });
+
+            return () => {
+                if (animationRef.current) {
+                    animationRef.current.destroy();
+                }
+            };
+        }
+    }, [src, loop, autoplay]);
+
+    return <div ref={containerRef} className={className} />;
+});
+
+LottieAnimation.displayName = 'LottieAnimation';
 
 function Pricing() {
     const [isClient, setIsClient] = useState(false);
@@ -23,26 +51,6 @@ function Pricing() {
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState('monthly'); // 'monthly' or 'yearly'
     const router = useRouter();
-
-    const LottieAnimation = ({ src, loop, autoplay, style }) => {
-        const containerRef = useRef(null);
-
-        useEffect(() => {
-            if (typeof window !== 'undefined' && containerRef.current) {
-                const animation = lottie.loadAnimation({
-                    container: containerRef.current,
-                    renderer: 'svg',
-                    loop,
-                    autoplay,
-                    path: src,
-                });
-
-                return () => animation.destroy(); // Cleanup
-            }
-        }, [src, loop, autoplay]);
-
-        return <div ref={containerRef} style={style} />;
-    };
 
     useEffect(() => {
         setIsClient(true);
@@ -65,107 +73,116 @@ function Pricing() {
         }
     }, []);
 
-    const products = [
-        {
-            id: 'NewsLetter',
-            name: 'Newsletter',
-            monthlyPrice: 10,
-            yearlyPrice: 50,
-            description: 'Premium trading insights and market analysis delivered weekly',
-            features: [
-                'Get your weekly stock picks for day trades, swing trades, options and dividends',
-                'Receive trading strategy from the best performances in top market sectors',
-                'Catch blog updates from every week',
-                'Get detailed time special offers and sponsorships',
-                'Read Featured News Articles',
-            ],
-            icon: Newspaper,
-            color: 'from-[#4cc7e8] to-[#2c7bbe]',
-            available: true,
-            popular: true,
-            apiName: 'NewsLetter',
-            productLink: 'https://blacksnowholdings.com',
-            productComission: '100',
-            hasSubscription: true,
-        },
-        {
-            id: 'RSVP',
-            name: 'RSVP',
-            price: 250,
-            period: 'one time',
-            description: 'Access to exclusive webinars and advanced trading education',
-            features: [
-                'Register for Webinar',
-                'Learn Investing Strategies',
-                'Learn to Build and Prospect a Master Stock List',
-                'Learn Covered Calls and Protective Puts',
-                'Learn Multiple Day Trading Strategies',
-            ],
-            icon: Calendar,
-            color: 'from-[#2c7bbe] to-[#4cc7e8]',
-            available: true,
-            popular: false,
-            apiName: 'RSVP',
-            productLink: 'https://blacksnowholdings.com/rsvp',
-            productComission: '10',
-            hasSubscription: false,
-        },
-        {
-            id: 'DigitalBillboard',
-            name: 'Digital Billboard',
-            monthlyPrice: 150,
-            yearlyPrice: 600,
-            description: 'Premium advertising placement across our platform',
-            features: ['Simple and Quick Setup', 'Global Exposure', 'Real-Time Performance Tracking', 'Enhanced Visibility'],
-            icon: Monitor,
-            color: 'from-[#4cc7e8] to-[#2a8dcc]',
-            available: true,
-            popular: false,
-            apiName: 'DigitalBillboard',
-            productLink: 'https://blacksnowholdings.com/advertising',
-            productComission: '150',
-            hasSubscription: true,
-        },
-        {
-            id: 'Sales',
-            name: 'Email/SMS System',
-            monthlyPrice: 500,
-            yearlyPrice: 4000,
-            description: 'Comprehensive communication platform for your business',
-            features: ['Send Unlimited Emails/SMS', 'Create Custom Emails/SMS', 'Send Emails/SMS in bulk', 'Scheduled Campaigns'],
-            icon: MessageSquare,
-            color: 'from-[#2a8dcc] to-[#2c7bbe]',
-            available: true,
-            popular: false,
-            apiName: 'EmailMarketing',
-            productLink: 'https://blacksnowholdings.com/emailMarketing',
-            productComission: '100',
-            hasSubscription: true,
-        },
-    ];
+    const products = useMemo(
+        () => [
+            {
+                id: 'NewsLetter',
+                name: 'Newsletter',
+                monthlyPrice: 10,
+                yearlyPrice: 50,
+                description: 'Premium trading insights and market analysis delivered weekly',
+                features: [
+                    'Get your weekly stock picks for day trades, swing trades, options and dividends',
+                    'Receive trading strategy from the best performances in top market sectors',
+                    'Catch blog updates from every week',
+                    'Get detailed time special offers and sponsorships',
+                    'Read Featured News Articles',
+                ],
+                icon: Newspaper,
+                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                available: true,
+                popular: true,
+                apiName: 'NewsLetter',
+                productLink: 'https://blacksnowholdings.com',
+                productComission: '100',
+                hasSubscription: true,
+            },
+            {
+                id: 'RSVP',
+                name: 'RSVP',
+                price: 250,
+                period: 'one time',
+                description: 'Access to exclusive webinars and advanced trading education',
+                features: [
+                    'Register for Webinar',
+                    'Learn Investing Strategies',
+                    'Learn to Build and Prospect a Master Stock List',
+                    'Learn Covered Calls and Protective Puts',
+                    'Learn Multiple Day Trading Strategies',
+                ],
+                icon: Calendar,
+                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                available: true,
+                popular: false,
+                apiName: 'RSVP',
+                productLink: 'https://blacksnowholdings.com/rsvp',
+                productComission: '10',
+                hasSubscription: false,
+            },
+            {
+                id: 'DigitalBillboard',
+                name: 'Digital Billboard',
+                monthlyPrice: 150,
+                yearlyPrice: 600,
+                description: 'Premium advertising placement across our platform',
+                features: ['Simple and Quick Setup', 'Global Exposure', 'Real-Time Performance Tracking', 'Enhanced Visibility'],
+                icon: Monitor,
+                color: 'from-[#4cc7e8] to-[#2a8dcc]',
+                available: true,
+                popular: false,
+                apiName: 'DigitalBillboard',
+                productLink: 'https://blacksnowholdings.com/advertising',
+                productComission: '150',
+                hasSubscription: true,
+            },
+            {
+                id: 'Sales',
+                name: 'Email CRM',
+                monthlyPrice: 500,
+                yearlyPrice: 4000,
+                description: 'Comprehensive communication platform for your business',
+                features: ['Send Unlimited Emails/SMS', 'Create Custom Emails/SMS', 'Send Emails/SMS in bulk', 'Scheduled Campaigns'],
+                icon: MessageSquare,
+                color: 'from-[#2a8dcc] to-[#2c7bbe]',
+                available: true,
+                popular: false,
+                apiName: 'EmailMarketing',
+                productLink: 'https://blacksnowholdings.com/emailMarketing',
+                productComission: '100',
+                hasSubscription: true,
+            },
+        ],
+        []
+    );
 
-    const getProductPrice = (product) => {
-        if (!product.hasSubscription) {
-            return `$${product.price}`;
-        }
-        return billingPeriod === 'monthly' ? `$${product.monthlyPrice}` : `$${product.yearlyPrice}`;
-    };
+    const getProductPrice = useCallback(
+        (product) => {
+            if (!product.hasSubscription) {
+                return `$${product.price}`;
+            }
+            return billingPeriod === 'monthly' ? `$${product.monthlyPrice}` : `$${product.yearlyPrice}`;
+        },
+        [billingPeriod]
+    );
 
-    const getProductPeriod = (product) => {
-        if (!product.hasSubscription) {
-            return `/ ${product.period}`;
-        }
-        return billingPeriod === 'monthly' ? '/Month' : '/Year';
-    };
+    const getProductPeriod = useCallback(
+        (product) => {
+            if (!product.hasSubscription) {
+                return `/ ${product.period}`;
+            }
+            return billingPeriod === 'monthly' ? '/Month' : '/Year';
+        },
+        [billingPeriod]
+    );
 
-    const getSavingsPercentage = (product) => {
+    const getSavingsPercentage = useCallback((product) => {
         if (!product.hasSubscription) return 0;
         const monthlyCost = product.monthlyPrice * 12;
         const yearlyCost = product.yearlyPrice;
         return Math.round(((monthlyCost - yearlyCost) / monthlyCost) * 100);
-    };
+    }, []);
 
-    const fetchUserEmail = async (userId) => {
+    const fetchUserEmail = useCallback(async (userId) => {
         setIsLoadingEmail(true);
         try {
             const response = await axios.get(`/api/v2/getUserMail/?id=${userId}`);
@@ -176,77 +193,80 @@ function Pricing() {
         } finally {
             setIsLoadingEmail(false);
         }
-    };
+    }, []);
 
-    const handlePurchase = async (product) => {
-        if (!isClient) return;
-        const userId = localStorage.getItem('userId');
+    const handlePurchase = useCallback(
+        async (product) => {
+            if (!isClient) return;
+            const userId = localStorage.getItem('userId');
 
-        if (!userId) {
-            setShowSignupModal(true);
-            return;
-        }
-
-        if (isLoadingEmail) return;
-
-        let role;
-        switch (product.id) {
-            case 'NewsLetter':
-                role = 'NewsLetter';
-                break;
-            case 'RSVP':
-                role = 'Rsvp';
-                break;
-            case 'DigitalBillboard':
-                role = 'DigitalBillboard';
-                break;
-            case 'Sales':
-                role = 'EmailMarketing';
-                break;
-            default:
-                role = product.id;
-        }
-
-        try {
-            const roleResponse = await axios.patch(`/api/v2/update-roles/?id=${userId}`, { rolesToAdd: role });
-            if (roleResponse.data?.user?.roles) {
-                localStorage.setItem('roles', JSON.stringify(roleResponse.data.user.roles));
+            if (!userId) {
+                setShowSignupModal(true);
+                return;
             }
 
-            localStorage.setItem('productLink', product.productLink);
-            localStorage.setItem('comission', product.productComission);
+            if (isLoadingEmail) return;
 
-            const email = await fetchUserEmail(userId);
-            if (!email) return;
-
-            let productType = product.id;
-            if (product.id === 'Sales') productType = 'EmailMarketing';
-
-            const requestBody = {
-                id: Number(userId),
-                email,
-                productType,
-            };
-
-            // Add period only for products with subscription
-            if (product.hasSubscription) {
-                requestBody.period = billingPeriod;
+            let role;
+            switch (product.id) {
+                case 'NewsLetter':
+                    role = 'NewsLetter';
+                    break;
+                case 'RSVP':
+                    role = 'Rsvp';
+                    break;
+                case 'DigitalBillboard':
+                    role = 'DigitalBillboard';
+                    break;
+                case 'Sales':
+                    role = 'EmailMarketing';
+                    break;
+                default:
+                    role = product.id;
             }
 
-            const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
+            try {
+                const roleResponse = await axios.patch(`/api/v2/update-roles/?id=${userId}`, { rolesToAdd: role });
+                if (roleResponse.data?.user?.roles) {
+                    localStorage.setItem('roles', JSON.stringify(roleResponse.data.user.roles));
+                }
 
-            window.location.href = stripeResponse.data.data;
-        } catch (error) {
-            console.error('Error in handlePurchase:', error);
-        }
-    };
+                localStorage.setItem('productLink', product.productLink);
+                localStorage.setItem('comission', product.productComission);
 
-    const handleUnsubscribe = (product) => {
+                const email = await fetchUserEmail(userId);
+                if (!email) return;
+
+                let productType = product.id;
+                if (product.id === 'Sales') productType = 'EmailMarketing';
+
+                const requestBody = {
+                    id: Number(userId),
+                    email,
+                    productType,
+                };
+
+                // Add period only for products with subscription
+                if (product.hasSubscription) {
+                    requestBody.period = billingPeriod;
+                }
+
+                const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
+
+                window.location.href = stripeResponse.data.data;
+            } catch (error) {
+                console.error('Error in handlePurchase:', error);
+            }
+        },
+        [billingPeriod, fetchUserEmail, isClient, isLoadingEmail]
+    );
+
+    const handleUnsubscribe = useCallback((product) => {
         setSelectedProduct(product);
         setShowConfirmModal(true);
-    };
+    }, []);
 
-    const confirmUnsubscribe = async () => {
+    const confirmUnsubscribe = useCallback(async () => {
         if (isLoadingUnsubscribe || !selectedProduct) return;
 
         const cookies = parseCookies();
@@ -272,14 +292,18 @@ function Pricing() {
         } finally {
             setIsLoadingUnsubscribe(false);
         }
-    };
+    }, [isLoadingUnsubscribe, selectedProduct, router]);
+
+    const handleBillingPeriodToggle = useCallback(() => {
+        setBillingPeriod((prev) => (prev === 'monthly' ? 'yearly' : 'monthly'));
+    }, []);
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             {/* Hero Section */}
-            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20 px-4 sm:px-6 md:px-8'>
+            <section className='relative pt-16 sm:pt-20 md:pt-24 pb-5 sm:pb-7 px-4 sm:px-6 md:px-8'>
                 <div className='container max-w-8xl mx-auto'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20'>
                         <div>
                             <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 PREMIUM PRODUCTS & SERVICES
@@ -293,25 +317,27 @@ function Pricing() {
                                 success.
                             </p>
                         </div>
-                        {/* RIGHT */}
-                        <div className='relative animate-slide-in-right '>
-                            <div className='relative overflow-hidden '>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
-                                        <LottieAnimation
-                                            src='/animations/pricingicon.json'
-                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:max-w-[250px] lg:max-h-[250px]'
-                                            loop={true}
-                                            autoplay={true}
-                                        />
+                        {/* RIGHT - Fixed container to prevent layout shift */}
+                        <div className='relative min-h-[300px] sm:min-h-[400px] md:min-h-[330px] lg:min-h-[370px] animate-slide-in-right'>
+                            <div className='absolute inset-0 flex items-center justify-center'>
+                                <div className='relative w-full h-full max-w-[500px] max-h-[500px] mx-auto'>
+                                    <div className='w-full h-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 p-4'>
+                                        {isClient && (
+                                            <LottieAnimation
+                                                src='/animations/pricingicon.json'
+                                                loop={true}
+                                                autoplay={true}
+                                                className='w-full h-full object-contain'
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Billing Toggle */}
-                    <div className='flex items-center justify-center gap-4 mt-8'>
+                    {/* Billing Toggle - Fixed positioning */}
+                    <div className='flex items-center justify-center gap-4 mt-10 sm:mt-14'>
                         <span
                             className={`text-base font-semibold transition-colors duration-300 ${
                                 billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
@@ -320,8 +346,9 @@ function Pricing() {
                             Monthly
                         </span>
                         <button
-                            onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
-                            className='relative w-16 h-8 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#4cc7e8]/30'
+                            onClick={handleBillingPeriodToggle}
+                            className='relative w-16 h-8 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#4cc7e8]/30 focus:outline-none focus:ring-2 focus:ring-[#4cc7e8]/50 focus:ring-offset-2 focus:ring-offset-[#050608]'
+                            aria-label={`Switch to ${billingPeriod === 'monthly' ? 'yearly' : 'monthly'} billing`}
                         >
                             <div
                                 className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ease-in-out ${
@@ -336,19 +363,14 @@ function Pricing() {
                         >
                             Yearly
                         </span>
-                        {billingPeriod === 'yearly' && (
-                            <Badge className='ml-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-3 py-1 text-xs font-bold animate-pulse'>
-                                SAVE UP TO 58%
-                            </Badge>
-                        )}
                     </div>
                 </div>
             </section>
 
             {/* Products Grid */}
-            <section className='pb-10 sm:pb-16 px-4 sm:px-6 md:px-8'>
+            <section className=' px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
-                    <div className='grid lg:grid-cols-2 gap-6 sm:gap-8'>
+                    <div className='grid lg:grid-cols-2 gap-6 sm:gap-8 pricing-grid pt-5 md:px-8 pb:10 sm:pb-16'>
                         {products.map((product, index) => {
                             const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
                             const savings = getSavingsPercentage(product);
@@ -640,6 +662,60 @@ function Pricing() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Add CSS to prevent layout shifts */}
+            <style jsx global>{`
+                @keyframes slide-in-right {
+                    from {
+                        opacity: 0;
+                        transform: translateX(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                .animate-slide-in-right {
+                    animation: slide-in-right 0.6s ease-out forwards;
+                }
+
+                @keyframes slide-in-up {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-slide-in-up {
+                    animation: slide-in-up 0.5s ease-out forwards;
+                    animation-fill-mode: both;
+                }
+
+                /* Prevent layout shifts */
+                .pricing-grid {
+                    contain: layout style paint;
+                }
+
+                /* Smooth transitions */
+                button,
+                .transition-all {
+                    transition-property: all;
+                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-duration: 300ms;
+                }
+
+                /* Fix for Lottie container */
+                .lottie-container {
+                    backface-visibility: hidden;
+                    transform: translateZ(0);
+                    will-change: transform;
+                }
+            `}</style>
         </div>
     );
 }

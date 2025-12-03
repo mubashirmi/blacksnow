@@ -433,8 +433,8 @@ export default function KPI() {
             {/* Monthly Goals */}
             <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-sm'>
                 <div className='mb-6'>
-                    <h3 className='text-xl font-bold text-gray-900 mb-1'>Monthly Goals & Targets</h3>
-                    <p className='text-sm text-gray-600'>Track your progress towards monthly objectives</p>
+                    <h3 className='text-xl font-bold text-gray-900 mb-1'>Weekly Goals & Targets</h3>
+                    <p className='text-sm text-gray-600'>Track your progress towards weekly objectives</p>
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                     <div className='p-6 bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-xl'>
@@ -444,14 +444,14 @@ export default function KPI() {
                             </div>
                             <span className='font-semibold text-gray-900'>Revenue Goal</span>
                         </div>
-                        <div className='text-3xl font-bold text-gray-900 mb-2'>$5,000</div>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>$1,250</div>
                         <div className='text-sm text-gray-600 mb-3'>
-                            Current: ${metrics.totalRevenue} ({Math.min((metrics.totalRevenue / 5000) * 100, 100).toFixed(0)}%)
+                            Current: ${metrics.totalRevenue} ({Math.min((metrics.totalRevenue / 1250) * 100, 100).toFixed(0)}%)
                         </div>
                         <div className='w-full bg-gray-200 rounded-full h-3'>
                             <div
                                 className='bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500'
-                                style={{ width: `${Math.min((metrics.totalRevenue / 5000) * 100, 100)}%` }}
+                                style={{ width: `${Math.min((metrics.totalRevenue / 1250) * 100, 100)}%` }}
                             ></div>
                         </div>
                     </div>
@@ -463,14 +463,14 @@ export default function KPI() {
                             </div>
                             <span className='font-semibold text-gray-900'>Click Goal</span>
                         </div>
-                        <div className='text-3xl font-bold text-gray-900 mb-2'>1,000</div>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>250</div>
                         <div className='text-sm text-gray-600 mb-3'>
-                            Current: {metrics.totalClicks} ({Math.min((metrics.totalClicks / 1000) * 100, 100).toFixed(0)}%)
+                            Current: {metrics.totalClicks} ({Math.min((metrics.totalClicks / 250) * 100, 100).toFixed(0)}%)
                         </div>
                         <div className='w-full bg-gray-200 rounded-full h-3'>
                             <div
                                 className='bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500'
-                                style={{ width: `${Math.min((metrics.totalClicks / 1000) * 100, 100)}%` }}
+                                style={{ width: `${Math.min((metrics.totalClicks / 250) * 100, 100)}%` }}
                             ></div>
                         </div>
                     </div>
@@ -482,14 +482,14 @@ export default function KPI() {
                             </div>
                             <span className='font-semibold text-gray-900'>Conversion Goal</span>
                         </div>
-                        <div className='text-3xl font-bold text-gray-900 mb-2'>200</div>
+                        <div className='text-3xl font-bold text-gray-900 mb-2'>50</div>
                         <div className='text-sm text-gray-600 mb-3'>
-                            Current: {metrics.totalConversions} ({Math.min((metrics.totalConversions / 200) * 100, 100).toFixed(0)}%)
+                            Current: {metrics.totalConversions} ({Math.min((metrics.totalConversions / 50) * 100, 100).toFixed(0)}%)
                         </div>
                         <div className='w-full bg-gray-200 rounded-full h-3'>
                             <div
                                 className='bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500'
-                                style={{ width: `${Math.min((metrics.totalConversions / 200) * 100, 100)}%` }}
+                                style={{ width: `${Math.min((metrics.totalConversions / 50) * 100, 100)}%` }}
                             ></div>
                         </div>
                     </div>
