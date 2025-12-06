@@ -10,29 +10,30 @@ datasource db {
 
 // schema.prisma (only the Auth model changed: role -> roles)
 model Auth {
-  id                        Int                         @id @default(autoincrement())
-  createdAt                 DateTime                    @default(now())
-  updatedAt                 DateTime                    @updatedAt
-  email                     String                      @unique
-  firstName                 String
-  lastName                  String
-  password                  String
-  roles                     Role[]                      @default([])
-  referralProducts          ReferralProducts[]
-  adminStripeConnectId      String?                     @unique
-  Checkouts                 Checkout[]
-  Subscription              Subscription[]
-  referredSales             Auth[]                      @relation("AffiliateToSales")
-  referredBy                Auth?                       @relation("AffiliateToSales", fields: [referredById], references: [id])
-  referredById              Int?
-  digitalBillboards         DigitalBillboard[]
-  emailMarketingCredentials emailMarketingCredentials[]
-  emailUsers                EmailUser[]
-  EmailJobResult            EmailJobResult[]
-  AdminPayouts              AdminPayouts[]
-  AdminRevenue              AdminRevenue[]
-  Notes                     Notes[]
-  emailSentHistories        EmailSentHistory[]
+  id                         Int                         @id @default(autoincrement())
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  email                      String                      @unique
+  firstName                  String
+  lastName                   String
+  password                   String
+  roles                      Role[]                      @default([])
+  referralProducts           ReferralProducts[]
+  adminStripeConnectId       String?                     @unique
+  adminStripeConnectIdStatus Boolean?                    @default(false)
+  Checkouts                  Checkout[]
+  Subscription               Subscription[]
+  referredSales              Auth[]                      @relation("AffiliateToSales")
+  referredBy                 Auth?                       @relation("AffiliateToSales", fields: [referredById], references: [id])
+  referredById               Int?
+  digitalBillboards          DigitalBillboard[]
+  emailMarketingCredentials  emailMarketingCredentials[]
+  emailUsers                 EmailUser[]
+  EmailJobResult             EmailJobResult[]
+  AdminPayouts               AdminPayouts[]
+  AdminRevenue               AdminRevenue[]
+  Notes                      Notes[]
+  emailSentHistories         EmailSentHistory[]
 
   // NEW: Newsletter relations
   newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")

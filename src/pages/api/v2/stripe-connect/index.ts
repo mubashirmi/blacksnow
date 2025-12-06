@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     roles: true,
                     adminStripeConnectId: true,
                     referredById: true,
+                    adminStripeConnectIdStatus: true,
                 },
             });
 
@@ -85,7 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const accountLink = await stripe.accountLinks.create({
                     account: accountId,
                     refresh_url: `${origin}/onboarding/refresh`,
-                    return_url: `${origin}/onboarding/success`,
+                    return_url: `${origin}/onboarding/success?connectId=${accountId}`,
                     type: 'account_onboarding',
                 });
                 onboardingUrl = accountLink.url;

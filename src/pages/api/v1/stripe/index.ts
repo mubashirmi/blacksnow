@@ -173,6 +173,7 @@ const api = async (req, res) => {
                     deleted: false,
                     product: filterProduct,
                     cancelSubscripton: false,
+                    period:period
                 },
             });
 

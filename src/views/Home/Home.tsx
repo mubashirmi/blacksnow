@@ -834,7 +834,7 @@ function Home() {
                             </div>
 
                             {/* Newsletter Signup Form */}
-                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 w-[90%] sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto'>
+                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 w-full sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto'>
                                 <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
                                     <Input
                                         placeholder='Join our Newsletter'
