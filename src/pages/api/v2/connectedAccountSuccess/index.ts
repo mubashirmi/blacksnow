@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Update the user's Stripe connect status
-            const update = await prisma.auth.update({
+            await prisma.auth.update({
                 where: { id: user.id },
                 data: {
                     adminStripeConnectIdStatus: true,
