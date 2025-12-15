@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Invoice" ADD COLUMN     "businessName" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "email" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "name" TEXT NOT NULL DEFAULT '';

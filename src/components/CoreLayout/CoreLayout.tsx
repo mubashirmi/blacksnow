@@ -111,7 +111,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
-                                    { name: 'Webinar RSVP', href: '/rsvp' },
+                                    { name: 'Invoice & Contract', href: '/InvoiceContract' },
                                     { name: 'Digital Billboard', href: '/advertising' },
                                     { name: 'Email CRM', href: '/emailMarketing' },
                                 ].map((link, index) => (

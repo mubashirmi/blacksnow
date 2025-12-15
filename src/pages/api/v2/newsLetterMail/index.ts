@@ -71,9 +71,9 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     const mailOptions = {
                         from: 'malikmubashir.3175709877@gmail.com', // Replace with your email
                         to: user.email,
-                        subject: subject,
-                        text: text,
-                        html: html,
+                        subject,
+                        text,
+                        html,
                     };
 
                     const info = await transporter.sendMail(mailOptions);

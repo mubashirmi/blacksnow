@@ -38,6 +38,8 @@ model Auth {
   // NEW: Newsletter relations
   newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
   newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
+  contracts            Contract[]
+  invoices             Invoice[]
 }
 
 enum Role {
@@ -48,6 +50,7 @@ enum Role {
   Rsvp
   DigitalBillboard
   EmailMarketing
+  InvoiceTool
 }
 
 model AdminPayouts {
@@ -295,7 +298,7 @@ model Checkout {
   AuthId            Int
   amount            Float
   paid              Boolean  @default(false)
-  period            String   @default("")
+  period            String   @default("") // montly/yearly
   auth              Auth     @relation(fields: [AuthId], references: [id])
   product           String?
   cancelSubscripton Boolean
@@ -496,4 +499,38 @@ enum Status {
   Approved
   NotApproved
   Rejected
+}
+
+// invoice 
+
+model Contract {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String   @default("")
+  contractName String   @default("")
+  email        String   @default("")
+
+  businessName String @default("")
+  pdf          String
+  signed       String @default("notSigned")
+
+  authId   Int? // optional foreign key
+  Auth     Auth?     @relation(fields: [authId], references: [id])
+  invoices Invoice[]
+}
+
+model Invoice {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String   @default("")
+  email        String   @default("")
+  businessName String   @default("")
+  price        String   @default("")
+
+  contractId Int? // optional foreign key
+  Contract   Contract? @relation(fields: [contractId], references: [id])
+  auth       Auth?     @relation(fields: [authId], references: [id])
+  authId     Int?
 }

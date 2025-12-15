@@ -195,7 +195,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 authId: Number(adminId),
                                 emailUserId: isNewsletter ? null : u.id,
                                 newsletterAuthId: isNewsletter ? u.id : null,
-                                credentialsId: credentialsId,
+                                credentialsId,
                                 jobResultId: null,
                             },
                         });
@@ -234,7 +234,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 authId: Number(adminId),
                                 emailUserId: isNewsletter ? null : u.id,
                                 newsletterAuthId: isNewsletter ? u.id : null,
-                                credentialsId: credentialsId,
+                                credentialsId,
                                 jobResultId: null,
                             },
                         });
@@ -318,7 +318,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                 authId: Number(adminId),
                                 emailUserId: isNewsletter ? null : u.id,
                                 newsletterAuthId: isNewsletter ? u.id : null,
-                                credentialsId: credentialsId,
+                                credentialsId,
                             },
                         });
 

@@ -5,7 +5,7 @@ import logger from '../../../../lib/logger';
 
 const stripe = require('stripe')(process.env.NEXT_PRIVATE_STRIPE_SECRET);
 
-type ProductType = 'NewsLetter' | 'RSVP' | 'DigitalBillboard' | 'Affiliate' | 'Sales' | 'EmailMarketing';
+type ProductType = 'NewsLetter' | 'RSVP' | 'DigitalBillboard' | 'Affiliate' | 'Sales' | 'EmailMarketing' | 'InvoiceTool';
 
 const NEWSLETTER_MONTHLY_PRICE = 10.0;
 const NEWSLETTER_YEARLY_PRICE = 50.0;
@@ -19,6 +19,9 @@ const SALES_PRICE = 40.0;
 
 const EMAIL_MARKETING_MONTHLY_PRICE = 500.0;
 const EMAIL_MARKETING_YEARLY_PRICE = 4000.0;
+
+const INVOICETOOL_MONTHLY_PRICE = 500.0;
+const INVOICETOOL_YEARLY_PRICE = 4000.0;
 
 function normalizePeriod(raw?: string): 'monthly' | 'yearly' {
     const value = (raw || 'monthly').toLowerCase();
@@ -66,6 +69,14 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
                 : process.env.NEXT_PRIVATE_STRIPE_PRICE_EMAILMARKETING_MONTHLY;
 
             const price = isYearly ? EMAIL_MARKETING_YEARLY_PRICE : EMAIL_MARKETING_MONTHLY_PRICE;
+
+            return { priceId, price };
+        }
+        case 'InvoiceTool': {
+            const isYearly = period === 'yearly';
+            const priceId = isYearly ? process.env.NEXT_PRIVATE_STRIPE_PRICE_INVOICETOOLS_YEARLY : process.env.NEXT_PRIVATE_STRIPE_PRICE_INVOICETOOLS_MONTHLY;
+
+            const price = isYearly ? INVOICETOOL_YEARLY_PRICE : INVOICETOOL_MONTHLY_PRICE;
 
             return { priceId, price };
         }
@@ -173,7 +184,7 @@ const api = async (req, res) => {
                     deleted: false,
                     product: filterProduct,
                     cancelSubscripton: false,
-                    period: period,
+                    period,
                 },
             });
 

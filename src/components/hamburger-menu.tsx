@@ -23,15 +23,14 @@ const menuItems = [
         category: 'Resources',
         items: [
             { name: 'Affiliate Program', href: '/affiliate' },
-            { name: 'Webinar RSVP', href: '/rsvp' },
+            { name: 'Invoice & Contract', href: '/InvoiceContract' },
             { name: 'Digital Billboard', href: '/advertising' },
             { name: 'Email Marketing', href: '/emailMarketing' },
-            // { name: 'Consultation', href: '/consultation' },
         ],
     },
 ];
 
-const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing', { label: string; path: string }> = {
+const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing', { label: string; path: string }> = {
     Affiliate: {
         label: 'Affiliate Dashboard',
         path: '/affiliate/dashboard/links',
@@ -39,6 +38,10 @@ const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'Admin' | 'DigitalBillboa
     Sales: {
         label: 'Sales Dashboard',
         path: '/sales/dashboard/links',
+    },
+    InvoiceTool: {
+        label: 'Invoice Dashboard',
+        path: '/invoicecontractdashboard/contract',
     },
     EmailMarketing: {
         label: 'Email Marketing Dashboard',

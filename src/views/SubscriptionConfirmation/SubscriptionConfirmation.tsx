@@ -127,8 +127,8 @@ function SubscriptionConfirmation() {
 
         if (productLink === 'https://blacksnowholdings.com/emailMarketing') {
             router.push('/emailMarketing/dashboard/kpi');
-        } else if (productLink === 'https://blacksnowholdings.com/rsvp') {
-            router.push('/rsvp');
+        } else if (productLink === 'https://blacksnowholdings.com/InvoiceContract') {
+            router.push('/invoicecontractdashboard/contract');
         } else if (productLink === 'https://blacksnowholdings.com/advertising') {
             router.push('/advertising');
         } else {

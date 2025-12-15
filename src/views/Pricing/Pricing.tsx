@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
 import lottie from 'lottie-web';
-import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
+import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
@@ -98,32 +98,32 @@ function Pricing() {
                 hasSubscription: true,
             },
             {
-                id: 'RSVP',
-                name: 'RSVP',
-                price: 250,
-                period: 'one time',
-                description: 'Access to exclusive webinars and advanced trading education',
+                id: 'InvoiceTool',
+                name: 'Invoice & Contract',
+                monthlyPrice: 150,
+                yearlyPrice: 600,
+                description: 'All-in-one contracts, signatures, and invoices—made simple',
                 features: [
-                    'Register for Webinar',
-                    'Learn Investing Strategies',
-                    'Learn to Build and Prospect a Master Stock List',
-                    'Learn Covered Calls and Protective Puts',
-                    'Learn Multiple Day Trading Strategies',
+                    'Upload invoices, contracts, and any PDF documents',
+                    'Generate secure, shareable signing links',
+                    'Collect digital signatures from recipients',
+                    'Create professional invoices from signed contracts',
+                    'Designed for contracts, vendor agreements, and finance ops',
                 ],
-                icon: Calendar,
+                icon: FilePen,
                 color: 'from-[#2c7bbe] to-[#4cc7e8]',
                 available: true,
                 popular: false,
-                apiName: 'RSVP',
-                productLink: 'https://blacksnowholdings.com/rsvp',
+                apiName: 'InvoiceTool',
+                productLink: 'https://blacksnowholdings.com/InvoiceContract',
                 productComission: '10',
-                hasSubscription: false,
+                hasSubscription: true,
             },
             {
                 id: 'DigitalBillboard',
                 name: 'Digital Billboard',
-                monthlyPrice: 150,
-                yearlyPrice: 600,
+                monthlyPrice: 500,
+                yearlyPrice: 4000,
                 description: 'Premium advertising placement across our platform',
                 features: ['Simple and Quick Setup', 'Global Exposure', 'Real-Time Performance Tracking', 'Enhanced Visibility'],
                 icon: Monitor,
@@ -212,8 +212,8 @@ function Pricing() {
                 case 'NewsLetter':
                     role = 'NewsLetter';
                     break;
-                case 'RSVP':
-                    role = 'Rsvp';
+                case 'InvoiceTool':
+                    role = 'InvoiceTool';
                     break;
                 case 'DigitalBillboard':
                     role = 'DigitalBillboard';
@@ -417,7 +417,7 @@ function Pricing() {
                                                 )}
                                             </div>
 
-                                            <div className='text-center mb-6'>
+                                            <div className='text-center'>
                                                 <div className='flex items-center justify-center gap-3'>
                                                     <div className={`text-4xl sm:text-5xl font-black ${isPurchased ? 'text-green-400' : 'text-[#4cc7e8]'}`}>
                                                         {getProductPrice(product)}

@@ -56,7 +56,7 @@ export default function DigitalBillboard() {
 
     useEffect(() => {
         checkAuthAndFetchData();
-        // eslint-disable-next-line no-use-before-define
+        // eslint-disable-next-line
     }, []);
 
     const checkAuthAndFetchData = async () => {
