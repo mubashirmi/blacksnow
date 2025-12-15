@@ -318,7 +318,7 @@ export default function InvoiceContractPage() {
                 </div>
             </section>
 
-            {/* Benefits Section - IMPROVED */}
+            {/* Benefits Section - IMPROVED  */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='absolute inset-0 bg-gradient-to-b from-transparent via-[#2c7bbe]/5 to-transparent pointer-events-none'></div>
 
@@ -359,7 +359,7 @@ export default function InvoiceContractPage() {
                 </div>
             </section>
 
-            {/* Use Cases Section - IMPROVED */}
+            {/* Use Cases Section - IMPROVED  */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-transparent via-[#0a0b0f] to-transparent'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
