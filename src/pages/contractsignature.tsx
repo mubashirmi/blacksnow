@@ -202,10 +202,10 @@ const ContractSignPage: React.FC = () => {
 
     const accentStyle = useMemo(
         () =>
-        ({
-            ['--accent' as any]: ACCENT,
-            ['--bg' as any]: BG,
-        } as React.CSSProperties),
+            ({
+                ['--accent' as any]: ACCENT,
+                ['--bg' as any]: BG,
+            } as React.CSSProperties),
         []
     );
 
@@ -365,7 +365,11 @@ const ContractSignPage: React.FC = () => {
         return bytes;
     };
 
-    const sanitizePdfText = (v: string) => (v ?? '').replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    const sanitizePdfText = (v: string) =>
+        (v ?? '')
+            .replace(/[\r\n\t]+/g, ' ')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
 
     const wrapText = (font: any, text: string, fontSize: number, maxWidth: number): string[] => {
         const cleaned = sanitizePdfText(text);
@@ -404,7 +408,16 @@ const ContractSignPage: React.FC = () => {
         return lines.length ? lines : [''];
     };
 
-    const drawNameBusinessOnLeft = (page: any, font: any, rgb: any, pageW: number, signatureWidth: number, margin: number, name: string, businessName: string) => {
+    const drawNameBusinessOnLeft = (
+        page: any,
+        font: any,
+        rgb: any,
+        pageW: number,
+        signatureWidth: number,
+        margin: number,
+        name: string,
+        businessName: string
+    ) => {
         const fontSize = 11;
         const lineHeight = 14;
 
