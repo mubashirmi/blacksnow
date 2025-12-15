@@ -112,6 +112,11 @@ const ContractSignPage: React.FC = () => {
     const sigWrapRef = useRef<HTMLDivElement | null>(null);
     const [sigSize, setSigSize] = useState({ width: 560, height: 180 });
 
+    // Cache signature + PDF bytes so modal submit can regenerate PDF with updated name/businessName without re-signing/re-fetching.
+    const cachedSigPngBytesRef = useRef<ArrayBuffer | null>(null);
+    const cachedPdfBytesRef = useRef<ArrayBuffer | null>(null);
+    const cachedPdfUrlRef = useRef<string>('');
+
     // Get contract ID from URL query
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -188,36 +193,45 @@ const ContractSignPage: React.FC = () => {
     useEffect(() => {
         if (!pdfUrl) return;
         setIsPdfFrameLoading(true);
+        // Invalidate cached PDF bytes if URL changes
+        if (cachedPdfUrlRef.current !== pdfUrl) {
+            cachedPdfBytesRef.current = null;
+            cachedPdfUrlRef.current = '';
+        }
     }, [pdfUrl]);
 
     const accentStyle = useMemo(
         () =>
-            ({
-                ['--accent' as any]: ACCENT,
-                ['--bg' as any]: BG,
-            } as React.CSSProperties),
+        ({
+            ['--accent' as any]: ACCENT,
+            ['--bg' as any]: BG,
+        } as React.CSSProperties),
         []
     );
 
     const handleClearDrawing = () => {
         sigCanvasRef.current?.clear();
+        cachedSigPngBytesRef.current = null;
     };
 
     const handleSignatureFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null;
         if (!file) {
             setSignatureFile(null);
+            cachedSigPngBytesRef.current = null;
             return;
         }
 
         if (!file.type.startsWith('image/')) {
             setError('Please upload an image file (PNG/JPEG) for your signature.');
             setSignatureFile(null);
+            cachedSigPngBytesRef.current = null;
             return;
         }
 
         setError(null);
         setSignatureFile(file);
+        cachedSigPngBytesRef.current = null;
     };
 
     // --- Helpers: ensure signature is BLACK on PDF ---
@@ -342,8 +356,95 @@ const ContractSignPage: React.FC = () => {
         return await pdfRes.arrayBuffer();
     };
 
-    const trySignWithPdfLib = async (pdfBytes: ArrayBuffer, sigPngBytes: ArrayBuffer): Promise<Blob> => {
-        const { PDFDocument } = await import('pdf-lib');
+    const getPdfBytesCached = async (): Promise<ArrayBuffer> => {
+        if (cachedPdfBytesRef.current && cachedPdfUrlRef.current === pdfUrl) return cachedPdfBytesRef.current;
+
+        const bytes = await fetchPdfBytes();
+        cachedPdfBytesRef.current = bytes;
+        cachedPdfUrlRef.current = pdfUrl;
+        return bytes;
+    };
+
+    const sanitizePdfText = (v: string) => (v ?? '').replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+    const wrapText = (font: any, text: string, fontSize: number, maxWidth: number): string[] => {
+        const cleaned = sanitizePdfText(text);
+        if (!cleaned) return [''];
+
+        // If it already fits, keep it as one line
+        try {
+            if (font.widthOfTextAtSize(cleaned, fontSize) <= maxWidth) return [cleaned];
+        } catch {
+            // if measurement fails for any reason, fall back to a single line
+            return [cleaned];
+        }
+
+        const words = cleaned.split(' ').filter(Boolean);
+        const lines: string[] = [];
+        let line = '';
+
+        for (const w of words) {
+            const next = line ? `${line} ${w}` : w;
+            let fits = true;
+            try {
+                fits = font.widthOfTextAtSize(next, fontSize) <= maxWidth;
+            } catch {
+                fits = true;
+            }
+
+            if (fits) {
+                line = next;
+            } else {
+                if (line) lines.push(line);
+                line = w;
+            }
+        }
+
+        if (line) lines.push(line);
+        return lines.length ? lines : [''];
+    };
+
+    const drawNameBusinessOnLeft = (page: any, font: any, rgb: any, pageW: number, signatureWidth: number, margin: number, name: string, businessName: string) => {
+        const fontSize = 11;
+        const lineHeight = 14;
+
+        const safeName = sanitizePdfText(name);
+        const safeBiz = sanitizePdfText(businessName);
+
+        // Available width on the left so it doesn't collide with bottom-right signature
+        const rightEdgeBeforeSignature = pageW - margin - signatureWidth - 12;
+        const maxTextWidth = Math.max(140, rightEdgeBeforeSignature - margin);
+
+        const label1 = `Name: ${safeName || ''}`.trim();
+        const label2 = `Business: ${safeBiz || ''}`.trim();
+
+        const lines1 = wrapText(font, label1, fontSize, maxTextWidth);
+        const lines2 = wrapText(font, label2, fontSize, maxTextWidth);
+
+        const allLines = [...lines1, ...lines2].filter((l) => l !== null && l !== undefined);
+
+        const baseY = margin + 8; // bottom-left area
+        const total = allLines.length;
+
+        for (let i = 0; i < total; i++) {
+            const textLine = allLines[i] ?? '';
+            const y = baseY + (total - 1 - i) * lineHeight;
+
+            // Avoid drawing empty placeholder lines unless both are empty
+            if (!textLine && (safeName || safeBiz)) continue;
+
+            page.drawText(textLine, {
+                x: margin,
+                y,
+                size: fontSize,
+                font,
+                color: rgb(0, 0, 0),
+            });
+        }
+    };
+
+    const trySignWithPdfLib = async (pdfBytes: ArrayBuffer, sigPngBytes: ArrayBuffer, name: string, businessName: string): Promise<Blob> => {
+        const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
 
         const pdfDoc = await PDFDocument.load(pdfBytes);
         const pages = pdfDoc.getPages();
@@ -351,6 +452,7 @@ const ContractSignPage: React.FC = () => {
 
         // Signature is always PNG and always black
         const image = await pdfDoc.embedPng(sigPngBytes);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
         const lastPage = pages[pages.length - 1];
 
@@ -370,7 +472,7 @@ const ContractSignPage: React.FC = () => {
             dims = image.scale(scaleFactor);
         }
 
-        // ✅ Bottom-right placement
+        // ✅ Bottom-right placement (signature)
         const x = pageW - margin - dims.width;
         const y = margin;
 
@@ -380,6 +482,9 @@ const ContractSignPage: React.FC = () => {
             width: dims.width,
             height: dims.height,
         });
+
+        // ✅ Print Name + Business Name on the LEFT side (bottom-left) of last page
+        drawNameBusinessOnLeft(lastPage, font, rgb, pageW, dims.width, margin, name, businessName);
 
         const signedPdfBytes = await pdfDoc.save();
         return new Blob([signedPdfBytes], { type: 'application/pdf' });
@@ -391,8 +496,9 @@ const ContractSignPage: React.FC = () => {
      * - Render each page to an image (flatten)
      * - Build a fresh PDF via pdf-lib
      * - Draw signature on last page
+     * - Draw name/businessName on last page (left side)
      */
-    const signByRasterizingPdf = async (pdfBytes: ArrayBuffer, sigPngBytes: ArrayBuffer): Promise<Blob> => {
+    const signByRasterizingPdf = async (pdfBytes: ArrayBuffer, sigPngBytes: ArrayBuffer, name: string, businessName: string): Promise<Blob> => {
         const pdfjsLib = await loadPdfJsFromCdn();
 
         const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
@@ -407,8 +513,9 @@ const ContractSignPage: React.FC = () => {
 
         const pdf = await loadingTask.promise;
 
-        const { PDFDocument } = await import('pdf-lib');
+        const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
         const outDoc = await PDFDocument.create();
+        const font = await outDoc.embedFont(StandardFonts.Helvetica);
 
         const renderScale = 2; // quality vs performance
 
@@ -461,7 +568,7 @@ const ContractSignPage: React.FC = () => {
             sigDims = sigImg.scale(sigScale);
         }
 
-        // ✅ Bottom-right placement
+        // ✅ Bottom-right placement (signature)
         const x = pageW - margin - sigDims.width;
         const y = margin;
 
@@ -472,23 +579,38 @@ const ContractSignPage: React.FC = () => {
             height: sigDims.height,
         });
 
+        // ✅ Print Name + Business Name on the LEFT side (bottom-left) of last page
+        drawNameBusinessOnLeft(lastOutPage, font, rgb, pageW, sigDims.width, margin, name, businessName);
+
         const signedPdfBytes = await outDoc.save();
         return new Blob([signedPdfBytes], { type: 'application/pdf' });
     };
 
-    const createSignedPdf = async (): Promise<Blob | null> => {
+    const createSignedPdf = async (nameForPdf: string, businessNameForPdf: string, preferCachedBytes = false): Promise<Blob | null> => {
         try {
-            const sigPngBytes = await getSignatureBlackPngBytes();
-            if (!sigPngBytes) return null;
+            const safeName = sanitizePdfText(nameForPdf);
+            const safeBiz = sanitizePdfText(businessNameForPdf);
 
-            const pdfBytes = await fetchPdfBytes();
+            // Signature bytes
+            let sigPngBytes: ArrayBuffer | null = null;
+
+            if (preferCachedBytes && cachedSigPngBytesRef.current) {
+                sigPngBytes = cachedSigPngBytesRef.current;
+            } else {
+                sigPngBytes = await getSignatureBlackPngBytes();
+                if (!sigPngBytes) return null;
+                cachedSigPngBytesRef.current = sigPngBytes;
+            }
+
+            // PDF bytes (cache by URL)
+            const pdfBytes = await getPdfBytesCached();
 
             try {
                 // fast path for normal PDFs
-                return await trySignWithPdfLib(pdfBytes, sigPngBytes);
+                return await trySignWithPdfLib(pdfBytes, sigPngBytes, safeName, safeBiz);
             } catch {
                 // encrypted or unsupported → rasterize fallback (frontend-only)
-                return await signByRasterizingPdf(pdfBytes, sigPngBytes);
+                return await signByRasterizingPdf(pdfBytes, sigPngBytes, safeName, safeBiz);
             }
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Something went wrong while signing the PDF.';
@@ -511,7 +633,10 @@ const ContractSignPage: React.FC = () => {
         }
 
         setIsSigning(true);
-        const blob = await createSignedPdf();
+
+        // Generate a signed PDF immediately using current form values (pre-filled from backend).
+        // On Submit we regenerate again to ensure the PDF matches the final edited fields.
+        const blob = await createSignedPdf(formData.name, formData.businessName);
 
         if (blob) {
             setSignedPdfBlob(blob);
@@ -521,15 +646,10 @@ const ContractSignPage: React.FC = () => {
         setIsSigning(false);
     };
 
-    // ✅ This PUT now sends the SIGNED PDF (same blob the user can download)
+    // ✅ This PUT now sends the SIGNED PDF (signature + name + businessName)
     const handleModalSubmit = async () => {
         if (!formData.name.trim() || !formData.businessName.trim()) {
             setError('Please fill in all fields.');
-            return;
-        }
-
-        if (!signedPdfBlob) {
-            setError('Signed PDF is missing. Please sign again.');
             return;
         }
 
@@ -537,13 +657,23 @@ const ContractSignPage: React.FC = () => {
         setIsSigning(true);
 
         try {
+            // Regenerate the PDF using the final (edited) name/businessName.
+            // Prefer cached signature + PDF bytes for reliability and speed.
+            const finalBlob = await createSignedPdf(formData.name.trim(), formData.businessName.trim(), true);
+            if (!finalBlob) {
+                setIsSigning(false);
+                return;
+            }
+
+            setSignedPdfBlob(finalBlob);
+
             const fd = new FormData();
             fd.append('name', formData.name.trim());
             fd.append('businessName', formData.businessName.trim());
             fd.append('signed', 'signed');
 
             // Use a File so backends that rely on filename/mimetype don’t drop it.
-            const signedFile = new File([signedPdfBlob], 'signed-contract.pdf', { type: 'application/pdf' });
+            const signedFile = new File([finalBlob], 'signed-contract.pdf', { type: 'application/pdf' });
             fd.append('pdf', signedFile);
 
             const response = await fetch(`/api/v2/contract?id=${encodeURIComponent(contractId)}`, {
@@ -703,7 +833,10 @@ const ContractSignPage: React.FC = () => {
                             <div className='mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-black/25 p-2'>
                                 <button
                                     type='button'
-                                    onClick={() => setMode('draw')}
+                                    onClick={() => {
+                                        setMode('draw');
+                                        cachedSigPngBytesRef.current = null;
+                                    }}
                                     className={cx(
                                         'flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
                                         mode === 'draw' ? 'text-white shadow' : 'text-white/60 hover:text-white'
@@ -715,7 +848,10 @@ const ContractSignPage: React.FC = () => {
                                 </button>
                                 <button
                                     type='button'
-                                    onClick={() => setMode('upload')}
+                                    onClick={() => {
+                                        setMode('upload');
+                                        cachedSigPngBytesRef.current = null;
+                                    }}
                                     className={cx(
                                         'flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
                                         mode === 'upload' ? 'text-white shadow' : 'text-white/60 hover:text-white'
@@ -829,7 +965,9 @@ const ContractSignPage: React.FC = () => {
                                 {isRejecting ? 'Rejecting…' : 'Reject Contract'}
                             </button>
 
-                            <p className='mt-4 text-xs leading-relaxed text-white/45'>Your signature will be added to the last page of the document.</p>
+                            <p className='mt-4 text-xs leading-relaxed text-white/45'>
+                                Your signature, name, and business name will be added to the last page of the document.
+                            </p>
                         </div>
                     </aside>
                 </div>
@@ -853,7 +991,7 @@ const ContractSignPage: React.FC = () => {
                         </button>
 
                         <h3 className='text-xl font-semibold text-white sm:text-2xl'>Complete your signature</h3>
-                        <p className='mt-2 text-sm text-white/60'>Provide your details to finalize the contract.</p>
+                        <p className='mt-2 text-sm text-white/60'>Provide your details to finalize the contract (these will also print on the PDF).</p>
 
                         <div className='mt-6 space-y-4'>
                             <div>

@@ -227,10 +227,10 @@ export default function InvoiceContractPage() {
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
                             SIMPLE PROCESS
                         </Badge>
-                        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             How It <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Works</span>
                         </h2>
-                        <div className='w-24 h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] mx-auto mb-4 sm:mb-6 rounded-full'></div>
+                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Get started in four simple steps</p>
                     </div>
 
@@ -277,10 +277,10 @@ export default function InvoiceContractPage() {
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
                             POWERFUL TOOLS
                         </Badge>
-                        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Core <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Features</span>
                         </h2>
-                        <div className='w-24 h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] mx-auto mb-4 sm:mb-6 rounded-full'></div>
+                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Everything you need in one platform</p>
                     </div>
 
@@ -327,10 +327,10 @@ export default function InvoiceContractPage() {
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
                             WHY CHOOSE US
                         </Badge>
-                        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Key <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Benefits</span>
                         </h2>
-                        <div className='w-24 h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] mx-auto mb-4 sm:mb-6 rounded-full'></div>
+                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Transform your document workflow</p>
                     </div>
 
@@ -366,10 +366,10 @@ export default function InvoiceContractPage() {
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
                             VERSATILE SOLUTIONS
                         </Badge>
-                        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4'>
+                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Perfect For Every <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Business</span>
                         </h2>
-                        <div className='w-24 h-1 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] mx-auto mb-4 sm:mb-6 rounded-full'></div>
+                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Discover how our platform adapts to your needs</p>
                     </div>
 
