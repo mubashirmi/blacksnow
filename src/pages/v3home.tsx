@@ -30,7 +30,7 @@ function Page() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTextIndex((prevIndex) => (prevIndex + 1) % textOptions.length);
-        }, 2000); // Change text every 2 seconds 
+        }, 2000); // Change text every 2 second
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, []);
