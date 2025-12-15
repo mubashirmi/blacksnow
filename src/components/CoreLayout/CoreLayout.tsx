@@ -40,7 +40,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                 </div>
             </header>
 
-            {/* Page Content */}
+            {/* Page  Content */}
             <main className='pt-16 sm:pt-20'>{children}</main>
 
             {/* Footer */}
