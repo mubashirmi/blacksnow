@@ -1,8 +1,6 @@
 import prisma from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Define the type of the result from sendEmail
-
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
     const { method } = req;
     const { role, id } = req.query as { role?: string; id?: string };

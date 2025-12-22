@@ -397,7 +397,7 @@ function Pricing() {
                                             <div className='flex items-center justify-between mb-6'>
                                                 <div className='flex items-center space-x-4'>
                                                     <div
-                                                        className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${
+                                                        className={`min-w-14 min-h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${
                                                             isPurchased ? 'from-green-400 to-emerald-500' : product.color
                                                         } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${
                                                             !product.available ? 'opacity-50' : ''

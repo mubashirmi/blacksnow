@@ -1,8 +1,28 @@
 // pages/api/invoices/index.ts
 import prisma from '@/lib/prisma';
+import formidable, { Fields, Files } from 'formidable';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getFileUrl } from '../../../../../bucket/bucketConfig';
+import { getFileUrl, uploadFileToS3 } from '../../../../../bucket/bucketConfig';
 
+function parseForm(req: NextApiRequest): Promise<{ fields: Fields; files: Files }> {
+    const form = formidable({
+        multiples: false,
+        keepExtensions: true,
+    });
+
+    return new Promise((resolve, reject) => {
+        form.parse(req, (err, fields, files) => {
+            if (err) return reject(err);
+            resolve({ fields, files });
+        });
+    });
+}
+
+function getField(fields: Fields, key: string): string | undefined {
+    const value = fields[key];
+    if (Array.isArray(value)) return value[0] as string;
+    return value as string | undefined;
+}
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const idParam = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
     const contractId = Array.isArray(req.query.contractId) ? req.query.contractId[0] : req.query.contractId;
@@ -34,8 +54,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     const signedPdfUrl = invoice.Contract?.pdf ? await getFileUrl(invoice.Contract.pdf) : null;
 
+                    const imageUrl = invoice.image ? await getFileUrl(invoice.image) : null;
                     const modified = {
                         ...invoice,
+                        image: imageUrl,
                         Contract: invoice.Contract ? { ...invoice.Contract, pdf: signedPdfUrl } : null,
                     };
 
@@ -60,8 +82,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const modified = await Promise.all(
                         invoices.map(async (data) => {
                             const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
+                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+
                             const modified = {
                                 ...data,
+                                image: imageUrl,
                                 Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
                             };
                             return modified;
@@ -86,8 +111,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const modified = await Promise.all(
                         invoices.map(async (data) => {
                             const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
+                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+
                             const modified = {
                                 ...data,
+                                image: imageUrl,
                                 Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
                             };
                             return modified;
@@ -102,14 +130,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // POST /api/invoices  -> create invoice
             case 'POST': {
-                const { authId, contractId, name, email, businessName, price } = req.body as {
-                    contractId?: number | null;
-                    name: string;
-                    email: string;
-                    businessName: string;
-                    price: string;
-                    authId: string;
-                };
+                const { fields, files } = await parseForm(req);
+                // eslint-disable-next-line
+                const image = files['image'];
+                const imageFile = Array.isArray(image) ? image[0] : image;
+
+                const contractId = getField(fields, 'contractId');
+                const name = getField(fields, 'name');
+                const email = getField(fields, 'email');
+                const businessName = getField(fields, 'businessName');
+                const price = getField(fields, 'price');
+                const authId = getField(fields, 'authId');
+
+                // const formData = await req.formData();
+
+                if (!imageFile) {
+                    return res.status(400).json({ message: 'Invalid pdf' });
+                }
+
+                const s3Key = await uploadFileToS3(image, 'uploads'); // or 'uploads'
+                console.log('s3Key', s3Key);
+                console.log('pdfFile', image);
 
                 let contractIdNumber: number | null = null;
                 if (contractId !== undefined && contractId !== null) {
@@ -127,6 +168,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         businessName,
                         price,
                         authId: Number(authId),
+                        image: s3Key,
                         contractId: contractIdNumber ?? undefined,
                     },
                 });
@@ -147,15 +189,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(400).json({ message: 'Invalid id' });
                 }
 
-                const { name, email, businessName, price } = req.body as {
-                    name: string;
-                    email: string;
-                    businessName: string;
-                    price: string;
-                };
+                const { fields, files } = await parseForm(req);
+                // eslint-disable-next-line
+                const image = files['image'];
+                const imageFile = Array.isArray(image) ? image[0] : image;
+                if (!imageFile) {
+                    return res.status(400).json({ message: 'Invalid pdf' });
+                }
+
+                const s3Key = await uploadFileToS3(image, 'uploads'); // or 'uploads'
+                console.log('s3Key', s3Key);
+                console.log('pdfFile', image);
+
+                const name = getField(fields, 'name');
+                const email = getField(fields, 'email');
+                const businessName = getField(fields, 'businessName');
+                const price = getField(fields, 'price');
 
                 const data: any = {};
 
+                if (imageFile) {
+                    const s3Key = await uploadFileToS3(imageFile, 'uploads');
+                    console.log('s3Key', s3Key);
+                    console.log('pdfFile', imageFile);
+                    data.pdf = s3Key;
+                }
                 if (name !== undefined) {
                     if (typeof name !== 'string') {
                         return res.status(400).json({ message: 'Invalid name  ' });

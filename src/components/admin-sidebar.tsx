@@ -17,7 +17,6 @@ import {
     StickyNote,
     Target,
     TrendingUp,
-    UserCheck,
     Users,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -51,11 +50,6 @@ export function AdminSidebar() {
             icon: Calendar,
         },
         {
-            title: 'RSVP',
-            url: '/admin/dashboard/rsvp',
-            icon: UserCheck,
-        },
-        {
             title: 'Sales',
             url: '/admin/dashboard/sales',
             icon: BarChart3,
@@ -67,6 +61,11 @@ export function AdminSidebar() {
         },
         {
             title: 'Email Users',
+            url: '/admin/dashboard/marketingSubscribers',
+            icon: Users,
+        },
+        {
+            title: 'Invoice Tool Users',
             url: '/admin/dashboard/marketingSubscribers',
             icon: Users,
         },
