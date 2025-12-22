@@ -26,7 +26,7 @@ const api = async (req, res) => {
                 break;
             }
             case 'GET': {
-                // if the request method is GET, fetch the applicant details
+                // if the request method is GET, fetch the njn applicant details
                 try {
                     logger.info('Fetching applicant');
                     const applicant = await prisma.applicants.findUnique({
