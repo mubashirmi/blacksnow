@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 
-// mirror the Prisma enum to validate incoming payloads
+// mirror the Prisma enum to validate incoming payloadss
 const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'Rsvp', 'DigitalBillboard']);
 
 function normalizeRoles(input: unknown): string[] {
