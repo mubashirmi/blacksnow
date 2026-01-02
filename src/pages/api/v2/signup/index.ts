@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 
-// mirror the Prisma enum to validate incoming payloadss
+// mirror the Prisma enum to validate incoming payloads
 const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'Rsvp', 'DigitalBillboard']);
 
 function normalizeRoles(input: unknown): string[] {
@@ -36,7 +36,7 @@ async function sendSignupEmail(params: { to: string; roles: string[]; plainPassw
         service: 'gmail',
         auth: {
             user: 'malikmubashir.3175709877@gmail.com',
-            pass: 'fhwd vueu fbnl agao', // app password
+            pass: 'fhwd vueu fbnl agao',
         },
     });
 

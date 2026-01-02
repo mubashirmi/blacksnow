@@ -7,7 +7,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         switch (req.method) {
             // GET /api/invoices  -> list invoices
             case 'GET': {
-                await prisma.auth.findMany({
+                // eslint-disable-next-line
+                const allInvoiceUsers = await prisma.auth.findMany({
                     where: {
                         roles: {
                             has: 'InvoiceTool',
