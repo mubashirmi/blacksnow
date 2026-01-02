@@ -1,21 +1,17 @@
+// pages/api/auth/[id].ts
+
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
+import nodemailer from 'nodemailer';
 
-// Use Next.js API route handler for page routing
-// pages/api/auth/[id].ts (or wherever your route is)
-
-// mirror the Prisma enum to validate incoming payloads
+// mirror the Prisma enum to validate incoming payloadss
 const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'Rsvp', 'DigitalBillboard']);
 
 function normalizeRoles(input: unknown): string[] {
     // accept: roles: string[], or role: string (back-compat)
-    if (Array.isArray(input)) {
-        return input.map(String);
-    }
-    if (typeof input === 'string' && input.trim()) {
-        return [input.trim()];
-    }
+    if (Array.isArray(input)) return input.map(String);
+    if (typeof input === 'string' && input.trim()) return [input.trim()];
     return [];
 }
 
@@ -24,6 +20,56 @@ function validateRoles(roles: string[]) {
     if (invalid.length) {
         throw new Error(`Invalid role(s): ${invalid.join(', ')}. Allowed: ${Array.from(AllowedRoles).join(', ')}`);
     }
+}
+
+function escapeHtml(input: string) {
+    return input.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+}
+
+async function sendSignupEmail(params: { to: string; roles: string[]; plainPassword: string }) {
+    const { to, roles, plainPassword } = params;
+
+    // ✅ Gmail service approach (as requested)
+    // Put these in env vars to avoid hardcoding secrets.
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'malikmubashir.3175709877@gmail.com',
+            pass: 'fhwd vueu fbnl agao', // app password
+        },
+    });
+
+    const rolesText = roles.length ? roles.join(', ') : '(none)';
+    const subject = 'Your account has been created';
+
+    const text = `Your account has been created successfully.
+
+Email: ${to}
+Roles: ${rolesText}
+Password: ${plainPassword}
+
+If you did not request this, please contact support.`;
+
+    const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <h2>Your account has been created successfully</h2>
+      <p><strong>Email:</strong> ${escapeHtml(to)}</p>
+      <p><strong>Roles:</strong> ${escapeHtml(rolesText)}</p>
+      <p><strong>Password:</strong> ${escapeHtml(plainPassword)}</p>
+      <p style="color:#666; font-size: 12px;">
+        If you did not request this, please contact support.
+      </p>
+    </div>
+  `;
+
+    await transporter.sendMail({
+        user: 'malikmubashir.3175709877@gmail.com',
+        to,
+        subject,
+        text,
+        html,
+    });
 }
 
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
@@ -40,7 +86,9 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
             // basic required fields
             if (!email || !firstName || !lastName || !password) {
-                return res.status(400).json({ message: 'Missing required fields (email, firstName, lastName, password, roles).' });
+                return res.status(400).json({
+                    message: 'Missing required fields (email, firstName, lastName, password, roles).',
+                });
             }
 
             // validate roles
@@ -56,7 +104,8 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(409).json({ message: 'Email already exists.' });
             }
 
-            const hashedPassword = await bcrypt.hash(String(password), 10);
+            const plainPassword = String(password);
+            const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
             const user = await prisma.auth.create({
                 data: {
@@ -72,6 +121,17 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                         : {}),
                 },
             });
+
+            // send email after successful signup (does NOT affect signup success if mail fails)
+            try {
+                await sendSignupEmail({
+                    to: String(email),
+                    roles,
+                    plainPassword,
+                });
+            } catch (mailErr) {
+                console.error('Signup email failed:', mailErr);
+            }
 
             return res.status(201).json({ message: 'User created successfully', user });
         }

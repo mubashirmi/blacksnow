@@ -114,7 +114,7 @@ function SignIn() {
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
-                    router.push('/admin/dashboard');
+                    router.push('/admin/dashboard/sales');
                 } else if (isSales) {
                     // Sales flow → redirect to sales dashboard users
                     setCookie('token', token);

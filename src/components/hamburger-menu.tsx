@@ -53,7 +53,7 @@ const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' |
     },
     Admin: {
         label: 'Admin Dashboard',
-        path: '/admin/dashboard',
+        path: '/admin/dashboard/sales',
     },
 };
 

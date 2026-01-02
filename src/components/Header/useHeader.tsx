@@ -34,7 +34,7 @@ const useHeader = () => {
             if (status === 200) {
                 const { roleId } = data.data;
                 if (roleId === 1) {
-                    router.push('/admin/dashboard');
+                    router.push('/admin/dashboard/sales');
                 } else if (roleId === 2) {
                     router.push('/emailMarketing/dashboard');
                 } else if (roleId === 3) {

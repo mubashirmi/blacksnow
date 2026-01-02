@@ -20,8 +20,8 @@ const SALES_PRICE = 40.0;
 const EMAIL_MARKETING_MONTHLY_PRICE = 500.0;
 const EMAIL_MARKETING_YEARLY_PRICE = 4000.0;
 
-const INVOICETOOL_MONTHLY_PRICE = 500.0;
-const INVOICETOOL_YEARLY_PRICE = 4000.0;
+const INVOICETOOL_MONTHLY_PRICE = 20.0;
+const INVOICETOOL_YEARLY_PRICE = 200.0;
 
 function normalizePeriod(raw?: string): 'monthly' | 'yearly' {
     const value = (raw || 'monthly').toLowerCase();
@@ -184,7 +184,7 @@ const api = async (req, res) => {
                     deleted: false,
                     product: filterProduct,
                     cancelSubscripton: false,
-                    period,
+                    period: period,
                 },
             });
 

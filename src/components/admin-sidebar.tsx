@@ -3,7 +3,6 @@
 import {
     BarChart3,
     BookOpen,
-    Calendar,
     CalendarCheck,
     FilePen,
     FileText,
@@ -44,11 +43,6 @@ export function AdminSidebar() {
     };
 
     const navigationItems = [
-        {
-            title: 'Manage Events',
-            url: '/admin/dashboard',
-            icon: Calendar,
-        },
         {
             title: 'Sales',
             url: '/admin/dashboard/sales',

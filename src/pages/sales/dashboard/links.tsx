@@ -39,7 +39,10 @@ export default function AffiliateLinks() {
             }
 
             const data: ApiResponse = await response.json();
-            setLinks(data.affiliateData || []);
+
+            const filtered = (data.affiliateData ?? []).filter((item) => item.productName !== 'rsvp');
+
+            setLinks(filtered);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch affiliate data');
         } finally {

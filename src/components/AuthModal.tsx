@@ -152,7 +152,7 @@ export default function AuthModal({
                     const prevent = onSuccess?.({ kind: 'login', role: 'admin' });
                     if (!prevent) {
                         onOpenChange(false);
-                        router.push('/admin/dashboard');
+                        router.push('/admin/dashboard/sales');
                     }
                 } else if (response.data.paymentRequired) {
                     setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });

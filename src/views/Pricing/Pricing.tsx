@@ -100,8 +100,8 @@ function Pricing() {
             {
                 id: 'InvoiceTool',
                 name: 'Invoice & Contract',
-                monthlyPrice: 150,
-                yearlyPrice: 600,
+                monthlyPrice: 20,
+                yearlyPrice: 200,
                 description: 'All-in-one contracts, signatures, and invoices—made simple',
                 features: [
                     'Upload invoices, contracts, and any PDF documents',
@@ -122,8 +122,8 @@ function Pricing() {
             {
                 id: 'DigitalBillboard',
                 name: 'Digital Billboard',
-                monthlyPrice: 500,
-                yearlyPrice: 4000,
+                monthlyPrice: 150,
+                yearlyPrice: 600,
                 description: 'Premium advertising placement across our platform',
                 features: ['Simple and Quick Setup', 'Global Exposure', 'Real-Time Performance Tracking', 'Enhanced Visibility'],
                 icon: Monitor,
