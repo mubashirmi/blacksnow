@@ -3,25 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import {
-    ArrowRight,
-    Award,
-    BarChart3,
-    Calendar,
-    CheckCircle,
-    Clock,
-    CreditCard,
-    DollarSign,
-    Eye,
-    Globe,
-    Mail,
-    Megaphone,
-    Monitor,
-    Share2,
-    Target,
-    Users,
-    Zap,
-} from 'lucide-react';
+import { ArrowRight, Award, BarChart3, Clock, DollarSign, Mail, Megaphone, Monitor, Rocket, Target, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
@@ -49,84 +31,70 @@ function Affiliate() {
 
     const commissionTiers = [
         {
-            title: 'RSVP Commissions',
-            amount: '$250',
-            description: 'Receive a $150 commission for every confirmed RSVP generated through your referral link.',
-            icon: Calendar,
-            color: 'from-[#4cc7e8] to-[#2c7bbe]',
-            period: 'per RSVP',
-        },
-        {
-            title: 'Newsletter Subscriptions',
-            amount: '$10/Month',
-            description: 'Promote our newsletter and earn a recurring $5 commission for each new subscriber.',
+            title: 'Newsletter',
+            monthly: '$10 / month',
+            yearly: '$50 / year',
+            description: 'Send branded newsletters and updates to your audience with reliable delivery and simple analytics.',
             icon: Mail,
+            color: 'from-[#4cc7e8] to-[#2c7bbe]',
+        },
+        {
+            title: 'Business Invoicing Platform',
+            monthly: '$20 / month',
+            yearly: '$200 / year',
+            description: 'Create, send, and manage professional invoices with automated reminders and organized records.',
+            icon: BarChart3,
             color: 'from-[#2c7bbe] to-[#4cc7e8]',
-            period: 'or $50/Year',
         },
         {
-            title: 'Basic Digital Billboard',
-            amount: '$150/Month',
-            description: 'Generate a steady stream of income with $125 monthly for each Basic Digital Billboard you refer.',
-            icon: Monitor,
+            title: 'Social Media Multiposter',
+            monthly: '$40 / month',
+            yearly: '$250 / year',
+            description: 'Publish content to multiple social platforms at once and keep your posting schedule consistent.',
+            icon: Rocket,
             color: 'from-[#4cc7e8] to-[#2a8dcc]',
-            period: 'or $600/Year',
         },
         {
-            title: 'Premium Email/SMS Systems',
-            amount: '$500/Month',
-            description: 'Secure a significant monthly commission of $350 for each Premium Digital Billboard referral.',
-            icon: Megaphone,
+            title: 'Website Advertising Tools',
+            monthly: '$150 / month',
+            yearly: '$600 / year',
+            description: 'Promote your business across high-traffic pages with premium digital billboard placements.',
+            icon: Monitor,
             color: 'from-[#2a8dcc] to-[#2c7bbe]',
-            period: 'or $4000/Year',
+        },
+        {
+            title: 'Email / SMS CRM',
+            monthly: '$500 / month',
+            yearly: '$3,000 / year',
+            description: 'Manage email and SMS campaigns, automation, segmentation, and performance tracking in one platform.',
+            icon: Megaphone,
+            color: 'from-[#4cc7e8] to-[#2c7bbe]',
         },
     ];
 
     const features = [
         {
-            title: 'Competitive Commission Rates',
-            description: 'Earn an attractive 50% industry-leading commissions on every sale or lead generated through your referral links.',
-            icon: DollarSign,
-        },
-        {
-            title: 'Complete Our Simple Online Application',
-            description: 'Quickly submit your application through our streamlined online form to get started.',
-            icon: CheckCircle,
-        },
-        {
-            title: 'Real-Time Tracking',
-            description: 'Access to a user-friendly dashboard to track clicks, conversions, and commissions in real time.',
-            icon: BarChart3,
-        },
-        {
-            title: 'Monthly Payouts',
-            description: 'Receive regular, reliable payouts on a monthly basis after connecting your Stripe account.',
-            icon: CreditCard,
-        },
-        {
-            title: 'Marketing Tools and Resources',
-            description: 'Access to banners, email templates, and other promotional materials to help you effectively promote our products.',
+            title: 'Premium Digital Products That Sell Themselve',
+            description: 'A diversified suite of automated, high-retention B2B digital products designed to convert easily and generate recurring revenue.',
             icon: Target,
         },
         {
-            title: 'No Traffic Restrictions',
-            description: 'Run ads and promotions through various channels (social media, blogs, websites) without restrictions on traffic sources.',
-            icon: Globe,
+            title: 'Fully Managed Sales Collateral',
+            description:
+                'Partners receive proven landing pages, outreach templates, and co-branded assets that remove setup friction and maximize conversions.',
+            icon: Target,
         },
         {
-            title: 'Access Your Personalized Dashboard',
-            description: 'Upon approval, receive a unique link to your landing page along with access to your performance dashboard.',
-            icon: Eye,
+            title: "Real-Time KPI's",
+            description:
+                'A professional affiliate dashboard provides full visibility into clicks, conversions, recurring commissions, payouts, and retention performance.',
+            icon: BarChart3,
         },
         {
-            title: 'Promote Your Link Across Multiple Channels',
-            description: 'Drive traffic by advertising your unique referral link on your preferred platforms.',
+            title: 'Built-In Email & SMS Tools Dashboard',
+            description:
+                'An all-in-one dashboard with integrated email and SMS tools lets you manage outreach, follow-ups, and customer communication from a single platform.',
             icon: Megaphone,
-        },
-        {
-            title: 'Share Your Link on Social Media',
-            description: 'Leverage your social media presence to maximize exposure and drive engagement with your affiliate link.',
-            icon: Share2,
         },
     ];
 
@@ -147,7 +115,7 @@ function Affiliate() {
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
                                 <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    EARN UNLIMITED COMMISSIONS
+                                    Earn Unlimited Commisions
                                 </Badge>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     Join Our{' '}
@@ -156,16 +124,26 @@ function Affiliate() {
                                     Program
                                 </h1>
                                 <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Sign up as an affiliate and earn <span className='text-[#4cc7e8] font-semibold'>unlimited commission</span> for each RSVP
-                                    and monthly residual income for each site advertisement sign up. Gain commissions and monthly residual income while working
-                                    from home on a laptop, computer or mobile device anywhere around the world.{' '}
-                                    <span className='text-[#2c7bbe] font-semibold'>It&apos;s quick and easy to get started.</span>
+                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                    Sign up as an affiliate and earn unlimited commission. Earn monthly or annual residual income while working from home on a
+                                    laptop, computer or mobile device anywhere around the world. Earn recurring monthly or annual commissions, paid
+                                    automatically on time—every time. Your referrals create long-term subscription value. Get paid as long as your subscribers
+                                    remain active. It&apos;s quick and easy to get started.
                                 </p>
                             </div>
 
                             {/* CTA Buttons */}
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                                <Link href={'/pricing'}>
+                                    <Button
+                                        size='lg'
+                                        variant='outline'
+                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    >
+                                        <BarChart3 className='w-6 h-6 mr-3' />
+                                        Join Now
+                                    </Button>
+                                </Link>
                                 <AuthModalTrigger
                                     buttonText='Join Now'
                                     defaultView='signup'
@@ -178,7 +156,7 @@ function Affiliate() {
                                         className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Join Now
+                                        View Earnings
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
                                     {/* <div className='bg-[#24a8cc] block sm:hidden uppercase relative rounded-2xl p-6 text-center text-3xl text-amber-50  font-semibold [text-shadow:_4px_4px_8px_rgba(0,0,0,0.5)] backdrop-blur-mxl'>Join Now</div> */}
@@ -192,7 +170,7 @@ function Affiliate() {
                                             className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                         >
                                             <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                            View Dashboard
+                                            View Earnings
                                         </Button>
                                     </Link>
                                 )}
@@ -265,13 +243,13 @@ function Affiliate() {
                                                 </div>
                                                 <div>
                                                     <CardTitle className='text-lg sm:text-xl font-bold text-white'>{tier.title}</CardTitle>
-                                                    <p className='text-xs sm:text-sm text-gray-400'>{tier.period}</p>
+                                                    <p className='text-xs sm:text-sm text-gray-400'>{tier.monthly}</p>
                                                 </div>
                                             </div>
-                                            <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8]'>{tier.amount}</div>
+                                            <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8]'>{tier.yearly}</div>
                                         </div>
                                     </CardHeader>
-                                    <CardContent className='p-6 sm:p-8 pt-0'>
+                                    <CardContent className='px-6 py-6 sm:px-8 pt-0'>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{tier.description}</p>
                                     </CardContent>
                                 </Card>
@@ -289,14 +267,14 @@ function Affiliate() {
                             PROGRAM BENEFITS
                         </Badge>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliate Program</span>
+                            Why Top <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliates</span> Choose Us
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             Everything you need to succeed as an affiliate partner with comprehensive tools and support.
                         </p>
                     </div>
 
-                    <div className='grid md:grid-cols-3 gap-6 sm:gap-8'>
+                    <div className='grid md:grid-cols-4 gap-6 sm:gap-8'>
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
                                 <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105 h-full'>

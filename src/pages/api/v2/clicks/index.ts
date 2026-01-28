@@ -18,13 +18,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const updated = await prisma.referralProducts.update({
-            where: { authId_productLink: { authId, productLink } },
-            data: { clicks: { increment: 1 } },
-            select: { id: true, authId: true, productLink: true, clicks: true },
+        const referralProduct = await prisma.referralProducts.findFirst({
+            where: { authId, productLink },
         });
 
-        return res.status(200).json({ message: 'Incremented', updated });
+        if (!referralProduct) {
+            return res.status(404).json({ message: 'No matching referral product' });
+        }
+
+        const alreadyExists = await prisma.referralProductsClicks.findFirst({
+            where: {
+                referralProductsId: referralProduct.id,
+            },
+        });
+
+        if (alreadyExists) {
+            await prisma.referralProductsClicks.update({
+                where: { id: alreadyExists.id },
+                data: {
+                    clicks: { increment: 1 },
+                },
+            });
+        } else {
+            await prisma.referralProductsClicks.create({
+                data: {
+                    referralProductsId: referralProduct.id,
+                    clicks: 1,
+                },
+            });
+        }
+        return res.status(200).json({ message: 'Click incremented' });
     } catch (e: any) {
         // Record not found
         if (e.code === 'P2025') {

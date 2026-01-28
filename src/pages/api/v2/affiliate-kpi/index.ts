@@ -10,12 +10,12 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             const affiliateData = await prisma.referralProducts.findMany({
                 where: { authId: Number(id) },
             });
-            const totalClicks = await prisma.referralProducts.aggregate({
+            const totalClicks = await prisma.referralProductsClicks.aggregate({
                 _sum: {
                     clicks: true,
                 },
                 where: {
-                    authId: Number(id),
+                    referralProductsId: Number(id),
                 },
             });
             const totalConversions = await prisma.referralProducts.aggregate({
@@ -52,10 +52,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     authId: Number(id),
                 },
                 select: {
-                    clicks: true,
                     conversion: true,
                     comission: true,
                     createdAt: true,
+                    referralProductsClicks: {
+                        select: {
+                            clicks: true,
+                        },
+                    },
                 },
             });
 
@@ -69,11 +73,15 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             // Aggregate by month
             const monthlyMap: Record<string, { clicks: number; conversion: number; comission: number }> = {};
             for (const row of monthlySource) {
-                const key = toMonthKey(new Date(row.createdAt));
+                const key = toMonthKey(row.createdAt);
+
                 if (!monthlyMap[key]) {
                     monthlyMap[key] = { clicks: 0, conversion: 0, comission: 0 };
                 }
-                monthlyMap[key].clicks += Number(row.clicks ?? 0);
+
+                const rowClicks = row.referralProductsClicks.reduce((sum, c) => sum + Number(c.clicks ?? 0), 0);
+
+                monthlyMap[key].clicks += rowClicks;
                 monthlyMap[key].conversion += Number(row.conversion ?? 0);
                 monthlyMap[key].comission += Number(row.comission ?? 0);
             }

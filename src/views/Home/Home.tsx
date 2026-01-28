@@ -27,13 +27,63 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
 
 const textOptions = ['Market Data', 'Swing Trades', 'Stock Options', 'Day Trades', 'Long Term Investment', 'Chart Patterns', 'Indicators', 'Stock Lists'];
+const paperTradingOptions = [
+    'Daytrade',
+    'Swing Trade',
+    'Bid–Ask',
+    'Liquidity',
+    'Volatility',
+    'Risk Management',
+    'Options Chain',
+    'Moving Averages',
+    'RSI',
+    'MACD',
+];
+
+const stockScreenerOptions = [
+    'Market Capitalization',
+    'Price Performance',
+    'Volume',
+    'Average Daily Volume',
+    'P/E Ratio',
+    'Dividend Yield',
+    '52-Week High / Low',
+    'Sector & Industry',
+    'Volatility (Beta)',
+    'Technical Signals',
+];
+
+const watchlistOptions = [
+    'Real-Time Prices',
+    'Daily Change',
+    'Percent Change',
+    'Price Alerts',
+    'Dividend Calendar',
+    'Bid–Ask',
+    'Market Movers',
+    'News Updates',
+    'Earnings Date',
+    'Trend Direction',
+];
 
 function Home() {
+    const [paperIdx, setPaperIdx] = useState(0);
+    const [screenerIdx, setScreenerIdx] = useState(0);
+    const [watchlistIdx, setWatchlistIdx] = useState(0);
     const { loading: authLoading } = useAuth();
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPaperIdx((i) => (i + 1) % paperTradingOptions.length);
+            setScreenerIdx((i) => (i + 1) % stockScreenerOptions.length);
+            setWatchlistIdx((i) => (i + 1) % watchlistOptions.length);
+        }, 2000);
 
-    // Hero rotating text
+        return () => clearInterval(interval);
+    }, []);
+    // eslint-disable-next-line
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
     // Modals
@@ -221,20 +271,20 @@ function Home() {
                         {/* LEFT */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12'>
                             <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                Live Market Analysis
+                                PAPER BROKERAGE
                             </Badge>
 
                             <div className='space-y-4 sm:space-y-5 animate-slide-in-left delay-200'>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight'>
                                     <div className='relative inline-block'>
-                                        <span className='text-[#f4f4f4]'>Investment &nbsp; strategies</span>
+                                        <span className='text-[#f4f4f4]'>Global &nbsp; Investment</span>
                                     </div>
                                     <br />
-                                    <span className='text-[#f4f4f4] leading-tight'>for&nbsp; everyone &nbsp;on &nbsp;the</span>
+                                    <span className='text-[#f4f4f4] leading-tight'>Strategies&nbsp; For</span>
                                     <br />
                                     <div className='relative inline-block'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black'>
-                                            internet
+                                            Everyone
                                         </span>
                                     </div>
                                 </h1>
@@ -247,20 +297,53 @@ function Home() {
                                 </div>
                             </div>
 
-                            <div className='space-y-6 sm:space-y-8 animate-slide-in-left delay-400'>
+                            <div className='space-y-6 sm:space-y-8 animate-slide-in-left delay-400 overflow-hidden'>
                                 <div className='flex flex-col sm:flex-row gap-4 sm:gap-6'>
+                                    {/* Paper Trading - Green */}
                                     <Button
                                         size='lg'
                                         onClick={openSubscribeFlow}
-                                        className='group relative bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-[#2c7bbe]/50 transition-all duration-500 transform rounded-xl sm:rounded-2xl overflow-hidden'
                                         disabled={authLoading || checkingAccess}
+                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-green-400 to-emerald-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-green-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
                                     >
-                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-300'></div>
+                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
                                         <span
-                                            className='inline-block animate-[cubicText_0.5s_cubic-bezier(0.68,-0.55,0.27,1.55)]'
-                                            key={textOptions[currentTextIndex]}
+                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
+                                            key={`paper-${paperTradingOptions[paperIdx]}`}
                                         >
-                                            {checkingAccess ? 'Checking access…' : `Learn : ${textOptions[currentTextIndex]}`}
+                                            {checkingAccess ? 'Checking access…' : `${paperTradingOptions[paperIdx]}`}
+                                        </span>
+                                    </Button>
+
+                                    {/* Stock Screener - Yellow */}
+                                    <Button
+                                        size='lg'
+                                        onClick={openSubscribeFlow}
+                                        disabled={authLoading || checkingAccess}
+                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-orange-400 to-yellow-500 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-yellow-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
+                                    >
+                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                                        <span
+                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
+                                            key={`screener-${stockScreenerOptions[screenerIdx]}`}
+                                        >
+                                            {checkingAccess ? 'Checking access…' : `${stockScreenerOptions[screenerIdx]}`}
+                                        </span>
+                                    </Button>
+
+                                    {/* Watchlist - Red */}
+                                    <Button
+                                        size='lg'
+                                        onClick={openSubscribeFlow}
+                                        disabled={authLoading || checkingAccess}
+                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-red-400 to-rose-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-red-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
+                                    >
+                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                                        <span
+                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
+                                            key={`watchlist-${watchlistOptions[watchlistIdx]}`}
+                                        >
+                                            {checkingAccess ? 'Checking access…' : `${watchlistOptions[watchlistIdx]}`}
                                         </span>
                                     </Button>
                                 </div>
@@ -313,8 +396,7 @@ function Home() {
                             MASTER THE MARKETS
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Covered Calls Vs <br />
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Protective Puts</span>
+                            Device <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Compatibility</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
                             Understand the sophisticated differences between covered calls and protective puts with our comprehensive analysis framework
@@ -335,9 +417,9 @@ function Home() {
                                                 <TrendingUp className='w-7 h-7 text-white' />
                                             </div>
                                             <div>
-                                                <CardTitle className='text-2xl font-bold text-white'>Covered Calls</CardTitle>
+                                                <CardTitle className='text-2xl font-bold text-white'>MOBILE & TABLET COMPATIBILITY</CardTitle>
                                                 <CardDescription className='text-green-400 font-semibold text-base'>
-                                                    Profit From Stock Price Increase
+                                                    Paper Trade Anywhere — Fully Responsive Platform
                                                 </CardDescription>
                                             </div>
                                         </div>
@@ -349,33 +431,35 @@ function Home() {
                                         <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
-                                                Right to Buy:
+                                                Optimized for Touch & Efficiency:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Call options give the holder the right (but not the obligation) to buy the underlying asset at a specified
-                                                strike price before expiration
+                                                Every button, chart, and trade entry field is designed for tap-based interaction, making it effortless to place
+                                                simulated trades, adjust filters, and navigate charts without accidental clicks or zooming issues. Built for
+                                                speed, clarity, and fingertip execution
                                             </p>
                                         </div>
 
                                         <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
-                                                Leverage Potential:
+                                                Adaptive Screen Layouts:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Investors use calls to gain leveraged exposure to stock price increases, potentially leading to higher
-                                                percentage returns than buying the stock outright
+                                                Whether you&apos;re on an iPhone, Android, or tablet, the interface automatically reorganizes to keep the most
+                                                important market data visible, prioritizing watchlists, screener results, and open simulations in a clean
+                                                vertical flow.
                                             </p>
                                         </div>
 
                                         <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
-                                                Bullish Strategy:
+                                                Real-Time Data, Real Market Behavior:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Calls are typically used in bullish strategies, allowing investors to profit from anticipated price increases in
-                                                the underlying asset
+                                                Market data updates live while you move between screens, allowing you to practice strategy execution and monitor
+                                                positions without constantly refreshing the page or losing your place in the platform.
                                             </p>
                                         </div>
                                     </div>
@@ -396,9 +480,9 @@ function Home() {
                                                 <Shield className='w-7 h-7 text-white' />
                                             </div>
                                             <div>
-                                                <CardTitle className='text-2xl font-bold text-white'>Protective Puts</CardTitle>
+                                                <CardTitle className='text-2xl font-bold text-white'>DESKTOP COMPATIBILITY</CardTitle>
                                                 <CardDescription className='text-red-400 font-semibold text-base'>
-                                                    Profit From Stock Price Decrease
+                                                    Professional Desktop Trading Workspace
                                                 </CardDescription>
                                             </div>
                                         </div>
@@ -410,33 +494,34 @@ function Home() {
                                         <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
-                                                Right to Sell:
+                                                Multi-Panel Workspace:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Put options provide the holder the right (but not the obligation) to sell the underlying asset at a specified
-                                                strike price before expiration
+                                                Analyze charts, run the stock screener, and execute simulated trades side-by-side without switching tabs. The
+                                                desktop layout allows expandable windows and panel stacking, enabling professional workflow efficiency. Maximum
+                                                visibility, total control, advanced analysis.
                                             </p>
                                         </div>
 
                                         <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
-                                                Hedging Tool:
+                                                High-Resolution Market Visualization:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Puts are commonly used as a hedging strategy to protect against declines in asset prices, helping to offset
-                                                potential losses in a portfolio
+                                                Larger screens unlock fullwidth technical charts, deeper analytic tools, and expanded data tables so you can
+                                                identify trends, study patterns, and break down market setups with precision.
                                             </p>
                                         </div>
 
                                         <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
                                                 <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
-                                                Bearish Strategy:
+                                                Keyboard-Driven Speed & Precision:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Investors use puts to profit from anticipated decreases in the underlying asset&apos;s price, making them a
-                                                useful tool in bearish market conditions
+                                                Designed for desktop power users, the platform incorporates keyboard shortcuts, faster data entry, and
+                                                drag-and-drop modules, making trade execution and stock research significantly faster than on mobile.
                                             </p>
                                         </div>
                                     </div>
@@ -480,36 +565,36 @@ function Home() {
 
                         <div className='grid lg:grid-cols-3 gap-12 lg:gap-8 relative z-10'>
                             {/* Step 1: Problem Analysis */}
-                            <div className='group relative animate-slide-in-left'>
+                            <div className='group relative animate-slide-in-right delay-400'>
                                 {/* Floating Number Badge */}
                                 <div className='absolute -top-6 left-8 z-20'>
-                                    <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-500/40 transform group-hover:scale-110 transition-transform duration-300'>
-                                        <span className='text-white font-black text-lg'>1</span>
+                                    <div className='w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-green-500/40 transform group-hover:scale-110 transition-transform duration-300'>
+                                        <span className='text-white font-black text-lg'>3</span>
                                     </div>
                                 </div>
 
                                 {/* Glowing Background Effect */}
-                                <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
+                                <div className='absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
 
                                 {/* Main Card */}
-                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-red-500/30 hover:border-red-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-red-500/20 min-h-[600px] flex flex-col h-full'>
+                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-green-500/30 hover:border-green-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-green-500/20 min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
-                                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-rose-500 to-red-600 rounded-t-3xl'></div>
+                                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 rounded-t-3xl'></div>
 
                                     {/* Floating Icons */}
                                     <div className='absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-300'>
-                                        <AlertTriangle className='w-8 h-8 text-red-400 animate-pulse' />
+                                        <Rocket className='w-8 h-8 text-green-400 animate-bounce' />
                                     </div>
 
                                     {/* Header */}
                                     <div className='mb-8'>
                                         <div className='flex items-center space-x-4 mb-6'>
-                                            <div className='w-16 h-16 bg-gradient-to-br from-red-400 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
-                                                <Clock className='w-8 h-8 text-white' />
+                                            <div className='w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
+                                                <DollarSign className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
-                                                <h3 className='text-2xl font-black text-red-400 mb-2'>IDENTIFY</h3>
-                                                <p className='text-red-300 font-semibold'>Market Problems</p>
+                                                <h3 className='text-2xl font-black text-green-400 mb-2'>Paper Trading</h3>
+                                                <p className='text-green-300 font-semibold'>Stock Market Simulator</p>
                                             </div>
                                         </div>
                                     </div>
@@ -517,63 +602,72 @@ function Home() {
                                     {/* Content */}
                                     <div className='flex-1 space-y-6'>
                                         <h4 className='text-3xl font-black text-white leading-tight'>
-                                            Stop Losing Money on <span className='text-red-400'>Bad Trades</span>
+                                            <span className='text-green-400'>Generate Consistent Profits</span>
                                         </h4>
 
                                         <p className='text-gray-300 leading-relaxed text-lg'>
-                                            Most traders fail because they rely on insufficient market data and ignore critical warning signals. Our AI
-                                            identifies these costly mistakes before they happen.
+                                            Paper Trading lets you execute simulated trades using real market data — without risk. You can test strategies, gain
+                                            experience, and build discipline while learning how the market behaves. Track performance, analyze your results, and
+                                            develop consistency before transitioning to a live account.
                                         </p>
 
-                                        {/* Problem Points */}
+                                        {/* Success Metrics */}
                                         <div className='space-y-4'>
                                             {[
                                                 {
-                                                    icon: TrendingDown,
-                                                    text: 'Missing key market signals',
-                                                    color: 'text-red-400',
+                                                    icon: TrendingUp,
+                                                    text: 'Stock Trades',
+                                                    color: 'text-green-400',
+                                                    value: '99.2%',
                                                 },
                                                 {
-                                                    icon: AlertTriangle,
-                                                    text: 'Ignoring risk indicators',
-                                                    color: 'text-orange-400',
+                                                    icon: DollarSign,
+                                                    text: 'Options Chains',
+                                                    color: 'text-emerald-400',
+                                                    value: '+347%',
                                                 },
                                                 {
-                                                    icon: Clock,
-                                                    text: 'Poor timing decisions',
-                                                    color: 'text-yellow-400',
+                                                    icon: Award,
+                                                    text: 'Live Markets',
+                                                    color: 'text-teal-400',
+                                                    value: 'Elite',
                                                 },
                                             ].map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl border border-red-500/20 transform hover:scale-105 transition-transform duration-300'
+                                                    className='flex items-center justify-between p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 transform hover:scale-105 transition-transform duration-300'
                                                 >
-                                                    <div className='w-10 h-10 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xl flex items-center justify-center'>
-                                                        <item.icon className={`w-5 h-5 ${item.color}`} />
+                                                    <div className='flex items-center space-x-4'>
+                                                        <div className='w-10 h-10 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center'>
+                                                            <item.icon className={`w-5 h-5 ${item.color}`} />
+                                                        </div>
+                                                        <span className='text-white font-semibold'>{item.text}</span>
                                                     </div>
-                                                    <span className='text-white font-semibold'>{item.text}</span>
+                                                    <div className={`${item.color} font-black text-lg`}>{item.value}</div>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        {/* Risk Analysis Box */}
-                                        <div className='bg-gradient-to-r from-red-500/5 to-rose-500/5 rounded-2xl p-6 border border-red-500/20'>
-                                            <div className='flex items-center justify-between mb-4'>
-                                                <span className='text-red-400 font-bold'>Risk Analysis</span>
-                                                <div className='flex space-x-2'>
-                                                    <div className='w-2 h-2 bg-red-400 rounded-full animate-pulse'></div>
-                                                    <div className='w-2 h-2 bg-rose-400 rounded-full animate-pulse delay-300'></div>
-                                                    <div className='w-2 h-2 bg-red-500 rounded-full animate-pulse delay-600'></div>
-                                                </div>
+                                        {/* Live Profit Tracker */}
+                                        <div className='bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-2xl p-6 border border-green-500/20'>
+                                            <div className='flex items-center justify-between '>
+                                                {/* <span className='text-green-400 font-bold'>Live Profits</span>
+                                                <div className='flex items-center space-x-2'>
+                                                    <div className='w-2 h-2 bg-green-400 rounded-full animate-pulse'></div>
+                                                    <span className='text-green-400 text-sm font-semibold'>ACTIVE</span>
+                                                </div> */}
                                             </div>
-                                            <div className='text-white font-semibold text-lg'>High-Risk Signals Detected</div>
-                                            <div className='text-red-400 text-sm mt-2'>Avoiding 73% of potential losses</div>
+                                            <div className='text-green-400  font-black text-2xl text-center'>Coming Soon</div>
+                                            {/* <div className='text-green-400 text-sm mt-2 flex items-center'>
+                                                <TrendingUp className='w-4 h-4 mr-2' />
+                                                +28.3% this month
+                                            </div> */}
                                         </div>
                                     </div>
 
                                     {/* Floating Elements */}
-                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
-                                        <AlertTriangle className='w-8 h-8 text-white' />
+                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
+                                        <Rocket className='w-8 h-8 text-white' />
                                     </div>
                                 </div>
                             </div>
@@ -607,8 +701,8 @@ function Home() {
                                                 <Layers className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
-                                                <h3 className='text-2xl font-black text-orange-400 mb-2'>STRATEGIZE</h3>
-                                                <p className='text-orange-300 font-semibold'>Smart Selection</p>
+                                                <h3 className='text-2xl font-black text-orange-400 mb-2'>Stock Screener</h3>
+                                                <p className='text-orange-300 font-semibold'>Stock Market Analytics</p>
                                             </div>
                                         </div>
                                     </div>
@@ -616,12 +710,13 @@ function Home() {
                                     {/* Content */}
                                     <div className='flex-1 space-y-6'>
                                         <h4 className='text-3xl font-black text-white leading-tight'>
-                                            Choose <span className='text-orange-400'>Winning</span> Strategies
+                                            <span className='text-orange-400'>Choose Winning Strategies</span>
                                         </h4>
 
                                         <p className='text-gray-300 leading-relaxed text-lg'>
-                                            Our AI analyzes thousands of market scenarios to recommend the optimal trading strategy for current market
-                                            conditions and your risk profile.
+                                            The Stock Screener highlights opportunities that match your strategy. Customize filters based on momentum, volume,
+                                            trend strength, price action, or fundamentals — and instantly identify stocks with potential. Instead of searching
+                                            manually, the screener brings the best setups directly to you.
                                         </p>
 
                                         {/* Strategy Points */}
@@ -629,17 +724,17 @@ function Home() {
                                             {[
                                                 {
                                                     icon: Activity,
-                                                    text: 'AI-powered strategy selection',
+                                                    text: 'Custom filters',
                                                     color: 'text-orange-400',
                                                 },
                                                 {
                                                     icon: BarChart2,
-                                                    text: 'Real-time market analysis',
+                                                    text: 'Sector snapshot',
                                                     color: 'text-yellow-400',
                                                 },
                                                 {
                                                     icon: Target,
-                                                    text: 'Risk-optimized approaches',
+                                                    text: 'Stock, ETF, Mutual Fund Research',
                                                     color: 'text-amber-400',
                                                 },
                                             ].map((item, index) => (
@@ -656,17 +751,18 @@ function Home() {
                                         </div>
 
                                         {/* Interactive Strategy Selector */}
-                                        <div className='bg-gradient-to-r from-orange-500/5 to-yellow-500/5 rounded-2xl p-6 border border-orange-500/20'>
-                                            <div className='flex items-center justify-between mb-4'>
-                                                <span className='text-orange-400 font-bold'>Current Strategy</span>
+                                        <div className='bg-gradient-to-r mt-14 from-orange-500/5 to-yellow-500/5 rounded-2xl p-6 border border-orange-500/20'>
+                                            <div className='flex items-center justify-between'>
+                                                {/* <span className='text-orange-400 font-bold'>Current Strategy</span>
                                                 <div className='flex space-x-2'>
                                                     <div className='w-2 h-2 bg-orange-400 rounded-full animate-pulse'></div>
                                                     <div className='w-2 h-2 bg-yellow-400 rounded-full animate-pulse delay-300'></div>
                                                     <div className='w-2 h-2 bg-amber-400 rounded-full animate-pulse delay-600'></div>
-                                                </div>
+                                                </div> */}
                                             </div>
-                                            <div className='text-white font-semibold text-lg'>Momentum Scalping</div>
-                                            <div className='text-gray-400 text-sm mt-2'>Optimized for current volatility</div>
+                                            <div className='text-orange-400 font-black text-2xl text-center'>Coming Soon</div>
+                                            {/* <div className='text-white font-semibold text-lg'>Momentum Scalping</div> */}
+                                            {/* <div className='text-gray-400 text-sm mt-2'>Optimized for current volatility</div> */}
                                         </div>
                                     </div>
 
@@ -676,38 +772,38 @@ function Home() {
                                     </div>
                                 </div>
                             </div>
+                            {/* Step 3: Problem Analysis */}
 
-                            {/* Step 3: Profit Execution */}
-                            <div className='group relative animate-slide-in-right delay-400'>
+                            <div className='group relative animate-slide-in-left'>
                                 {/* Floating Number Badge */}
                                 <div className='absolute -top-6 left-8 z-20'>
-                                    <div className='w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-green-500/40 transform group-hover:scale-110 transition-transform duration-300'>
-                                        <span className='text-white font-black text-lg'>3</span>
+                                    <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-500/40 transform group-hover:scale-110 transition-transform duration-300'>
+                                        <span className='text-white font-black text-lg'>1</span>
                                     </div>
                                 </div>
 
                                 {/* Glowing Background Effect */}
-                                <div className='absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
+                                <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
 
                                 {/* Main Card */}
-                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-green-500/30 hover:border-green-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-green-500/20 min-h-[600px] flex flex-col h-full'>
+                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-red-500/30 hover:border-red-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-red-500/20 min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
-                                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 rounded-t-3xl'></div>
+                                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-rose-500 to-red-600 rounded-t-3xl'></div>
 
                                     {/* Floating Icons */}
                                     <div className='absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-300'>
-                                        <Rocket className='w-8 h-8 text-green-400 animate-bounce' />
+                                        <AlertTriangle className='w-8 h-8 text-red-400 animate-pulse' />
                                     </div>
 
                                     {/* Header */}
                                     <div className='mb-8'>
                                         <div className='flex items-center space-x-4 mb-6'>
-                                            <div className='w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
-                                                <DollarSign className='w-8 h-8 text-white' />
+                                            <div className='w-16 h-16 bg-gradient-to-br from-red-400 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
+                                                <Clock className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
-                                                <h3 className='text-2xl font-black text-green-400 mb-2'>EXECUTE</h3>
-                                                <p className='text-green-300 font-semibold'>Profit Generation</p>
+                                                <h3 className='text-2xl font-black text-red-400 mb-2'>Watchlist</h3>
+                                                <p className='text-red-300 font-semibold'>Market Movers</p>
                                             </div>
                                         </div>
                                     </div>
@@ -715,74 +811,69 @@ function Home() {
                                     {/* Content */}
                                     <div className='flex-1 space-y-6'>
                                         <h4 className='text-3xl font-black text-white leading-tight'>
-                                            Generate <span className='text-green-400'>Consistent</span> Profits
+                                            <span className='text-red-400'>Stop Losing Money on Stock Market Volatility</span>
                                         </h4>
 
                                         <p className='text-gray-300 leading-relaxed text-lg'>
-                                            Execute trades with precision using our automated signals and real-time monitoring. Watch your portfolio grow with
-                                            systematic, data-driven decisions.
+                                            Market Glance gives you a complete, real-time snapshot of what’s happening across the market. View sector strength,
+                                            top gainers and losers, volatility, and sentiment all in one streamlined dashboard. Know whether conditions favor
+                                            bullish or bearish moves before placing a trade.
                                         </p>
 
-                                        {/* Success Metrics */}
+                                        {/* Problem Points */}
                                         <div className='space-y-4'>
                                             {[
                                                 {
-                                                    icon: TrendingUp,
-                                                    text: 'Automated trade execution',
-                                                    color: 'text-green-400',
-                                                    value: '99.2%',
+                                                    icon: TrendingDown,
+                                                    text: 'Real-time Data',
+                                                    color: 'text-red-400',
                                                 },
                                                 {
-                                                    icon: DollarSign,
-                                                    text: 'Profit optimization',
-                                                    color: 'text-emerald-400',
-                                                    value: '+347%',
+                                                    icon: AlertTriangle,
+                                                    text: 'Spot momentum early',
+                                                    color: 'text-orange-400',
                                                 },
                                                 {
-                                                    icon: Award,
-                                                    text: 'Risk management',
-                                                    color: 'text-teal-400',
-                                                    value: 'Elite',
+                                                    icon: Clock,
+                                                    text: 'Market trend direction',
+                                                    color: 'text-yellow-400',
                                                 },
                                             ].map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className='flex items-center justify-between p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 transform hover:scale-105 transition-transform duration-300'
+                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl border border-red-500/20 transform hover:scale-105 transition-transform duration-300'
                                                 >
-                                                    <div className='flex items-center space-x-4'>
-                                                        <div className='w-10 h-10 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center'>
-                                                            <item.icon className={`w-5 h-5 ${item.color}`} />
-                                                        </div>
-                                                        <span className='text-white font-semibold'>{item.text}</span>
+                                                    <div className='w-10 h-10 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xl flex items-center justify-center'>
+                                                        <item.icon className={`w-5 h-5 ${item.color}`} />
                                                     </div>
-                                                    <div className={`${item.color} font-black text-lg`}>{item.value}</div>
+                                                    <span className='text-white font-semibold'>{item.text}</span>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        {/* Live Profit Tracker */}
-                                        <div className='bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-2xl p-6 border border-green-500/20'>
-                                            <div className='flex items-center justify-between mb-4'>
-                                                <span className='text-green-400 font-bold'>Live Profits</span>
-                                                <div className='flex items-center space-x-2'>
-                                                    <div className='w-2 h-2 bg-green-400 rounded-full animate-pulse'></div>
-                                                    <span className='text-green-400 text-sm font-semibold'>ACTIVE</span>
-                                                </div>
+                                        {/* Risk Analysis Box */}
+                                        <div className='bg-gradient-to-r from-red-500/5 to-rose-500/5 rounded-2xl p-6 border border-red-500/20'>
+                                            <div className='flex items-center justify-between'>
+                                                {/* <span className='text-red-400 font-bold'>Risk Analysis</span>
+                                                <div className='flex space-x-2'>
+                                                    <div className='w-2 h-2 bg-red-400 rounded-full animate-pulse'></div>
+                                                    <div className='w-2 h-2 bg-rose-400 rounded-full animate-pulse delay-300'></div>
+                                                    <div className='w-2 h-2 bg-red-500 rounded-full animate-pulse delay-600'></div>
+                                                </div> */}
                                             </div>
-                                            <div className='text-white font-black text-2xl'>$47,230</div>
-                                            <div className='text-green-400 text-sm mt-2 flex items-center'>
-                                                <TrendingUp className='w-4 h-4 mr-2' />
-                                                +28.3% this month
-                                            </div>
+                                            <div className='text-red-400  font-black text-2xl text-center'>Coming Soon</div>
+                                            {/* <div className='text-white font-semibold text-lg'>High-Risk Signals Detected</div>
+                                            <div className='text-red-400 text-sm mt-2'>Avoiding 73% of potential losses</div> */}
                                         </div>
                                     </div>
 
                                     {/* Floating Elements */}
-                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
-                                        <Rocket className='w-8 h-8 text-white' />
+                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
+                                        <AlertTriangle className='w-8 h-8 text-white' />
                                     </div>
                                 </div>
                             </div>
+                            {/* Step 3: Profit Execution */}
                         </div>
                     </div>
                 </div>
@@ -824,7 +915,7 @@ function Home() {
                         {/* RIGHT - Lottie Animation and Subscribe Form */}
                         <div className='space-y-8'>
                             {/* Learn More Lottie Animation */}
-                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
+                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto bg-re'>
                                 <LottieAnimation
                                     src='/animations/LearnMore2.json'
                                     className='w-[90%] h-full sm:w-[400px] sm:h-[380px] md:w-[500px] md:h-[420px] lg:w-[550px] lg:h-[450px]'
@@ -1063,6 +1154,8 @@ function Home() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <CookieConsentBanner />
         </div>
     );
 }

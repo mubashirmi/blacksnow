@@ -130,7 +130,7 @@ function SubscriptionConfirmation() {
         } else if (productLink === 'https://blacksnowholdings.com/InvoiceContract') {
             router.push('/invoicecontractdashboard/contract');
         } else if (productLink === 'https://blacksnowholdings.com/advertising') {
-            router.push('/advertising');
+            router.push('/digitalBillboard/dashboard');
         } else {
             router.push('/');
         }

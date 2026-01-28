@@ -288,7 +288,7 @@ function SignIn() {
                                     </div>
                                 ) : (
                                     <>
-                                        {isSignUp ? 'Create Account' : 'Sign In to Dashboard'}
+                                        {isSignUp ? 'Create Account' : 'Dashboard'}
                                         <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
                                     </>
                                 )}

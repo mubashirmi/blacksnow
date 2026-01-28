@@ -8,18 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const id = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
     try {
         if (method === 'GET') {
-            const billboardData = await prisma.digitalBillboard.findFirst({
+            const billboardData = await prisma.digitalBillboard.findMany({
                 where: { authId: id },
-                select: {
-                    id: true,
-                },
             });
 
             if (!billboardData) {
                 return res.status(200).json({ message: 'No digital billboard exist', status: false });
             }
 
-            return res.status(200).json({ message: 'Digital billboard exist', status: true });
+            return res.status(200).json({ message: 'Digital billboard exist', status: true, billboardData });
         }
 
         return res.status(405).json({ message: 'Method not allowed' });

@@ -1263,7 +1263,7 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Revenue Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>$1,250</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>$10,000</div>
                             <div className='text-sm text-gray-600 mb-3'>
                                 Current: ${metrics?.totalRevenue ?? 0} ({Math.min(((metrics?.totalRevenue ?? 0) / 1250) * 100, 100).toFixed(0)}%)
                             </div>
@@ -1282,7 +1282,7 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Click Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>250</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>1000</div>
                             <div className='text-sm text-gray-600 mb-3'>
                                 Current: {metrics?.affiliate?.totalClicks ?? 0} (
                                 {Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 250) * 100, 100).toFixed(0)}%)
@@ -1302,7 +1302,7 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Subscriber Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>125</div>
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>100</div>
                             <div className='text-sm text-gray-600 mb-3'>
                                 Current: {metrics?.marketing?.totalSubscribers ?? 0} (
                                 {Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 125) * 100, 100).toFixed(0)}%)
@@ -1367,6 +1367,10 @@ export default function UnifiedSalesKPI() {
                         </h3>
                         <div className='space-y-4'>
                             <div className='flex justify-between items-center'>
+                                <span className='text-gray-600'>Emails Delivered</span>
+                                <span className='font-bold text-green-600'>{metrics?.marketing?.deliveredEmails ?? 0}</span>
+                            </div>
+                            <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Total Revenue</span>
                                 <span className='font-bold text-green-600'>${(metrics?.totalRevenue ?? 0).toLocaleString()}</span>
                             </div>
@@ -1374,10 +1378,7 @@ export default function UnifiedSalesKPI() {
                                 <span className='text-gray-600'>Conversions</span>
                                 <span className='font-bold text-green-600'>{metrics?.affiliate?.totalConversions ?? 0}</span>
                             </div>
-                            <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Emails Delivered</span>
-                                <span className='font-bold text-green-600'>{metrics?.marketing?.deliveredEmails ?? 0}</span>
-                            </div>
+
                             {!affiliateData && (
                                 <div className='text-xs text-orange-600 flex items-center gap-1 pt-2 border-t'>
                                     <AlertCircle className='w-3 h-3' />
@@ -1394,6 +1395,13 @@ export default function UnifiedSalesKPI() {
                         </h3>
                         <div className='space-y-4'>
                             <div className='flex justify-between items-center'>
+                                <span className='text-gray-600'>Conversions</span>
+                                <span className='font-bold text-blue-600'>
+                                    {Math.round((Number(metrics?.affiliate?.totalClicks ?? 0) * Number(metrics?.conversionRate ?? 0)) / 100)}
+                                </span>
+                            </div>
+
+                            <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Total Clicks</span>
                                 <span className='font-bold text-blue-600'>{metrics?.affiliate?.totalClicks ?? 0}</span>
                             </div>
@@ -1401,10 +1409,10 @@ export default function UnifiedSalesKPI() {
                                 <span className='text-gray-600'>Conversion Rate</span>
                                 <span className='font-bold text-blue-600'>{metrics?.conversionRate ?? '0.0'}%</span>
                             </div>
-                            <div className='flex justify-between items-center'>
+                            {/* <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Total Subscribers</span>
                                 <span className='font-bold text-blue-600'>{metrics?.marketing?.totalSubscribers ?? 0}</span>
-                            </div>
+                            </div> */}
                             {!marketingData && (
                                 <div className='text-xs text-orange-600 flex items-center gap-1 pt-2 border-t'>
                                     <AlertCircle className='w-3 h-3' />

@@ -1,24 +1,7 @@
 'use client';
 
-import { Briefcase, ChevronDown, ChevronRight, DollarSign, FileText, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -148,7 +131,7 @@ type KPIResponse = {
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 export default function KPIPage() {
-    const [expandedSections, setExpandedSections] = useState<string[]>(['Overview']);
+    // const [expandedSections, setExpandedSections] = useState<string[]>(['Overview']);
     const [data, setData] = useState<KPIResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -159,9 +142,9 @@ export default function KPIPage() {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const itemsPerPage = 10;
 
-    const toggleSection = (sectionName: string) => {
-        setExpandedSections((prev) => (prev.includes(sectionName) ? prev.filter((s) => s !== sectionName) : [...prev, sectionName]));
-    };
+    // const toggleSection = (sectionName: string) => {
+    //     setExpandedSections((prev) => (prev.includes(sectionName) ? prev.filter((s) => s !== sectionName) : [...prev, sectionName]));
+    // };
 
     useEffect(() => {
         const fetchKPI = async () => {
@@ -187,38 +170,38 @@ export default function KPIPage() {
 
     const affiliates = data?.affiliateUsers ?? [];
     const sales = data?.salesUsers ?? [];
-    const latestBlog = data?.latestBlog ?? null;
+    // const latestBlog = data?.latestBlog ?? null;
     const latestNotes = data?.latestThreeNotes ?? [];
     // const latestBillboard = data?.latestBillboard ?? null;
     const billboardApprovals = data?.latestBillBoardApprovels ?? [];
-    const latestJob = data?.latestJob ?? null;
+    // const latestJob = data?.latestJob ?? null;
     const latestApplicants = data?.latestJobApplicants ?? [];
     const rsvpEvents = data?.rsvpEvents ?? [];
     const checkoutRevenues = (data?.checkoutRevenues ?? []) as CheckoutRevenue[];
     const userProducts = (data?.userProducts ?? []) as ProductUser[];
 
     // Analytics calculations
-    const getGrowthData = (users: User[]) => {
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const monthlyData = months.map((month, idx) => {
-            const count = users.filter((u) => {
-                const date = new Date(u.createdAt);
-                return date.getMonth() === idx && date.getFullYear() === 2025;
-            }).length;
-            return { month, count };
-        });
-        return monthlyData;
-    };
+    // const getGrowthData = (users: User[]) => {
+    //     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    //     const monthlyData = months.map((month, idx) => {
+    //         const count = users.filter((u) => {
+    //             const date = new Date(u.createdAt);
+    //             return date.getMonth() === idx && date.getFullYear() === 2025;
+    //         }).length;
+    //         return { month, count };
+    //     });
+    //     return monthlyData;
+    // };
 
-    const getBillboardStatusData = () => {
-        const statuses = ['Approved', 'NotApproved', 'Rejected'];
-        return statuses
-            .map((status) => ({
-                name: status,
-                value: billboardApprovals.filter((b) => b.status === status).length,
-            }))
-            .filter((item) => item.value > 0);
-    };
+    // const getBillboardStatusData = () => {
+    //     const statuses = ['Approved', 'NotApproved', 'Rejected'];
+    //     return statuses
+    //         .map((status) => ({
+    //             name: status,
+    //             value: billboardApprovals.filter((b) => b.status === status).length,
+    //         }))
+    //         .filter((item) => item.value > 0);
+    // };
 
     const getRecentActivity = () => {
         const allActivity = [
@@ -230,15 +213,15 @@ export default function KPIPage() {
         return allActivity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
     };
 
-    const getRsvpUtilization = () => {
-        return rsvpEvents.map((event) => ({
-            id: event.id,
-            date: new Date(event.date).toLocaleDateString(),
-            registered: event.userBroughtProduct?.length || 0,
-            limit: event.limit,
-            utilization: ((event.userBroughtProduct?.length || 0) / event.limit) * 100,
-        }));
-    };
+    // const getRsvpUtilization = () => {
+    //     return rsvpEvents.map((event) => ({
+    //         id: event.id,
+    //         date: new Date(event.date).toLocaleDateString(),
+    //         registered: event.userBroughtProduct?.length || 0,
+    //         limit: event.limit,
+    //         utilization: ((event.userBroughtProduct?.length || 0) / event.limit) * 100,
+    //     }));
+    // };
 
     function formatProductName(product?: string) {
         if (!product) return 'Unknown';
@@ -353,9 +336,9 @@ export default function KPIPage() {
         return { highest, lowest, average: avg };
     }
 
-    function getNewsletterSubscribers(users: ProductUser[]) {
-        return users.filter((user) => user.roles?.includes('NewsLetter') ?? false);
-    }
+    // function getNewsletterSubscribers(users: ProductUser[]) {
+    //     return users.filter((user) => user.roles?.includes('NewsLetter') ?? false);
+    // }
 
     const currency = (n?: number | null) =>
         typeof n === 'number' ? n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) : '$0';
@@ -377,11 +360,11 @@ export default function KPIPage() {
 
     const formatDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '-');
 
-    const affiliateGrowth = getGrowthData(affiliates);
-    const salesGrowth = getGrowthData(sales);
-    const billboardStatus = getBillboardStatusData();
+    // const affiliateGrowth = getGrowthData(affiliates);
+    // const salesGrowth = getGrowthData(sales);
+    // const billboardStatus = getBillboardStatusData();
     const recentActivity = getRecentActivity();
-    const rsvpUtilization = getRsvpUtilization();
+    // const rsvpUtilization = getRsvpUtilization();
 
     const revenueBreakdown = getRevenueBreakdownFromUsers(userProducts);
     const allPayingCustomersRaw = getAllPayingCustomers(userProducts);
@@ -421,13 +404,13 @@ export default function KPIPage() {
 
     const avgRevenuePerCustomer = totalPayingCustomers > 0 ? totalProfit / totalPayingCustomers : 0;
 
-    const getRevenueForProduct = (productKey: string) => productRevenueChartData.find((item) => item.productKey === productKey)?.revenue ?? 0;
+    // const getRevenueForProduct = (productKey: string) => productRevenueChartData.find((item) => item.productKey === productKey)?.revenue ?? 0;
 
-    const newsletterRevenue = getRevenueForProduct('NewsLetter');
-    const billboardRevenue = getRevenueForProduct('DigitalBillboard');
-    const rsvpRevenue = getRevenueForProduct('RSVP');
+    // const newsletterRevenue = getRevenueForProduct('NewsLetter');
+    // const billboardRevenue = getRevenueForProduct('DigitalBillboard');
+    // const rsvpRevenue = getRevenueForProduct('RSVP');
 
-    const newsletterSubscribers = getNewsletterSubscribers(userProducts);
+    // const newsletterSubscribers = getNewsletterSubscribers(userProducts);
 
     const handleSort = (column: 'revenue' | 'date') => {
         if (sortBy === column) {
@@ -439,23 +422,23 @@ export default function KPIPage() {
         setCurrentPage(1);
     };
 
-    const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }: any) => (
-        <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-            <div className='flex items-center justify-between mb-4'>
-                <div className={`p-3 rounded-lg bg-${color}-50`}>
-                    <Icon className={`w-6 h-6 text-${color}-600`} />
-                </div>
-                {trend && (
-                    <div className={`flex items-center gap-1 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                        {trend === 'up' ? <TrendingUp className='w-4 h-4' /> : <TrendingDown className='w-4 h-4' />}
-                        <span>{trendValue}</span>
-                    </div>
-                )}
-            </div>
-            <h3 className='text-sm font-medium text-gray-500 mb-1'>{title}</h3>
-            <p className='text-3xl font-bold text-gray-900'>{value}</p>
-        </div>
-    );
+    // const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }: any) => (
+    //     <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+    //         <div className='flex items-center justify-between mb-4'>
+    //             <div className={`p-3 rounded-lg bg-${color}-50`}>
+    //                 <Icon className={`w-6 h-6 text-${color}-600`} />
+    //             </div>
+    //             {trend && (
+    //                 <div className={`flex items-center gap-1 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+    //                     {trend === 'up' ? <TrendingUp className='w-4 h-4' /> : <TrendingDown className='w-4 h-4' />}
+    //                     <span>{trendValue}</span>
+    //                 </div>
+    //             )}
+    //         </div>
+    //         <h3 className='text-sm font-medium text-gray-500 mb-1'>{title}</h3>
+    //         <p className='text-3xl font-bold text-gray-900'>{value}</p>
+    //     </div>
+    // );
 
     if (errorMsg) {
         return (
@@ -484,6 +467,7 @@ export default function KPIPage() {
                 </div>
 
                 {/* Overview Stats */}
+                {/*
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
                     <StatCard title='Total Affiliates' value={isLoading ? '...' : affiliates.length} icon={Users} color='blue' trend='up' trendValue='+12%' />
                     <StatCard title='Sales Team' value={isLoading ? '...' : sales.length} icon={Briefcase} color='green' trend='up' trendValue='+8%' />
@@ -497,8 +481,10 @@ export default function KPIPage() {
                         trendValue='+24%'
                     />
                 </div>
+                */}
 
                 {/* Growth Charts */}
+                {/*
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                     <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                         <h3 className='text-lg font-semibold text-gray-800 mb-4'>Affiliate Growth Trend</h3>
@@ -545,8 +531,10 @@ export default function KPIPage() {
                         )}
                     </div>
                 </div>
+                */}
 
                 {/* Billboard & RSVP Analytics */}
+                {/*
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                     <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                         <h3 className='text-lg font-semibold text-gray-800 mb-4'>Billboard Status Distribution</h3>
@@ -598,6 +586,7 @@ export default function KPIPage() {
                         )}
                     </div>
                 </div>
+                */}
 
                 {/* Revenue Analytics */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -828,7 +817,7 @@ export default function KPIPage() {
                 </div>
 
                 {/* Detailed Sections */}
-                <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
+                {/* <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
                     {['Newsletter', 'Billboard', 'Affiliate', 'Sales', 'Events', 'Blogs', 'Notes'].map((section) => (
                         <div key={section} className='border-b border-gray-200 last:border-b-0'>
                             <button
@@ -1095,7 +1084,7 @@ export default function KPIPage() {
                             )}
                         </div>
                     ))}
-                </div>
+                </div> */}
 
                 {/* Summary Statistics Grid */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>

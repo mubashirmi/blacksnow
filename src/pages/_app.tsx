@@ -1,5 +1,6 @@
+// pages/_app.tsx
 import { CoreLayout } from '@/components';
-import AdminLayout from '@/components/AdminLayout'; // Import your AdminLayout
+import AdminLayout from '@/components/AdminLayout';
 import AffiliateLayout from '@/components/AffiliateDashboardLayout';
 import EmailMarketingLayout from '@/components/EmailMarketingLayout';
 import SalesDashboardLayout from '@/components/SalesDashboardLayout';
@@ -15,13 +16,15 @@ import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import '@mantine/tiptap/styles.css';
 import 'mantine-react-table/styles.css';
-import { AppProps } from 'next/app';
+import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, type ReactElement, type ReactNode } from 'react';
 import '../styles/globalStyles.css';
 
-// Amplify.configure(amplifyConfig, { ssr: true });
+type NextPageWithLayout = AppProps['Component'] & {
+    getLayout?: (page: ReactElement) => ReactNode;
+};
 
 export default function App({ Component, pageProps }: AppProps) {
     const { showLoading, hideLoading } = useGlobalState();
@@ -44,30 +47,32 @@ export default function App({ Component, pageProps }: AppProps) {
 
     useEffect(() => {
         const handleRouteChange = () => {
-            // Store the current route as the previous route
             sessionStorage.setItem('previousRoute', router.asPath);
         };
-
         router.events.on('routeChangeStart', handleRouteChange);
-
-        return () => {
-            router.events.off('routeChangeStart', handleRouteChange);
-        };
+        return () => router.events.off('routeChangeStart', handleRouteChange);
     }, [router]);
 
     useEffect(() => {
-        if (router.pathname === '/login') {
-            document.body.style.minHeight = '100px';
-        } else {
-            document.body.style.minHeight = '100vh';
-        }
+        document.body.style.minHeight = router.pathname === '/login' ? '100px' : '100vh';
     }, [router.pathname]);
 
-    // Determine if the current route is an admin route
-    const isAdminRoute = router.pathname.startsWith('/admin');
-    const isEmailMarketingRoute = router.pathname.startsWith('/emailMarketing/dashboard');
-    const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
-    const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
+    // Default layout logic (your existing routing logic)
+    const defaultLayout = (page: ReactElement) => {
+        const isAdminRoute = router.pathname.startsWith('/admin');
+        const isEmailMarketingRoute = router.pathname.startsWith('/emailMarketing/dashboard');
+        const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
+        const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
+
+        if (isAdminRoute) return <AdminLayout>{page}</AdminLayout>;
+        if (isEmailMarketingRoute) return <EmailMarketingLayout>{page}</EmailMarketingLayout>;
+        if (isSalesRoute) return <SalesDashboardLayout>{page}</SalesDashboardLayout>;
+        if (isAffiliateRoute) return <AffiliateLayout>{page}</AffiliateLayout>;
+        return <CoreLayout>{page}</CoreLayout>;
+    };
+
+    const PageComponent = Component as NextPageWithLayout;
+    const getLayout = PageComponent.getLayout ?? defaultLayout;
 
     return (
         <>
@@ -75,33 +80,13 @@ export default function App({ Component, pageProps }: AppProps) {
                 <title>Black Snow</title>
                 <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width' />
             </Head>
+
             <MantineProvider theme={mantineTheme}>
-                {isAdminRoute ? (
-                    <AdminLayout>
-                        <Notifications position='top-right' />
-                        <Component {...pageProps} />
-                    </AdminLayout>
-                ) : isEmailMarketingRoute ? (
-                    <EmailMarketingLayout>
-                        <Notifications position='top-right' />
-                        <Component {...pageProps} />
-                    </EmailMarketingLayout>
-                ) : isSalesRoute ? (
-                    <SalesDashboardLayout>
-                        <Notifications position='top-right' />
-                        <Component {...pageProps} />
-                    </SalesDashboardLayout>
-                ) : isAffiliateRoute ? (
-                    <AffiliateLayout>
-                        <Notifications position='top-right' />
-                        <Component {...pageProps} />
-                    </AffiliateLayout>
-                ) : (
-                    <CoreLayout>
-                        <Notifications position='top-right' />
-                        <Component {...pageProps} />
-                    </CoreLayout>
-                )}
+                {/* ✅ Put Notifications once */}
+                <Notifications position='top-right' />
+
+                {/* ✅ Page decides layout if getLayout exists */}
+                {getLayout(<PageComponent {...pageProps} />)}
             </MantineProvider>
         </>
     );

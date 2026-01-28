@@ -90,7 +90,8 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
-                                    { name: 'Consultation', href: '/consultation' },
+                                    { name: 'cookie policy', href: '/cookies' },
+                                    // { name: 'Consultation', href: '/consultation' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}
@@ -138,6 +139,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Terms & Conditions', href: '/terms' },
                                     { name: 'Privacy Policy', href: '/privacy' },
                                     { name: 'GDPR', href: '/gdpr' },
+                                    { name: 'Admin dashboard', href: '/admin/dashboard' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}

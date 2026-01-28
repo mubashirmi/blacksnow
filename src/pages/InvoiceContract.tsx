@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import lottie from 'lottie-web';
 import {
     ArrowRight,
-    Award,
     BarChart3,
     CheckCircle,
     Clock,
@@ -12,10 +11,12 @@ import {
     LinkIcon,
     Pen,
     Receipt,
+    Rocket,
     Send,
     Share2,
     Shield,
-    TrendingUp,
+    Star,
+    Target,
     Upload,
     Users,
     Zap,
@@ -56,27 +57,39 @@ export default function InvoiceContractPage() {
 
     const features = [
         {
-            icon: Upload,
-            title: 'Upload PDF Documents',
-            description: 'Easily upload your invoices, contracts, or any PDF documents to our secure platform.',
+            icon: Star,
+            title: 'Professional Custom Invoices',
+            description: 'Send clean, branded invoices that make you look established and trustworthy. No design skills or formatting required.',
             color: 'from-[#4cc7e8] to-[#2c7bbe]',
         },
         {
+            icon: Upload,
+            title: 'Email Delivery Options',
+            description: 'Send invoices instantly through email so clients receive them quickly and can make payments without delays.',
+            color: 'from-[#4cc7e8] to-[#2c7bbe]',
+        },
+        {
+            icon: Zap,
+            title: 'Automatic Payment Reminders',
+            description: 'The system follows up for you so you don’t have to. More reminders mean more on-time payments without awkward conversations.',
+            color: 'from-[#2c7bbe] to-[#4cc7e8]',
+        },
+        {
             icon: LinkIcon,
-            title: 'Generate Shareable Links',
-            description: 'Get unique, secure links that you can send to anyone for document signing and collaboration.',
+            title: 'Create Invoice Contracts',
+            description: 'Upload simple invoice-based contracts clients can review before paying. Keep all terms and signatures.',
             color: 'from-[#2c7bbe] to-[#4cc7e8]',
         },
         {
             icon: Pen,
-            title: 'Digital Signing',
-            description: 'Recipients can securely sign your documents with their digital signature directly from the link.',
+            title: 'Create Recurring Invoices',
+            description: 'Set up weekly, monthly, or annual billing that sends itself. Perfect for subscription services or long-term clients.',
             color: 'from-[#4cc7e8] to-[#2a8dcc]',
         },
         {
             icon: BarChart3,
-            title: 'Create Invoices',
-            description: 'Generate professional invoices from your signed contracts with customizable templates.',
+            title: 'Add Multiple Users',
+            description: 'Invite assistants or team members to help manage billing. Access controls ensure the right people see the right information.',
             color: 'from-[#2a8dcc] to-[#2c7bbe]',
         },
     ];
@@ -110,46 +123,46 @@ export default function InvoiceContractPage() {
 
     const benefits = [
         {
+            icon: Star,
+            title: 'Professional Invoices',
+            description: 'Sends professional invoices that elevate your brand image.',
+            stat: 'Pro',
+            statLabel: 'Branding',
+        },
+        {
+            icon: Rocket,
+            title: 'Faster Payments',
+            description: 'Speeds up payments through fast, reliable email delivery.',
+            stat: 'Fast',
+            statLabel: 'Delivery',
+        },
+        {
+            icon: Target,
+            title: 'Fewer Errors',
+            description: 'Eliminates manual tracking and reduces billing errors.',
+            stat: 'Less',
+            statLabel: 'Mistakes',
+        },
+        {
             icon: Clock,
-            title: 'Save Time',
-            description: 'Eliminate manual document processing. Create, share, and sign documents in minutes.',
-            stat: '80%',
-            statLabel: 'Faster',
+            title: 'Automated Reminders',
+            description: 'Saves time with automated reminders and recurring invoices.',
+            stat: 'Auto',
+            statLabel: 'Follow-ups',
         },
         {
-            icon: Shield,
-            title: 'Enhanced Security',
-            description: 'All documents are encrypted and stored securely with complete audit trails.',
-            stat: '256-bit',
-            statLabel: 'Encryption',
+            icon: BarChart3,
+            title: 'Organized Records',
+            description: 'Keeps your financial records clean and organized.',
+            stat: 'Clean',
+            statLabel: 'Books',
         },
         {
-            icon: Users,
-            title: 'Easy Collaboration',
-            description: 'Share documents with multiple signers and track signing status in real-time.',
-            stat: '∞',
-            statLabel: 'Users',
-        },
-        {
-            icon: Award,
-            title: 'Professional Results',
-            description: 'Generate polished, branded invoices that reflect your business professionalism.',
-            stat: '100%',
-            statLabel: 'Branded',
-        },
-        {
-            icon: Zap,
-            title: 'Instant Access',
-            description: 'Access your documents anytime, anywhere from any device with internet.',
-            stat: '24/7',
-            statLabel: 'Available',
-        },
-        {
-            icon: TrendingUp,
-            title: 'Business Growth',
-            description: 'Streamline operations and focus on growth while we handle documents.',
-            stat: '3x',
-            statLabel: 'Efficiency',
+            icon: CheckCircle,
+            title: 'Smooth Billing',
+            description: 'Provides a smooth, dependable billing flow from start to finish.',
+            stat: 'Smooth',
+            statLabel: 'Flow',
         },
     ];
 
@@ -163,17 +176,19 @@ export default function InvoiceContractPage() {
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
                                 <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    INVOICE & CONTRACT MANAGEMENT
+                                    Create Invoices
                                 </Badge>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Invoice &</span>
-                                    &nbsp;Contract
+                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Business </span>
+                                    &nbsp;Invoice
                                 </h1>
                                 <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Streamline your document management with our powerful Invoice & Contract tool. Upload PDFs, generate shareable signing
-                                    links, collect signatures, and create professional{' '}
-                                    <span className='text-[#4cc7e8] font-semibold'>invoices—all in one place.</span>
+                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                    Your Business Invoice system makes billing clean, fast, and effortless. Every payment is tracked, organized, and stored so
+                                    you always know where your money stands. Clients receive clear, polished invoices that make paying simple and stress-free.
+                                    The platform is designed for speed, efficiency, and total accuracy. Create unlimited invoices and contracts for customers on
+                                    {'   '}
+                                    <span className='text-[#4cc7e8] font-semibold'> a single dashboard.</span>
                                 </p>
                             </div>
 
@@ -275,13 +290,15 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-6 px-4 sm:px-6 py-2 text-xs sm:text-sm font-bold'>
-                            POWERFUL TOOLS
+                            Features
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Core <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Features</span>
+                            Professional Custom <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Invoices </span>
                         </h2>
                         <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
-                        <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Everything you need in one platform</p>
+                        <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>
+                            Send clean, branded invoices that make you look established and trustworthy. No design skills or formatting required.
+                        </p>
                     </div>
 
                     <div className='grid sm:grid-cols-2 gap-6 lg:gap-8'>
@@ -453,14 +470,12 @@ export default function InvoiceContractPage() {
                                 START MANAGING DOCUMENTS LIKE A PRO
                             </Badge>
                             <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Ready to
-                                <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>&nbsp;Simplify</span>
+                                Create New
+                                <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>&nbsp;Transactions</span>
                                 <br />
-                                Your Workflow?
                             </h2>
                             <p className='text-xl text-gray-300 leading-relaxed'>
-                                Join thousands of successful businesses who have chosen our platform to reach their target audience and drive exceptional
-                                results.
+                                Start today and experience a faster, cleaner, and more professional way to handle every invoice.
                             </p>
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button

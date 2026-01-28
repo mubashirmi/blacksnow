@@ -247,7 +247,7 @@ export default function NotesPage() {
                         role='dialog'
                         aria-modal='true'
                         aria-labelledby='create-note-title'
-                        className='bg-white rounded-[18px] shadow-2xl w-full max-w-md border border-slate-500 overflow-hidden'
+                        className='bg-white rounded-[18px] shadow-2xl w-full max-w-xl border border-slate-500 overflow-hidden'
                         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
                     >
                         {/* Header matches the page header */}
@@ -301,7 +301,7 @@ export default function NotesPage() {
                                     onChange={(e) => setContent(e.target.value)}
                                     placeholder='Enter note content'
                                     rows={4}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    className={`w-full px-3 py-2 border h-48 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                         errors.content ? 'border-red-500' : 'border-slate-200'
                                     }`}
                                 />

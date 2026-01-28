@@ -226,66 +226,12 @@ function Advertising() {
                                     &nbsp;Billboards
                                 </h1>
                                 <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Placing your business advertisements across our website has never been easier. In a few easy steps, activate your robust
-                                    campaign and monitor your performance in real-time.
+                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                    Your Digital Billboard positions your business in front of active buyers exactly when intent is highest, running nonstop to
+                                    funnel traffic back to your advertisement automatically. Every impression is monitored and optimized to maximize visibility,
+                                    without the need for a design or marketing team. It delivers simple, always-on exposure built for speed, clarity, and
+                                    reliable results.
                                 </p>
-                                <p className='text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Advertise your <span className='text-[#4cc7e8] font-semibold'>Business, Podcast, Product Page</span>,{' '}
-                                    <span className='text-[#2c7bbe] font-semibold'>Social Media</span> and etc.
-                                </p>
-                            </div>
-
-                            {/* Feature List */}
-                            <div className='space-y-4 sm:space-y-6'>
-                                {[
-                                    {
-                                        title: 'Simple and Quick Setup',
-                                        description: 'Launch your advertising campaign in just a few easy steps with no technical expertise required.',
-                                        icon: Zap,
-                                        color: 'from-[#4cc7e8] to-[#2c7bbe]',
-                                    },
-                                    {
-                                        title: 'Global Exposure',
-                                        description: "Get promoted to a worldwide audience, expanding your brand's reach far beyond local markets.",
-                                        icon: Globe,
-                                        color: 'from-[#2c7bbe] to-[#4cc7e8]',
-                                    },
-                                    {
-                                        title: 'Real-Time Performance Tracking',
-                                        description:
-                                            'Monitor the effectiveness of your campaign with real-time analytics, giving you full control over your results.',
-                                        icon: BarChart3,
-                                        color: 'from-[#4cc7e8] to-[#2a8dcc]',
-                                    },
-                                    {
-                                        title: 'Enhanced Visibility',
-                                        description: "Maximize your brand's presence through prominent ad placement on key pages of our website.",
-                                        icon: Eye,
-                                        color: 'from-[#2a8dcc] to-[#2c7bbe]',
-                                    },
-                                ].map((feature, index) => (
-                                    <div
-                                        key={index}
-                                        className='group flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40 transition-all duration-300 animate-slide-in-left'
-                                        style={{ animationDelay: `${index * 200}ms` }}
-                                    >
-                                        <div className='flex-shrink-0'>
-                                            <div
-                                                className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r ${feature.color} rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                                            >
-                                                <CheckCircle className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
-                                            </div>
-                                        </div>
-                                        <div className='space-y-2'>
-                                            <h3 className='text-lg sm:text-xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300 flex items-center'>
-                                                {feature.title}
-                                                <feature.icon className='w-4 h-4 sm:w-5 sm:h-5 ml-2 text-[#4cc7e8]' />
-                                            </h3>
-                                            <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
-                                        </div>
-                                    </div>
-                                ))}
                             </div>
 
                             {/* CTA Buttons */}
@@ -304,19 +250,19 @@ function Advertising() {
                                     ) : (
                                         <>
                                             <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                            Advertise
+                                            Learn More
                                             <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                         </>
                                     )}
                                 </Button>
-                                <Link href={'/billboards'}>
+                                <Link href={'/pricing'}>
                                     <Button
                                         size='lg'
                                         variant='outline'
                                         className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
-                                        <Monitor className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Digital Billboard
+                                        <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        View Pricing
                                     </Button>
                                 </Link>
                             </div>
@@ -338,18 +284,97 @@ function Advertising() {
                             </div>
                         </div>
                     </div>
+                    {/* Feature List */}
+                    {/* Feature List */}
                 </div>
             </section>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
+                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 text-center'>
+                        Digital Billboard <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Features</span>{' '}
+                    </h2>
+                    <p className='text-base sm:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center px-20'>
+                        High-visibility placement, real-time analytics, share buttons, up to 4 campaigns, and team access.
+                    </p>
 
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-10'>
+                        {[
+                            {
+                                title: 'High-Visibility Placement',
+                                description:
+                                    'Your ads appear in premium online locations that drive real clicks and real visibility. No confusing settings—just plug in your offer and let the system distribute traffic.',
+                                icon: Eye,
+                                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                            },
+                            {
+                                title: 'Live Analytics Dashboard',
+                                description: 'Track impressions, clicks, and engagement in real time. You always know exactly how your campaign is performing.',
+                                icon: BarChart3,
+                                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                            },
+                            {
+                                title: 'Simple Setup & Zero Maintenance',
+                                description:
+                                    'Upload your content once and let the system run itself. Perfect for business owners who want steady traffic without extra work.',
+                                icon: Zap,
+                                color: 'from-[#4cc7e8] to-[#2a8dcc]',
+                            },
+                            {
+                                title: 'Create Up to 4 Billboards',
+                                description:
+                                    'Run multiple billboard campaigns at once for different products, offers, or audiences. Maximize your exposure with more digital real estate.',
+                                icon: Monitor,
+                                color: 'from-[#2a8dcc] to-[#2c7bbe]',
+                            },
+                            {
+                                title: 'Email & SMS Share Buttons',
+                                description:
+                                    'Your ads include built-in share buttons that let viewers send your offer instantly through email or SMS. This expands your reach through effortless referrals.',
+                                icon: Megaphone,
+                                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                            },
+                            {
+                                title: 'Add Multiple Users',
+                                description:
+                                    'Invite team members into the platform with controlled access. Great for larger businesses and teams that need collaborative management.',
+                                icon: CheckCircle,
+                                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                            },
+                        ].map((feature, index) => (
+                            <div
+                                key={index}
+                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#2c7bbe]/20 bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/5 p-5 sm:p-6 transition-all duration-300 hover:border-[#4cc7e8]/40 hover:translate-y-[-2px]'
+                            >
+                                {/* glow */}
+                                <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10' />
+
+                                <div className='relative flex items-start gap-4'>
+                                    <div
+                                        className={`flex h-12 w-12 p-2 items-center justify-center rounded-xl bg-gradient-to-r ${feature.color} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                                    >
+                                        <feature.icon className='h-14 w-14 text-white' />
+                                    </div>
+
+                                    <div className='space-y-2'>
+                                        <h3 className='text-lg font-bold text-white group-hover:text-[#4cc7e8] transition-colors'>{feature.title}</h3>
+                                        <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
             {/* Features Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
                         <Badge className='uppercase bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-6 py-2 text-sm font-bold'>
                             ADVERTISING EXCELLENCE
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Platform</span>
+                            Why Choose Our{' '}
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Billboard?</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
                             Experience the power of premium digital advertising with our cutting-edge platform designed for maximum impact and ROI.
@@ -359,34 +384,34 @@ function Advertising() {
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
                         {[
                             {
-                                icon: Rocket,
-                                title: 'Instant Launch',
-                                description: 'Get your campaigns live in minutes with our streamlined setup process.',
-                            },
-                            {
-                                icon: BarChart3,
-                                title: 'Advanced Analytics',
-                                description: 'Track performance with detailed insights and real-time reporting.',
-                            },
-                            {
                                 icon: Globe,
-                                title: 'Global Reach',
-                                description: 'Connect with audiences worldwide through our extensive network.',
-                            },
-                            {
-                                icon: Target,
-                                title: 'Precision Targeting',
-                                description: 'Reach your ideal customers with advanced targeting capabilities.',
-                            },
-                            {
-                                icon: Clock,
-                                title: '24/7 Support',
-                                description: 'Get help whenever you need it with our round-the-clock support team.',
+                                title: '24/7 Brand Visibility',
+                                description: 'Your brand receives nonstop visibility 24/7 without added workload.',
                             },
                             {
                                 icon: Star,
-                                title: 'Premium Placement',
-                                description: 'Secure prime advertising spots on high-traffic pages for maximum visibility.',
+                                title: 'Premium Traffic',
+                                description: 'Premium share buttons ensure real traffic and meaningful attention.',
+                            },
+                            {
+                                icon: Target,
+                                title: 'Automatic Optimization',
+                                description: 'Automatic optimization keeps your ads performing consistently well.',
+                            },
+                            {
+                                icon: Rocket,
+                                title: 'Fast Setup',
+                                description: 'The entire system is designed for quick setup and ease of use.',
+                            },
+                            {
+                                icon: BarChart3,
+                                title: 'Clear Analytics',
+                                description: 'Analytics give you complete clarity on your performance at all times.',
+                            },
+                            {
+                                icon: Clock,
+                                title: 'Hands-Off Exposure',
+                                description: 'Reliable, hands-off exposure that keeps your business in front of buyers.',
                             },
                         ].map((feature, index) => (
                             <Card
@@ -439,7 +464,7 @@ function Advertising() {
                                     ) : (
                                         <>
                                             <Megaphone className='w-6 h-6 mr-3' />
-                                            Start Campaign
+                                            Learn More
                                             <ArrowRight className='w-5 h-5 ml-3' />
                                         </>
                                     )}

@@ -81,15 +81,25 @@ model ReferralProducts {
   updatedAt   DateTime @updatedAt
   productName String
   productLink String
-  clicks      Int      @default(0)
   Auth        Auth     @relation(fields: [authId], references: [id])
   authId      Int
-  // 1-to-1 relation with Conversions
-  conversion  Int      @default(0)
-  comission   Int      @default(0)
 
-  @@unique([authId, productLink]) // one row per (user, product)
+  conversion             Int                      @default(0)
+  comission              Int                      @default(0)
+  referralProductsClicks ReferralProductsClicks[]
+
+  @@unique([authId, productLink])
   @@index([authId])
+}
+
+model ReferralProductsClicks {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clicks             Int              @default(0)
+  ReferralProducts   ReferralProducts @relation(fields: [referralProductsId], references: [id])
+  referralProductsId Int
 }
 
 model AdminRevenue {

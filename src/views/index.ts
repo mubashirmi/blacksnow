@@ -9,6 +9,7 @@ export * from './Careers';
 export * from './CareersTitle';
 export * from './Confirmation';
 export * from './Consultation';
+export * from './Cookies';
 export * from './EmailMarketing';
 export * from './FAQ';
 export * from './Home';

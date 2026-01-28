@@ -34,12 +34,26 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                 <div className='flex items-center gap-3'>
                     <div className='relative transform hover:scale-105 transition-transform duration-300'>
                         <Link href={'/'}>
-                            <Image src='/logoblack.png' alt='Black Snow Logo' width={40} height={40} className='object-contain drop-shadow-md' />
+                            <Image src='/logoblack.png' alt='Black Snow Logo' width={80} height={80} className='object-contain drop-shadow-md' />
                         </Link>
                     </div>
                     <div>
-                        <span className='font-bold text-xl text-gray-800'>Black Snow</span>
-                        <p className='text-gray-500 text-sm'>Sales Panel</p>
+                        <span className='font-bold text-xl text-gray-800 ml-1'>Black Snow</span>
+                        <button
+                            className='
+    px-4  h-8 cursor-pointer whitespace-nowrap
+    text-sm font-medium
+    text-[#0b0b0b]/80
+    border border-[#0b0b0b]/30
+    bg-transparent
+    rounded-lg      /* not too round */
+    transition
+    hover:bg-[#0b0b0b]
+    hover:text-white
+  '
+                        >
+                            Sales Dashboard
+                        </button>
                     </div>
                 </div>
             </div>
@@ -81,22 +95,32 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
                 </button>
             </div>
             {isModalOpen && (
-                <div className='fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50'>
-                    <div className='bg-white rounded-lg p-6 w-96'>
-                        <h2 className='text-lg font-semibold mb-4'>Confirm Logout</h2>
-                        <p className='text-gray-600 mb-6'>Are you sure you want to logout?</p>
-                        <div className='flex justify-end gap-4'>
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] px-4'>
+                    <div className='w-[320px] overflow-hidden rounded-2xl bg-white shadow-2xl'>
+                        {/* Title + message */}
+                        <div className='px-6 pt-5 pb-4 text-center'>
+                            <h2 className='text-[20px] font-semibold text-[#ff3b30]'>Logout</h2>
+                            <p className='mt-2 text-[14px] text-black/60'>Are you sure you want to logout?</p>
+                        </div>
+
+                        <div className='h-px bg-black/10' />
+
+                        {/* Buttons same row */}
+                        <div className='flex'>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className='px-4 py-2 text-sm cursor-pointer font-medium text-gray-700 hover:bg-gray-100 rounded-md'
+                                className='h-12 w-[50%] text-[18px] text-black/60 active:bg-black/5 transition cursor-pointer'
                             >
                                 Cancel
                             </button>
+
+                            <div className='w-px bg-black/10' />
+
                             <button
                                 onClick={handleLogout}
-                                className='px-4 py-2 text-sm font-medium text-white bg-slate-500 hover:bg-slate-600 rounded-md cursor-pointer'
+                                className='h-12 text-[18px] w-[50%] cursor-pointer font-semibold text-[#007aff] active:bg-black/5 transition'
                             >
-                                Logout
+                                Confirm
                             </button>
                         </div>
                     </div>
