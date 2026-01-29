@@ -1,7 +1,5 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useEffect, useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -128,38 +126,160 @@ type KPIResponse = {
     userProducts?: ProductUser[];
 };
 
+/** New APIs types */
+type KPIChartMetricResponse = {
+    message: string;
+    weeklyRevenue: number;
+    monthlyRevenue: number;
+    yearlyRevenue: number;
+    weeklySubscribers: number;
+    monthlySubscribers: number;
+    yearlySubscribers: number;
+    weeklyChurnRate: number;
+    monthlyChurnRate: number;
+    yearlyChurnRate: number;
+};
+
+type SalesAffiliateChartRow = {
+    month: string;
+    count: number;
+    churnRate: number;
+};
+
+type TotalKPIResponse = {
+    countsByRole: Record<string, number>;
+};
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
+const PRODUCT_OPTIONS = [
+    { label: 'All Products', value: 'All' },
+    { label: 'Digital Billboard', value: 'DigitalBillboard' },
+    { label: 'Newsletter', value: 'NewsLetter' },
+    { label: 'RSVP', value: 'RSVP' },
+    { label: 'Email Marketing', value: 'EmailMarketing' },
+    { label: 'Invoice Tool', value: 'InvoiceTool' },
+];
+
+const monthOrder: Record<string, number> = {
+    Jan: 1,
+    Feb: 2,
+    Mar: 3,
+    Apr: 4,
+    May: 5,
+    Jun: 6,
+    Jul: 7,
+    Aug: 8,
+    Sep: 9,
+    Oct: 10,
+    Nov: 11,
+    Dec: 12,
+};
+
+function safeNumber(n: any, fallback = 0) {
+    const x = typeof n === 'number' ? n : Number(n);
+    return Number.isFinite(x) ? x : fallback;
+}
+
+function formatProductName(product?: string) {
+    if (!product) return 'Unknown';
+    switch (product) {
+        case 'DigitalBillboard':
+            return 'Digital Billboard';
+        case 'NewsLetter':
+            return 'Newsletter';
+        case 'RSVP':
+            return 'RSVP';
+        default:
+            return product;
+    }
+}
+
+function currency(n?: number | null) {
+    const v = typeof n === 'number' && Number.isFinite(n) ? n : 0;
+    return v.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+}
+
+function normalizePercent(rate: number) {
+    // handles 0..1 or 0..100
+    if (!Number.isFinite(rate)) return 0;
+    if (rate <= 1) return rate * 100;
+    return rate;
+}
+
+function percent(rate: number) {
+    const p = normalizePercent(rate);
+    return `${p.toFixed(2)}%`;
+}
+
+/** Recharts custom cursor: horizontal line */
+function HorizontalCursor(props: any) {
+    const { points, width } = props || {};
+    if (!points || !points.length || typeof width !== 'number') return null;
+    const y = points[0]?.y;
+    if (typeof y !== 'number') return null;
+
+    return <line x1={0} x2={width} y1={y} y2={y} stroke='rgba(17, 24, 39, 0.35)' strokeDasharray='4 4' />;
+}
+
+async function fetchJSON<T>(url: string): Promise<T> {
+    const res = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+        throw new Error(`Failed to fetch (${res.status}) ${url}`);
+    }
+    return (await res.json()) as T;
+}
+
 export default function KPIPage() {
-    // const [expandedSections, setExpandedSections] = useState<string[]>(['Overview']);
+    /** Existing KPI data */
     const [data, setData] = useState<KPIResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    // Pagination and sorting for paying customers
+    /** Existing table state */
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState<'revenue' | 'date'>('revenue');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const itemsPerPage = 10;
 
-    // const toggleSection = (sectionName: string) => {
-    //     setExpandedSections((prev) => (prev.includes(sectionName) ? prev.filter((s) => s !== sectionName) : [...prev, sectionName]));
-    // };
+    /** New Chart #1 state */
+    const [metricData, setMetricData] = useState<KPIChartMetricResponse | null>(null);
+    const [metricLoading, setMetricLoading] = useState(false);
+    const [metricError, setMetricError] = useState<string | null>(null);
 
+    const [metricType, setMetricType] = useState<'Revenue' | 'Subscribers' | 'ChurnRate'>('Revenue');
+    const [metricPeriod, setMetricPeriod] = useState<'Week' | 'Month' | 'Year'>('Week');
+
+    /** New Chart #2 state (Sales) */
+    const [salesChart, setSalesChart] = useState<SalesAffiliateChartRow[]>([]);
+    const [salesChartLoading, setSalesChartLoading] = useState(false);
+    const [salesChartError, setSalesChartError] = useState<string | null>(null);
+    const [salesProduct, setSalesProduct] = useState<string>('All');
+
+    /** New Chart #3 state (Affiliate) */
+    const [affiliateChart, setAffiliateChart] = useState<SalesAffiliateChartRow[]>([]);
+    const [affiliateChartLoading, setAffiliateChartLoading] = useState(false);
+    const [affiliateChartError, setAffiliateChartError] = useState<string | null>(null);
+    const [affiliateProduct, setAffiliateProduct] = useState<string>('All');
+
+    /** New Chart #4 state (Total KPI) */
+    const [totalKpi, setTotalKpi] = useState<TotalKPIResponse | null>(null);
+    const [totalKpiLoading, setTotalKpiLoading] = useState(false);
+    const [totalKpiError, setTotalKpiError] = useState<string | null>(null);
+
+    /** Fetch existing KPI */
     useEffect(() => {
         const fetchKPI = async () => {
             try {
                 setIsLoading(true);
                 setErrorMsg(null);
-                const res = await fetch('/api/v2/kpi', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                });
-                if (!res.ok) throw new Error(`Failed to fetch KPI: ${res.status}`);
-                const json = (await res.json()) as KPIResponse;
+                const json = await fetchJSON<KPIResponse>('/api/v2/kpi');
                 setData(json);
             } catch (e: any) {
-                setErrorMsg(e?.message || 'Failed to load data');
+                setErrorMsg(e?.message || 'Failed to load KPI data');
                 console.error('KPI fetch error:', e);
             } finally {
                 setIsLoading(false);
@@ -168,40 +288,180 @@ export default function KPIPage() {
         fetchKPI();
     }, []);
 
+    /** Fetch new chart #1 */
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setMetricLoading(true);
+                setMetricError(null);
+                const json = await fetchJSON<KPIChartMetricResponse>('/api/v3/kpi-chart-metric');
+                if (cancelled) return;
+                setMetricData(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setMetricError(e?.message || 'Failed to load metric chart');
+                console.error('Metric chart error:', e);
+            } finally {
+                if (!cancelled) setMetricLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    /** helper: fetch sales/affiliate chart with fallback */
+    async function fetchSalesAffiliate(type: 'Sales' | 'Affiliate', product: string) {
+        const qs = new URLSearchParams();
+        qs.set('type', type);
+        if (product && product !== 'All') qs.set('product', product);
+
+        const primary = `/api/v3/total-sales-affiliate-chart?${qs.toString()}`;
+        const fallback = `/total-sales-affiliate-chart?${qs.toString()}`;
+
+        try {
+            return await fetchJSON<SalesAffiliateChartRow[]>(primary);
+        } catch (e: any) {
+            // fallback if primary doesn't exist
+            // eslint-disable-next-line
+            try {
+                return await fetchJSON<SalesAffiliateChartRow[]>(fallback);
+                // eslint-disable-next-line
+            } catch (e2: any) {
+                throw e2;
+            }
+        }
+    }
+
+    /** Fetch chart #2 (Sales) when product changes */
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setSalesChartLoading(true);
+                setSalesChartError(null);
+                const rows = await fetchSalesAffiliate('Sales', salesProduct);
+
+                if (cancelled) return;
+
+                const cleaned = Array.isArray(rows)
+                    ? rows
+                          .map((r) => ({
+                              month: String(r?.month ?? ''),
+                              count: safeNumber(r?.count, 0),
+                              churnRate: safeNumber(r?.churnRate, 0),
+                          }))
+                          .filter((r) => r.month)
+                          .sort((a, b) => (monthOrder[a.month] || 999) - (monthOrder[b.month] || 999))
+                    : [];
+
+                setSalesChart(cleaned);
+            } catch (e: any) {
+                if (cancelled) return;
+                setSalesChartError(e?.message || 'Failed to load sales chart');
+                console.error('Sales chart error:', e);
+                setSalesChart([]);
+            } finally {
+                if (!cancelled) setSalesChartLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, [salesProduct]);
+
+    /** Fetch chart #3 (Affiliate) when product changes */
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setAffiliateChartLoading(true);
+                setAffiliateChartError(null);
+                const rows = await fetchSalesAffiliate('Affiliate', affiliateProduct);
+
+                if (cancelled) return;
+
+                const cleaned = Array.isArray(rows)
+                    ? rows
+                          .map((r) => ({
+                              month: String(r?.month ?? ''),
+                              count: safeNumber(r?.count, 0),
+                              churnRate: safeNumber(r?.churnRate, 0),
+                          }))
+                          .filter((r) => r.month)
+                          .sort((a, b) => (monthOrder[a.month] || 999) - (monthOrder[b.month] || 999))
+                    : [];
+
+                setAffiliateChart(cleaned);
+            } catch (e: any) {
+                if (cancelled) return;
+                setAffiliateChartError(e?.message || 'Failed to load affiliate chart');
+                console.error('Affiliate chart error:', e);
+                setAffiliateChart([]);
+            } finally {
+                if (!cancelled) setAffiliateChartLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, [affiliateProduct]);
+
+    /** Fetch chart #4 (Total KPI) */
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setTotalKpiLoading(true);
+                setTotalKpiError(null);
+                const json = await fetchJSON<TotalKPIResponse>('/api/v3/total-kpi');
+                if (cancelled) return;
+                setTotalKpi(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setTotalKpiError(e?.message || 'Failed to load total KPI chart');
+                console.error('Total KPI error:', e);
+                setTotalKpi(null);
+            } finally {
+                if (!cancelled) setTotalKpiLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    /** Existing derived KPI */
     const affiliates = data?.affiliateUsers ?? [];
     const sales = data?.salesUsers ?? [];
-    // const latestBlog = data?.latestBlog ?? null;
     const latestNotes = data?.latestThreeNotes ?? [];
-    // const latestBillboard = data?.latestBillboard ?? null;
     const billboardApprovals = data?.latestBillBoardApprovels ?? [];
-    // const latestJob = data?.latestJob ?? null;
     const latestApplicants = data?.latestJobApplicants ?? [];
     const rsvpEvents = data?.rsvpEvents ?? [];
     const checkoutRevenues = (data?.checkoutRevenues ?? []) as CheckoutRevenue[];
     const userProducts = (data?.userProducts ?? []) as ProductUser[];
 
-    // Analytics calculations
-    // const getGrowthData = (users: User[]) => {
-    //     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    //     const monthlyData = months.map((month, idx) => {
-    //         const count = users.filter((u) => {
-    //             const date = new Date(u.createdAt);
-    //             return date.getMonth() === idx && date.getFullYear() === 2025;
-    //         }).length;
-    //         return { month, count };
-    //     });
-    //     return monthlyData;
-    // };
+    const timeAgo = (iso?: string) => {
+        if (!iso) return '-';
+        const ts = new Date(iso).getTime();
+        if (Number.isNaN(ts)) return '-';
+        const diff = Date.now() - ts;
+        const s = Math.floor(diff / 1000);
+        const m = Math.floor(s / 60);
+        const h = Math.floor(m / 60);
+        const d = Math.floor(h / 24);
+        if (d > 0) return `${d}d ago`;
+        if (h > 0) return `${h}h ago`;
+        if (m > 0) return `${m}m ago`;
+        return 'Just now';
+    };
 
-    // const getBillboardStatusData = () => {
-    //     const statuses = ['Approved', 'NotApproved', 'Rejected'];
-    //     return statuses
-    //         .map((status) => ({
-    //             name: status,
-    //             value: billboardApprovals.filter((b) => b.status === status).length,
-    //         }))
-    //         .filter((item) => item.value > 0);
-    // };
+    const formatDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '-');
 
     const getRecentActivity = () => {
         const allActivity = [
@@ -212,30 +472,6 @@ export default function KPIPage() {
         ];
         return allActivity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
     };
-
-    // const getRsvpUtilization = () => {
-    //     return rsvpEvents.map((event) => ({
-    //         id: event.id,
-    //         date: new Date(event.date).toLocaleDateString(),
-    //         registered: event.userBroughtProduct?.length || 0,
-    //         limit: event.limit,
-    //         utilization: ((event.userBroughtProduct?.length || 0) / event.limit) * 100,
-    //     }));
-    // };
-
-    function formatProductName(product?: string) {
-        if (!product) return 'Unknown';
-        switch (product) {
-            case 'DigitalBillboard':
-                return 'Digital Billboard';
-            case 'NewsLetter':
-                return 'Newsletter';
-            case 'RSVP':
-                return 'RSVP';
-            default:
-                return product;
-        }
-    }
 
     function getRevenueBreakdownFromUsers(users: ProductUser[]) {
         const productMap: Record<string, { revenue: number; transactions: number; customers: Set<number> }> = {};
@@ -318,16 +554,15 @@ export default function KPIPage() {
 
     function getRevenuePieData(revenues: CheckoutRevenue[]) {
         return revenues
-            .filter((item) => item._sum?.amount && item._sum.amount > 0)
+            .filter((item) => item?._sum?.amount && safeNumber(item._sum.amount) > 0)
             .map((item) => ({
                 name: formatProductName(item.product),
-                value: item._sum.amount || 0,
+                value: safeNumber(item._sum.amount, 0),
             }));
     }
 
     function getProductComparisons(revenues: CheckoutRevenue[]) {
-        const products = revenues.map((r) => ({ product: formatProductName(r.product), revenue: r._sum.amount || 0 }));
-        // Example comparison: highest vs lowest
+        const products = revenues.map((r) => ({ product: formatProductName(r.product), revenue: safeNumber(r._sum?.amount, 0) }));
         if (products.length < 2) return null;
         const sorted = [...products].sort((a, b) => b.revenue - a.revenue);
         const highest = sorted[0];
@@ -336,40 +571,12 @@ export default function KPIPage() {
         return { highest, lowest, average: avg };
     }
 
-    // function getNewsletterSubscribers(users: ProductUser[]) {
-    //     return users.filter((user) => user.roles?.includes('NewsLetter') ?? false);
-    // }
-
-    const currency = (n?: number | null) =>
-        typeof n === 'number' ? n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) : '$0';
-
-    const timeAgo = (iso?: string) => {
-        if (!iso) return '-';
-        const ts = new Date(iso).getTime();
-        if (Number.isNaN(ts)) return '-';
-        const diff = Date.now() - ts;
-        const s = Math.floor(diff / 1000);
-        const m = Math.floor(s / 60);
-        const h = Math.floor(m / 60);
-        const d = Math.floor(h / 24);
-        if (d > 0) return `${d}d ago`;
-        if (h > 0) return `${h}h ago`;
-        if (m > 0) return `${m}m ago`;
-        return 'Just now';
-    };
-
-    const formatDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '-');
-
-    // const affiliateGrowth = getGrowthData(affiliates);
-    // const salesGrowth = getGrowthData(sales);
-    // const billboardStatus = getBillboardStatusData();
     const recentActivity = getRecentActivity();
-    // const rsvpUtilization = getRsvpUtilization();
 
     const revenueBreakdown = getRevenueBreakdownFromUsers(userProducts);
     const allPayingCustomersRaw = getAllPayingCustomers(userProducts);
     const sortedCustomers = sortCustomers(allPayingCustomersRaw);
-    const totalPages = Math.ceil(sortedCustomers.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(sortedCustomers.length / itemsPerPage));
     const paginatedCustomers = sortedCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     const productRevenueChartData = checkoutRevenues
@@ -380,7 +587,7 @@ export default function KPIPage() {
             return {
                 productKey: rawProduct,
                 product: formatProductName(rawProduct),
-                revenue: typeof amount === 'number' && !Number.isNaN(amount) ? amount : 0,
+                revenue: safeNumber(amount, 0),
             };
         })
         .filter((item) => item.revenue > 0);
@@ -390,7 +597,7 @@ export default function KPIPage() {
 
     const derivedTotalRevenue = productRevenueChartData.reduce((sum, item) => sum + item.revenue, 0);
     const apiTotalProfit = data?.totalProfit?._sum?.amount;
-    const totalProfit = typeof apiTotalProfit === 'number' && !Number.isNaN(apiTotalProfit) ? apiTotalProfit : derivedTotalRevenue;
+    const totalProfit = typeof apiTotalProfit === 'number' && Number.isFinite(apiTotalProfit) ? apiTotalProfit : derivedTotalRevenue;
 
     const totalPayingCustomers = userProducts.filter(
         (user) => Array.isArray(user.Checkouts) && user.Checkouts.some((checkout) => checkout && checkout.paid && !checkout.deleted)
@@ -404,14 +611,6 @@ export default function KPIPage() {
 
     const avgRevenuePerCustomer = totalPayingCustomers > 0 ? totalProfit / totalPayingCustomers : 0;
 
-    // const getRevenueForProduct = (productKey: string) => productRevenueChartData.find((item) => item.productKey === productKey)?.revenue ?? 0;
-
-    // const newsletterRevenue = getRevenueForProduct('NewsLetter');
-    // const billboardRevenue = getRevenueForProduct('DigitalBillboard');
-    // const rsvpRevenue = getRevenueForProduct('RSVP');
-
-    // const newsletterSubscribers = getNewsletterSubscribers(userProducts);
-
     const handleSort = (column: 'revenue' | 'date') => {
         if (sortBy === column) {
             setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
@@ -422,39 +621,71 @@ export default function KPIPage() {
         setCurrentPage(1);
     };
 
-    // const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }: any) => (
-    //     <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-    //         <div className='flex items-center justify-between mb-4'>
-    //             <div className={`p-3 rounded-lg bg-${color}-50`}>
-    //                 <Icon className={`w-6 h-6 text-${color}-600`} />
-    //             </div>
-    //             {trend && (
-    //                 <div className={`flex items-center gap-1 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-    //                     {trend === 'up' ? <TrendingUp className='w-4 h-4' /> : <TrendingDown className='w-4 h-4' />}
-    //                     <span>{trendValue}</span>
-    //                 </div>
-    //             )}
-    //         </div>
-    //         <h3 className='text-sm font-medium text-gray-500 mb-1'>{title}</h3>
-    //         <p className='text-3xl font-bold text-gray-900'>{value}</p>
-    //     </div>
-    // );
+    /** Chart #1 data derived */
+    const metricChartSeries = useMemo(() => {
+        if (!metricData) return [];
 
-    if (errorMsg) {
-        return (
-            <div className='min-h-screen bg-gray-50 p-8'>
-                <div className='max-w-7xl mx-auto'>
-                    <div className='bg-red-50 border border-red-200 rounded-lg p-6'>
-                        <h3 className='text-lg font-semibold text-red-800 mb-2'>Error Loading Dashboard</h3>
-                        <p className='text-red-600'>{errorMsg}</p>
-                        <button onClick={() => window.location.reload()} className='mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700'>
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+        const weekly =
+            metricType === 'Revenue'
+                ? safeNumber(metricData.weeklyRevenue)
+                : metricType === 'Subscribers'
+                ? safeNumber(metricData.weeklySubscribers)
+                : safeNumber(metricData.weeklyChurnRate);
+
+        const monthly =
+            metricType === 'Revenue'
+                ? safeNumber(metricData.monthlyRevenue)
+                : metricType === 'Subscribers'
+                ? safeNumber(metricData.monthlySubscribers)
+                : safeNumber(metricData.monthlyChurnRate);
+
+        const yearly =
+            metricType === 'Revenue'
+                ? safeNumber(metricData.yearlyRevenue)
+                : metricType === 'Subscribers'
+                ? safeNumber(metricData.yearlySubscribers)
+                : safeNumber(metricData.yearlyChurnRate);
+
+        return [
+            { period: 'Week', value: weekly },
+            { period: 'Month', value: monthly },
+            { period: 'Year', value: yearly },
+        ];
+    }, [metricData, metricType]);
+
+    const selectedMetricValue = useMemo(() => {
+        const row = metricChartSeries.find((d) => d.period === metricPeriod);
+        return row?.value ?? 0;
+    }, [metricChartSeries, metricPeriod]);
+
+    const metricValueLabel = useMemo(() => {
+        if (metricType === 'Revenue') return currency(selectedMetricValue);
+        if (metricType === 'Subscribers') return `${safeNumber(selectedMetricValue)} subscribers`;
+        return percent(safeNumber(selectedMetricValue));
+    }, [metricType, selectedMetricValue]);
+
+    /** Chart #4 data derived */
+    const totalKpiChartData = useMemo(() => {
+        const counts = totalKpi?.countsByRole ?? {};
+        const entries = Object.entries(counts).map(([key, val]) => ({
+            name: formatProductName(key),
+            key,
+            value: safeNumber(val, 0),
+        }));
+
+        // Put important ones first if present
+        const priority = ['Sales', 'Affiliate', 'SuperiorAffiliate', 'WebsiteSales', 'Website Sales', 'Superior Affiliate'];
+        const sorted = [...entries.filter((e) => priority.includes(e.key)), ...entries.filter((e) => !priority.includes(e.key))];
+
+        // Remove duplicates by key if any
+        const seen = new Set<string>();
+        return sorted.filter((e) => {
+            const k = e.key;
+            if (seen.has(k)) return false;
+            seen.add(k);
+            return true;
+        });
+    }, [totalKpi]);
 
     return (
         <div className='min-h-screen bg-gray-50 p-8'>
@@ -466,129 +697,235 @@ export default function KPIPage() {
                     {isLoading && <div className='mt-4 text-sm'>Loading data...</div>}
                 </div>
 
-                {/* Overview Stats */}
-                {/*
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-                    <StatCard title='Total Affiliates' value={isLoading ? '...' : affiliates.length} icon={Users} color='blue' trend='up' trendValue='+12%' />
-                    <StatCard title='Sales Team' value={isLoading ? '...' : sales.length} icon={Briefcase} color='green' trend='up' trendValue='+8%' />
-                    <StatCard title='Job Applicants' value={isLoading ? '...' : latestApplicants.length} icon={FileText} color='orange' />
-                    <StatCard
-                        title='Total Revenue'
-                        value={isLoading ? '...' : currency(totalProfit)}
-                        icon={DollarSign}
-                        color='purple'
-                        trend='up'
-                        trendValue='+24%'
-                    />
-                </div>
-                */}
+                {/* Non-blocking error banner */}
+                {errorMsg && (
+                    <div className='bg-red-50 border border-red-200 rounded-lg p-6'>
+                        <h3 className='text-lg font-semibold text-red-800 mb-2'>KPI API Error</h3>
+                        <p className='text-red-600'>{errorMsg}</p>
+                        <button onClick={() => window.location.reload()} className='mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700'>
+                            Retry
+                        </button>
+                    </div>
+                )}
 
-                {/* Growth Charts */}
-                {/*
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>Affiliate Growth Trend</h3>
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
-                        ) : affiliates.length > 0 ? (
-                            <ResponsiveContainer width='100%' height={300}>
-                                <AreaChart data={affiliateGrowth}>
-                                    <defs>
-                                        <linearGradient id='colorAff' x1='0' y1='0' x2='0' y2='1'>
-                                            <stop offset='5%' stopColor='#3b82f6' stopOpacity={0.8} />
-                                            <stop offset='95%' stopColor='#3b82f6' stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='month' />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Area type='monotone' dataKey='count' stroke='#3b82f6' fillOpacity={1} fill='url(#colorAff)' />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No data available</div>
-                        )}
+                {/* ========================= */}
+                {/* NEW CHART #1 (Metrics)     */}
+                {/* ========================= */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>KPI Metric Chart</h3>
+                            <p className='text-sm text-gray-500'>Select metric and timeframe (Week/Month/Year)</p>
+                        </div>
+
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            <select
+                                value={metricType}
+                                onChange={(e) => setMetricType(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Revenue'>Revenue</option>
+                                <option value='Subscribers'>Subscribers</option>
+                                <option value='ChurnRate'>Churn Rate</option>
+                            </select>
+
+                            <select
+                                value={metricPeriod}
+                                onChange={(e) => setMetricPeriod(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+
+                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
+                                <span className='text-gray-500 mr-2'>Selected:</span>
+                                <span className='font-semibold text-gray-900'>{metricValueLabel}</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>Sales Growth Trend</h3>
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
-                        ) : sales.length > 0 ? (
-                            <ResponsiveContainer width='100%' height={300}>
-                                <LineChart data={salesGrowth}>
+                    {metricError && <div className='mb-4 text-sm text-red-600'>{metricError}</div>}
+
+                    {metricLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading metric chart...</div>
+                    ) : metricChartSeries.length > 0 ? (
+                        <div className='w-full'>
+                            <ResponsiveContainer width='100%' height={240}>
+                                <BarChart data={metricChartSeries}>
                                     <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='month' />
+                                    <XAxis dataKey='period' />
                                     <YAxis />
-                                    <Tooltip />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any, name: any, props: any) => {
+                                            const v = safeNumber(value, 0);
+                                            if (metricType === 'Revenue') return currency(v);
+                                            if (metricType === 'Subscribers') return `${v}`;
+                                            return percent(v);
+                                        }}
+                                    />
                                     <Legend />
-                                    <Line type='monotone' dataKey='count' stroke='#10b981' strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No data available</div>
-                        )}
-                    </div>
-                </div>
-                */}
-
-                {/* Billboard & RSVP Analytics */}
-                {/*
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>Billboard Status Distribution</h3>
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
-                        ) : billboardStatus.length > 0 ? (
-                            <ResponsiveContainer width='100%' height={300}>
-                                <PieChart>
-                                    <Pie
-                                        data={billboardStatus}
-                                        cx='50%'
-                                        cy='50%'
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                        outerRadius={80}
-                                        fill='#8884d8'
-                                        dataKey='value'
-                                    >
-                                        {billboardStatus.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    <Bar dataKey='value' name={metricType === 'ChurnRate' ? 'Churn Rate' : metricType}>
+                                        {metricChartSeries.map((entry, idx) => (
+                                            <Cell key={`cell-${idx}`} fill={entry.period === metricPeriod ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'} />
                                         ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No billboard data</div>
-                        )}
-                    </div>
-
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>RSVP Event Utilization</h3>
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
-                        ) : rsvpUtilization.length > 0 ? (
-                            <ResponsiveContainer width='100%' height={300}>
-                                <BarChart data={rsvpUtilization}>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='date' />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey='registered' fill='#3b82f6' name='Registered' />
-                                    <Bar dataKey='limit' fill='#e5e7eb' name='Limit' />
+                                    </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No RSVP data</div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No metric data</div>
+                    )}
                 </div>
-                */}
 
-                {/* Revenue Analytics */}
+                {/* ===================================== */}
+                {/* NEW CHART #2 (Total Sales - Sales)    */}
+                {/* ===================================== */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Total Sales (Sales Team)</h3>
+                            <p className='text-sm text-gray-500'>Subscribers & churn rate by month</p>
+                        </div>
+
+                        <div className='flex gap-3'>
+                            <select
+                                value={salesProduct}
+                                onChange={(e) => setSalesProduct(e.target.value)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {PRODUCT_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {salesChartError && <div className='mb-4 text-sm text-red-600'>{salesChartError}</div>}
+
+                    {salesChartLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading sales chart...</div>
+                    ) : salesChart.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={260}>
+                            <ComposedChart data={salesChart}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='month' />
+                                <YAxis yAxisId='left' />
+                                <YAxis yAxisId='right' orientation='right' tickFormatter={(v) => `${v}%`} />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any, name: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (name === 'Churn Rate') return percent(v);
+                                        return `${v}`;
+                                    }}
+                                />
+                                <Legend />
+                                <Bar yAxisId='left' dataKey='count' name='Subscribers' fill='#2c7bbe' />
+                                <Line yAxisId='right' type='monotone' dataKey='churnRate' name='Churn Rate' stroke='#ef4444' strokeWidth={2} dot={false} />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No sales data</div>
+                    )}
+                </div>
+
+                {/* ===================================== */}
+                {/* NEW CHART #3 (Total Affiliate)        */}
+                {/* ===================================== */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Total Affiliate (Basic Affiliate)</h3>
+                            <p className='text-sm text-gray-500'>Subscribers & churn rate by month</p>
+                        </div>
+
+                        <div className='flex gap-3'>
+                            <select
+                                value={affiliateProduct}
+                                onChange={(e) => setAffiliateProduct(e.target.value)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {PRODUCT_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {affiliateChartError && <div className='mb-4 text-sm text-red-600'>{affiliateChartError}</div>}
+
+                    {affiliateChartLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading affiliate chart...</div>
+                    ) : affiliateChart.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={260}>
+                            <ComposedChart data={affiliateChart}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='month' />
+                                <YAxis yAxisId='left' />
+                                <YAxis yAxisId='right' orientation='right' tickFormatter={(v) => `${v}%`} />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any, name: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (name === 'Churn Rate') return percent(v);
+                                        return `${v}`;
+                                    }}
+                                />
+                                <Legend />
+                                <Bar yAxisId='left' dataKey='count' name='Subscribers' fill='#10b981' />
+                                <Line yAxisId='right' type='monotone' dataKey='churnRate' name='Churn Rate' stroke='#ef4444' strokeWidth={2} dot={false} />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No affiliate data</div>
+                    )}
+                </div>
+
+                {/* ===================================== */}
+                {/* NEW CHART #4 (Total KPI)              */}
+                {/* ===================================== */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex items-center justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Total KPI</h3>
+                            <p className='text-sm text-gray-500'>Sales + Affiliate + other channels</p>
+                        </div>
+                    </div>
+
+                    {totalKpiError && <div className='mb-4 text-sm text-red-600'>{totalKpiError}</div>}
+
+                    {totalKpiLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading total KPI...</div>
+                    ) : totalKpiChartData.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={260}>
+                            <BarChart data={totalKpiChartData}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='name' />
+                                <YAxis />
+                                <Tooltip cursor={<HorizontalCursor />} />
+                                <Legend />
+                                <Bar dataKey='value' name='Total'>
+                                    {totalKpiChartData.map((_, idx) => (
+                                        <Cell key={`kpi-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No KPI totals available</div>
+                    )}
+                </div>
+
+                {/* ========================= */}
+                {/* Existing Revenue Analytics */}
+                {/* ========================= */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                     <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                         <div className='flex items-center justify-between mb-4'>
@@ -625,7 +962,11 @@ export default function KPIPage() {
                                         <CartesianGrid strokeDasharray='3 3' />
                                         <XAxis dataKey='product' />
                                         <YAxis />
-                                        <Tooltip formatter={(value) => currency(value as number)} labelFormatter={(label) => `Product: ${label}`} />
+                                        <Tooltip
+                                            cursor={<HorizontalCursor />}
+                                            formatter={(value) => currency(value as number)}
+                                            labelFormatter={(label) => `Product: ${label}`}
+                                        />
                                         <Legend />
                                         <Bar dataKey='revenue' name='Revenue' fill='#6366f1' />
                                     </BarChart>
@@ -666,16 +1007,17 @@ export default function KPIPage() {
                                         fill='#8884d8'
                                         dataKey='value'
                                     >
-                                        {revenuePieData.map((entry, index) => (
+                                        {revenuePieData.map((_, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip formatter={(value) => currency(value as number)} />
+                                    <Tooltip cursor={<HorizontalCursor />} formatter={(value) => currency(value as number)} />
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : (
                             <div className='h-64 flex items-center justify-center text-gray-400'>No revenue data</div>
                         )}
+
                         {productComparisons && (
                             <div className='mt-4 space-y-2 text-sm text-gray-600'>
                                 <div className='flex justify-between'>
@@ -714,6 +1056,7 @@ export default function KPIPage() {
                             </button>
                         </div>
                     </div>
+
                     {isLoading ? (
                         <div className='h-64 flex items-center justify-center text-gray-400'>Loading customers...</div>
                     ) : paginatedCustomers.length > 0 ? (
@@ -744,6 +1087,7 @@ export default function KPIPage() {
                                     </tbody>
                                 </table>
                             </div>
+
                             <div className='mt-4 flex justify-between items-center'>
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -752,12 +1096,14 @@ export default function KPIPage() {
                                 >
                                     Previous
                                 </button>
+
                                 <span className='text-sm text-gray-600'>
                                     Page {currentPage} of {totalPages}
                                 </span>
+
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                    disabled={currentPage === totalPages}
+                                    disabled={currentPage >= totalPages}
                                     className='px-4 py-2 bg-gray-200 rounded text-sm disabled:opacity-50 hover:bg-gray-300'
                                 >
                                     Next
@@ -772,6 +1118,7 @@ export default function KPIPage() {
                 {/* Recent Activity Table */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <h3 className='text-lg font-semibold text-gray-800 mb-4'>Recent Activity</h3>
+
                     {isLoading ? (
                         <div className='text-center py-8 text-gray-400'>Loading activities...</div>
                     ) : recentActivity.length > 0 ? (
@@ -815,276 +1162,6 @@ export default function KPIPage() {
                         <div className='text-center py-8 text-gray-400'>No recent activity</div>
                     )}
                 </div>
-
-                {/* Detailed Sections */}
-                {/* <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
-                    {['Newsletter', 'Billboard', 'Affiliate', 'Sales', 'Events', 'Blogs', 'Notes'].map((section) => (
-                        <div key={section} className='border-b border-gray-200 last:border-b-0'>
-                            <button
-                                onClick={() => toggleSection(section)}
-                                className='w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition'
-                            >
-                                <span className='text-lg font-semibold text-gray-800'>{section}</span>
-                                {expandedSections.includes(section) ? (
-                                    <ChevronDown className='w-5 h-5 text-gray-500' />
-                                ) : (
-                                    <ChevronRight className='w-5 h-5 text-gray-500' />
-                                )}
-                            </button>
-
-                            {expandedSections.includes(section) && (
-                                <div className='px-6 pb-6'>
-                                    {section === 'Newsletter' && (
-                                        <div className='space-y-6'>
-                                            <div className='flex flex-wrap gap-4'>
-                                                <div className='px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm'>
-                                                    <span className='font-semibold'>Newsletter revenue: </span>
-                                                    <span>{currency(newsletterRevenue)}</span>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <h4 className='font-semibold text-gray-800 mb-3'>Newsletter Subscribers</h4>
-                                                {newsletterSubscribers.length > 0 ? (
-                                                    <div className='overflow-x-auto'>
-                                                        <table className='w-full text-sm'>
-                                                            <thead className='bg-gray-50'>
-                                                                <tr>
-                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Name</th>
-                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Email</th>
-                                                                    <th className='px-4 py-2 text-left font-medium text-gray-500'>Subscribed On</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody className='divide-y'>
-                                                                {newsletterSubscribers.map((user) => (
-                                                                    <tr key={user.id}>
-                                                                        <td className='px-4 py-2 font-medium text-gray-900'>
-                                                                            {user.firstName} {user.lastName}
-                                                                        </td>
-                                                                        <td className='px-4 py-2 text-gray-600'>{user.email}</td>
-                                                                        <td className='px-4 py-2 text-gray-500'>{formatDate(user.createdAt)}</td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                ) : (
-                                                    <p className='text-gray-500'>No subscribers yet</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {section === 'Blogs' && (
-                                        <div className='space-y-6'>
-                                            {latestBlog ? (
-                                                <div className='border rounded-lg p-4'>
-                                                    <h4 className='font-semibold text-gray-800 mb-2'>Latest Blog: {latestBlog.title}</h4>
-                                                    <div className='flex gap-4 text-sm text-gray-500 mb-3'>
-                                                        <span>Category: {latestBlog.category}</span>
-                                                        <span>Views: {latestBlog.views}</span>
-                                                        <span>{formatDate(latestBlog.createdAt)}</span>
-                                                    </div>
-                                                    <p className='text-gray-600 line-clamp-3'>{latestBlog.postContent}</p>
-                                                </div>
-                                            ) : (
-                                                <p className='text-gray-500'>No blog posts available</p>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {section === 'Notes' && (
-                                        <div className='space-y-6'>
-                                            {latestNotes.length > 0 ? (
-                                                <div>
-                                                    <h4 className='font-semibold text-gray-800 mb-3'>Recent Notes</h4>
-                                                    <div className='space-y-3'>
-                                                        {latestNotes.map((note) => (
-                                                            <div key={note.id} className='border rounded-lg p-4'>
-                                                                <div className='flex justify-between items-start mb-2'>
-                                                                    <h5 className='font-medium text-gray-800'>{note.title}</h5>
-                                                                    <span className='text-xs text-gray-500'>{timeAgo(note.createdAt)}</span>
-                                                                </div>
-                                                                <p className='text-sm text-gray-600'>{note.content}</p>
-                                                                <p className='text-xs text-gray-500 mt-2'>by {note.authorName}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <p className='text-gray-500'>No notes available</p>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {section === 'Affiliate' && (
-                                        <div className='overflow-x-auto'>
-                                            {affiliates.length > 0 ? (
-                                                <table className='w-full'>
-                                                    <thead className='bg-gray-50'>
-                                                        <tr>
-                                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Name</th>
-                                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Email</th>
-                                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Joined</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className='divide-y'>
-                                                        {affiliates.slice(0, 10).map((user) => (
-                                                            <tr key={user.id}>
-                                                                <td className='px-4 py-2 text-sm'>
-                                                                    {user.firstName} {user.lastName}
-                                                                </td>
-                                                                <td className='px-4 py-2 text-sm text-gray-600'>{user.email}</td>
-                                                                <td className='px-4 py-2 text-sm text-gray-500'>{timeAgo(user.createdAt)}</td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            ) : (
-                                                <p className='text-gray-500'>No affiliates found</p>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {section === 'Sales' && (
-                                        <div className='space-y-6'>
-                                            {sales.length > 0 && (
-                                                <div className='overflow-x-auto'>
-                                                    <table className='w-full'>
-                                                        <thead className='bg-gray-50'>
-                                                            <tr>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Name</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Email</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Joined</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody className='divide-y'>
-                                                            {sales.slice(0, 10).map((user) => (
-                                                                <tr key={user.id}>
-                                                                    <td className='px-4 py-2 text-sm'>
-                                                                        {user.firstName} {user.lastName}
-                                                                    </td>
-                                                                    <td className='px-4 py-2 text-sm text-gray-600'>{user.email}</td>
-                                                                    <td className='px-4 py-2 text-sm text-gray-500'>{timeAgo(user.createdAt)}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            )}
-
-                                            {latestJob && (
-                                                <div className='border rounded-lg p-4'>
-                                                    <h4 className='font-semibold text-gray-800 mb-2'>{latestJob.title}</h4>
-                                                    <div className='flex gap-4 text-sm text-gray-500 mb-2'>
-                                                        <span>{latestJob.location}</span>
-                                                        <span>{currency(latestJob.salary)}</span>
-                                                        <span>{latestJob.type}</span>
-                                                    </div>
-                                                    <p className='text-gray-600'>{latestJob.description}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {section === 'Billboard' && (
-                                        <div>
-                                            <div className='mb-4'>
-                                                <span className='text-sm font-semibold text-gray-700'>Digital billboard revenue:</span>
-                                                <span className='ml-2 text-sm text-gray-900'>{currency(billboardRevenue)}</span>
-                                            </div>
-                                            {billboardApprovals.length > 0 ? (
-                                                <div className='grid md:grid-cols-2 gap-4'>
-                                                    {billboardApprovals.map((billboard) => (
-                                                        <div key={billboard.id} className='border rounded-lg p-4'>
-                                                            <div className='flex justify-between items-start mb-2'>
-                                                                <h5 className='font-medium'>{billboard.fullName}</h5>
-                                                                <span
-                                                                    className={`px-2 py-1 text-xs rounded-full ${
-                                                                        billboard.status === 'Approved'
-                                                                            ? 'bg-green-100 text-green-800'
-                                                                            : billboard.status === 'Rejected'
-                                                                            ? 'bg-red-100 text-red-800'
-                                                                            : 'bg-yellow-100 text-yellow-800'
-                                                                    }`}
-                                                                >
-                                                                    {billboard.status}
-                                                                </span>
-                                                            </div>
-                                                            {billboard.companyName && <p className='text-sm text-gray-600'>{billboard.companyName}</p>}
-                                                            {billboard.description && <p className='text-sm text-gray-500 mt-2'>{billboard.description}</p>}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <p className='text-gray-500'>No billboard data available</p>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {section === 'Events' && (
-                                        <div>
-                                            <div className='mb-4'>
-                                                <span className='text-sm font-semibold text-gray-700'>RSVP revenue:</span>
-                                                <span className='ml-2 text-sm text-gray-900'>{currency(rsvpRevenue)}</span>
-                                            </div>
-                                            {rsvpEvents.length > 0 ? (
-                                                <div className='overflow-x-auto'>
-                                                    <table className='w-full'>
-                                                        <thead className='bg-gray-50'>
-                                                            <tr>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Event ID</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Date</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Time</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Registered</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Limit</th>
-                                                                <th className='px-4 py-2 text-left text-xs font-medium text-gray-500'>Utilization</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody className='divide-y'>
-                                                            {rsvpEvents.map((event) => {
-                                                                const registered = event.userBroughtProduct?.length || 0;
-                                                                const utilization = (registered / event.limit) * 100;
-                                                                return (
-                                                                    <tr key={event.id} className='hover:bg-gray-50'>
-                                                                        <td className='px-4 py-2 text-sm font-medium'>#{event.id}</td>
-                                                                        <td className='px-4 py-2 text-sm'>{formatDate(event.date)}</td>
-                                                                        <td className='px-4 py-2 text-sm'>{event.time}</td>
-                                                                        <td className='px-4 py-2 text-sm'>{registered}</td>
-                                                                        <td className='px-4 py-2 text-sm'>{event.limit}</td>
-                                                                        <td className='px-4 py-2 text-sm'>
-                                                                            <div className='flex items-center gap-2'>
-                                                                                <div className='flex-1 bg-gray-200 rounded-full h-2 max-w-[100px]'>
-                                                                                    <div
-                                                                                        className={`h-2 rounded-full ${
-                                                                                            utilization >= 80
-                                                                                                ? 'bg-green-500'
-                                                                                                : utilization >= 50
-                                                                                                ? 'bg-yellow-500'
-                                                                                                : 'bg-red-500'
-                                                                                        }`}
-                                                                                        style={{ width: `${Math.min(utilization, 100)}%` }}
-                                                                                    />
-                                                                                </div>
-                                                                                <span className='text-xs text-gray-600'>{utilization.toFixed(0)}%</span>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            })}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            ) : (
-                                                <p className='text-gray-500'>No events scheduled</p>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div> */}
 
                 {/* Summary Statistics Grid */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>

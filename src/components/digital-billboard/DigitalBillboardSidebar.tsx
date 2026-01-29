@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { ChevronDown, List, LogOut, Monitor, PlusSquare } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +22,7 @@ export function DigitalBillboardSidebar({
     closeMobile: () => void;
 }) {
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const navigationItems = useMemo(
         () => [
@@ -39,6 +41,14 @@ export function DigitalBillboardSidebar({
     );
 
     const toggleMenu = (title: string) => setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
+
+    const cancelLogout = () => setShowLogoutConfirm(false);
+
+    const confirmLogout = () => {
+        setShowLogoutConfirm(false);
+        closeMobile?.();
+        onLogout?.();
+    };
 
     return (
         <div className='h-full flex flex-col'>
@@ -131,16 +141,38 @@ export function DigitalBillboardSidebar({
             {/* Footer */}
             <div className='p-4 border-t border-gray-100'>
                 <button
-                    onClick={() => {
-                        onLogout();
-                        closeMobile();
-                    }}
-                    className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium'
+                    onClick={() => setShowLogoutConfirm(true)}
+                    className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
                 >
                     <LogOut className='w-4 h-4' />
                     <span>Logout</span>
                 </button>
             </div>
+
+            {/* ✅ Logout confirmation modal */}
+            {showLogoutConfirm && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
+                    <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
+                        <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>Confirm Logout</h2>
+                        <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
+                        <div className='flex justify-end space-x-4'>
+                            <Button
+                                onClick={cancelLogout}
+                                className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={confirmLogout}
+                                className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                            >
+                                Logout
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

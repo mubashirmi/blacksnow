@@ -50,7 +50,7 @@ export function useBillboards(authId: string | null) {
     const updateBillboard = useCallback(
         async (billboardId: number, values: BillboardFormValues) => {
             if (!authId) throw new Error('Missing authId');
-            await axios.put(`/api/v2/digital-billboard?authId=${authId}`, {
+            await axios.put(`/api/v2/digital-billboard?id=${billboardId}`, {
                 ...values,
                 status: 'NotApproved',
                 billboardId,

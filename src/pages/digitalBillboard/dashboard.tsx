@@ -1,10 +1,10 @@
-import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { BillboardForm } from '@/components/digital-billboard/BillboardForm';
 import { BillboardHeader } from '@/components/digital-billboard/BillboardHeader';
 import { BillboardList } from '@/components/digital-billboard/BillboardList';
+import { BillboardViewModal } from '@/components/digital-billboard/BillboardViewModal';
 import { DashboardLayout } from '@/components/digital-billboard/DashboardLayout';
 import { DigitalBillboardSidebar } from '@/components/digital-billboard/DigitalBillboardSidebar';
 
@@ -13,11 +13,7 @@ import { MAX_BILLBOARDS } from '@/lib/digital-billboard/constants';
 import type { BillboardData } from '@/lib/digital-billboard/types';
 import { parseRoles, toFormValues } from '@/lib/digital-billboard/utils';
 
-type NextPageWithLayout<P = {}> = NextPage<P> & {
-    getLayout?: (page: ReactElement) => ReactElement;
-};
-
-const DigitalBillboardPage: NextPageWithLayout = () => {
+function DigitalBillboardPage() {
     const router = useRouter();
 
     const [booting, setBooting] = useState(true);
@@ -28,6 +24,9 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
     const [view, setView] = useState<'list' | 'form'>('list');
     const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
     const [activeBillboard, setActiveBillboard] = useState<BillboardData | null>(null);
+
+    // ✅ View modal
+    const [viewModalBillboard, setViewModalBillboard] = useState<BillboardData | null>(null);
 
     const canCreateMore = billboards.length < MAX_BILLBOARDS;
 
@@ -76,7 +75,7 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
         return formMode === 'create' ? ('create' as const) : ('edit' as const);
     }, [view, formMode]);
 
-    // ✅ NORMAL SIDEBAR COMPONENT (NOT A FUNCTION PROP)
+    // ✅ Sidebar as normal component
     const Sidebar = ({ closeMobile }: { closeMobile: () => void }) => (
         <DigitalBillboardSidebar
             activeKey={activeKey}
@@ -107,7 +106,7 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
 
     return (
         <DashboardLayout Sidebar={Sidebar}>
-            <div className='mx-auto'>
+            <div className=''>
                 <BillboardHeader
                     view={view}
                     onCreate={openCreate}
@@ -117,10 +116,10 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
                     maxCount={MAX_BILLBOARDS}
                 />
 
-                {error && <div className='mb-6 bg-red-50 text-red-700 border border-red-200 rounded-lg p-4 '>{error}</div>}
+                {error && <div className='mb-6 bg-red-50 text-red-700 border border-red-200 rounded-lg p-4'>{error}</div>}
 
                 {view === 'list' ? (
-                    <BillboardList billboards={billboards} onCreate={openCreate} onEdit={openEdit} />
+                    <BillboardList billboards={billboards} onCreate={openCreate} onEdit={openEdit} onView={(bb) => setViewModalBillboard(bb)} />
                 ) : (
                     <BillboardForm
                         mode={formMode}
@@ -130,15 +129,15 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
                         onCancel={() => setView('list')}
                         onSave={async (values) => {
                             setError('');
-                            if (!authId) {
-                                router.replace('/login');
-                                return;
-                            }
-
                             if (formMode === 'create') {
+                                if (!authId) {
+                                    router.replace('/login');
+                                    return;
+                                }
                                 await createBillboard(values);
                             } else {
                                 if (!activeBillboard?.id) throw new Error('Missing billboard id');
+                                // ✅ Requirement: update uses id=billboardId handled in hook
                                 await updateBillboard(activeBillboard.id, values);
                             }
 
@@ -149,12 +148,20 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
                     />
                 )}
             </div>
+
+            {/* ✅ View modal */}
+            <BillboardViewModal
+                open={!!viewModalBillboard}
+                billboard={viewModalBillboard}
+                onClose={() => setViewModalBillboard(null)}
+                onEdit={(bb) => {
+                    setViewModalBillboard(null);
+                    openEdit(bb);
+                }}
+            />
         </DashboardLayout>
     );
-};
+}
 
-// ✅ This disables your global CoreLayout ONLY IF your _app.tsx supports getLayout.
-// (You still need the _app.tsx change for this to actually work.)
 DigitalBillboardPage.getLayout = (page) => page;
-
 export default DigitalBillboardPage;

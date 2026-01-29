@@ -27,9 +27,11 @@ export function DashboardLayout({ Sidebar, children }: DashboardLayoutProps) {
             </div>
 
             <div className='flex'>
-                {/* Desktop sidebar */}
-                <aside className='hidden md:block w-72 bg-white border-r border-gray-100 min-h-screen'>
-                    <Sidebar closeMobile={closeMobile} />
+                {/* ✅ Desktop sidebar (fixed) */}
+                <aside className='hidden md:block fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-gray-100 z-30'>
+                    <div className='h-full overflow-y-auto'>
+                        <Sidebar closeMobile={closeMobile} />
+                    </div>
                 </aside>
 
                 {/* Mobile sidebar overlay */}
@@ -44,13 +46,15 @@ export function DashboardLayout({ Sidebar, children }: DashboardLayoutProps) {
                                 </button>
                             </div>
 
-                            <Sidebar closeMobile={closeMobile} />
+                            <div className='h-full overflow-y-auto'>
+                                <Sidebar closeMobile={closeMobile} />
+                            </div>
                         </div>
                     </div>
                 )}
 
-                {/* Main content */}
-                <main className='flex-1 p-4 md:p-10'>{children}</main>
+                {/* ✅ Main content shifted because sidebar is fixed */}
+                <main className='flex-1 p-4 md:p-10 md:ml-72 min-h-screen'>{children}</main>
             </div>
         </div>
     );
