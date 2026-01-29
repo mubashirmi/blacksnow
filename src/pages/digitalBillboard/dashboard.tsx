@@ -117,7 +117,7 @@ const DigitalBillboardPage: NextPageWithLayout = () => {
                     maxCount={MAX_BILLBOARDS}
                 />
 
-                {error && <div className='mb-6 bg-red-50 text-red-700 border border-red-200 rounded-lg p-4'>{error}</div>}
+                {error && <div className='mb-6 bg-red-50 text-red-700 border border-red-200 rounded-lg p-4 '>{error}</div>}
 
                 {view === 'list' ? (
                     <BillboardList billboards={billboards} onCreate={openCreate} onEdit={openEdit} />
