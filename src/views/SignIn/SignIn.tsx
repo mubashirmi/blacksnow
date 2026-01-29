@@ -64,13 +64,19 @@ function SignIn() {
         setAlert({ type: '', message: '' });
         try {
             if (isSignUp) {
+                const fullName = String(data.fullName || '').trim();
+                const parts = fullName.split(/\s+/);
+                const firstName = parts[0] || '';
+                const lastName = parts.slice(1).join(' ') || '';
+
                 const signupData = {
                     email: data.email,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
+                    firstName,
+                    lastName,
                     password: data.password,
                     role: '',
                 };
+
                 const refId = localStorage.getItem('referredby');
                 let response;
                 if (refId) {
@@ -177,53 +183,24 @@ function SignIn() {
 
                         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
                             {isSignUp && (
-                                <>
-                                    <div className='space-y-2'>
-                                        {/* <Label htmlFor='firstName' className='text-white font-semibold flex items-center space-x-2'>
-                                            <User className='w-4 h-4 text-[#4cc7e8]' />
-                                            <span>First Name</span>
-                                        </Label> */}
-                                        <div className='relative'>
-                                            <Input
-                                                id='firstName'
-                                                type='text'
-                                                placeholder='Enter your first name'
-                                                {...register('firstName', {
-                                                    required: 'First name is required',
-                                                    minLength: { value: 2, message: 'First name must be at least 2 characters' },
-                                                })}
-                                                className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
-                                            />
-                                            <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
-                                                <User className='w-5 h-5 text-[#4cc7e8]' />
-                                            </div>
+                                <div className='space-y-2'>
+                                    <div className='relative'>
+                                        <Input
+                                            id='fullName'
+                                            type='text'
+                                            placeholder='Enter your full name'
+                                            {...register('fullName', {
+                                                required: 'Full name is required',
+                                                validate: (v: string) => v.trim().split(/\s+/).length >= 2 || 'Please enter first and last name',
+                                            })}
+                                            className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                        />
+                                        <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
+                                            <User className='w-5 h-5 text-[#4cc7e8]' />
                                         </div>
-                                        {errors.firstName && <p className='text-red-400 text-sm'>{errors.firstName.message}</p>}
                                     </div>
-
-                                    <div className='space-y-2'>
-                                        {/* <Label htmlFor='lastName' className='text-white font-semibold flex items-center space-x-2'>
-                                            <User className='w-4 h-4 text-[#4cc7e8]' />
-                                            <span>Last Name</span>
-                                        </Label> */}
-                                        <div className='relative'>
-                                            <Input
-                                                id='lastName'
-                                                type='text'
-                                                placeholder='Enter your last name'
-                                                {...register('lastName', {
-                                                    required: 'Last name is required',
-                                                    minLength: { value: 2, message: 'Last name must be at least 2 characters' },
-                                                })}
-                                                className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
-                                            />
-                                            <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
-                                                <User className='w-5 h-5 text-[#4cc7e8]' />
-                                            </div>
-                                        </div>
-                                        {errors.lastName && <p className='text-red-400 text-sm'>{errors.lastName.message}</p>}
-                                    </div>
-                                </>
+                                    {errors.fullName && <p className='text-red-400 text-sm'>{(errors as any).fullName.message}</p>}
+                                </div>
                             )}
 
                             <div className='space-y-2'>

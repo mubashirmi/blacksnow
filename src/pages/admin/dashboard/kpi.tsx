@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -126,7 +128,7 @@ type KPIResponse = {
     userProducts?: ProductUser[];
 };
 
-/** New APIs types */
+/** NEW (Correct) API response */
 type KPIChartMetricResponse = {
     message: string;
     weeklyRevenue: number;
@@ -138,12 +140,8 @@ type KPIChartMetricResponse = {
     weeklyChurnRate: number;
     monthlyChurnRate: number;
     yearlyChurnRate: number;
-};
-
-type SalesAffiliateChartRow = {
-    month: string;
-    count: number;
-    churnRate: number;
+    type?: 'Sales' | 'Affiliate' | string;
+    product?: string;
 };
 
 type TotalKPIResponse = {
@@ -152,47 +150,20 @@ type TotalKPIResponse = {
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-const PRODUCT_OPTIONS = [
-    { label: 'All Products', value: 'All' },
-    { label: 'Digital Billboard', value: 'DigitalBillboard' },
-    { label: 'Newsletter', value: 'NewsLetter' },
-    { label: 'RSVP', value: 'RSVP' },
+/** EXACT products your client listed for this metric endpoint */
+const METRIC_PRODUCTS = [
     { label: 'Email Marketing', value: 'EmailMarketing' },
     { label: 'Invoice Tool', value: 'InvoiceTool' },
-];
+    { label: 'Digital Billboard', value: 'DigitalBillboard' },
+    { label: 'Newsletter', value: 'NewsLetter' },
+] as const;
 
-const monthOrder: Record<string, number> = {
-    Jan: 1,
-    Feb: 2,
-    Mar: 3,
-    Apr: 4,
-    May: 5,
-    Jun: 6,
-    Jul: 7,
-    Aug: 8,
-    Sep: 9,
-    Oct: 10,
-    Nov: 11,
-    Dec: 12,
-};
+type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
+type MetricPeriod = 'Week' | 'Month' | 'Year';
 
 function safeNumber(n: any, fallback = 0) {
     const x = typeof n === 'number' ? n : Number(n);
     return Number.isFinite(x) ? x : fallback;
-}
-
-function formatProductName(product?: string) {
-    if (!product) return 'Unknown';
-    switch (product) {
-        case 'DigitalBillboard':
-            return 'Digital Billboard';
-        case 'NewsLetter':
-            return 'Newsletter';
-        case 'RSVP':
-            return 'RSVP';
-        default:
-            return product;
-    }
 }
 
 function currency(n?: number | null) {
@@ -212,25 +183,75 @@ function percent(rate: number) {
     return `${p.toFixed(2)}%`;
 }
 
+function formatProductName(product?: string) {
+    if (!product) return 'Unknown';
+    switch (product) {
+        case 'DigitalBillboard':
+            return 'Digital Billboard';
+        case 'NewsLetter':
+            return 'Newsletter';
+        case 'RSVP':
+            return 'RSVP';
+        default:
+            return product;
+    }
+}
+
 /** Recharts custom cursor: horizontal line */
 function HorizontalCursor(props: any) {
     const { points, width } = props || {};
     if (!points || !points.length || typeof width !== 'number') return null;
     const y = points[0]?.y;
     if (typeof y !== 'number') return null;
-
     return <line x1={0} x2={width} y1={y} y2={y} stroke='rgba(17, 24, 39, 0.35)' strokeDasharray='4 4' />;
 }
 
 async function fetchJSON<T>(url: string): Promise<T> {
-    const res = await fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) {
-        throw new Error(`Failed to fetch (${res.status}) ${url}`);
-    }
+    const res = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+    if (!res.ok) throw new Error(`Failed to fetch (${res.status}) ${url}`);
     return (await res.json()) as T;
+}
+
+/** Builds the (Week/Month/Year) bar data from API */
+function buildMetricSeries(metricData: KPIChartMetricResponse | null, metricType: MetricType) {
+    if (!metricData) return [];
+
+    const weekly =
+        metricType === 'Revenue'
+            ? safeNumber(metricData.weeklyRevenue)
+            : metricType === 'Subscribers'
+            ? safeNumber(metricData.weeklySubscribers)
+            : safeNumber(metricData.weeklyChurnRate);
+
+    const monthly =
+        metricType === 'Revenue'
+            ? safeNumber(metricData.monthlyRevenue)
+            : metricType === 'Subscribers'
+            ? safeNumber(metricData.monthlySubscribers)
+            : safeNumber(metricData.monthlyChurnRate);
+
+    const yearly =
+        metricType === 'Revenue'
+            ? safeNumber(metricData.yearlyRevenue)
+            : metricType === 'Subscribers'
+            ? safeNumber(metricData.yearlySubscribers)
+            : safeNumber(metricData.yearlyChurnRate);
+
+    return [
+        { period: 'Week', value: weekly },
+        { period: 'Month', value: monthly },
+        { period: 'Year', value: yearly },
+    ] as const;
+}
+
+function getSelectedMetricValue(series: { period: string; value: number }[], period: MetricPeriod) {
+    return series.find((d) => d.period === period)?.value ?? 0;
+}
+
+function formatMetricValue(metricType: MetricType, value: number) {
+    if (metricType === 'Revenue') return currency(value);
+    if (metricType === 'Subscribers') return `${safeNumber(value)} subscribers`;
+    return percent(safeNumber(value));
 }
 
 export default function KPIPage() {
@@ -245,27 +266,23 @@ export default function KPIPage() {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const itemsPerPage = 10;
 
-    /** New Chart #1 state */
-    const [metricData, setMetricData] = useState<KPIChartMetricResponse | null>(null);
-    const [metricLoading, setMetricLoading] = useState(false);
-    const [metricError, setMetricError] = useState<string | null>(null);
+    /** Chart #1 (Correct): Total Sales (Sales Team) */
+    const [salesProduct, setSalesProduct] = useState<(typeof METRIC_PRODUCTS)[number]['value']>('DigitalBillboard');
+    const [salesMetricType, setSalesMetricType] = useState<MetricType>('Revenue');
+    const [salesMetricPeriod, setSalesMetricPeriod] = useState<MetricPeriod>('Week');
+    const [salesMetricData, setSalesMetricData] = useState<KPIChartMetricResponse | null>(null);
+    const [salesMetricLoading, setSalesMetricLoading] = useState(false);
+    const [salesMetricError, setSalesMetricError] = useState<string | null>(null);
 
-    const [metricType, setMetricType] = useState<'Revenue' | 'Subscribers' | 'ChurnRate'>('Revenue');
-    const [metricPeriod, setMetricPeriod] = useState<'Week' | 'Month' | 'Year'>('Week');
+    /** Chart #2 (Correct): Total Affiliate (Basic Affiliate) */
+    const [affiliateProduct, setAffiliateProduct] = useState<(typeof METRIC_PRODUCTS)[number]['value']>('NewsLetter');
+    const [affiliateMetricType, setAffiliateMetricType] = useState<MetricType>('Revenue');
+    const [affiliateMetricPeriod, setAffiliateMetricPeriod] = useState<MetricPeriod>('Week');
+    const [affiliateMetricData, setAffiliateMetricData] = useState<KPIChartMetricResponse | null>(null);
+    const [affiliateMetricLoading, setAffiliateMetricLoading] = useState(false);
+    const [affiliateMetricError, setAffiliateMetricError] = useState<string | null>(null);
 
-    /** New Chart #2 state (Sales) */
-    const [salesChart, setSalesChart] = useState<SalesAffiliateChartRow[]>([]);
-    const [salesChartLoading, setSalesChartLoading] = useState(false);
-    const [salesChartError, setSalesChartError] = useState<string | null>(null);
-    const [salesProduct, setSalesProduct] = useState<string>('All');
-
-    /** New Chart #3 state (Affiliate) */
-    const [affiliateChart, setAffiliateChart] = useState<SalesAffiliateChartRow[]>([]);
-    const [affiliateChartLoading, setAffiliateChartLoading] = useState(false);
-    const [affiliateChartError, setAffiliateChartError] = useState<string | null>(null);
-    const [affiliateProduct, setAffiliateProduct] = useState<string>('All');
-
-    /** New Chart #4 state (Total KPI) */
+    /** Chart #3 (Already fixed): Total KPI */
     const [totalKpi, setTotalKpi] = useState<TotalKPIResponse | null>(null);
     const [totalKpiLoading, setTotalKpiLoading] = useState(false);
     const [totalKpiError, setTotalKpiError] = useState<string | null>(null);
@@ -288,83 +305,31 @@ export default function KPIPage() {
         fetchKPI();
     }, []);
 
-    /** Fetch new chart #1 */
-    useEffect(() => {
-        let cancelled = false;
-        const run = async () => {
-            try {
-                setMetricLoading(true);
-                setMetricError(null);
-                const json = await fetchJSON<KPIChartMetricResponse>('/api/v3/kpi-chart-metric');
-                if (cancelled) return;
-                setMetricData(json);
-            } catch (e: any) {
-                if (cancelled) return;
-                setMetricError(e?.message || 'Failed to load metric chart');
-                console.error('Metric chart error:', e);
-            } finally {
-                if (!cancelled) setMetricLoading(false);
-            }
-        };
-        run();
-        return () => {
-            cancelled = true;
-        };
-    }, []);
-
-    /** helper: fetch sales/affiliate chart with fallback */
-    async function fetchSalesAffiliate(type: 'Sales' | 'Affiliate', product: string) {
+    /** Fetch metric by (type + product) */
+    async function fetchMetric(type: 'Sales' | 'Affiliate', product: string) {
         const qs = new URLSearchParams();
         qs.set('type', type);
-        if (product && product !== 'All') qs.set('product', product);
-
-        const primary = `/api/v3/total-sales-affiliate-chart?${qs.toString()}`;
-        const fallback = `/total-sales-affiliate-chart?${qs.toString()}`;
-
-        try {
-            return await fetchJSON<SalesAffiliateChartRow[]>(primary);
-        } catch (e: any) {
-            // fallback if primary doesn't exist
-            // eslint-disable-next-line
-            try {
-                return await fetchJSON<SalesAffiliateChartRow[]>(fallback);
-                // eslint-disable-next-line
-            } catch (e2: any) {
-                throw e2;
-            }
-        }
+        qs.set('product', product);
+        return await fetchJSON<KPIChartMetricResponse>(`/api/v3/kpi-chart-metric?${qs.toString()}`);
     }
 
-    /** Fetch chart #2 (Sales) when product changes */
+    /** Fetch Chart #1 data (Sales) when product changes */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
             try {
-                setSalesChartLoading(true);
-                setSalesChartError(null);
-                const rows = await fetchSalesAffiliate('Sales', salesProduct);
-
+                setSalesMetricLoading(true);
+                setSalesMetricError(null);
+                const json = await fetchMetric('Sales', salesProduct);
                 if (cancelled) return;
-
-                const cleaned = Array.isArray(rows)
-                    ? rows
-                          .map((r) => ({
-                              month: String(r?.month ?? ''),
-                              count: safeNumber(r?.count, 0),
-                              churnRate: safeNumber(r?.churnRate, 0),
-                          }))
-                          .filter((r) => r.month)
-                          .sort((a, b) => (monthOrder[a.month] || 999) - (monthOrder[b.month] || 999))
-                    : [];
-
-                setSalesChart(cleaned);
+                setSalesMetricData(json);
             } catch (e: any) {
                 if (cancelled) return;
-                setSalesChartError(e?.message || 'Failed to load sales chart');
-                console.error('Sales chart error:', e);
-                setSalesChart([]);
+                setSalesMetricError(e?.message || 'Failed to load Sales metric chart');
+                console.error('Sales metric error:', e);
+                setSalesMetricData(null);
             } finally {
-                if (!cancelled) setSalesChartLoading(false);
+                if (!cancelled) setSalesMetricLoading(false);
             }
         };
         run();
@@ -373,36 +338,23 @@ export default function KPIPage() {
         };
     }, [salesProduct]);
 
-    /** Fetch chart #3 (Affiliate) when product changes */
+    /** Fetch Chart #2 data (Affiliate) when product changes */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
             try {
-                setAffiliateChartLoading(true);
-                setAffiliateChartError(null);
-                const rows = await fetchSalesAffiliate('Affiliate', affiliateProduct);
-
+                setAffiliateMetricLoading(true);
+                setAffiliateMetricError(null);
+                const json = await fetchMetric('Affiliate', affiliateProduct);
                 if (cancelled) return;
-
-                const cleaned = Array.isArray(rows)
-                    ? rows
-                          .map((r) => ({
-                              month: String(r?.month ?? ''),
-                              count: safeNumber(r?.count, 0),
-                              churnRate: safeNumber(r?.churnRate, 0),
-                          }))
-                          .filter((r) => r.month)
-                          .sort((a, b) => (monthOrder[a.month] || 999) - (monthOrder[b.month] || 999))
-                    : [];
-
-                setAffiliateChart(cleaned);
+                setAffiliateMetricData(json);
             } catch (e: any) {
                 if (cancelled) return;
-                setAffiliateChartError(e?.message || 'Failed to load affiliate chart');
-                console.error('Affiliate chart error:', e);
-                setAffiliateChart([]);
+                setAffiliateMetricError(e?.message || 'Failed to load Affiliate metric chart');
+                console.error('Affiliate metric error:', e);
+                setAffiliateMetricData(null);
             } finally {
-                if (!cancelled) setAffiliateChartLoading(false);
+                if (!cancelled) setAffiliateMetricLoading(false);
             }
         };
         run();
@@ -411,7 +363,7 @@ export default function KPIPage() {
         };
     }, [affiliateProduct]);
 
-    /** Fetch chart #4 (Total KPI) */
+    /** Fetch Chart #3 (Total KPI) */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
@@ -621,50 +573,23 @@ export default function KPIPage() {
         setCurrentPage(1);
     };
 
-    /** Chart #1 data derived */
-    const metricChartSeries = useMemo(() => {
-        if (!metricData) return [];
+    /** Chart #1 (Sales) derived */
+    const salesSeries = useMemo(() => buildMetricSeries(salesMetricData, salesMetricType), [salesMetricData, salesMetricType]);
+    const salesSelectedValue = useMemo(() => getSelectedMetricValue(salesSeries as any, salesMetricPeriod), [salesSeries, salesMetricPeriod]);
+    const salesSelectedLabel = useMemo(() => formatMetricValue(salesMetricType, safeNumber(salesSelectedValue, 0)), [salesMetricType, salesSelectedValue]);
 
-        const weekly =
-            metricType === 'Revenue'
-                ? safeNumber(metricData.weeklyRevenue)
-                : metricType === 'Subscribers'
-                ? safeNumber(metricData.weeklySubscribers)
-                : safeNumber(metricData.weeklyChurnRate);
+    /** Chart #2 (Affiliate) derived */
+    const affiliateSeries = useMemo(() => buildMetricSeries(affiliateMetricData, affiliateMetricType), [affiliateMetricData, affiliateMetricType]);
+    const affiliateSelectedValue = useMemo(
+        () => getSelectedMetricValue(affiliateSeries as any, affiliateMetricPeriod),
+        [affiliateSeries, affiliateMetricPeriod]
+    );
+    const affiliateSelectedLabel = useMemo(
+        () => formatMetricValue(affiliateMetricType, safeNumber(affiliateSelectedValue, 0)),
+        [affiliateMetricType, affiliateSelectedValue]
+    );
 
-        const monthly =
-            metricType === 'Revenue'
-                ? safeNumber(metricData.monthlyRevenue)
-                : metricType === 'Subscribers'
-                ? safeNumber(metricData.monthlySubscribers)
-                : safeNumber(metricData.monthlyChurnRate);
-
-        const yearly =
-            metricType === 'Revenue'
-                ? safeNumber(metricData.yearlyRevenue)
-                : metricType === 'Subscribers'
-                ? safeNumber(metricData.yearlySubscribers)
-                : safeNumber(metricData.yearlyChurnRate);
-
-        return [
-            { period: 'Week', value: weekly },
-            { period: 'Month', value: monthly },
-            { period: 'Year', value: yearly },
-        ];
-    }, [metricData, metricType]);
-
-    const selectedMetricValue = useMemo(() => {
-        const row = metricChartSeries.find((d) => d.period === metricPeriod);
-        return row?.value ?? 0;
-    }, [metricChartSeries, metricPeriod]);
-
-    const metricValueLabel = useMemo(() => {
-        if (metricType === 'Revenue') return currency(selectedMetricValue);
-        if (metricType === 'Subscribers') return `${safeNumber(selectedMetricValue)} subscribers`;
-        return percent(safeNumber(selectedMetricValue));
-    }, [metricType, selectedMetricValue]);
-
-    /** Chart #4 data derived */
+    /** Chart #3 (Total KPI) derived */
     const totalKpiChartData = useMemo(() => {
         const counts = totalKpi?.countsByRole ?? {};
         const entries = Object.entries(counts).map(([key, val]) => ({
@@ -673,16 +598,13 @@ export default function KPIPage() {
             value: safeNumber(val, 0),
         }));
 
-        // Put important ones first if present
         const priority = ['Sales', 'Affiliate', 'SuperiorAffiliate', 'WebsiteSales', 'Website Sales', 'Superior Affiliate'];
         const sorted = [...entries.filter((e) => priority.includes(e.key)), ...entries.filter((e) => !priority.includes(e.key))];
 
-        // Remove duplicates by key if any
         const seen = new Set<string>();
         return sorted.filter((e) => {
-            const k = e.key;
-            if (seen.has(k)) return false;
-            seen.add(k);
+            if (seen.has(e.key)) return false;
+            seen.add(e.key);
             return true;
         });
     }, [totalKpi]);
@@ -708,20 +630,35 @@ export default function KPIPage() {
                     </div>
                 )}
 
-                {/* ========================= */}
-                {/* NEW CHART #1 (Metrics)     */}
-                {/* ========================= */}
+                {/* ===================================================== */}
+                {/* FIXED CHART #1: Total Sales (Sales Team)              */}
+                {/* Uses: /api/v3/kpi-chart-metric?type=Sales&product=...  */}
+                {/* ===================================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
                         <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>KPI Metric Chart</h3>
-                            <p className='text-sm text-gray-500'>Select metric and timeframe (Week/Month/Year)</p>
+                            <h3 className='text-lg font-semibold text-gray-800'>Total Sales (Sales Team)</h3>
+                            <p className='text-sm text-gray-500'>Choose product + metric + timeframe (Week/Month/Year)</p>
                         </div>
 
                         <div className='flex flex-col sm:flex-row gap-3'>
+                            {/* Product dropdown */}
                             <select
-                                value={metricType}
-                                onChange={(e) => setMetricType(e.target.value as any)}
+                                value={salesProduct}
+                                onChange={(e) => setSalesProduct(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {METRIC_PRODUCTS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {/* Metric dropdown */}
+                            <select
+                                value={salesMetricType}
+                                onChange={(e) => setSalesMetricType(e.target.value as any)}
                                 className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
                             >
                                 <option value='Revenue'>Revenue</option>
@@ -729,9 +666,10 @@ export default function KPIPage() {
                                 <option value='ChurnRate'>Churn Rate</option>
                             </select>
 
+                            {/* Period dropdown */}
                             <select
-                                value={metricPeriod}
-                                onChange={(e) => setMetricPeriod(e.target.value as any)}
+                                value={salesMetricPeriod}
+                                onChange={(e) => setSalesMetricPeriod(e.target.value as any)}
                                 className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
                             >
                                 <option value='Week'>Week</option>
@@ -741,155 +679,141 @@ export default function KPIPage() {
 
                             <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
                                 <span className='text-gray-500 mr-2'>Selected:</span>
-                                <span className='font-semibold text-gray-900'>{metricValueLabel}</span>
+                                <span className='font-semibold text-gray-900'>{salesSelectedLabel}</span>
                             </div>
                         </div>
                     </div>
 
-                    {metricError && <div className='mb-4 text-sm text-red-600'>{metricError}</div>}
+                    {salesMetricError && <div className='mb-4 text-sm text-red-600'>{salesMetricError}</div>}
 
-                    {metricLoading ? (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading metric chart...</div>
-                    ) : metricChartSeries.length > 0 ? (
+                    {salesMetricLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading sales chart...</div>
+                    ) : salesSeries.length > 0 ? (
                         <div className='w-full'>
                             <ResponsiveContainer width='100%' height={240}>
-                                <BarChart data={metricChartSeries}>
+                                <BarChart data={salesSeries as any}>
                                     <CartesianGrid strokeDasharray='3 3' />
                                     <XAxis dataKey='period' />
                                     <YAxis />
                                     <Tooltip
                                         cursor={<HorizontalCursor />}
-                                        formatter={(value: any, name: any, props: any) => {
+                                        formatter={(value: any) => {
                                             const v = safeNumber(value, 0);
-                                            if (metricType === 'Revenue') return currency(v);
-                                            if (metricType === 'Subscribers') return `${v}`;
+                                            if (salesMetricType === 'Revenue') return currency(v);
+                                            if (salesMetricType === 'Subscribers') return `${v}`;
                                             return percent(v);
                                         }}
                                     />
                                     <Legend />
-                                    <Bar dataKey='value' name={metricType === 'ChurnRate' ? 'Churn Rate' : metricType}>
-                                        {metricChartSeries.map((entry, idx) => (
-                                            <Cell key={`cell-${idx}`} fill={entry.period === metricPeriod ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'} />
+                                    <Bar dataKey='value' name={salesMetricType === 'ChurnRate' ? 'Churn Rate' : salesMetricType}>
+                                        {(salesSeries as any).map((entry: any, idx: number) => (
+                                            <Cell
+                                                key={`sales-cell-${idx}`}
+                                                fill={entry.period === salesMetricPeriod ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'}
+                                            />
                                         ))}
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>No metric data</div>
-                    )}
-                </div>
-
-                {/* ===================================== */}
-                {/* NEW CHART #2 (Total Sales - Sales)    */}
-                {/* ===================================== */}
-                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
-                        <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Total Sales (Sales Team)</h3>
-                            <p className='text-sm text-gray-500'>Subscribers & churn rate by month</p>
-                        </div>
-
-                        <div className='flex gap-3'>
-                            <select
-                                value={salesProduct}
-                                onChange={(e) => setSalesProduct(e.target.value)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                {PRODUCT_OPTIONS.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {salesChartError && <div className='mb-4 text-sm text-red-600'>{salesChartError}</div>}
-
-                    {salesChartLoading ? (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading sales chart...</div>
-                    ) : salesChart.length > 0 ? (
-                        <ResponsiveContainer width='100%' height={260}>
-                            <ComposedChart data={salesChart}>
-                                <CartesianGrid strokeDasharray='3 3' />
-                                <XAxis dataKey='month' />
-                                <YAxis yAxisId='left' />
-                                <YAxis yAxisId='right' orientation='right' tickFormatter={(v) => `${v}%`} />
-                                <Tooltip
-                                    cursor={<HorizontalCursor />}
-                                    formatter={(value: any, name: any) => {
-                                        const v = safeNumber(value, 0);
-                                        if (name === 'Churn Rate') return percent(v);
-                                        return `${v}`;
-                                    }}
-                                />
-                                <Legend />
-                                <Bar yAxisId='left' dataKey='count' name='Subscribers' fill='#2c7bbe' />
-                                <Line yAxisId='right' type='monotone' dataKey='churnRate' name='Churn Rate' stroke='#ef4444' strokeWidth={2} dot={false} />
-                            </ComposedChart>
-                        </ResponsiveContainer>
-                    ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No sales data</div>
                     )}
                 </div>
 
-                {/* ===================================== */}
-                {/* NEW CHART #3 (Total Affiliate)        */}
-                {/* ===================================== */}
+                {/* ===================================================== */}
+                {/* FIXED CHART #2: Total Affiliate (Basic Affiliate)      */}
+                {/* Uses: /api/v3/kpi-chart-metric?type=Affiliate&product= */}
+                {/* ===================================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
                         <div>
                             <h3 className='text-lg font-semibold text-gray-800'>Total Affiliate (Basic Affiliate)</h3>
-                            <p className='text-sm text-gray-500'>Subscribers & churn rate by month</p>
+                            <p className='text-sm text-gray-500'>Choose product + metric + timeframe (Week/Month/Year)</p>
                         </div>
 
-                        <div className='flex gap-3'>
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            {/* Product dropdown */}
                             <select
                                 value={affiliateProduct}
-                                onChange={(e) => setAffiliateProduct(e.target.value)}
+                                onChange={(e) => setAffiliateProduct(e.target.value as any)}
                                 className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
                             >
-                                {PRODUCT_OPTIONS.map((opt) => (
+                                {METRIC_PRODUCTS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
                                         {opt.label}
                                     </option>
                                 ))}
                             </select>
+
+                            {/* Metric dropdown */}
+                            <select
+                                value={affiliateMetricType}
+                                onChange={(e) => setAffiliateMetricType(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Revenue'>Revenue</option>
+                                <option value='Subscribers'>Subscribers</option>
+                                <option value='ChurnRate'>Churn Rate</option>
+                            </select>
+
+                            {/* Period dropdown */}
+                            <select
+                                value={affiliateMetricPeriod}
+                                onChange={(e) => setAffiliateMetricPeriod(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+
+                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
+                                <span className='text-gray-500 mr-2'>Selected:</span>
+                                <span className='font-semibold text-gray-900'>{affiliateSelectedLabel}</span>
+                            </div>
                         </div>
                     </div>
 
-                    {affiliateChartError && <div className='mb-4 text-sm text-red-600'>{affiliateChartError}</div>}
+                    {affiliateMetricError && <div className='mb-4 text-sm text-red-600'>{affiliateMetricError}</div>}
 
-                    {affiliateChartLoading ? (
+                    {affiliateMetricLoading ? (
                         <div className='h-56 flex items-center justify-center text-gray-400'>Loading affiliate chart...</div>
-                    ) : affiliateChart.length > 0 ? (
-                        <ResponsiveContainer width='100%' height={260}>
-                            <ComposedChart data={affiliateChart}>
-                                <CartesianGrid strokeDasharray='3 3' />
-                                <XAxis dataKey='month' />
-                                <YAxis yAxisId='left' />
-                                <YAxis yAxisId='right' orientation='right' tickFormatter={(v) => `${v}%`} />
-                                <Tooltip
-                                    cursor={<HorizontalCursor />}
-                                    formatter={(value: any, name: any) => {
-                                        const v = safeNumber(value, 0);
-                                        if (name === 'Churn Rate') return percent(v);
-                                        return `${v}`;
-                                    }}
-                                />
-                                <Legend />
-                                <Bar yAxisId='left' dataKey='count' name='Subscribers' fill='#10b981' />
-                                <Line yAxisId='right' type='monotone' dataKey='churnRate' name='Churn Rate' stroke='#ef4444' strokeWidth={2} dot={false} />
-                            </ComposedChart>
-                        </ResponsiveContainer>
+                    ) : affiliateSeries.length > 0 ? (
+                        <div className='w-full'>
+                            <ResponsiveContainer width='100%' height={240}>
+                                <BarChart data={affiliateSeries as any}>
+                                    <CartesianGrid strokeDasharray='3 3' />
+                                    <XAxis dataKey='period' />
+                                    <YAxis />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any) => {
+                                            const v = safeNumber(value, 0);
+                                            if (affiliateMetricType === 'Revenue') return currency(v);
+                                            if (affiliateMetricType === 'Subscribers') return `${v}`;
+                                            return percent(v);
+                                        }}
+                                    />
+                                    <Legend />
+                                    <Bar dataKey='value' name={affiliateMetricType === 'ChurnRate' ? 'Churn Rate' : affiliateMetricType}>
+                                        {(affiliateSeries as any).map((entry: any, idx: number) => (
+                                            <Cell
+                                                key={`aff-cell-${idx}`}
+                                                fill={entry.period === affiliateMetricPeriod ? '#10b981' : 'rgba(16, 185, 129, 0.35)'}
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No affiliate data</div>
                     )}
                 </div>
 
                 {/* ===================================== */}
-                {/* NEW CHART #4 (Total KPI)              */}
+                {/* Chart #3: Total KPI (keep as-is)      */}
                 {/* ===================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex items-center justify-between gap-4 mb-4'>

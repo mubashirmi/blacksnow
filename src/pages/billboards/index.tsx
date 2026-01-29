@@ -292,7 +292,7 @@ function BillboardCard({ b }: { b: Billboard }) {
                                     <s.icon className='w-4.5 h-4.5' />
                                 </Link>
                             ))}
-                            <Link href={`/billboards/${b.id}`} target='_blank' rel='noopener noreferrer' className='ml-auto'>
+                            <Link href={`/billboards/${b.id}`} className='ml-auto'>
                                 <Button className='h-9 px-3 text-xs bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white cursor-pointer'>
                                     Visit
                                     <ArrowRight className='w-3.5 h-3.5 ml-1.5' />

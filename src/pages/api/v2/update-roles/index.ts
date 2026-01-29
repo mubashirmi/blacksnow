@@ -1,7 +1,6 @@
 import prisma from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Allowed roles (must mirror your Prisma Role enum)
 const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'InvoiceTool', 'DigitalBillboard', 'EmailMarketing']);
 
 function normalizeRoles(input: unknown): string[] {

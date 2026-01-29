@@ -54,8 +54,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     const signedPdfUrl = invoice.Contract?.pdf ? await getFileUrl(invoice.Contract.pdf) : null;
 
+                    const imageUrl = invoice.image ? await getFileUrl(invoice.image) : null;
                     const modified = {
                         ...invoice,
+                        image: imageUrl,
                         Contract: invoice.Contract ? { ...invoice.Contract, pdf: signedPdfUrl } : null,
                     };
 
@@ -80,8 +82,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const modified = await Promise.all(
                         invoices.map(async (data) => {
                             const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
+                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+
                             const modified = {
                                 ...data,
+                                image: imageUrl,
                                 Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
                             };
                             return modified;
@@ -106,8 +111,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const modified = await Promise.all(
                         invoices.map(async (data) => {
                             const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
+                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+
                             const modified = {
                                 ...data,
+                                image: imageUrl,
                                 Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
                             };
                             return modified;
