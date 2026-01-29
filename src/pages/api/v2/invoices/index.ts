@@ -123,7 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // POST /api/invoices  -> create invoice
             case 'POST': {
                 const { fields, files } = await parseForm(req);
-
+                // eslint-disable-next-line
                 const image = files['image'];
                 const imageFile = Array.isArray(image) ? image[0] : image;
 
@@ -182,7 +182,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
                 const { fields, files } = await parseForm(req);
-
+                // eslint-disable-next-line
                 const image = files['image'];
                 const imageFile = Array.isArray(image) ? image[0] : image;
                 if (!imageFile) {
