@@ -1,3 +1,4 @@
+import { AuthModalTrigger } from '@/components/AuthModal';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -1002,12 +1003,14 @@ function Home() {
                     </DialogHeader>
                     <div className='text-center py-4 space-y-4'>
                         {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your subscription.</p> */}
-                        <Button
-                            onClick={() => router.push('/login?signup')}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                        >
-                            Signup
-                        </Button>
+                        <AuthModalTrigger buttonText='Signup' defaultView='signup' sourceRoute='/' redirectAfterLogin='/' redirectAfterSignup='/pricing'>
+                            <Button
+                                onClick={() => router.push('/login?signup')}
+                                className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                            >
+                                Signup
+                            </Button>
+                        </AuthModalTrigger>
                     </div>
                 </DialogContent>
             </Dialog>

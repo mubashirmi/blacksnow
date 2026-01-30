@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -219,7 +220,13 @@ function BlogDirectory() {
                                 and grow their revenue.
                             </p>
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4'>
-                                <Link href={'/login'}>
+                                <AuthModalTrigger
+                                    buttonText='Get Start'
+                                    defaultView='signup'
+                                    sourceRoute='/blogdirectory'
+                                    redirectAfterLogin='/blogdirectory'
+                                    redirectAfterSignup='/pricing'
+                                >
                                     <Button
                                         size='lg'
                                         className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
@@ -228,7 +235,8 @@ function BlogDirectory() {
                                         Join Now
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
-                                </Link>
+                                </AuthModalTrigger>
+
                                 <Link href={'/pricing'}>
                                     <Button
                                         size='lg'

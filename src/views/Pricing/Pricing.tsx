@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -609,12 +610,17 @@ function Pricing() {
                     </DialogHeader>
 
                     <div className='py-4'>
-                        <Button
-                            onClick={() => router.push('/login')}
-                            className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
+                        <AuthModalTrigger
+                            buttonText='Signup Now'
+                            defaultView='signup'
+                            sourceRoute='/pricing'
+                            redirectAfterLogin='/pricing'
+                            redirectAfterSignup='/pricing'
                         >
-                            Signup Now
-                        </Button>
+                            <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'>
+                                Signup Now
+                            </Button>
+                        </AuthModalTrigger>
                     </div>
                 </DialogContent>
             </Dialog>

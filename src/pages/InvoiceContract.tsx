@@ -345,7 +345,7 @@ export default function InvoiceContractPage() {
                             WHY CHOOSE US
                         </Badge>
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Key <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Benefits</span>
+                            Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'> Digital Solution</span>
                         </h2>
                         <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Transform your document workflow</p>

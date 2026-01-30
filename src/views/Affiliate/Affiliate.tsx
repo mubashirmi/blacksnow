@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, Award, BarChart3, Clock, DollarSign, Mail, Megaphone, Monitor, Rocket, Target, Users, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, Clock, Mail, Megaphone, Monitor, Rocket, Target, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
@@ -141,7 +141,7 @@ function Affiliate() {
                                         className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <BarChart3 className='w-6 h-6 mr-3' />
-                                        Join Now
+                                        View Pricings
                                     </Button>
                                 </Link>
                                 <AuthModalTrigger
@@ -156,7 +156,7 @@ function Affiliate() {
                                         className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        View Earnings
+                                        Join Now
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
                                     {/* <div className='bg-[#24a8cc] block sm:hidden uppercase relative rounded-2xl p-6 text-center text-3xl text-amber-50  font-semibold [text-shadow:_4px_4px_8px_rgba(0,0,0,0.5)] backdrop-blur-mxl'>Join Now</div> */}
@@ -177,35 +177,18 @@ function Affiliate() {
                             </div>
                         </div>
 
-                        {/* Right Visual - Dollar Sign */}
-                        <div className='hidden sm:block relative animate-slide-in-right'>
-                            <div className='relative flex items-center justify-center'>
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    <div className='absolute w-80 h-80 border-4 border-[#4cc7e8]/20 rounded-full animate-spin-slow'></div>
-                                    <div
-                                        className='absolute w-64 h-64 border-4 border-[#2c7bbe]/30 rounded-full animate-spin-slow delay-1000'
-                                        style={{ animationDirection: 'reverse' }}
-                                    ></div>
-                                    <div className='absolute w-48 h-48 border-4 border-[#2a8dcc]/40 rounded-full animate-spin-slow delay-2000'></div>
-                                </div>
-
-                                <div className='relative group'>
-                                    <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-full blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-500 animate-pulse'></div>
-                                    <div className='relative w-64 h-64 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] rounded-full border-8 border-[#4cc7e8]/30 flex items-center justify-center shadow-2xl shadow-[#2c7bbe]/40 transform group-hover:scale-110 transition-transform duration-500'>
-                                        <DollarSign className='w-32 h-32 text-[#4cc7e8] animate-pulse' />
+                        {/* RIGHT */}
+                        <div className='relative animate-slide-in-right '>
+                            <div className='relative overflow-hidden '>
+                                <div className='relative flex items-center justify-center w-full h-full'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                        <LottieAnimation
+                                            src='/animations/affiliate-coin-dollar-blue.json'
+                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
+                                            loop={true}
+                                            autoplay={true}
+                                        />
                                     </div>
-                                </div>
-
-                                <div className='absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow'>
-                                    <DollarSign className='min-w-8 min-h-8 text-white' />
-                                </div>
-
-                                <div className='absolute -bottom-8 -right-8 w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow delay-1000'>
-                                    <Award className='min-w-10 min-h-10 text-white' />
-                                </div>
-
-                                <div className='absolute top-8 -right-12 w-12 h-12 bg-gradient-to-br from-[#4cc7e8] to-[#2c7bbe] rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-500'>
-                                    <Zap className='min-w-6 min-h-6 text-white' />
                                 </div>
                             </div>
                         </div>

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, Calendar, CheckCircle, Clock, Edit3, Globe, Mail, Megaphone, MessageSquare, Send, Target, Users, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, Calendar, Clock, Edit3, Globe, Mail, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -198,7 +198,7 @@ function EmailMarketing() {
                                     </Button>
                                 </Link>
                             </div>
-                            <div className='grid grid-cols-3 gap-4 sm:gap-5'>
+                            {/* <div className='grid grid-cols-3 gap-4 sm:gap-5'>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
                                     <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>99.9%</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Delivery Rate</div>
@@ -211,53 +211,20 @@ function EmailMarketing() {
                                     <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>24/7</div>
                                     <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Support</div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
 
-                        {/* Right Visual */}
-                        <div className='relative animate-slide-in-right mt-7 sm:mt-0'>
-                            <div className='relative flex items-center justify-center'>
-                                {/* Animated Background */}
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    <div className='absolute w-80 h-80 sm:w-96 sm:h-96 border-4 border-[#4cc7e8]/20 rounded-full animate-spin-slow'></div>
-                                    <div
-                                        className='absolute w-64 h-64 sm:w-80 sm:h-80 border-4 border-[#2c7bbe]/30 rounded-full animate-spin-slow delay-1000'
-                                        style={{ animationDirection: 'reverse' }}
-                                    ></div>
-                                    <div className='absolute w-48 h-48 sm:w-64 sm:h-64 border-4 border-[#2a8dcc]/40 rounded-full animate-spin-slow delay-2000'></div>
-
-                                    {/* Floating Icons */}
-                                    <div className='absolute -top-5 sm:-top-12 -left-1 sm:-left-12 w-16 h-16 bg-gradient-to-br from-[#4cc7e8]/90 to-[#2c7bbe]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow'>
-                                        <Send className='w-8 h-8 text-white' />
-                                    </div>
-                                    <div className='absolute -bottom-16 sm:-bottom-12 right-0 sm:-right-12 w-20 h-20 bg-gradient-to-br from-[#2a8dcc]/90 to-[#4cc7e8]/90 rounded-2xl flex items-center justify-center shadow-2xl animate-float-slow delay-1000'>
-                                        <MessageSquare className='w-10 h-10 text-white' />
-                                    </div>
-                                    <div className='absolute top-12 sm:top-16 -right-1 sm:-right-20 w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-500'>
-                                        <CheckCircle className='w-6 h-6 text-white' />
-                                    </div>
-                                    <div className='absolute bottom-0 sm:bottom-20 -left-1 sm:-left-20 w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-xl animate-float-slow delay-1500'>
-                                        <Calendar className='w-7 h-7 text-white' />
-                                    </div>
-                                </div>
-
-                                {/* Main Email Icon */}
-                                <div className='relative group'>
-                                    <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-500 animate-pulse'></div>
-                                    <div className='relative w-64 h-64 sm:w-80 sm:h-80 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] rounded-3xl border-8 border-[#4cc7e8]/30 flex items-center justify-center shadow-2xl shadow-[#2c7bbe]/40 transform group-hover:scale-105 transition-transform duration-500'>
-                                        <svg
-                                            className='w-32 h-32 sm:w-48 sm:h-48 text-[#4cc7e8]'
-                                            viewBox='0 0 200 200'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            strokeWidth='4'
-                                        >
-                                            <rect x='20' y='60' width='160' height='120' rx='8' className='animate-pulse' />
-                                            <path d='M20 60 L100 120 L180 60' className='animate-pulse delay-300' />
-                                            <line x1='40' y1='100' x2='80' y2='100' className='animate-pulse delay-500' />
-                                            <line x1='40' y1='120' x2='120' y2='120' className='animate-pulse delay-700' />
-                                            <line x1='40' y1='140' x2='100' y2='140' className='animate-pulse delay-900' />
-                                        </svg>
+                        {/* RIGHT */}
+                        <div className='relative animate-slide-in-right '>
+                            <div className='relative overflow-hidden '>
+                                <div className='relative flex items-center justify-center w-full h-full'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                        <LottieAnimation
+                                            src='/animations/emailmarketing-herosection-page.json'
+                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
+                                            loop={true}
+                                            autoplay={true}
+                                        />
                                     </div>
                                 </div>
                             </div>

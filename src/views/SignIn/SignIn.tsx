@@ -64,8 +64,10 @@ function SignIn() {
         setAlert({ type: '', message: '' });
         try {
             if (isSignUp) {
-                const fullName = String(data.fullName || '').trim();
-                const parts = fullName.split(/\s+/);
+                const cleaned = String(data.fullName || '')
+                    .trim()
+                    .replace(/\s+/g, ' ');
+                const parts = cleaned ? cleaned.split(' ') : [];
                 const firstName = parts[0] || '';
                 const lastName = parts.slice(1).join(' ') || '';
 
@@ -191,7 +193,12 @@ function SignIn() {
                                             placeholder='Enter your full name'
                                             {...register('fullName', {
                                                 required: 'Full name is required',
-                                                validate: (v: string) => v.trim().split(/\s+/).length >= 2 || 'Please enter first and last name',
+                                                validate: (v: string) => {
+                                                    const cleaned = String(v || '')
+                                                        .trim()
+                                                        .replace(/\s+/g, ' ');
+                                                    return cleaned.length >= 2 || 'Please enter your name';
+                                                },
                                             })}
                                             className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
                                         />

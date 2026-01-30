@@ -208,7 +208,13 @@ function About() {
                                 profitability.
                             </p>
                             <div className='flex flex-col sm:flex-row gap-5 pt-8'>
-                                <AuthModalTrigger>
+                                <AuthModalTrigger
+                                    buttonText='Get Started'
+                                    defaultView='signup'
+                                    sourceRoute='/about'
+                                    redirectAfterLogin='/about'
+                                    redirectAfterSignup='/pricing'
+                                >
                                     <Button
                                         size='lg'
                                         className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
