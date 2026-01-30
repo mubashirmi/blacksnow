@@ -649,11 +649,6 @@ export default function SalesProfilePage() {
                                                                 </td>
                                                                 <td className='py-4 px-6'>
                                                                     <div className='flex items-center gap-3'>
-                                                                        <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold'>
-                                                                            {typeof user.fullName === 'string' && user.fullName.trim()
-                                                                                ? user.fullName.charAt(0).toUpperCase()
-                                                                                : user.email?.charAt(0)?.toUpperCase() || '?'}
-                                                                        </div>
                                                                         <span className='font-medium text-slate-800'>
                                                                             {user.fullName || user.email?.split('@')[0] || '—'}
                                                                         </span>

@@ -1,5 +1,4 @@
 import prisma from '@/lib/prisma';
-// import { Role } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 // const ROLE_LIST = [Role.Sales, Role.Affiliate, Role.NewsLetter, Role.Rsvp, Role.DigitalBillboard, Role.EmailMarketing, Role.InvoiceTool] as const;

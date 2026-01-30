@@ -1,5 +1,6 @@
 'use client';
 
+import { PricingComponent } from '@/components/PricingComponent';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -232,6 +233,10 @@ function EmailMarketing() {
                     </div>
                 </div>
             </section>
+
+            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <PricingComponent name='EmailMarketing' />
+            </div>
 
             {/* Main Features */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>

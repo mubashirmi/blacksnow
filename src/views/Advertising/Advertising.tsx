@@ -1,3 +1,4 @@
+import { PricingComponent } from '@/components/PricingComponent';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -288,6 +289,11 @@ function Advertising() {
                     {/* Feature List */}
                 </div>
             </section>
+
+            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <PricingComponent name='DigitalBillboard' />
+            </div>
+
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
                     <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 text-center'>

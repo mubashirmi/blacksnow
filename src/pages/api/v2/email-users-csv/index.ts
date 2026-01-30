@@ -187,7 +187,44 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
         if (method === 'PUT' || method === 'PATCH') {
             const id = getNumberFromQuery('id');
-            if (!id) return res.status(400).json({ message: 'Valid id is required in query (?id=)' });
+            const csvId = getNumberFromQuery('csvId');
+
+            /**
+             * ✅ NEW: Update EmailUserCSV (only when ?csvId= is provided and ?id= is NOT provided)
+             * Body can be: { name } OR { csvName } OR { csv: { name } }
+             */
+            if (!id && csvId) {
+                const { csv, csvName, name } = req.body ?? {};
+                const nextName = coerceCsvName(csv ?? csvName ?? name);
+
+                if (!nextName) {
+                    return res.status(400).json({
+                        message: 'Non-empty CSV "name" is required (use "name" or "csvName" or "csv": { "name" }).',
+                    });
+                }
+
+                const updatedCsv = await prisma.emailUserCSV.update({
+                    where: { id: csvId },
+                    data: { name: nextName },
+                    include: {
+                        _count: { select: { emailUsers: true } },
+                    },
+                });
+
+                return res.status(200).json({
+                    message: 'CSV updated successfully',
+                    emailUserCSV: updatedCsv,
+                });
+            }
+
+            /**
+             * ✅ Existing behavior: Update EmailUser by ?id=
+             */
+            if (!id) {
+                return res.status(400).json({
+                    message: 'Valid id is required in query (?id=) OR provide ?csvId= to update a CSV',
+                });
+            }
 
             const { email, fullName, authId: rawAuthId, csvId: rawCsvId } = req.body ?? {};
             const data: Record<string, any> = {};
@@ -200,9 +237,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             if (Object.keys(data).length === 0) return res.status(400).json({ message: 'Nothing to update' });
 
             if (data.email || data.authId) {
-                const current = await prisma.emailUser.findUnique({ where: { id }, select: { authId: true, email: true } });
+                const current = await prisma.emailUser.findUnique({
+                    where: { id },
+                    select: { authId: true, email: true },
+                });
+
                 const checkAuthId = data.authId ?? current?.authId;
                 const checkEmail = data.email ?? current?.email;
+
                 if (checkAuthId && checkEmail) {
                     const existing = await prisma.emailUser.findFirst({
                         where: { authId: Number(checkAuthId), email: String(checkEmail), id: { not: id } },

@@ -1,3 +1,4 @@
+import { PricingComponent } from '@/components/PricingComponent';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import lottie from 'lottie-web';
@@ -232,7 +233,9 @@ export default function InvoiceContractPage() {
                     </div>
                 </div>
             </section>
-
+            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <PricingComponent name='InvoiceTool' />
+            </div>
             {/* How It Works Section - IMPROVED */}
             <section ref={howItWorksRef} className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='absolute inset-0 bg-gradient-to-b from-transparent via-[#2c7bbe]/5 to-transparent pointer-events-none'></div>
