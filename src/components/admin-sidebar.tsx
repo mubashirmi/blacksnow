@@ -21,250 +21,170 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+
 export function AdminSidebar() {
     const router = useRouter();
     const pathname = usePathname();
-    const [openMenus, setOpenMenus] = useState({});
 
-    const toggleMenu = (title) => {
+    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    // ✅ Auto logout (10 min inactivity)
+    const AUTO_LOGOUT_MS = 10 * 60 * 1000;
+    const logoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const toggleMenu = (title: string) => {
         setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
     };
-    const handleAdminLogout = () => {
-        // Clear admin_token cookie
-        document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
 
-        // (Optional) clear any admin-related localStorage
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('roles');
-            localStorage.removeItem('referredby');
+    const doLogout = () => {
+        try {
+            // Clear admin_token cookie
+            document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+
+            // Clear storage
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('adminId');
+                localStorage.removeItem('roles');
+                localStorage.removeItem('referredby');
+            }
+        } catch (e) {
+            // never break UI
+            console.error('Logout error:', e);
+        } finally {
+            // Redirect
+            router.replace('/');
         }
-
-        // Redirect to login
-        router.push('/');
     };
 
-    // const navigationItems = [
-    //     {
-    //         title: 'KPI',
-    //         url: '/admin/dashboard/kpi',
-    //         icon: TrendingUp,
-    //     },
-    //     {
-    //         title: 'Sales',
-    //         url: '/admin/dashboard/sales',
-    //         icon: BarChart3,
-    //     },
-    //     {
-    //         title: 'Affiliates',
-    //         url: '/admin/dashboard/affiliates',
-    //         icon: Users,
-    //     },
-    //     {
-    //         title: 'Email Users',
-    //         url: '/admin/dashboard/marketingSubscribers',
-    //         icon: Users,
-    //     },
-    //     {
-    //         title: 'Invoice Tool Users',
-    //         url: '/admin/dashboard/marketingSubscribers',
-    //         icon: Users,
-    //     },
-    //     {
-    //         title: 'Digital Billboard',
-    //         url: '/admin/dashboard/billboard',
-    //         icon: Monitor,
-    //     },
-    //     {
-    //         title: 'Newsletter',
-    //         url: '/admin/dashboard/newsletter',
-    //         icon: Mail,
-    //     },
-    //     {
-    //         title: 'Contract',
-    //         url: '/admin/dashboard/contract',
-    //         icon: FilePen,
-    //     },
-    //     {
-    //         title: 'Email Upload',
-    //         url: '/admin/dashboard/users',
-    //         icon: Users,
-    //     },
-    //     {
-    //         title: 'Email Compose',
-    //         url: '/admin/dashboard/automation',
-    //         icon: LinkIcon,
-    //     },
-    //     {
-    //         title: 'Email Campaign',
-    //         url: '/admin/dashboard/campaign',
-    //         icon: Target,
-    //     },
-    //     {
-    //         title: 'Email KPI',
-    //         url: '/admin/dashboard/emailkpi',
-    //         icon: Mail,
-    //     },
-    //     {
-    //         title: 'Email Schedules',
-    //         url: '/admin/dashboard/emailSchedule',
-    //         icon: CalendarCheck,
-    //     },
+    // ✅ Manual logout: open modal
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true);
+    };
 
-    //     {
-    //         title: 'Requisition',
-    //         url: '/admin/dashboard/requisition',
-    //         icon: FileText,
-    //     },
-    //     {
-    //         title: 'Invoice',
-    //         url: '/admin/dashboard/invoice',
-    //         icon: ReceiptText,
-    //     },
-    //     {
-    //         title: 'Blog',
-    //         url: '/admin/dashboard/blog',
-    //         icon: BookOpen,
-    //     },
-    //     {
-    //         title: 'Notes',
-    //         url: '/admin/dashboard/notes',
-    //         icon: StickyNote,
-    //     },
-    //     {
-    //         title: 'FAQ',
-    //         url: '/admin/dashboard/faq',
-    //         icon: HelpCircle,
-    //     },
-    //     {
-    //         title: 'Legal',
-    //         url: '/admin/dashboard/legal',
-    //         icon: Scale,
-    //     },
-    // ];
+    const cancelLogout = () => {
+        setShowLogoutModal(false);
+    };
+
+    const confirmLogout = () => {
+        setShowLogoutModal(false);
+        doLogout();
+    };
+
+    // ✅ reset timer on activity
+    const resetAutoLogoutTimer = () => {
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+        logoutTimerRef.current = setTimeout(() => {
+            // Auto logout without modal (as requested)
+            doLogout();
+            // eslint-disable-next-line
+        }, AUTO_LOGOUT_MS);
+    };
+
+    useEffect(() => {
+        // start timer
+        resetAutoLogoutTimer();
+        // eslint-disable-next-line
+        const events: (keyof WindowEventMap)[] = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+
+        const onActivity = () => resetAutoLogoutTimer();
+        events.forEach((ev) => window.addEventListener(ev, onActivity, { passive: true }));
+
+        const onVisibility = () => {
+            // when user returns to tab, reset
+            if (document.visibilityState === 'visible') resetAutoLogoutTimer();
+        };
+        document.addEventListener('visibilitychange', onVisibility);
+
+        const onEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setShowLogoutModal(false);
+        };
+        window.addEventListener('keydown', onEsc);
+
+        return () => {
+            if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+            events.forEach((ev) => window.removeEventListener(ev, onActivity));
+            document.removeEventListener('visibilitychange', onVisibility);
+            window.removeEventListener('keydown', onEsc);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // (Optional) reset timer on route change too (safe)
+    useEffect(() => {
+        resetAutoLogoutTimer();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathname]);
+
     const navigationItems = [
         {
             title: 'KPI Metrics',
             url: '/admin/dashboard/kpi',
             icon: TrendingUp,
         },
-
-        // Subscribers Group
         {
             title: 'Subscribers',
             icon: Users,
             children: [
-                {
-                    title: 'Newsletter',
-                    url: '/admin/dashboard/newsletter',
-                    icon: Mail,
-                },
-                {
-                    title: 'Email Users',
-                    url: '/admin/dashboard/marketingSubscribers',
-                    icon: Users,
-                },
-                {
-                    title: 'Digital Billboard',
-                    url: '/admin/dashboard/billboard',
-                    icon: Monitor,
-                },
+                { title: 'Newsletter', url: '/admin/dashboard/newsletter', icon: Mail },
+                { title: 'Email Users', url: '/admin/dashboard/marketingSubscribers', icon: Users },
+                { title: 'Digital Billboard', url: '/admin/dashboard/billboard', icon: Monitor },
             ],
         },
-
-        {
-            title: 'Sales',
-            url: '/admin/dashboard/sales',
-            icon: BarChart3,
-        },
-        {
-            title: 'Affiliates',
-            url: '/admin/dashboard/affiliates',
-            icon: Users,
-        },
-
-        // CRM Group (Combine Email Tabs)
+        { title: 'Sales', url: '/admin/dashboard/sales', icon: BarChart3 },
+        { title: 'Affiliates', url: '/admin/dashboard/affiliates', icon: Users },
         {
             title: 'CRM',
             icon: Mail,
             children: [
-                {
-                    title: 'Email Upload',
-                    url: '/admin/dashboard/users',
-                    icon: Users,
-                },
-                {
-                    title: 'Email Automation',
-                    url: '/admin/dashboard/automation',
-                    icon: LinkIcon,
-                },
-                {
-                    title: 'Email Campaign',
-                    url: '/admin/dashboard/campaign',
-                    icon: Target,
-                },
-                {
-                    title: 'Email KPI',
-                    url: '/admin/dashboard/emailkpi',
-                    icon: Mail,
-                },
-                {
-                    title: 'Email Schedules',
-                    url: '/admin/dashboard/emailSchedule',
-                    icon: CalendarCheck,
-                },
+                { title: 'Email Upload', url: '/admin/dashboard/users', icon: Users },
+                { title: 'Email Automation', url: '/admin/dashboard/automation', icon: LinkIcon },
+                { title: 'Email Campaign', url: '/admin/dashboard/campaign', icon: Target },
+                { title: 'Email KPI', url: '/admin/dashboard/emailkpi', icon: Mail },
+                { title: 'Email Schedules', url: '/admin/dashboard/emailSchedule', icon: CalendarCheck },
             ],
         },
-
-        {
-            title: 'Requisition',
-            url: '/admin/dashboard/requisition',
-            icon: FileText,
-        },
-        {
-            title: 'Invoice',
-            url: '/admin/dashboard/invoice',
-            icon: ReceiptText,
-        },
-        {
-            title: 'Contract',
-            url: '/admin/dashboard/contract',
-            icon: FilePen,
-        },
-        {
-            title: 'Invoice Tool Users',
-            url: '/admin/dashboard/marketingSubscribers', // keep as-is since that's what you had
-            icon: Users,
-        },
-        {
-            title: 'Blog',
-            url: '/admin/dashboard/blog',
-            icon: BookOpen,
-        },
-        {
-            title: 'Notes',
-            url: '/admin/dashboard/notes',
-            icon: StickyNote,
-        },
-        {
-            title: 'FAQ',
-            url: '/admin/dashboard/faq',
-            icon: HelpCircle,
-        },
-        {
-            title: 'Legal',
-            url: '/admin/dashboard/legal',
-            icon: Scale,
-        },
-
-        // Not mentioned by client => push to end
+        { title: 'Requisition', url: '/admin/dashboard/requisition', icon: FileText },
+        { title: 'Invoice', url: '/admin/dashboard/invoice', icon: ReceiptText },
+        { title: 'Contract', url: '/admin/dashboard/contract', icon: FilePen },
+        { title: 'Invoice Tool Users', url: '/admin/dashboard/marketingSubscribers', icon: Users },
+        { title: 'Blog', url: '/admin/dashboard/blog', icon: BookOpen },
+        { title: 'Notes', url: '/admin/dashboard/notes', icon: StickyNote },
+        { title: 'FAQ', url: '/admin/dashboard/faq', icon: HelpCircle },
+        { title: 'Legal', url: '/admin/dashboard/legal', icon: Scale },
     ];
 
     return (
         <div className='h-full flex flex-col'>
+            {/* ✅ Logout Confirmation Modal */}
+            {showLogoutModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center'>
+                    <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
+                    <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
+                        <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>Confirm Logout</h2>
+                        <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
+                        <div className='flex justify-end space-x-4'>
+                            <button
+                                onClick={cancelLogout}
+                                className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmLogout}
+                                className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Sidebar Header */}
             <div className='p-6 border-b border-gray-100'>
                 <div className='flex items-center gap-3'>
@@ -277,19 +197,19 @@ export function AdminSidebar() {
                         <span className='font-bold text-xl text-gray-800 ml-1'>Black Snow</span>
                         <button
                             className='
-     items-center gap-2
-    px-2 py-1 cursor-pointer
-    text-sm font-medium
-    text-[#0b0b0b]/80
-    border border-[#0b0b0b]/30
-    bg-transparent
-    rounded-xl      /* not too round */
-    transition
-    hover:bg-[#0b0b0b]
-    hover:text-white
-  '
+                                items-center gap-2
+                                px-4 py-1 cursor-pointer
+                                text-sm font-medium
+                                text-[#0b0b0b]/80
+                                border border-[#0b0b0b]/30
+                                bg-transparent
+                                rounded-xl
+                                transition
+                                hover:bg-[#0b0b0b]
+                                hover:text-white
+                            '
                         >
-                            Admin Dashboard
+                            Admin
                         </button>
                     </div>
                 </div>
@@ -299,11 +219,15 @@ export function AdminSidebar() {
             <div className='flex-1 overflow-y-auto p-4'>
                 <div className='space-y-1'>
                     {navigationItems.map((item) => {
-                        const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+                        const hasChildren = Array.isArray((item as any).children) && (item as any).children.length > 0;
 
-                        const isActive = item.url ? pathname === item.url || (item.url !== '/admin/dashboard' && pathname?.startsWith(item.url)) : false;
+                        const isActive = (item as any).url
+                            ? pathname === (item as any).url || ((item as any).url !== '/admin/dashboard' && pathname?.startsWith((item as any).url))
+                            : false;
 
-                        const isChildActive = hasChildren ? item.children.some((child) => pathname === child.url || pathname?.startsWith(child.url)) : false;
+                        const isChildActive = hasChildren
+                            ? (item as any).children.some((child: any) => pathname === child.url || pathname?.startsWith(child.url))
+                            : false;
 
                         const isOpen = openMenus[item.title] ?? isChildActive;
 
@@ -314,9 +238,9 @@ export function AdminSidebar() {
                                         type='button'
                                         onClick={() => toggleMenu(item.title)}
                                         className={`
-                    w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
-                    ${isChildActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
-                  `}
+                                            w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                                            ${isChildActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
+                                        `}
                                     >
                                         <span className='flex items-center gap-3'>
                                             <item.icon className='w-4 h-4' />
@@ -328,7 +252,7 @@ export function AdminSidebar() {
 
                                     {isOpen && (
                                         <div className='ml-4 space-y-1'>
-                                            {item.children.map((child) => {
+                                            {(item as any).children.map((child: any) => {
                                                 const childActive = pathname === child.url || pathname?.startsWith(child.url);
 
                                                 return (
@@ -336,9 +260,13 @@ export function AdminSidebar() {
                                                         key={child.title}
                                                         href={child.url}
                                                         className={`
-                            flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 font-medium
-                            ${childActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
-                          `}
+                                                            flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 font-medium
+                                                            ${
+                                                                childActive
+                                                                    ? 'bg-gray-800 text-white shadow-md'
+                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                                                            }
+                                                        `}
                                                     >
                                                         <child.icon className='w-4 h-4' />
                                                         <span>{child.title}</span>
@@ -351,18 +279,17 @@ export function AdminSidebar() {
                             );
                         }
 
-                        // Normal item
                         return (
                             <Link
-                                key={item.title}
-                                href={item.url}
+                                key={(item as any).title}
+                                href={(item as any).url}
                                 className={`
-                flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
-                ${isActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
-              `}
+                                    flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                                    ${isActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
+                                `}
                             >
                                 <item.icon className='w-4 h-4' />
-                                <span>{item.title}</span>
+                                <span>{(item as any).title}</span>
                             </Link>
                         );
                     })}
@@ -372,7 +299,7 @@ export function AdminSidebar() {
             {/* Sidebar Footer */}
             <div className='p-4 border-t border-gray-100'>
                 <button
-                    onClick={handleAdminLogout}
+                    onClick={handleLogoutClick}
                     className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
                 >
                     <LogOut className='w-4 h-4' />

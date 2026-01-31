@@ -3,7 +3,6 @@ import {
     AlertCircle,
     AlertTriangle,
     BarChart3,
-    Calendar,
     CheckCircle,
     Clock,
     DollarSign,
@@ -22,13 +21,13 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
-    Area,
-    AreaChart,
     Bar,
     BarChart,
     CartesianGrid,
     Cell,
     Legend,
+    Line,
+    LineChart,
     Pie,
     PieChart,
     RadialBar,
@@ -47,9 +46,12 @@ export default function UnifiedSalesKPI() {
         credentials: null,
         general: null,
     });
+
     const [affiliateData, setAffiliateData] = useState(null);
     const [marketingData, setMarketingData] = useState(null);
-    const [selectedMetric, setSelectedMetric] = useState('revenue');
+
+    // Unified trends metric selector (UPDATED)
+    const [selectedMetric, setSelectedMetric] = useState('revenue'); // revenue | subscribers | conversionRate | churnRate
     const [retryCount, setRetryCount] = useState({ affiliate: 0, marketing: 0 });
 
     // Credentials state
@@ -59,6 +61,47 @@ export default function UnifiedSalesKPI() {
     const [credentialsData, setCredentialsData] = useState({ email: '', appPassword: '' });
     const [credentialsErrors, setCredentialsErrors] = useState({});
 
+    // ✅ NEW: Goals KPI state (/v3/goals-kpi)
+    const [goalsKpi, setGoalsKpi] = useState(null);
+    const [goalsError, setGoalsError] = useState(null);
+
+    // ✅ NEW: Product KPI state (/v3/kpi-chart-metric)
+    const PRODUCTS = ['DigitalBillboard', 'NewsLetter', 'InvoiceTool', 'EmailMarketing'];
+    const [selectedProduct, setSelectedProduct] = useState('all'); // all | productName
+    const [productView, setProductView] = useState('weekly'); // weekly | monthly
+    const [productKpiMap, setProductKpiMap] = useState({}); // { [productName]: kpi }
+    const [productKpiError, setProductKpiError] = useState(null);
+
+    // -------------------------
+    // Helpers (safe, no-crash)
+    // -------------------------
+    const toNumber = (v, fallback = 0) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : fallback;
+    };
+
+    const clamp = (n, min = 0, max = 100) => Math.max(min, Math.min(max, n));
+
+    const formatCurrency = (n) => `$${toNumber(n, 0).toLocaleString()}`;
+
+    const formatPercent = (n) => `${toNumber(n, 0).toFixed(1)}%`;
+
+    const getAuthId = () => {
+        const id = Number(localStorage.getItem('userId') || localStorage.getItem('adminId'));
+        return !id || isNaN(id) ? null : id;
+    };
+
+    const safeJson = async (resp) => {
+        try {
+            return await resp.json();
+        } catch {
+            return null;
+        }
+    };
+
+    // -------------------------
+    // Init / Fetch
+    // -------------------------
     useEffect(() => {
         initializeDashboard();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,11 +112,16 @@ export default function UnifiedSalesKPI() {
         try {
             setLoading(true);
             setErrors({ affiliate: null, marketing: null, credentials: null, general: null });
+            setGoalsError(null);
+            setProductKpiError(null);
+
             const credentialsOk = await checkMarketingCredentials();
-            await fetchAllData(credentialsOk);
+
+            // run all in parallel (but never break page if one fails)
+            await Promise.allSettled([fetchAllData(credentialsOk), fetchGoalsKpi(), fetchAllProductKpis()]);
         } catch (err) {
             console.error('Initialization error:', err);
-            setErrors((prev) => ({ ...prev, general: err.message || 'Failed to initialize dashboard' }));
+            setErrors((prev) => ({ ...prev, general: err?.message || 'Failed to initialize dashboard' }));
         } finally {
             setLoading(false);
         }
@@ -82,9 +130,9 @@ export default function UnifiedSalesKPI() {
     const checkMarketingCredentials = async () => {
         try {
             setCheckingCredentials(true);
-            const id = Number(localStorage.getItem('userId') || localStorage.getItem('adminId'));
+            const id = getAuthId();
 
-            if (!id || isNaN(id)) {
+            if (!id) {
                 setErrors((prev) => ({ ...prev, credentials: 'Invalid user ID. Please login again.' }));
                 return false;
             }
@@ -99,13 +147,13 @@ export default function UnifiedSalesKPI() {
                 throw new Error(`Credentials check failed: ${res.status}`);
             }
 
-            const json = await res.json();
+            const json = await safeJson(res);
             const ok = json?.policy?.email?.trim() && json?.policy?.appPassword?.trim();
             setShowCredentialsModal(!ok);
             return !!ok;
         } catch (e) {
             console.error('Credentials check failed:', e);
-            setErrors((prev) => ({ ...prev, credentials: e.message }));
+            setErrors((prev) => ({ ...prev, credentials: e?.message || 'Credentials check failed' }));
             return false;
         } finally {
             setCheckingCredentials(false);
@@ -113,9 +161,8 @@ export default function UnifiedSalesKPI() {
     };
 
     const fetchAllData = async (hasMarketingCreds = false) => {
-        const id = Number(localStorage.getItem('userId') || localStorage.getItem('adminId'));
-
-        if (!id || isNaN(id)) {
+        const id = getAuthId();
+        if (!id) {
             setErrors((prev) => ({ ...prev, general: 'User ID not found. Please login again.' }));
             return;
         }
@@ -123,24 +170,17 @@ export default function UnifiedSalesKPI() {
         // Fetch affiliate data
         try {
             const affiliateRes = await fetch(`/api/v2/affiliate-kpi/?id=${id}`);
+            if (!affiliateRes.ok) throw new Error(`Failed to fetch affiliate data: ${affiliateRes.statusText}`);
+            const affiliateJson = await safeJson(affiliateRes);
 
-            if (!affiliateRes.ok) {
-                throw new Error(`Failed to fetch affiliate data: ${affiliateRes.statusText}`);
-            }
-
-            const affiliateJson = await affiliateRes.json();
-
-            // Validate affiliate data structure
-            if (!affiliateJson || typeof affiliateJson !== 'object') {
-                throw new Error('Invalid affiliate data format received');
-            }
+            if (!affiliateJson || typeof affiliateJson !== 'object') throw new Error('Invalid affiliate data format received');
 
             setAffiliateData(affiliateJson);
             setErrors((prev) => ({ ...prev, affiliate: null }));
             setRetryCount((prev) => ({ ...prev, affiliate: 0 }));
         } catch (err) {
             console.error('Affiliate data fetch failed:', err);
-            setErrors((prev) => ({ ...prev, affiliate: err.message }));
+            setErrors((prev) => ({ ...prev, affiliate: err?.message || 'Affiliate fetch failed' }));
             setAffiliateData(null);
         }
 
@@ -148,26 +188,82 @@ export default function UnifiedSalesKPI() {
         if (hasMarketingCreds) {
             try {
                 const marketingRes = await fetch(`/api/v2/marketing-kpi/?authId=${id}`);
+                if (!marketingRes.ok) throw new Error(`Failed to fetch marketing data: ${marketingRes.statusText}`);
+                const marketingJson = await safeJson(marketingRes);
 
-                if (!marketingRes.ok) {
-                    throw new Error(`Failed to fetch marketing data: ${marketingRes.statusText}`);
-                }
-
-                const marketingJson = await marketingRes.json();
-
-                // Validate marketing data structure
-                if (!marketingJson || typeof marketingJson !== 'object') {
-                    throw new Error('Invalid marketing data format received');
-                }
+                if (!marketingJson || typeof marketingJson !== 'object') throw new Error('Invalid marketing data format received');
 
                 setMarketingData(marketingJson);
                 setErrors((prev) => ({ ...prev, marketing: null }));
                 setRetryCount((prev) => ({ ...prev, marketing: 0 }));
             } catch (err) {
                 console.error('Marketing data fetch failed:', err);
-                setErrors((prev) => ({ ...prev, marketing: err.message }));
+                setErrors((prev) => ({ ...prev, marketing: err?.message || 'Marketing fetch failed' }));
                 setMarketingData(null);
             }
+        }
+    };
+
+    // ✅ NEW: Goals KPI fetch
+    const fetchGoalsKpi = async () => {
+        const id = getAuthId();
+        if (!id) return;
+
+        try {
+            const res = await fetch(`/api/v3/goals-kpi?authId=${id}`);
+            if (!res.ok) throw new Error(`Goals KPI failed: ${res.statusText}`);
+            const json = await safeJson(res);
+
+            if (!json || typeof json !== 'object') throw new Error('Invalid goals KPI response');
+
+            setGoalsKpi(json);
+            setGoalsError(null);
+        } catch (e) {
+            console.error('Goals KPI fetch failed:', e);
+            setGoalsKpi(null);
+            setGoalsError(e?.message || 'Goals KPI fetch failed');
+        }
+    };
+
+    // ✅ NEW: Product KPI fetch (4 products)
+    const fetchAllProductKpis = async () => {
+        const id = getAuthId();
+        if (!id) return;
+
+        try {
+            const results = await Promise.allSettled(
+                PRODUCTS.map((p) =>
+                    fetch(`/api/v3/kpi-chart-metric?type=Sales&product=${encodeURIComponent(p)}&authId=${id}`).then(async (r) => {
+                        if (!r.ok) throw new Error(`${p}: ${r.statusText}`);
+                        const j = await safeJson(r);
+                        if (!j || typeof j !== 'object') throw new Error(`${p}: invalid response`);
+                        return { product: p, data: j };
+                    })
+                )
+            );
+
+            const map = {};
+            const failed = [];
+
+            results.forEach((r) => {
+                if (r.status === 'fulfilled') {
+                    map[r.value.product] = r.value.data;
+                } else {
+                    failed.push(r.reason?.message || 'unknown error');
+                }
+            });
+
+            setProductKpiMap(map);
+
+            if (failed.length) {
+                setProductKpiError(`Some product KPI requests failed (${failed.length}). Showing available data.`);
+            } else {
+                setProductKpiError(null);
+            }
+        } catch (e) {
+            console.error('Product KPI fetch failed:', e);
+            setProductKpiMap({});
+            setProductKpiError(e?.message || 'Product KPI fetch failed');
         }
     };
 
@@ -204,11 +300,8 @@ export default function UnifiedSalesKPI() {
         try {
             setErrors((prev) => ({ ...prev, credentials: null }));
             setCredsSubmitting(true);
-            const id = Number(localStorage.getItem('userId') || localStorage.getItem('adminId'));
-
-            if (!id || isNaN(id)) {
-                throw new Error('User ID not found');
-            }
+            const id = getAuthId();
+            if (!id) throw new Error('User ID not found');
 
             const resp = await fetch('/api/v2/marketingCredentials', {
                 method: 'POST',
@@ -221,15 +314,15 @@ export default function UnifiedSalesKPI() {
             });
 
             if (!resp.ok) {
-                const j = await resp.json().catch(() => ({}));
-                throw new Error(j.message || `Failed to save credentials: ${resp.statusText}`);
+                const j = await safeJson(resp).catch(() => ({}));
+                throw new Error(j?.message || `Failed to save credentials: ${resp.statusText}`);
             }
 
             setShowCredentialsModal(false);
             setCredentialsData({ email: '', appPassword: '' });
-            await fetchAllData(true);
+            await Promise.allSettled([fetchAllData(true), fetchGoalsKpi(), fetchAllProductKpis()]);
         } catch (e) {
-            setErrors((prev) => ({ ...prev, credentials: e.message || 'Failed to save credentials' }));
+            setErrors((prev) => ({ ...prev, credentials: e?.message || 'Failed to save credentials' }));
         } finally {
             setCredsSubmitting(false);
         }
@@ -250,7 +343,9 @@ export default function UnifiedSalesKPI() {
         }
     };
 
-    // Calculate unified metrics with error handling
+    // -------------------------
+    // Metrics (existing)
+    // -------------------------
     const calculateUnifiedMetrics = () => {
         try {
             const affiliate = {
@@ -304,12 +399,10 @@ export default function UnifiedSalesKPI() {
         }
     };
 
-    // Format combined monthly data with error handling
     const formatCombinedMonthlyData = () => {
         try {
             const monthlyMap = {};
 
-            // Add affiliate data
             if (affiliateData?.monthlyStats && Array.isArray(affiliateData.monthlyStats)) {
                 affiliateData.monthlyStats.forEach((stat) => {
                     if (stat?.month) {
@@ -326,7 +419,6 @@ export default function UnifiedSalesKPI() {
                 });
             }
 
-            // Add marketing data
             if (marketingData?.totalEmailSent && Array.isArray(marketingData.totalEmailSent)) {
                 marketingData.totalEmailSent.forEach((email) => {
                     if (email?.createdAt) {
@@ -346,9 +438,7 @@ export default function UnifiedSalesKPI() {
                                 }
                                 monthlyMap[monthKey].emailsSent++;
                             }
-                        } catch (e) {
-                            console.warn('Invalid date format:', email.createdAt);
-                        }
+                        } catch {}
                     }
                 });
             }
@@ -360,13 +450,9 @@ export default function UnifiedSalesKPI() {
                             const date = new Date(user.createdAt);
                             if (!isNaN(date.getTime())) {
                                 const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                                if (monthlyMap[monthKey]) {
-                                    monthlyMap[monthKey].newSubscribers++;
-                                }
+                                if (monthlyMap[monthKey]) monthlyMap[monthKey].newSubscribers++;
                             }
-                        } catch (e) {
-                            console.warn('Invalid date format:', user.createdAt);
-                        }
+                        } catch {}
                     }
                 });
             }
@@ -380,9 +466,7 @@ export default function UnifiedSalesKPI() {
 
     const getTopProducts = () => {
         try {
-            if (!affiliateData?.affiliateData || !Array.isArray(affiliateData.affiliateData)) {
-                return [];
-            }
+            if (!affiliateData?.affiliateData || !Array.isArray(affiliateData.affiliateData)) return [];
             return affiliateData.affiliateData
                 .filter((p) => p && typeof p.comission === 'number')
                 .sort((a, b) => b.comission - a.comission)
@@ -395,9 +479,7 @@ export default function UnifiedSalesKPI() {
 
     const getProductPerformanceComparison = () => {
         try {
-            if (!affiliateData?.affiliateData || !Array.isArray(affiliateData.affiliateData)) {
-                return [];
-            }
+            if (!affiliateData?.affiliateData || !Array.isArray(affiliateData.affiliateData)) return [];
             return affiliateData.affiliateData
                 .filter((p) => p && p.productName)
                 .map((product) => ({
@@ -419,7 +501,6 @@ export default function UnifiedSalesKPI() {
         try {
             const metrics = calculateUnifiedMetrics();
             if (!metrics) return [];
-
             return [
                 { stage: 'Clicks', value: metrics.affiliate.totalClicks, fill: '#3B82F6' },
                 { stage: 'Conversions', value: metrics.affiliate.totalConversions, fill: '#10B981' },
@@ -435,7 +516,6 @@ export default function UnifiedSalesKPI() {
         try {
             const metrics = calculateUnifiedMetrics();
             if (!metrics) return [];
-
             return [
                 { name: 'Delivered', value: metrics.marketing.deliveredEmails, color: '#10B981' },
                 { name: 'Failed', value: metrics.marketing.failedEmails, color: '#EF4444' },
@@ -451,18 +531,9 @@ export default function UnifiedSalesKPI() {
         try {
             const metrics = calculateUnifiedMetrics();
             if (!metrics) return [];
-
             return [
-                {
-                    name: 'Conversion Rate',
-                    value: parseFloat(metrics.conversionRate),
-                    fill: '#8B5CF6',
-                },
-                {
-                    name: 'Delivery Rate',
-                    value: parseFloat(metrics.deliveryRate),
-                    fill: '#10B981',
-                },
+                { name: 'Conversion Rate', value: parseFloat(metrics.conversionRate), fill: '#8B5CF6' },
+                { name: 'Delivery Rate', value: parseFloat(metrics.deliveryRate), fill: '#10B981' },
             ];
         } catch (error) {
             console.error('Error getting gauge data:', error);
@@ -470,17 +541,122 @@ export default function UnifiedSalesKPI() {
         }
     };
 
-    const getChartConfig = () => {
-        const configs = {
-            revenue: { dataKey: 'revenue', stroke: '#10B981', name: 'Revenue ($)' },
-            clicks: { dataKey: 'clicks', stroke: '#3B82F6', name: 'Clicks' },
-            conversions: { dataKey: 'conversions', stroke: '#8B5CF6', name: 'Conversions' },
-            emails: { dataKey: 'emailsSent', stroke: '#F59E0B', name: 'Emails Sent' },
+    // -------------------------
+    // ✅ NEW: Product KPI derived data
+    // -------------------------
+    const computeAllProductKpi = () => {
+        const rows = PRODUCTS.map((p) => productKpiMap?.[p]).filter(Boolean);
+
+        if (!rows.length) return null;
+
+        const sum = (key) => rows.reduce((acc, r) => acc + toNumber(r?.[key], 0), 0);
+        const avg = (key) => {
+            const vals = rows.map((r) => toNumber(r?.[key], 0));
+            if (!vals.length) return 0;
+            return vals.reduce((a, b) => a + b, 0) / vals.length;
         };
-        return configs[selectedMetric] || configs.revenue;
+
+        // NOTE: conversionRate fields may not exist in backend response yet.
+        return {
+            weeklyRevenue: sum('weeklyRevenue'),
+            monthlyRevenue: sum('monthlyRevenue'),
+            yearlyRevenue: sum('yearlyRevenue'),
+
+            weeklySubscribers: sum('weeklySubscribers'),
+            monthlySubscribers: sum('monthlySubscribers'),
+            yearlySubscribers: sum('yearlySubscribers'),
+
+            weeklyChurnRate: avg('weeklyChurnRate'),
+            monthlyChurnRate: avg('monthlyChurnRate'),
+            yearlyChurnRate: avg('yearlyChurnRate'),
+
+            weeklyConversionRate: avg('weeklyConversionRate'),
+            monthlyConversionRate: avg('monthlyConversionRate'),
+            yearlyConversionRate: avg('yearlyConversionRate'),
+
+            type: 'Sales',
+            product: 'all',
+        };
     };
 
-    // Loading state
+    const allProductKpi = computeAllProductKpi();
+    const currentProductKpi = selectedProduct === 'all' ? allProductKpi : productKpiMap?.[selectedProduct];
+
+    const trendData = currentProductKpi
+        ? [
+              {
+                  period: 'Weekly',
+                  revenue: toNumber(currentProductKpi.weeklyRevenue, 0),
+                  subscribers: toNumber(currentProductKpi.weeklySubscribers, 0),
+                  conversionRate: toNumber(currentProductKpi.weeklyConversionRate ?? currentProductKpi.weeklyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.weeklyChurnRate, 0),
+              },
+              {
+                  period: 'Monthly',
+                  revenue: toNumber(currentProductKpi.monthlyRevenue, 0),
+                  subscribers: toNumber(currentProductKpi.monthlySubscribers, 0),
+                  conversionRate: toNumber(currentProductKpi.monthlyConversionRate ?? currentProductKpi.monthlyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.monthlyChurnRate, 0),
+              },
+              {
+                  period: 'Annual',
+                  revenue: toNumber(currentProductKpi.yearlyRevenue, 0),
+                  subscribers: toNumber(currentProductKpi.yearlySubscribers, 0),
+                  conversionRate: toNumber(currentProductKpi.yearlyConversionRate ?? currentProductKpi.yearlyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.yearlyChurnRate, 0),
+              },
+          ]
+        : [];
+
+    const chartConfigs = {
+        revenue: { dataKey: 'revenue', name: 'Revenue ($)' },
+        subscribers: { dataKey: 'subscribers', name: 'Subscribers' },
+        conversionRate: { dataKey: 'conversionRate', name: 'Conversion Rate (%)' },
+        churnRate: { dataKey: 'churnRate', name: 'Churn Rate (%)' },
+    };
+    const chartConfig = chartConfigs[selectedMetric] || chartConfigs.revenue;
+
+    const weeklyProductSeries = currentProductKpi
+        ? [
+              {
+                  label: 'Start',
+                  subscribers: toNumber(currentProductKpi.weeklySubscribers, 0),
+                  revenue: toNumber(currentProductKpi.weeklyRevenue, 0),
+                  conversionRate: toNumber(currentProductKpi.weeklyConversionRate ?? currentProductKpi.weeklyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.weeklyChurnRate, 0),
+              },
+              {
+                  label: 'End',
+                  subscribers: toNumber(currentProductKpi.weeklySubscribers, 0),
+                  revenue: toNumber(currentProductKpi.weeklyRevenue, 0),
+                  conversionRate: toNumber(currentProductKpi.weeklyConversionRate ?? currentProductKpi.weeklyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.weeklyChurnRate, 0),
+              },
+          ]
+        : [];
+
+    const monthlyProductSeries = currentProductKpi
+        ? [
+              {
+                  label: 'Start',
+                  subscribers: toNumber(currentProductKpi.monthlySubscribers, 0),
+                  revenue: toNumber(currentProductKpi.monthlyRevenue, 0),
+                  conversionRate: toNumber(currentProductKpi.monthlyConversionRate ?? currentProductKpi.monthlyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.monthlyChurnRate, 0),
+              },
+              {
+                  label: 'End',
+                  subscribers: toNumber(currentProductKpi.monthlySubscribers, 0),
+                  revenue: toNumber(currentProductKpi.monthlyRevenue, 0),
+                  conversionRate: toNumber(currentProductKpi.monthlyConversionRate ?? currentProductKpi.monthlyConversionRatePercent ?? 0, 0),
+                  churnRate: toNumber(currentProductKpi.monthlyChurnRate, 0),
+              },
+          ]
+        : [];
+
+    // -------------------------
+    // Loading / Critical Error
+    // -------------------------
     if (loading || checkingCredentials) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100'>
@@ -493,8 +669,7 @@ export default function UnifiedSalesKPI() {
         );
     }
 
-    // Critical error state (no data at all)
-    if (errors.general && !affiliateData && !marketingData) {
+    if (errors.general && !affiliateData && !marketingData && !goalsKpi && !Object.keys(productKpiMap || {}).length) {
         return (
             <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4'>
                 <div className='bg-white rounded-2xl border-2 border-red-200 p-8 max-w-md shadow-xl'>
@@ -515,38 +690,37 @@ export default function UnifiedSalesKPI() {
     }
 
     const metrics = calculateUnifiedMetrics();
-
-    // If metrics calculation failed but we have some data
-    if (!metrics && (affiliateData || marketingData)) {
-        return (
-            <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4'>
-                <div className='bg-white rounded-2xl border-2 border-orange-200 p-8 max-w-md shadow-xl'>
-                    <div className='text-center'>
-                        <AlertTriangle className='w-20 h-20 text-orange-500 mx-auto mb-4' />
-                        <h3 className='text-2xl font-bold text-gray-900 mb-2'>Data Processing Error</h3>
-                        <p className='text-gray-600 mb-6'>Unable to process dashboard metrics. Please try again.</p>
-                        <button
-                            onClick={() => handleRetry('general')}
-                            className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md hover:shadow-lg'
-                        >
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
+    // eslint-disable-next-line
     const monthlyData = formatCombinedMonthlyData();
+    // eslint-disable-next-line
     const topProducts = getTopProducts();
     const productComparison = getProductPerformanceComparison();
     const funnelData = getConversionFunnelData();
     const emailDistribution = getEmailStatusDistribution();
     const performanceGauge = getPerformanceGaugeData();
-    const chartConfig = getChartConfig();
-    // const COLORS = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444'];
 
-    // Credentials Modal
+    // -------------------------
+    // Goals KPI values (fallback safe)
+    // -------------------------
+    const goals = goalsKpi || {};
+    const emailsDelivered = toNumber(goals.totalEmailDeliverd, toNumber(metrics?.marketing?.deliveredEmails, 0));
+    const totalClicks = toNumber(goals.totalClicks, toNumber(metrics?.affiliate?.totalClicks, 0));
+    const totalConversions = toNumber(goals.totalConversion, toNumber(metrics?.affiliate?.totalConversions, 0));
+    const conversionRatePercent = toNumber(goals.conversionRatePercent, toNumber(metrics?.conversionRate, 0));
+    const totalSubscribers = toNumber(goals.totalSubscribers, toNumber(metrics?.marketing?.totalSubscribers, 0));
+    const totalEmailForCampaign = toNumber(goals.TotalEmailForCampaign, toNumber(metrics?.marketing?.totalEmailsSent, 0));
+    const totalEmailForAutomation = toNumber(goals.TotalEmailForAutomation, toNumber(metrics?.marketing?.activeAutomations, 0));
+    const churnRate = toNumber(goals.ChurnRate, 0);
+    const averageRevenue = toNumber(goals.averageRevenue, 0);
+
+    // Weekly goals (client request)
+    const EMAIL_GOAL = 100000;
+    const CLICK_GOAL = 1000;
+    const SUBSCRIBER_GOAL = 100;
+
+    // -------------------------
+    // UI Components
+    // -------------------------
     const CredentialsModal = () =>
         showCredentialsModal ? (
             <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn'>
@@ -652,7 +826,6 @@ export default function UnifiedSalesKPI() {
             </div>
         ) : null;
 
-    // Error Alert Component
     const ErrorAlert = ({ type, message, onRetry }) => (
         <div className='bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded-r-lg shadow-sm animate-slideDown'>
             <div className='flex items-start'>
@@ -668,12 +841,11 @@ export default function UnifiedSalesKPI() {
         </div>
     );
 
-    // KPI Cards data
     const kpiCards = [
         {
             id: 1,
             metric: 'Total Revenue',
-            value: `$${(metrics?.totalRevenue ?? 0).toLocaleString()}`,
+            value: formatCurrency(metrics?.totalRevenue ?? 0),
             icon: DollarSign,
             iconBg: 'bg-green-100',
             iconColor: 'text-green-600',
@@ -685,7 +857,7 @@ export default function UnifiedSalesKPI() {
         {
             id: 2,
             metric: 'Total Clicks',
-            value: (metrics?.affiliate?.totalClicks ?? 0).toLocaleString(),
+            value: toNumber(metrics?.affiliate?.totalClicks ?? 0).toLocaleString(),
             icon: MousePointer,
             iconBg: 'bg-blue-100',
             iconColor: 'text-blue-600',
@@ -697,7 +869,7 @@ export default function UnifiedSalesKPI() {
         {
             id: 3,
             metric: 'Email Subscribers',
-            value: (metrics?.marketing?.totalSubscribers ?? 0).toLocaleString(),
+            value: toNumber(metrics?.marketing?.totalSubscribers ?? 0).toLocaleString(),
             icon: Users,
             iconBg: 'bg-purple-100',
             iconColor: 'text-purple-600',
@@ -709,7 +881,7 @@ export default function UnifiedSalesKPI() {
         {
             id: 4,
             metric: 'Emails Sent',
-            value: (metrics?.marketing?.totalEmailsSent ?? 0).toLocaleString(),
+            value: toNumber(metrics?.marketing?.totalEmailsSent ?? 0).toLocaleString(),
             icon: Mail,
             iconBg: 'bg-orange-100',
             iconColor: 'text-orange-600',
@@ -731,36 +903,25 @@ export default function UnifiedSalesKPI() {
                         <h1 className='text-4xl font-bold text-gray-900 bg-clip-text'>Sales Dashboard</h1>
                         <p className='text-gray-600 mt-2'>Unified Affiliate & Email Marketing Analytics</p>
                     </div>
-                    {/* <button
-                        onClick={() => handleRetry('general')}
-                        className='px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-md hover:shadow-lg font-medium'
-                    >
-                        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
-                        </svg>
-                        Refresh
-                    </button> */}
                 </div>
 
                 {/* Error Alerts */}
                 {errors.affiliate && <ErrorAlert type='affiliate' message={errors.affiliate} onRetry={() => handleRetry('affiliate')} />}
                 {errors.marketing && <ErrorAlert type='marketing' message={errors.marketing} onRetry={() => handleRetry('marketing')} />}
 
-                {/* Tab Navigation */}
-                {/* <div className='bg-white rounded-lg shadow-sm p-1 inline-flex gap-1'>
-                    {['overview', 'affiliate', 'marketing'].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-2.5 rounded-md font-medium transition-all ${activeTab === tab
-                                    ? 'bg-blue-600 text-white shadow-md'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                }`}
-                        >
-                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                    ))}
-                </div> */}
+                {/* Non-breaking warnings */}
+                {(goalsError || productKpiError) && (
+                    <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800'>
+                        <div className='flex items-start gap-2'>
+                            <AlertTriangle className='w-5 h-5 mt-0.5' />
+                            <div className='space-y-1'>
+                                {goalsError && <div>Goals KPI issue: {goalsError}</div>}
+                                {productKpiError && <div>Product KPI issue: {productKpiError}</div>}
+                                <div className='text-yellow-700'>Showing available data without breaking the page.</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* KPI Cards */}
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
@@ -807,7 +968,7 @@ export default function UnifiedSalesKPI() {
                             <Target className='w-8 h-8 text-purple-600' />
                             <div>
                                 <p className='text-sm text-gray-600'>Conversion Rate</p>
-                                <p className='text-2xl font-bold text-gray-900'>{metrics?.conversionRate ?? '0.0'}%</p>
+                                <p className='text-2xl font-bold text-gray-900'>{toNumber(metrics?.conversionRate ?? 0).toFixed(1)}%</p>
                             </div>
                         </div>
                         <p className='text-xs text-gray-500'>Click to conversion ratio</p>
@@ -824,7 +985,7 @@ export default function UnifiedSalesKPI() {
                             <Activity className='w-8 h-8 text-blue-600' />
                             <div>
                                 <p className='text-sm text-gray-600'>Conversions</p>
-                                <p className='text-2xl font-bold text-gray-900'>{metrics?.affiliate?.totalConversions ?? 0}</p>
+                                <p className='text-2xl font-bold text-gray-900'>{toNumber(metrics?.affiliate?.totalConversions ?? 0)}</p>
                             </div>
                         </div>
                         <p className='text-xs text-gray-500'>Successful conversions</p>
@@ -835,7 +996,7 @@ export default function UnifiedSalesKPI() {
                             <CheckCircle className='w-8 h-8 text-green-600' />
                             <div>
                                 <p className='text-sm text-gray-600'>Email Delivery</p>
-                                <p className='text-2xl font-bold text-gray-900'>{metrics?.deliveryRate ?? '0.0'}%</p>
+                                <p className='text-2xl font-bold text-gray-900'>{toNumber(metrics?.deliveryRate ?? 0).toFixed(1)}%</p>
                             </div>
                         </div>
                         <p className='text-xs text-gray-500'>Email delivery success rate</p>
@@ -877,13 +1038,13 @@ export default function UnifiedSalesKPI() {
                                     innerRadius='60%'
                                     outerRadius='100%'
                                     barSize={20}
-                                    data={[{ name: 'Conversion', value: parseFloat(metrics?.conversionRate ?? 0), fill: '#8B5CF6' }]}
+                                    data={[{ name: 'Conversion', value: toNumber(metrics?.conversionRate ?? 0), fill: '#8B5CF6' }]}
                                     startAngle={180}
                                     endAngle={0}
                                 >
                                     <RadialBar background dataKey='value' cornerRadius={10} />
                                     <text x='50%' y='50%' textAnchor='middle' dominantBaseline='middle' className='text-3xl font-bold fill-gray-900'>
-                                        {metrics?.conversionRate ?? '0.0'}%
+                                        {toNumber(metrics?.conversionRate ?? 0).toFixed(1)}%
                                     </text>
                                 </RadialBarChart>
                             </ResponsiveContainer>
@@ -904,13 +1065,13 @@ export default function UnifiedSalesKPI() {
                                     innerRadius='60%'
                                     outerRadius='100%'
                                     barSize={20}
-                                    data={[{ name: 'Delivery', value: parseFloat(metrics?.deliveryRate ?? 0), fill: '#10B981' }]}
+                                    data={[{ name: 'Delivery', value: toNumber(metrics?.deliveryRate ?? 0), fill: '#10B981' }]}
                                     startAngle={180}
                                     endAngle={0}
                                 >
                                     <RadialBar background dataKey='value' cornerRadius={10} />
                                     <text x='50%' y='50%' textAnchor='middle' dominantBaseline='middle' className='text-3xl font-bold fill-gray-900'>
-                                        {metrics?.deliveryRate ?? '0.0'}%
+                                        {toNumber(metrics?.deliveryRate ?? 0).toFixed(1)}%
                                     </text>
                                 </RadialBarChart>
                             </ResponsiveContainer>
@@ -918,44 +1079,55 @@ export default function UnifiedSalesKPI() {
                     </div>
                 )}
 
-                {/* Combined Performance Chart */}
-                {monthlyData.length > 0 ? (
-                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
-                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4'>
-                            <div>
-                                <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
-                                    <TrendingUp className='w-6 h-6 text-blue-600' />
-                                    Unified Performance Trends
-                                </h3>
-                                <p className='text-sm text-gray-600'>Track all metrics over time</p>
-                            </div>
+                {/* ✅ UPDATED: Unified Performance Trends (Line chart + Annual + Churn) */}
+                <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
+                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4'>
+                        <div>
+                            <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
+                                <TrendingUp className='w-6 h-6 text-blue-600' />
+                                Unified Performance Trends
+                            </h3>
+                            <p className='text-sm text-gray-600'>Weekly / Monthly / Annual view (includes Churn Rate)</p>
+                        </div>
+
+                        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
                             <div className='flex items-center gap-2'>
-                                <label htmlFor='metric-select' className='text-sm font-medium text-gray-700 whitespace-nowrap'>
-                                    Show:
-                                </label>
+                                <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Product:</label>
                                 <select
-                                    id='metric-select'
+                                    value={selectedProduct}
+                                    onChange={(e) => setSelectedProduct(e.target.value)}
+                                    className='px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white'
+                                >
+                                    <option value='all'>All Products</option>
+                                    {PRODUCTS.map((p) => (
+                                        <option key={p} value={p}>
+                                            {p}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className='flex items-center gap-2'>
+                                <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Metric:</label>
+                                <select
                                     value={selectedMetric}
                                     onChange={(e) => setSelectedMetric(e.target.value)}
-                                    className='px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-w-[140px] bg-white'
+                                    className='px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white'
                                 >
                                     <option value='revenue'>Revenue</option>
-                                    <option value='clicks'>Clicks</option>
-                                    <option value='conversions'>Conversions</option>
-                                    <option value='emails'>Emails Sent</option>
+                                    <option value='subscribers'>Subscribers</option>
+                                    <option value='conversionRate'>Conversion Rate</option>
+                                    <option value='churnRate'>Churn Rate</option>
                                 </select>
                             </div>
                         </div>
-                        <ResponsiveContainer width='100%' height={400}>
-                            <AreaChart data={monthlyData}>
-                                <defs>
-                                    <linearGradient id='colorMetric' x1='0' y1='0' x2='0' y2='1'>
-                                        <stop offset='5%' stopColor={chartConfig.stroke} stopOpacity={0.3} />
-                                        <stop offset='95%' stopColor={chartConfig.stroke} stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
+                    </div>
+
+                    {trendData.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={320}>
+                            <LineChart data={trendData}>
                                 <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
-                                <XAxis dataKey='month' stroke='#6B7280' style={{ fontSize: '12px' }} />
+                                <XAxis dataKey='period' stroke='#6B7280' style={{ fontSize: '12px' }} />
                                 <YAxis stroke='#6B7280' style={{ fontSize: '12px' }} />
                                 <Tooltip
                                     contentStyle={{
@@ -965,31 +1137,107 @@ export default function UnifiedSalesKPI() {
                                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                                     }}
                                     formatter={(value) => {
-                                        if (selectedMetric === 'revenue') {
-                                            return [`${Number(value).toLocaleString()}`, chartConfig.name];
-                                        }
-                                        return [Number(value).toLocaleString(), chartConfig.name];
+                                        if (selectedMetric === 'revenue') return [formatCurrency(value), chartConfig.name];
+                                        if (selectedMetric === 'conversionRate' || selectedMetric === 'churnRate')
+                                            return [formatPercent(value), chartConfig.name];
+                                        return [toNumber(value).toLocaleString(), chartConfig.name];
                                     }}
                                 />
                                 <Legend />
-                                <Area
-                                    type='monotone'
-                                    dataKey={chartConfig.dataKey}
-                                    stroke={chartConfig.stroke}
-                                    strokeWidth={3}
-                                    name={chartConfig.name}
-                                    fill='url(#colorMetric)'
-                                />
-                            </AreaChart>
+                                <Line type='monotone' dataKey={chartConfig.dataKey} stroke='#2563EB' strokeWidth={3} dot />
+                            </LineChart>
                         </ResponsiveContainer>
+                    ) : (
+                        <div className='bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center shadow-sm'>
+                            <BarChart3 className='w-16 h-16 text-gray-400 mx-auto mb-4' />
+                            <h3 className='text-lg font-semibold text-gray-700 mb-2'>No KPI Trend Data Available</h3>
+                            <p className='text-gray-500 text-sm'>Product KPI data will appear here once available</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* ✅ NEW: Product Revenue Section (Weekly + Monthly with dropdown) */}
+                <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
+                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
+                                <BarChart3 className='w-6 h-6 text-green-600' />
+                                Product Revenue Section
+                            </h3>
+                            <p className='text-sm text-gray-600'>Switch products and view Weekly / Monthly performance</p>
+                        </div>
+
+                        <div className='flex items-center gap-2'>
+                            <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Product:</label>
+                            <select
+                                value={selectedProduct}
+                                onChange={(e) => setSelectedProduct(e.target.value)}
+                                className='px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white'
+                            >
+                                <option value='all'>All Products</option>
+                                {PRODUCTS.map((p) => (
+                                    <option key={p} value={p}>
+                                        {p}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                ) : (
-                    <div className='bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center shadow-sm'>
-                        <BarChart3 className='w-16 h-16 text-gray-400 mx-auto mb-4' />
-                        <h3 className='text-lg font-semibold text-gray-700 mb-2'>No Trend Data Available</h3>
-                        <p className='text-gray-500 text-sm'>Historical performance data will appear here once available</p>
+
+                    {/* Tabs */}
+                    <div className='flex gap-2 mb-4'>
+                        <button
+                            onClick={() => setProductView('weekly')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+                                productView === 'weekly' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'
+                            }`}
+                        >
+                            Weekly Performance
+                        </button>
+                        <button
+                            onClick={() => setProductView('monthly')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+                                productView === 'monthly' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'
+                            }`}
+                        >
+                            Monthly Performance
+                        </button>
                     </div>
-                )}
+
+                    {currentProductKpi ? (
+                        <ResponsiveContainer width='100%' height={360}>
+                            <LineChart data={productView === 'weekly' ? weeklyProductSeries : monthlyProductSeries}>
+                                <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
+                                <XAxis dataKey='label' stroke='#6B7280' style={{ fontSize: '12px' }} />
+                                <YAxis yAxisId='left' stroke='#6B7280' style={{ fontSize: '12px' }} />
+                                <YAxis yAxisId='right' orientation='right' stroke='#6B7280' style={{ fontSize: '12px' }} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#FFF',
+                                        border: '1px solid #E5E7EB',
+                                        borderRadius: '8px',
+                                    }}
+                                    formatter={(value, name) => {
+                                        if (name === 'Revenue') return [formatCurrency(value), name];
+                                        if (name === 'Conversion Rate' || name === 'Churn Rate') return [formatPercent(value), name];
+                                        return [toNumber(value).toLocaleString(), name];
+                                    }}
+                                />
+                                <Legend />
+                                <Line yAxisId='left' type='monotone' dataKey='subscribers' name='Subscribers' stroke='#7C3AED' strokeWidth={3} dot />
+                                <Line yAxisId='left' type='monotone' dataKey='revenue' name='Revenue' stroke='#16A34A' strokeWidth={3} dot />
+                                <Line yAxisId='right' type='monotone' dataKey='conversionRate' name='Conversion Rate' stroke='#2563EB' strokeWidth={3} dot />
+                                <Line yAxisId='right' type='monotone' dataKey='churnRate' name='Churn Rate' stroke='#DC2626' strokeWidth={3} dot />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center shadow-sm'>
+                            <BarChart3 className='w-16 h-16 text-gray-400 mx-auto mb-4' />
+                            <h3 className='text-lg font-semibold text-gray-700 mb-2'>No Product KPI Data</h3>
+                            <p className='text-gray-500 text-sm'>Product charts will appear once KPI data is available</p>
+                        </div>
+                    )}
+                </div>
 
                 {/* Conversion Funnel & Email Distribution */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -1013,7 +1261,7 @@ export default function UnifiedSalesKPI() {
                                             border: '1px solid #E5E7EB',
                                             borderRadius: '8px',
                                         }}
-                                        formatter={(value) => [Number(value).toLocaleString(), 'Count']}
+                                        formatter={(value) => [toNumber(value).toLocaleString(), 'Count']}
                                     />
                                     <Bar dataKey='value' radius={[0, 8, 8, 0]}>
                                         {funnelData.map((entry, index) => (
@@ -1065,16 +1313,6 @@ export default function UnifiedSalesKPI() {
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className='mt-4 flex justify-center gap-4 flex-wrap'>
-                                {emailDistribution.map((item, i) => (
-                                    <div key={i} className='flex items-center gap-2'>
-                                        <div className='w-3 h-3 rounded-full' style={{ backgroundColor: item.color }}></div>
-                                        <span className='text-sm text-gray-600'>
-                                            {item.name}: {item.value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     ) : (
                         <div className='bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center shadow-sm'>
@@ -1100,13 +1338,7 @@ export default function UnifiedSalesKPI() {
                                 <CartesianGrid strokeDasharray='3 3' stroke='#E5E7EB' />
                                 <XAxis dataKey='name' stroke='#6B7280' style={{ fontSize: '11px' }} angle={-15} textAnchor='end' height={80} />
                                 <YAxis stroke='#6B7280' style={{ fontSize: '12px' }} />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#FFF',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: '8px',
-                                    }}
-                                />
+                                <Tooltip contentStyle={{ backgroundColor: '#FFF', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
                                 <Legend />
                                 <Bar dataKey='clicks' fill='#3B82F6' name='Clicks' radius={[8, 8, 0, 0]} />
                                 <Bar dataKey='conversions' fill='#8B5CF6' name='Conversions' radius={[8, 8, 0, 0]} />
@@ -1116,165 +1348,37 @@ export default function UnifiedSalesKPI() {
                     </div>
                 )}
 
-                {/* Top Products */}
-                {topProducts.length > 0 ? (
-                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
-                        <div className='mb-6'>
-                            <h3 className='text-xl font-bold text-gray-900 mb-1'>Top Performing Products</h3>
-                            <p className='text-sm text-gray-600'>Your highest earning affiliate products</p>
-                        </div>
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                            {topProducts.map((product, index) => (
-                                <div
-                                    key={product.id}
-                                    className='p-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl hover:shadow-md transition-all'
-                                >
-                                    <div className='flex items-start justify-between mb-3'>
-                                        <div className='w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-lg shadow-sm'>
-                                            {index + 1}
-                                        </div>
-                                        <div className='text-right'>
-                                            <div className='text-2xl font-bold text-green-600'>${product.comission ?? 0}</div>
-                                            <div className='text-xs text-gray-500'>Revenue</div>
-                                        </div>
-                                    </div>
-                                    <h4 className='font-semibold text-gray-900 mb-2 capitalize'>
-                                        {(product.productName || 'Unknown').replace(/([A-Z])/g, ' $1').trim()}
-                                    </h4>
-                                    <div className='flex items-center justify-between text-sm text-gray-600'>
-                                        <div className='flex items-center gap-1'>
-                                            <MousePointer className='w-4 h-4' />
-                                            <span>{product.clicks ?? 0} clicks</span>
-                                        </div>
-                                        <div className='flex items-center gap-1'>
-                                            <Target className='w-4 h-4' />
-                                            <span>{product.conversion ?? 0} conv.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div className='bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center shadow-sm'>
-                        <Target className='w-16 h-16 text-gray-400 mx-auto mb-4' />
-                        <h3 className='text-lg font-semibold text-gray-700 mb-2'>No Product Data</h3>
-                        <p className='text-gray-500 text-sm'>Top performing products will appear here once you have sales</p>
-                    </div>
-                )}
-
-                {/* Latest Email Subscribers */}
-                {marketingData?.latestUsers?.length > 0 && (
-                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
-                        <div className='mb-6'>
-                            <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
-                                <Users className='w-6 h-6 text-blue-600' />
-                                Latest Email Subscribers
-                            </h3>
-                            <p className='text-sm text-gray-600'>Recent additions to your mailing list</p>
-                        </div>
-                        <div className='overflow-x-auto'>
-                            <table className='w-full'>
-                                <thead>
-                                    <tr className='border-b border-gray-200'>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Name</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Email</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Joined Date</th>
-                                        <th className='text-left py-3 px-4 font-semibold text-gray-700'>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {marketingData.latestUsers.map((user) => (
-                                        <tr key={user.id} className='border-b border-gray-100 hover:bg-gray-50 transition-colors'>
-                                            <td className='py-3 px-4 font-medium text-gray-900'>{user.fullName || 'N/A'}</td>
-                                            <td className='py-3 px-4 text-gray-600'>{user.email || 'N/A'}</td>
-                                            <td className='py-3 px-4 text-gray-600'>
-                                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
-                                            </td>
-                                            <td className='py-3 px-4'>
-                                                <span className='px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium'>Active</span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
-
-                {/* Latest Sent Emails */}
-                {marketingData?.latestSentEmail?.length > 0 && (
-                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
-                        <div className='mb-6'>
-                            <h3 className='text-xl font-bold text-gray-900 mb-1 flex items-center gap-2'>
-                                <Mail className='w-6 h-6 text-purple-600' />
-                                Recent Email Campaigns
-                            </h3>
-                            <p className='text-sm text-gray-600'>Latest email campaigns sent</p>
-                        </div>
-                        <div className='space-y-3'>
-                            {marketingData.latestSentEmail.map((email) => (
-                                <div key={email.id} className='p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all'>
-                                    <div className='flex items-start justify-between'>
-                                        <div className='flex-1'>
-                                            <h4 className='font-semibold text-gray-900 mb-1'>{email.subject || 'No Subject'}</h4>
-                                            <p className='text-sm text-gray-600 mb-2 line-clamp-2'>{email.text || 'No content'}</p>
-                                            <div className='flex items-center gap-4 text-xs text-gray-500'>
-                                                <span className='flex items-center gap-1'>
-                                                    <Clock className='w-3 h-3' />
-                                                    {email.runAt ? new Date(email.runAt).toLocaleString() : 'N/A'}
-                                                </span>
-                                                {email.repeated && (
-                                                    <span className='px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium'>Recurring</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className='ml-4'>
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                    email.status === 'sent'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : email.status === 'failed'
-                                                        ? 'bg-red-100 text-red-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                }`}
-                                            >
-                                                {email.status || 'unknown'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Weekly Goals */}
+                {/* ✅ UPDATED: Weekly Goals & Targets (client request) */}
                 <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
                     <div className='mb-6'>
                         <h3 className='text-xl font-bold text-gray-900 mb-1'>Weekly Goals & Targets</h3>
-                        <p className='text-sm text-gray-600'>Track your progress towards monthly objectives</p>
+                        <p className='text-sm text-gray-600'>Track progress towards weekly goals</p>
                     </div>
+
                     <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                        {/* Email Goal */}
                         <div className='p-6 bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-xl hover:shadow-md transition-all'>
                             <div className='flex items-center gap-3 mb-3'>
                                 <div className='p-2 bg-green-100 rounded-lg'>
-                                    <DollarSign className='w-6 h-6 text-green-600' />
+                                    <Mail className='w-6 h-6 text-green-600' />
                                 </div>
-                                <span className='font-semibold text-gray-900'>Revenue Goal</span>
+                                <span className='font-semibold text-gray-900'>Email Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>$10,000</div>
+
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>{EMAIL_GOAL.toLocaleString()}</div>
                             <div className='text-sm text-gray-600 mb-3'>
-                                Current: ${metrics?.totalRevenue ?? 0} ({Math.min(((metrics?.totalRevenue ?? 0) / 1250) * 100, 100).toFixed(0)}%)
+                                Current: {emailsDelivered.toLocaleString()} ({clamp((emailsDelivered / EMAIL_GOAL) * 100).toFixed(0)}%)
                             </div>
+
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.totalRevenue ?? 0) / 1250) * 100, 100)}%` }}
+                                    style={{ width: `${clamp((emailsDelivered / EMAIL_GOAL) * 100)}%` }}
                                 />
                             </div>
                         </div>
 
+                        {/* Click Goal */}
                         <div className='p-6 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl hover:shadow-md transition-all'>
                             <div className='flex items-center gap-3 mb-3'>
                                 <div className='p-2 bg-blue-100 rounded-lg'>
@@ -1282,19 +1386,21 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Click Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>1000</div>
+
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>{CLICK_GOAL.toLocaleString()}</div>
                             <div className='text-sm text-gray-600 mb-3'>
-                                Current: {metrics?.affiliate?.totalClicks ?? 0} (
-                                {Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 250) * 100, 100).toFixed(0)}%)
+                                Current: {totalClicks.toLocaleString()} ({clamp((totalClicks / CLICK_GOAL) * 100).toFixed(0)}%)
                             </div>
+
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.affiliate?.totalClicks ?? 0) / 250) * 100, 100)}%` }}
+                                    style={{ width: `${clamp((totalClicks / CLICK_GOAL) * 100)}%` }}
                                 />
                             </div>
                         </div>
 
+                        {/* Subscriber Goal */}
                         <div className='p-6 bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl hover:shadow-md transition-all'>
                             <div className='flex items-center gap-3 mb-3'>
                                 <div className='p-2 bg-purple-100 rounded-lg'>
@@ -1302,64 +1408,25 @@ export default function UnifiedSalesKPI() {
                                 </div>
                                 <span className='font-semibold text-gray-900'>Subscriber Goal</span>
                             </div>
-                            <div className='text-3xl font-bold text-gray-900 mb-2'>100</div>
+
+                            <div className='text-3xl font-bold text-gray-900 mb-2'>{SUBSCRIBER_GOAL.toLocaleString()}</div>
                             <div className='text-sm text-gray-600 mb-3'>
-                                Current: {metrics?.marketing?.totalSubscribers ?? 0} (
-                                {Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 125) * 100, 100).toFixed(0)}%)
+                                Current: {totalSubscribers.toLocaleString()} ({clamp((totalSubscribers / SUBSCRIBER_GOAL) * 100).toFixed(0)}%)
                             </div>
+
                             <div className='w-full bg-gray-200 rounded-full h-3'>
                                 <div
                                     className='bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500'
-                                    style={{ width: `${Math.min(((metrics?.marketing?.totalSubscribers ?? 0) / 125) * 100, 100)}%` }}
+                                    style={{ width: `${clamp((totalSubscribers / SUBSCRIBER_GOAL) * 100)}%` }}
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Top Referred Affiliates */}
-                {affiliateData?.totalTop5Affiliate?.length > 0 && (
-                    <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md'>
-                        <div className='mb-6'>
-                            <h3 className='text-xl font-bold text-gray-900 mb-1'>Top Referred Affiliates</h3>
-                            <p className='text-sm text-gray-600'>Your most successful referrals</p>
-                        </div>
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                            {affiliateData.totalTop5Affiliate.map((affiliate, index) => (
-                                <div
-                                    key={affiliate.id}
-                                    className='p-4 bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl hover:shadow-md transition-all'
-                                >
-                                    <div className='flex items-center gap-3 mb-3'>
-                                        <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-md'>
-                                            {index + 1}
-                                        </div>
-                                        <div className='flex-1'>
-                                            <div className='font-semibold text-gray-900'>
-                                                {affiliate.firstName || ''} {affiliate.lastName || ''}
-                                            </div>
-                                            <div className='text-xs text-gray-500 truncate'>{affiliate.email || 'N/A'}</div>
-                                        </div>
-                                    </div>
-                                    <div className='text-xs text-gray-600 flex items-center gap-1'>
-                                        <Calendar className='w-4 h-4' />
-                                        Joined{' '}
-                                        {affiliate.createdAt
-                                            ? new Date(affiliate.createdAt).toLocaleDateString('en-US', {
-                                                  month: 'short',
-                                                  day: 'numeric',
-                                                  year: 'numeric',
-                                              })
-                                            : 'N/A'}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Summary Stats */}
+                {/* ✅ UPDATED: Summary Stats (client order) */}
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                    {/* Success Metrics */}
                     <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-lg transition-all'>
                         <h3 className='text-lg font-bold text-gray-900 mb-4 flex items-center gap-2'>
                             <CheckCircle className='w-5 h-5 text-green-600' />
@@ -1368,26 +1435,20 @@ export default function UnifiedSalesKPI() {
                         <div className='space-y-4'>
                             <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Emails Delivered</span>
-                                <span className='font-bold text-green-600'>{metrics?.marketing?.deliveredEmails ?? 0}</span>
+                                <span className='font-bold text-green-600'>{emailsDelivered.toLocaleString()}</span>
                             </div>
                             <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Total Revenue</span>
-                                <span className='font-bold text-green-600'>${(metrics?.totalRevenue ?? 0).toLocaleString()}</span>
+                                <span className='text-gray-600'>Email Campaigns</span>
+                                <span className='font-bold text-green-600'>{totalEmailForCampaign.toLocaleString()}</span>
                             </div>
                             <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Conversions</span>
-                                <span className='font-bold text-green-600'>{metrics?.affiliate?.totalConversions ?? 0}</span>
+                                <span className='text-gray-600'>Email Automations</span>
+                                <span className='font-bold text-green-600'>{totalEmailForAutomation.toLocaleString()}</span>
                             </div>
-
-                            {!affiliateData && (
-                                <div className='text-xs text-orange-600 flex items-center gap-1 pt-2 border-t'>
-                                    <AlertCircle className='w-3 h-3' />
-                                    Affiliate data unavailable
-                                </div>
-                            )}
                         </div>
                     </div>
 
+                    {/* Engagement Metrics */}
                     <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-lg transition-all'>
                         <h3 className='text-lg font-bold text-gray-900 mb-4 flex items-center gap-2'>
                             <Activity className='w-5 h-5 text-blue-600' />
@@ -1396,32 +1457,20 @@ export default function UnifiedSalesKPI() {
                         <div className='space-y-4'>
                             <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Conversions</span>
-                                <span className='font-bold text-blue-600'>
-                                    {Math.round((Number(metrics?.affiliate?.totalClicks ?? 0) * Number(metrics?.conversionRate ?? 0)) / 100)}
-                                </span>
+                                <span className='font-bold text-blue-600'>{totalConversions.toLocaleString()}</span>
                             </div>
-
                             <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Total Clicks</span>
-                                <span className='font-bold text-blue-600'>{metrics?.affiliate?.totalClicks ?? 0}</span>
+                                <span className='font-bold text-blue-600'>{totalClicks.toLocaleString()}</span>
                             </div>
                             <div className='flex justify-between items-center'>
                                 <span className='text-gray-600'>Conversion Rate</span>
-                                <span className='font-bold text-blue-600'>{metrics?.conversionRate ?? '0.0'}%</span>
+                                <span className='font-bold text-blue-600'>{conversionRatePercent.toFixed(1)}%</span>
                             </div>
-                            {/* <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Total Subscribers</span>
-                                <span className='font-bold text-blue-600'>{metrics?.marketing?.totalSubscribers ?? 0}</span>
-                            </div> */}
-                            {!marketingData && (
-                                <div className='text-xs text-orange-600 flex items-center gap-1 pt-2 border-t'>
-                                    <AlertCircle className='w-3 h-3' />
-                                    Marketing data unavailable
-                                </div>
-                            )}
                         </div>
                     </div>
 
+                    {/* Activity Overview */}
                     <div className='bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-lg transition-all'>
                         <h3 className='text-lg font-bold text-gray-900 mb-4 flex items-center gap-2'>
                             <Clock className='w-5 h-5 text-purple-600' />
@@ -1429,23 +1478,23 @@ export default function UnifiedSalesKPI() {
                         </h3>
                         <div className='space-y-4'>
                             <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Active Products</span>
-                                <span className='font-bold text-purple-600'>{affiliateData?.affiliateData?.length ?? 0}</span>
+                                <span className='text-gray-600'>Total Subscribers</span>
+                                <span className='font-bold text-purple-600'>{totalSubscribers.toLocaleString()}</span>
                             </div>
                             <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Email Campaigns</span>
-                                <span className='font-bold text-purple-600'>{metrics?.marketing?.totalEmailsSent ?? 0}</span>
+                                <span className='text-gray-600'>Average Revenue</span>
+                                <span className='font-bold text-purple-600'>{formatCurrency(averageRevenue)}</span>
                             </div>
                             <div className='flex justify-between items-center'>
-                                <span className='text-gray-600'>Automations</span>
-                                <span className='font-bold text-purple-600'>{metrics?.marketing?.activeAutomations ?? 0}</span>
+                                <span className='text-gray-600'>Churn Rate</span>
+                                <span className='font-bold text-purple-600'>{churnRate.toFixed(1)}%</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* No Data Message */}
-                {!affiliateData && !marketingData && (
+                {!affiliateData && !marketingData && !goalsKpi && !Object.keys(productKpiMap || {}).length && (
                     <div className='bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 p-12 text-center shadow-lg'>
                         <div className='max-w-md mx-auto'>
                             <AlertCircle className='w-20 h-20 text-blue-500 mx-auto mb-6' />

@@ -17,10 +17,68 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+    // ✅ Auto logout (10 min inactivity)
+    const AUTO_LOGOUT_MS = 10 * 60 * 1000;
+    const logoutTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const doLogout = React.useCallback(() => {
+        try {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('roles');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('affiliateId'); // (safe extra)
+            }
+        } catch (e) {
+            console.error('Logout error:', e);
+        } finally {
+            router.replace('/');
+        }
+    }, [router]);
+
+    const resetAutoLogoutTimer = React.useCallback(() => {
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+        logoutTimerRef.current = setTimeout(() => {
+            // Auto logout without modal
+            doLogout();
+        }, AUTO_LOGOUT_MS);
+        // eslint-disable-next-line
+    }, [doLogout]);
+
+    React.useEffect(() => {
+        resetAutoLogoutTimer();
+        // eslint-disable-next-line
+        const events: (keyof WindowEventMap)[] = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+        const onActivity = () => resetAutoLogoutTimer();
+
+        events.forEach((ev) => window.addEventListener(ev, onActivity, { passive: true }));
+
+        const onVisibility = () => {
+            if (document.visibilityState === 'visible') resetAutoLogoutTimer();
+        };
+        document.addEventListener('visibilitychange', onVisibility);
+
+        const onEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsModalOpen(false);
+        };
+        window.addEventListener('keydown', onEsc);
+
+        return () => {
+            if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+            events.forEach((ev) => window.removeEventListener(ev, onActivity));
+            document.removeEventListener('visibilitychange', onVisibility);
+            window.removeEventListener('keydown', onEsc);
+        };
+    }, [resetAutoLogoutTimer]);
+
+    // optional: reset timer when route changes
+    React.useEffect(() => {
+        resetAutoLogoutTimer();
+    }, [pathname, resetAutoLogoutTimer]);
+
     const handleLogout = () => {
-        localStorage.removeItem('roles');
-        localStorage.removeItem('userId');
-        router.push('/');
+        setIsModalOpen(false);
+        doLogout();
     };
 
     return (
@@ -37,18 +95,18 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
                         <span className='font-bold text-xl text-gray-800 ml-1'>Black Snow</span>
                         <button
                             className='
-    px-2 py-1 cursor-pointer h-8 whitespace-nowrap
-    text-sm font-medium
-    text-[#0b0b0b]/80
-    border border-[#0b0b0b]/30
-    bg-transparent
-    rounded-xl      /* not too round */
-    transition
-    hover:bg-[#0b0b0b]
-    hover:text-white
-  '
+                                px-2 py-1 cursor-pointer h-8 whitespace-nowrap
+                                text-sm font-medium
+                                text-[#0b0b0b]/80
+                                border border-[#0b0b0b]/30
+                                bg-transparent
+                                rounded-xl
+                                transition
+                                hover:bg-[#0b0b0b]
+                                hover:text-white
+                            '
                         >
-                            Affiliate Dashboard
+                            Affiliate
                         </button>
                     </div>
                 </div>
@@ -90,10 +148,11 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
                     <span>Logout </span>
                 </button>
             </div>
+
+            {/* Logout Modal */}
             {isModalOpen && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] px-4'>
                     <div className='w-[320px] overflow-hidden rounded-2xl bg-white shadow-2xl'>
-                        {/* Title + message */}
                         <div className='px-6 pt-5 pb-4 text-center'>
                             <h2 className='text-[20px] font-semibold text-[#ff3b30]'>Logout</h2>
                             <p className='mt-2 text-[14px] text-black/60'>Are you sure you want to logout?</p>
@@ -101,7 +160,6 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
 
                         <div className='h-px bg-black/10' />
 
-                        {/* Buttons same row */}
                         <div className='flex'>
                             <button
                                 onClick={() => setIsModalOpen(false)}
