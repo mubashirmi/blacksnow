@@ -144,12 +144,24 @@ export default function AuthModal({
                 reset();
 
                 const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId });
+
+                // ✅ CHANGE: if sourceRoute/currentRoute is "/pricing", refresh page (no redirect)
                 if (!prevent) {
+                    if (currentRoute === '/pricing') {
+                        if (typeof window !== 'undefined') {
+                            window.location.reload();
+                        } else {
+                            // SSR-safe fallback (shouldn't normally happen since this is client)
+                            router.reload();
+                        }
+                        return;
+                    }
+
                     // keep the modal open so they can sign in, but you can auto-redirect if you prefer
                     if (currentRoute === '/affiliate') {
                         router.push('/affiliate/dashboard/kpi');
                     } else {
-                        router.push('/pricing');
+                        router.push(redirectAfterSignup);
                     }
                 }
             } else {
@@ -248,10 +260,6 @@ export default function AuthModal({
                             )}
 
                             <div className='space-y-2'>
-                                {/* <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
-                                    <Mail className='w-4 h-4 text-[#4cc7e8]' />
-                                    <span>Email Address</span>
-                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='email'
@@ -268,10 +276,6 @@ export default function AuthModal({
                             </div>
 
                             <div className='space-y-2'>
-                                {/* <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
-                                    <Lock className='w-4 h-4 text-[#4cc7e8]' />
-                                    <span>Password</span>
-                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='password'
