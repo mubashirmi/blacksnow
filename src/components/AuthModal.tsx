@@ -17,26 +17,15 @@ import { Card, CardContent } from '@/components/ui/card';
 
 /**
  * Reusable auth modal that supports both Sign In and Sign Up flows.
- *
- * ✅ Drop-in anywhere (header, homepage button, pricing page, etc.)
- * ✅ Controlled via `open`/`onOpenChange`
- * ✅ Preserves all existing behaviors (alerts, validation, redirects, cookies)
- * ✅ Can default to signup from props or URL query (?signup, ?mode=signup, etc.)
- * ✅ Emits `onSuccess` so parents can react (analytics, close modal, toasts)
  */
 
 export type AuthModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    /** default view if URL doesn't request signup */
     defaultView?: 'signin' | 'signup';
-    /** If provided, overrides where to go after a successful login (non-admin). */
     redirectAfterLogin?: string;
-    /** If provided, overrides where to go after a successful signup. */
     redirectAfterSignup?: string;
-    /** If you're opening the modal from a specific route (e.g., '/affiliate'), pass it for role inference */
     sourceRoute?: string;
-    /** Called on successful auth. Return true to prevent default redirect. */
     onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; userId?: string }) => boolean | void;
 };
 
@@ -89,7 +78,6 @@ export default function AuthModal({
         reset,
     } = useForm();
 
-    // Derive previousRoute (for role assignment) with a sensible fallback
     const currentRoute = useMemo(() => {
         const fromProp = sourceRoute ?? '';
         if (fromProp) return fromProp;
@@ -99,7 +87,6 @@ export default function AuthModal({
         return '';
     }, [sourceRoute]);
 
-    // Allow URL query to flip to signup when present (works on any page)
     useEffect(() => {
         if (!router.isReady) return;
         const q = router.query;
@@ -145,19 +132,14 @@ export default function AuthModal({
 
                 const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId });
 
-                // ✅ CHANGE: if sourceRoute/currentRoute is "/pricing", refresh page (no redirect)
                 if (!prevent) {
+                    // ✅ If opened from pricing, refresh page and stay there
                     if (currentRoute === '/pricing') {
-                        if (typeof window !== 'undefined') {
-                            window.location.reload();
-                        } else {
-                            // SSR-safe fallback (shouldn't normally happen since this is client)
-                            router.reload();
-                        }
+                        if (typeof window !== 'undefined') window.location.reload();
+                        else router.reload();
                         return;
                     }
 
-                    // keep the modal open so they can sign in, but you can auto-redirect if you prefer
                     if (currentRoute === '/affiliate') {
                         router.push('/affiliate/dashboard/kpi');
                     } else {
@@ -209,10 +191,11 @@ export default function AuthModal({
             }}
         >
             <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent'>
-                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20'>
+                {/* ✅ FIXED HEIGHT: card has a consistent height; content scrolls if needed */}
+                <Card className='relative flex flex-col h-[min(600px,90vh)] bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20'>
                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
 
-                    <DialogHeader className='p-8 text-center'>
+                    <DialogHeader className='p-8 text-center shrink-0'>
                         <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6'>
                             <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
                         </div>
@@ -224,7 +207,8 @@ export default function AuthModal({
                         </DialogDescription>
                     </DialogHeader>
 
-                    <CardContent className='p-8 pt-0'>
+                    {/* ✅ scroll area so height stays fixed on toggle */}
+                    <CardContent className='p-8 pt-0 flex-1 overflow-y-auto'>
                         {alert.message && (
                             <Alert className={`mb-6 ${alert.type === 'success' ? 'bg-green-900/50 border-green-500' : 'bg-red-900/50 border-red-500'}`}>
                                 <AlertTitle className='text-white'>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
@@ -350,10 +334,7 @@ export default function AuthModal({
 }
 
 /**
- * Convenience wrapper with its own trigger button. Useful for quick drops on pages.
- *
- * Example:
- * <AuthModalTrigger buttonText="Open Account" defaultView="signup" />
+ * Convenience wrapper with its own trigger button.
  */
 export function AuthModalTrigger({
     buttonText = 'Sign In',
@@ -372,7 +353,7 @@ export function AuthModalTrigger({
     sourceRoute?: string;
     onSuccess?: AuthModalProps['onSuccess'];
     className?: string;
-    children?: React.ReactNode; // if provided, this replaces the default button UI
+    children?: React.ReactNode;
 }) {
     const [open, setOpen] = useState(false);
     return (

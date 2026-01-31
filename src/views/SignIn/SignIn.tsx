@@ -45,21 +45,21 @@ function SignIn() {
         setIsSignUp(shouldSignUp);
     }, [router.isReady, router.query]);
 
-    const validateEmail = (value) => {
+    const validateEmail = (value: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value) || 'Please enter a valid email address';
     };
 
-    const validatePassword = (value) => {
+    const validatePassword = (value: string) => {
         return value.length >= 6 || 'Password must be at least 6 characters long';
     };
 
-    const setCookie = (name, value, days = 7) => {
+    const setCookie = (name: string, value: string, days = 7) => {
         const expires = new Date(Date.now() + days * 864e5).toUTCString();
         document.cookie = `${name}=${value}; expires=${expires}; path=/`;
     };
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: any) => {
         setIsLoading(true);
         setAlert({ type: '', message: '' });
         try {
@@ -89,7 +89,6 @@ function SignIn() {
                 const userId = response.data.user.id;
 
                 localStorage.setItem('userId', userId);
-                // localStorage.setItem('validator', 'true');
                 setCookie('id', response.data.user.id);
 
                 setAlert({
@@ -117,14 +116,14 @@ function SignIn() {
                     setCookie('admin_token', token);
                     setCookie('role', 'admin');
                     setCookie('adminId', user.id);
-                    setCookie('id', user.id); // keep consistent with rest of app
+                    setCookie('id', user.id);
                     localStorage.setItem('adminId', String(user.id));
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
                     router.push('/admin/dashboard/sales');
                 } else if (isSales) {
-                    // Sales flow → redirect to sales dashboard users
+                    // Sales flow
                     setCookie('token', token);
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setCookie('id', user.id);
@@ -149,10 +148,10 @@ function SignIn() {
                     router.push('/pricing');
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             setAlert({
                 type: 'error',
-                message: error.response?.data?.message || 'Something went wrong. Please try again.',
+                message: error?.response?.data?.message || 'Something went wrong. Please try again.',
             });
         } finally {
             setIsLoading(false);
@@ -162,10 +161,11 @@ function SignIn() {
     return (
         <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] py-10 relative overflow-hidden flex items-center justify-center'>
             <div className='relative z-10 w-full max-w-md px-6'>
-                <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>
-                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
+                {/* ✅ FIXED HEIGHT across login/signup AND across screens */}
+                <Card className='relative flex flex-col h-[min(600px,85vh)] sm:h-[min(600px,85vh)] bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>
+                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
 
-                    <CardHeader className='p-8 text-center'>
+                    <CardHeader className='p-8 text-center shrink-0'>
                         <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6'>
                             <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
                         </div>
@@ -175,7 +175,8 @@ function SignIn() {
                         </CardDescription>
                     </CardHeader>
 
-                    <CardContent className='p-8 pt-0'>
+                    {/* ✅ Scroll area so card height never changes when toggling */}
+                    <CardContent className='p-8 pt-0 flex-1 overflow-y-auto'>
                         {alert.message && (
                             <Alert className={`mb-6 ${alert.type === 'success' ? 'bg-green-900/50 border-green-500' : 'bg-red-900/50 border-red-500'}`}>
                                 <AlertTitle className='text-white'>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
@@ -202,19 +203,15 @@ function SignIn() {
                                             })}
                                             className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
                                         />
-                                        <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
+                                        <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                             <User className='w-5 h-5 text-[#4cc7e8]' />
                                         </div>
                                     </div>
-                                    {errors.fullName && <p className='text-red-400 text-sm'>{(errors as any).fullName.message}</p>}
+                                    {errors?.fullName && <p className='text-red-400 text-sm'>{(errors as any).fullName.message}</p>}
                                 </div>
                             )}
 
                             <div className='space-y-2'>
-                                {/* <Label htmlFor='email' className='text-white font-semibold flex items-center space-x-2'>
-                                    <Mail className='w-4 h-4 text-[#4cc7e8]' />
-                                    <span>Email Address</span>
-                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='email'
@@ -223,18 +220,14 @@ function SignIn() {
                                         {...register('email', { required: 'Email is required', validate: validateEmail })}
                                         className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
                                     />
-                                    <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
+                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                         <Mail className='w-5 h-5 text-[#4cc7e8]' />
                                     </div>
                                 </div>
-                                {errors.email && <p className='text-red-400 text-sm'>{errors.email.message}</p>}
+                                {errors?.email && <p className='text-red-400 text-sm'>{(errors as any).email.message}</p>}
                             </div>
 
                             <div className='space-y-2'>
-                                {/* <Label htmlFor='password' className='text-white font-semibold flex items-center space-x-2'>
-                                    <Lock className='w-4 h-4 text-[#4cc7e8]' />
-                                    <span>Password</span>
-                                </Label> */}
                                 <div className='relative'>
                                     <Input
                                         id='password'
@@ -243,18 +236,18 @@ function SignIn() {
                                         {...register('password', { required: 'Password is required', validate: validatePassword })}
                                         className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 pr-12 rounded-2xl transition-all duration-300'
                                     />
-                                    <div className='absolute left-4 top-1/2 transform -translate-y-1/2'>
+                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                         <Lock className='w-5 h-5 text-[#4cc7e8]' />
                                     </div>
                                     <button
                                         type='button'
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className='absolute right-4 top-1/2 transform -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
+                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
                                     >
                                         {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
                                     </button>
                                 </div>
-                                {errors.password && <p className='text-red-400 text-sm'>{errors.password.message}</p>}
+                                {errors?.password && <p className='text-red-400 text-sm'>{(errors as any).password.message}</p>}
                             </div>
 
                             <Button
