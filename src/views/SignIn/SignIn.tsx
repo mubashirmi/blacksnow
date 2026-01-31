@@ -69,7 +69,7 @@ function SignIn() {
                     .replace(/\s+/g, ' ');
                 const parts = cleaned ? cleaned.split(' ') : [];
                 const firstName = parts[0] || '';
-                const lastName = parts.slice(1).join(' ') || '';
+                const lastName = parts.length > 1 ? parts.slice(1).join(' ') : ' ';
 
                 const signupData = {
                     email: data.email,

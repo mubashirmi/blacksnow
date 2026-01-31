@@ -1,5 +1,5 @@
-import { AlertCircle, Check, ChevronDown, ChevronRight, FileText, Info, Loader2, Lock, Mail, Plus, ShieldCheck, Upload, User, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { AlertCircle, Check, ChevronDown, ChevronRight, FileText, Info, Loader2, Lock, Mail, Plus, ShieldCheck, Trash2, Upload, User, X } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export default function SalesProfilePage() {
     const [users, setUsers] = useState<any[]>([]);
@@ -24,6 +24,17 @@ export default function SalesProfilePage() {
         appPassword: '',
     });
     const [credentialsErrors, setCredentialsErrors] = useState<{ email?: string; appPassword?: string }>({});
+
+    // ✅ NEW: delete flows
+    const [confirmDelete, setConfirmDelete] = useState<null | {
+        type: 'user' | 'csv';
+        user?: any;
+        csvId?: number;
+        groupKey?: string;
+    }>(null);
+
+    const [deletingUserIds, setDeletingUserIds] = useState<Record<number, boolean>>({});
+    const [deletingCsvIds, setDeletingCsvIds] = useState<Record<number, boolean>>({});
 
     useEffect(() => {
         (async () => {
@@ -75,10 +86,12 @@ export default function SalesProfilePage() {
         return best;
     };
 
-    const fetchUsers = async () => {
+    const fetchUsers = async (opts?: { silent?: boolean }) => {
+        const silent = !!opts?.silent;
         try {
-            setLoading(true);
+            if (!silent) setLoading(true);
             setError(null);
+
             const id = Number(localStorage.getItem('userId'));
             if (!id) {
                 if (typeof window !== 'undefined') window.location.href = '/login';
@@ -100,6 +113,7 @@ export default function SalesProfilePage() {
                         (typeof u.email === 'string' && u.email.includes('@') ? u.email.split('@')[0] : ''),
                     createdAt: u.createdAt,
                     fromCSV: !!u.emailUserCSVId,
+                    csvId: u.emailUserCSVId ? Number(u.emailUserCSVId) : null, // ✅ used for list delete
                     csvListName: u.emailUserCSV?.name ?? (u.emailUserCSVId ? `List #${u.emailUserCSVId}` : null),
                 }))
                 .filter((u: any) => typeof u.email === 'string' && u.email.trim());
@@ -108,7 +122,7 @@ export default function SalesProfilePage() {
         } catch (err: any) {
             setError(err.message || 'Something went wrong');
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
@@ -219,7 +233,7 @@ export default function SalesProfilePage() {
             setIsModalOpen(true);
 
             if (!users.length) {
-                fetchUsers();
+                fetchUsers({ silent: true });
             }
         } catch (e: any) {
             setError(e.message || 'Failed to save credentials');
@@ -384,7 +398,7 @@ export default function SalesProfilePage() {
                 setIsModalOpen(false);
                 setSuccess(false);
                 setUploadMode('single');
-                fetchUsers();
+                fetchUsers({ silent: true });
             }, 1500);
         } catch (err: any) {
             setError(err.message || 'Something went wrong');
@@ -462,7 +476,7 @@ export default function SalesProfilePage() {
             setTimeout(() => {
                 setIsModalOpen(false);
                 setSuccess(false);
-                fetchUsers();
+                fetchUsers({ silent: true });
             }, 1500);
         } catch (err: any) {
             if (typeof err?.message === 'string' && /email already exist/i.test(err.message)) {
@@ -490,17 +504,13 @@ export default function SalesProfilePage() {
         }
     };
 
-    const groupedUsers = React.useMemo(() => {
-        const groups: { [key: string]: any[] } = {
-            manual: [],
-        };
+    const groupedUsers = useMemo(() => {
+        const groups: { [key: string]: any[] } = { manual: [] };
 
         users.forEach((user) => {
             if (user.fromCSV && user.csvListName) {
                 const key = user.csvListName;
-                if (!groups[key]) {
-                    groups[key] = [];
-                }
+                if (!groups[key]) groups[key] = [];
                 groups[key].push(user);
             } else {
                 groups.manual.push(user);
@@ -513,20 +523,16 @@ export default function SalesProfilePage() {
     const toggleGroup = (groupKey: string) => {
         setExpandedGroups((prev) => {
             const newSet = new Set(prev);
-            if (newSet.has(groupKey)) {
-                newSet.delete(groupKey);
-            } else {
-                newSet.add(groupKey);
-            }
+            if (newSet.has(groupKey)) newSet.delete(groupKey);
+            else newSet.add(groupKey);
             return newSet;
         });
     };
 
     const openModal = async () => {
         const ok = await checkMarketingCredentials();
-        if (!ok) {
-            return;
-        }
+        if (!ok) return;
+
         setIsModalOpen(true);
         setFormData({ email: '', fullName: '' });
         setFormErrors({});
@@ -537,6 +543,124 @@ export default function SalesProfilePage() {
         setError(null);
         setSuccess(false);
         setUploadMode('single');
+    };
+
+    // ✅ NEW: delete helpers
+    const anyDeleting = useMemo(() => Object.keys(deletingUserIds).length > 0 || Object.keys(deletingCsvIds).length > 0, [deletingUserIds, deletingCsvIds]);
+
+    const requestDeleteUser = (user: any) => {
+        if (!user?.id) {
+            setError('Unable to delete: missing user id.');
+            return;
+        }
+        setError(null);
+        setConfirmDelete({ type: 'user', user });
+    };
+
+    const requestDeleteCsvList = (csvId: number | null | undefined, groupKey: string) => {
+        const idNum = typeof csvId === 'number' ? csvId : csvId ? Number(csvId) : NaN;
+        if (!idNum || Number.isNaN(idNum)) {
+            setError('Unable to delete list: missing csvId.');
+            return;
+        }
+        setError(null);
+        setConfirmDelete({ type: 'csv', csvId: idNum, groupKey });
+    };
+
+    const deleteSingleUser = async (userId: number) => {
+        if (!userId || Number.isNaN(userId)) {
+            setError('Invalid user id.');
+            return;
+        }
+        if (deletingUserIds[userId]) return;
+
+        setDeletingUserIds((prev) => ({ ...prev, [userId]: true }));
+        setError(null);
+
+        try {
+            const response = await fetch(`/api/v2/email-users?id=${encodeURIComponent(String(userId))}`, { method: 'DELETE' });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data?.message || 'Failed to delete user');
+            }
+
+            setUsers((prev) => prev.filter((u) => u.id !== userId));
+            fetchUsers({ silent: true });
+        } catch (e: any) {
+            setError(e?.message || 'Failed to delete user');
+        } finally {
+            setDeletingUserIds((prev) => {
+                const next = { ...prev };
+                delete next[userId];
+                return next;
+            });
+        }
+    };
+
+    const deleteCsvList = async (csvId: number, groupKey?: string) => {
+        if (!csvId || Number.isNaN(csvId)) {
+            setError('Invalid csvId.');
+            return;
+        }
+        if (deletingCsvIds[csvId]) return;
+
+        setDeletingCsvIds((prev) => ({ ...prev, [csvId]: true }));
+        setError(null);
+
+        try {
+            const response = await fetch(`/api/v2/email-users-csv?csvId=${encodeURIComponent(String(csvId))}`, { method: 'DELETE' });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data?.message || 'Failed to delete CSV list');
+            }
+
+            setUsers((prev) => prev.filter((u) => Number(u.csvId) !== csvId));
+
+            if (groupKey) {
+                setExpandedGroups((prev) => {
+                    const next = new Set(prev);
+                    next.delete(groupKey);
+                    return next;
+                });
+            }
+
+            fetchUsers({ silent: true });
+        } catch (e: any) {
+            setError(e?.message || 'Failed to delete CSV list');
+        } finally {
+            setDeletingCsvIds((prev) => {
+                const next = { ...prev };
+                delete next[csvId];
+                return next;
+            });
+        }
+    };
+
+    const confirmDeleteAction = async () => {
+        if (!confirmDelete) return;
+
+        if (confirmDelete.type === 'user') {
+            const userId = Number(confirmDelete.user?.id);
+            if (!userId) {
+                setError('Unable to delete: missing user id.');
+                return;
+            }
+            await deleteSingleUser(userId);
+            setConfirmDelete(null);
+            return;
+        }
+
+        if (confirmDelete.type === 'csv') {
+            const csvId = Number(confirmDelete.csvId);
+            if (!csvId) {
+                setError('Unable to delete list: missing csvId.');
+                return;
+            }
+            await deleteCsvList(csvId, confirmDelete.groupKey);
+            setConfirmDelete(null);
+        }
     };
 
     if (loading || checkingCredentials || isLoading) {
@@ -565,7 +689,8 @@ export default function SalesProfilePage() {
                             </div>
                             <button
                                 onClick={openModal}
-                                className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-sm cursor-pointer'
+                                disabled={submitting || anyDeleting}
+                                className='bg-blue-500 hover:bg-blue-600 disabled:opacity-60 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-all shadow-sm cursor-pointer'
                             >
                                 <span className='inline-flex items-center gap-2'>
                                     <Plus className='w-4 h-4' />
@@ -601,8 +726,10 @@ export default function SalesProfilePage() {
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Full Name</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Email</th>
                                             <th className='text-left py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Created At</th>
+                                            <th className='text-right py-4 px-6 text-sm font-semibold text-slate-700 uppercase tracking-wider'>Actions</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         {Object.entries(groupedUsers).map(([groupKey, groupUsers]) => {
                                             const isExpanded = expandedGroups.has(groupKey);
@@ -610,76 +737,134 @@ export default function SalesProfilePage() {
                                             const groupName = isManual ? 'Manually Created Users' : groupKey;
                                             const groupCount = groupUsers.length;
 
+                                            const csvIdForGroup = !isManual ? (groupUsers.find((u: any) => u?.csvId)?.csvId as number | null) ?? null : null;
+
+                                            const listDeleting = !isManual && csvIdForGroup ? !!deletingCsvIds[Number(csvIdForGroup)] : false;
+
                                             return (
                                                 <React.Fragment key={groupKey}>
                                                     <tr
                                                         className='bg-slate-50 hover:bg-slate-100 cursor-pointer border-b border-slate-200'
                                                         onClick={() => toggleGroup(groupKey)}
                                                     >
-                                                        <td colSpan={4} className='py-4 px-6'>
-                                                            <div className='flex items-center gap-3'>
-                                                                {isExpanded ? (
-                                                                    <ChevronDown className='w-5 h-5 text-slate-600' />
-                                                                ) : (
-                                                                    <ChevronRight className='w-5 h-5 text-slate-600' />
+                                                        <td colSpan={5} className='py-4 px-6'>
+                                                            <div className='flex items-center justify-between gap-3'>
+                                                                <div className='flex items-center gap-3'>
+                                                                    {isExpanded ? (
+                                                                        <ChevronDown className='w-5 h-5 text-slate-600' />
+                                                                    ) : (
+                                                                        <ChevronRight className='w-5 h-5 text-slate-600' />
+                                                                    )}
+                                                                    {isManual ? (
+                                                                        <User className='w-5 h-5 text-blue-600' />
+                                                                    ) : (
+                                                                        <FileText className='w-5 h-5 text-green-600' />
+                                                                    )}
+                                                                    <span className='font-semibold text-slate-800 text-base'>{groupName}</span>
+                                                                    <span className='inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium'>
+                                                                        {groupCount} {groupCount === 1 ? 'user' : 'users'}
+                                                                    </span>
+                                                                </div>
+
+                                                                {!isManual && (
+                                                                    <button
+                                                                        type='button'
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            requestDeleteCsvList(csvIdForGroup, groupKey);
+                                                                        }}
+                                                                        disabled={submitting || anyDeleting || listDeleting}
+                                                                        className='inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+                                                                    >
+                                                                        {listDeleting ? (
+                                                                            <>
+                                                                                <Loader2 className='w-4 h-4 animate-spin' />
+                                                                                Deleting...
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Trash2 className='w-4 h-4' />
+                                                                                Delete list
+                                                                            </>
+                                                                        )}
+                                                                    </button>
                                                                 )}
-                                                                {isManual ? (
-                                                                    <User className='w-5 h-5 text-blue-600' />
-                                                                ) : (
-                                                                    <FileText className='w-5 h-5 text-green-600' />
-                                                                )}
-                                                                <span className='font-semibold text-slate-800 text-base'>{groupName}</span>
-                                                                <span className='inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium'>
-                                                                    {groupCount} {groupCount === 1 ? 'user' : 'users'}
-                                                                </span>
                                                             </div>
                                                         </td>
                                                     </tr>
 
                                                     {isExpanded &&
-                                                        groupUsers.map((user: any, index: number) => (
-                                                            <tr
-                                                                key={user.id ?? `${user.email}-${index}`}
-                                                                className='border-b border-slate-100 hover:bg-slate-50 transition-colors'
-                                                            >
-                                                                <td className='py-4 px-6 pl-16'>
-                                                                    <span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm'>
-                                                                        {index + 1}
-                                                                    </span>
-                                                                </td>
-                                                                <td className='py-4 px-6'>
-                                                                    <div className='flex items-center gap-3'>
-                                                                        <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold'>
-                                                                            {typeof user.fullName === 'string' && user.fullName.trim()
-                                                                                ? user.fullName.charAt(0).toUpperCase()
-                                                                                : user.email?.charAt(0)?.toUpperCase() || '?'}
-                                                                        </div>
-                                                                        <span className='font-medium text-slate-800'>
-                                                                            {user.fullName || user.email?.split('@')[0] || '—'}
+                                                        groupUsers.map((user: any, index: number) => {
+                                                            const userId = Number(user.id);
+                                                            const rowDeleting = !!deletingUserIds[userId];
+
+                                                            return (
+                                                                <tr
+                                                                    key={user.id ?? `${user.email}-${index}`}
+                                                                    className='border-b border-slate-100 hover:bg-slate-50 transition-colors'
+                                                                >
+                                                                    <td className='py-4 px-6 pl-16'>
+                                                                        <span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm'>
+                                                                            {index + 1}
                                                                         </span>
-                                                                    </div>
-                                                                </td>
-                                                                <td className='py-4 px-6'>
-                                                                    <div className='flex items-center gap-2 text-slate-600'>
-                                                                        <Mail className='w-4 h-4 text-slate-400' />
-                                                                        {user.email}
-                                                                    </div>
-                                                                </td>
-                                                                <td className='py-4 px-6'>
-                                                                    <span className='text-slate-600 text-sm'>
-                                                                        {user.createdAt
-                                                                            ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                                                                                  year: 'numeric',
-                                                                                  month: 'short',
-                                                                                  day: 'numeric',
-                                                                                  hour: '2-digit',
-                                                                                  minute: '2-digit',
-                                                                              })
-                                                                            : '--'}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
+                                                                    </td>
+                                                                    <td className='py-4 px-6'>
+                                                                        <div className='flex items-center gap-3'>
+                                                                            <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold'>
+                                                                                {typeof user.fullName === 'string' && user.fullName.trim()
+                                                                                    ? user.fullName.charAt(0).toUpperCase()
+                                                                                    : user.email?.charAt(0)?.toUpperCase() || '?'}
+                                                                            </div>
+                                                                            <span className='font-medium text-slate-800'>
+                                                                                {user.fullName || user.email?.split('@')[0] || '—'}
+                                                                            </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className='py-4 px-6'>
+                                                                        <div className='flex items-center gap-2 text-slate-600'>
+                                                                            <Mail className='w-4 h-4 text-slate-400' />
+                                                                            {user.email}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className='py-4 px-6'>
+                                                                        <span className='text-slate-600 text-sm'>
+                                                                            {user.createdAt
+                                                                                ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                                                                      year: 'numeric',
+                                                                                      month: 'short',
+                                                                                      day: 'numeric',
+                                                                                      hour: '2-digit',
+                                                                                      minute: '2-digit',
+                                                                                  })
+                                                                                : '--'}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className='py-4 px-6 text-right'>
+                                                                        <button
+                                                                            type='button'
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                requestDeleteUser(user);
+                                                                            }}
+                                                                            disabled={submitting || anyDeleting || rowDeleting}
+                                                                            className='inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 bg-white text-red-700 hover:bg-red-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+                                                                        >
+                                                                            {rowDeleting ? (
+                                                                                <>
+                                                                                    <Loader2 className='w-4 h-4 animate-spin' />
+                                                                                    Deleting...
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <Trash2 className='w-4 h-4' />
+                                                                                    Delete
+                                                                                </>
+                                                                            )}
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
                                                 </React.Fragment>
                                             );
                                         })}
@@ -691,6 +876,97 @@ export default function SalesProfilePage() {
                 </div>
             </div>
 
+            {/* ✅ Confirm Delete Modal */}
+            {confirmDelete && (
+                <div className='fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50'>
+                    <div className='bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200'>
+                        <div className='bg-gradient-to-r from-red-600 to-red-700 px-6 py-5 flex items-center justify-between'>
+                            <div className='flex items-center gap-3'>
+                                <AlertCircle className='w-7 h-7 text-white' />
+                                <div>
+                                    <h2 className='text-xl font-bold text-white'>{confirmDelete.type === 'csv' ? 'Delete CSV List' : 'Delete User'}</h2>
+                                    <p className='text-white/80 text-sm'>
+                                        {confirmDelete.type === 'csv' ? 'This will remove all users in this list.' : 'This will remove the selected user.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setConfirmDelete(null)}
+                                className='text-white/90 hover:text-white rounded-lg p-1 transition-colors disabled:opacity-60'
+                                disabled={
+                                    confirmDelete.type === 'csv'
+                                        ? !!(confirmDelete.csvId && deletingCsvIds[Number(confirmDelete.csvId)])
+                                        : !!(confirmDelete.user?.id && deletingUserIds[Number(confirmDelete.user.id)])
+                                }
+                                title='Close'
+                            >
+                                <X className='w-5 h-5' />
+                            </button>
+                        </div>
+
+                        <div className='p-6 space-y-4'>
+                            <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+                                <p className='text-red-900 font-medium mb-1'>Are you sure?</p>
+                                {confirmDelete.type === 'csv' ? (
+                                    <p className='text-red-800 text-sm'>Deleting this CSV list cannot be undone. All users under this list will be removed.</p>
+                                ) : (
+                                    <p className='text-red-800 text-sm'>
+                                        Deleting{' '}
+                                        <span className='font-semibold'>{confirmDelete.user?.email || confirmDelete.user?.fullName || 'this user'}</span> cannot
+                                        be undone.
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className='flex gap-3 pt-2'>
+                                <button
+                                    type='button'
+                                    onClick={() => setConfirmDelete(null)}
+                                    className='flex-1 px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
+                                    disabled={
+                                        confirmDelete.type === 'csv'
+                                            ? !!(confirmDelete.csvId && deletingCsvIds[Number(confirmDelete.csvId)])
+                                            : !!(confirmDelete.user?.id && deletingUserIds[Number(confirmDelete.user.id)])
+                                    }
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type='button'
+                                    onClick={confirmDeleteAction}
+                                    className='flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2'
+                                    disabled={
+                                        confirmDelete.type === 'csv'
+                                            ? !!(confirmDelete.csvId && deletingCsvIds[Number(confirmDelete.csvId)])
+                                            : !!(confirmDelete.user?.id && deletingUserIds[Number(confirmDelete.user.id)])
+                                    }
+                                >
+                                    {confirmDelete.type === 'csv' && confirmDelete.csvId && deletingCsvIds[Number(confirmDelete.csvId)] ? (
+                                        <>
+                                            <Loader2 className='w-5 h-5 animate-spin' />
+                                            Deleting...
+                                        </>
+                                    ) : confirmDelete.type === 'user' && confirmDelete.user?.id && deletingUserIds[Number(confirmDelete.user.id)] ? (
+                                        <>
+                                            <Loader2 className='w-5 h-5 animate-spin' />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trash2 className='w-5 h-5' />
+                                            Delete
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Credentials Modal (unchanged) */}
             {showCredentialsModal && (
                 <div className='fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50'>
                     <div className='bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden'>
@@ -801,6 +1077,7 @@ export default function SalesProfilePage() {
                 </div>
             )}
 
+            {/* Add Modal (unchanged) */}
             {isModalOpen && (
                 <div className='fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50'>
                     <div className='bg-white rounded-xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden'>
@@ -933,9 +1210,7 @@ export default function SalesProfilePage() {
                                             value={csvData.name}
                                             onChange={(e) => {
                                                 setCsvData((prev) => ({ ...prev, name: e.target.value }));
-                                                if (csvErrors.name) {
-                                                    setCsvErrors((prev) => ({ ...prev, name: undefined }));
-                                                }
+                                                if (csvErrors.name) setCsvErrors((prev) => ({ ...prev, name: undefined }));
                                             }}
                                             className={`w-full px-4 py-3 rounded-lg border ${
                                                 csvErrors.name ? 'border-red-300 bg-red-50' : 'border-slate-300'
