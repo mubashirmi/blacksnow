@@ -98,6 +98,7 @@ function Pricing() {
                 productLink: 'https://blacksnowholdings.com',
                 productComission: '100',
                 hasSubscription: true,
+                redirectRoute: '/',
             },
             {
                 id: 'InvoiceTool',
@@ -122,6 +123,7 @@ function Pricing() {
                 productLink: 'https://blacksnowholdings.com/InvoiceContract',
                 productComission: '10',
                 hasSubscription: true,
+                redirectRoute: '/InvoiceContract',
             },
             {
                 id: 'DigitalBillboard',
@@ -146,6 +148,7 @@ function Pricing() {
                 productLink: 'https://blacksnowholdings.com/advertising',
                 productComission: '150',
                 hasSubscription: true,
+                redirectRoute: '/advertising',
             },
             {
                 id: 'Sales',
@@ -170,6 +173,7 @@ function Pricing() {
                 productLink: 'https://blacksnowholdings.com/emailMarketing',
                 productComission: '100',
                 hasSubscription: true,
+                redirectRoute: '/emailMarketing',
             },
         ],
         []
@@ -214,7 +218,7 @@ function Pricing() {
             setIsLoadingEmail(false);
         }
     }, []);
-
+    // eslint-disable-next-line
     const handlePurchase = useCallback(
         async (product) => {
             if (!isClient) return;
@@ -405,7 +409,7 @@ function Pricing() {
                                                 ? 'border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 cursor-pointer'
                                                 : 'border-gray-600/30 opacity-70'
                                         }`}
-                                        onClick={() => product.available && !isPurchased && handlePurchase(product)}
+                                        // onClick={() => product.available && !isPurchased && handlePurchase(product)}
                                     >
                                         <div
                                             className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${
@@ -490,15 +494,14 @@ function Pricing() {
                                                     ) : (
                                                         <Button
                                                             size='lg'
-                                                            className={`w-full bg-gradient-to-r ${product.color} hover:from-[#4cc7e8] hover:hover:to-[#2a8dcc] text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handlePurchase(product);
+                                                            className={`cursor-pointer w-full bg-gradient-to-r ${product.color} hover:from-[#4cc7e8] hover:hover:to-[#2a8dcc] text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl`}
+                                                            onClick={() => {
+                                                                router.push(product.redirectRoute);
                                                             }}
                                                             disabled={isLoadingEmail}
                                                         >
                                                             <DollarSign className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                                            {isLoadingEmail ? 'Loading...' : 'Purchase'}
+                                                            {isLoadingEmail ? 'Loading...' : 'Learn More'}
                                                             <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                                         </Button>
                                                     )
