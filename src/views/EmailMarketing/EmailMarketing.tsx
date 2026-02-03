@@ -12,6 +12,9 @@ import { useEffect, useRef, useState } from 'react';
 
 function EmailMarketing() {
     const [userId, setUserId] = useState<string | null>(null);
+    // const pricingRef = useRef<HTMLDivElement | null>(null);
+    const [pricingOpen, setPricingOpen] = useState(false);
+
     const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
         const containerRef = useRef<HTMLDivElement>(null);
         const router = useRouter();
@@ -188,16 +191,15 @@ function EmailMarketing() {
                                         </Link>
                                     )}
                                 </>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        <BarChart3 className='w-6 h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                             {/* <div className='grid grid-cols-3 gap-4 sm:gap-5'>
                                 <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
@@ -233,10 +235,6 @@ function EmailMarketing() {
                     </div>
                 </div>
             </section>
-
-            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <PricingComponent name='EmailMarketing' />
-            </div>
 
             {/* Main Features */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
@@ -280,18 +278,6 @@ function EmailMarketing() {
                                     {/* BOTTOM (Description pinned) */}
                                     <CardContent className=''>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed max-w-md '>{feature.description}</p>
-
-                                        {/* <div className='space-y-3'>
-            {feature.benefits.map((benefit, i) => (
-              <div
-                key={i}
-                className='flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'
-              >
-                <CheckCircle className='w-5 h-5 text-green-400 flex-shrink-0' />
-                <span className='text-gray-300 text-sm font-medium'>{benefit}</span>
-              </div>
-            ))}
-          </div> */}
                                     </CardContent>
                                 </Card>
                             </div>
@@ -363,16 +349,15 @@ function EmailMarketing() {
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
                                 </Link>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
-                                    >
-                                        <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
+                                >
+                                    <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                         </div>
 
@@ -387,6 +372,8 @@ function EmailMarketing() {
                     </div>
                 </div>
             </section>
+
+            <PricingComponent name='EmailMarketing' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
         </div>
     );
 }

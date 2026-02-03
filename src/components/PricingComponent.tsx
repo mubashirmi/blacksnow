@@ -3,12 +3,11 @@
 import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
-import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, MessageSquare, Monitor, Newspaper, X } from 'lucide-react';
+import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, Lock, Mail, MessageSquare, Monitor, Newspaper, Star, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/router'; // If you're on App Router, swap to: import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'; // App Router: import { useRouter } from 'next/navigation'
 import { parseCookies } from 'nookies';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -75,7 +74,7 @@ const PRODUCTS = [
         productComission: '150',
         hasSubscription: true,
     },
-    // IMPORTANT: apiName is EmailMarketing but id is Sales (same as your page)
+    // IMPORTANT: apiName is EmailMarketing but id is Sales
     {
         id: 'Sales',
         apiName: 'EmailMarketing',
@@ -101,25 +100,40 @@ const PRODUCTS = [
     },
 ];
 
-export function PricingComponent({
-    name, // "NewsLetter" | "InvoiceTool" | "DigitalBillboard" | "EmailMarketing"
-    defaultBillingPeriod = 'monthly', // "monthly" | "yearly"
-    className = '',
-}) {
+type BillingPeriod = 'monthly' | 'yearly';
+
+type PricingComponentProps = {
+    name: string;
+    defaultBillingPeriod?: BillingPeriod;
+    className?: string;
+
+    /** ✅ If true, component renders inside a Dialog modal */
+    asModal?: boolean;
+
+    /** ✅ Controlled modal state (recommended) */
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+};
+
+export function PricingComponent({ name, defaultBillingPeriod = 'monthly', className = '', asModal = false, open, onOpenChange }: PricingComponentProps) {
     const router = useRouter();
 
     const [isClient, setIsClient] = useState(false);
-    const [purchasedProducts, setPurchasedProducts] = useState({});
+    const [purchasedProducts, setPurchasedProducts] = useState<Record<string, string>>({});
     const [showSignupModal, setShowSignupModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [isLoadingEmail, setIsLoadingEmail] = useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
-    const [billingPeriod, setBillingPeriod] = useState(defaultBillingPeriod);
+    const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod);
+
+    // ✅ internal modal state (only used if parent doesn’t control it)
+    const [internalOpen, setInternalOpen] = useState(false);
+    const modalOpen = open ?? internalOpen;
+    const setModalOpen = onOpenChange ?? setInternalOpen;
 
     const product = useMemo(() => {
-        // name is apiName (except you also allow passing "Sales" if you want)
         return PRODUCTS.find((p) => p.apiName === name || p.id === name) || null;
     }, [name]);
 
@@ -128,7 +142,6 @@ export function PricingComponent({
 
         const cookies = parseCookies();
         const id = cookies.id;
-
         if (!id) return;
 
         axios
@@ -143,7 +156,7 @@ export function PricingComponent({
     }, []);
 
     const getProductPrice = useCallback(
-        (p) => {
+        (p: any) => {
             if (!p?.hasSubscription) return `$${p?.price}`;
             return billingPeriod === 'monthly' ? `$${p?.monthlyPrice}` : `$${p?.yearlyPrice}`;
         },
@@ -151,21 +164,21 @@ export function PricingComponent({
     );
 
     const getProductPeriod = useCallback(
-        (p) => {
+        (p: any) => {
             if (!p?.hasSubscription) return `/ ${p?.period}`;
             return billingPeriod === 'monthly' ? '/Month' : '/Year';
         },
         [billingPeriod]
     );
 
-    const getSavingsPercentage = useCallback((p) => {
+    const getSavingsPercentage = useCallback((p: any) => {
         if (!p?.hasSubscription) return 0;
         const monthlyCost = p.monthlyPrice * 12;
         const yearlyCost = p.yearlyPrice;
         return Math.round(((monthlyCost - yearlyCost) / monthlyCost) * 100);
     }, []);
 
-    const fetchUserEmail = useCallback(async (userId) => {
+    const fetchUserEmail = useCallback(async (userId: string) => {
         setIsLoadingEmail(true);
         try {
             const response = await axios.get(`/api/v2/getUserMail/?id=${userId}`);
@@ -179,7 +192,7 @@ export function PricingComponent({
     }, []);
 
     const handlePurchase = useCallback(
-        async (p) => {
+        async (p: any) => {
             if (!isClient || !p) return;
 
             const userId = localStorage.getItem('userId');
@@ -223,7 +236,7 @@ export function PricingComponent({
                 let productType = p.id;
                 if (p.id === 'Sales') productType = 'EmailMarketing';
 
-                const requestBody = {
+                const requestBody: any = {
                     id: Number(userId),
                     email,
                     productType,
@@ -240,7 +253,7 @@ export function PricingComponent({
         [billingPeriod, fetchUserEmail, isClient, isLoadingEmail]
     );
 
-    const handleUnsubscribe = useCallback((p) => {
+    const handleUnsubscribe = useCallback((p: any) => {
         setSelectedProduct(p);
         setShowConfirmModal(true);
     }, []);
@@ -255,7 +268,7 @@ export function PricingComponent({
         setIsLoadingUnsubscribe(true);
         try {
             const response = await axios.post(`/api/v2/cancel-subscription?id=${id}`, {
-                product: selectedProduct.id, // keep EXACT behavior from your page (Sales stays Sales)
+                product: selectedProduct.id,
             });
 
             if (response.status === 200) {
@@ -273,292 +286,313 @@ export function PricingComponent({
         }
     }, [isLoadingUnsubscribe, selectedProduct, router]);
 
-    const handleBillingPeriodToggle = useCallback(() => {
-        setBillingPeriod((prev) => (prev === 'monthly' ? 'yearly' : 'monthly'));
-    }, []);
-
-    if (!product) {
-        return null; // or return a small fallback UI if you want
-    }
+    if (!product) return null;
 
     const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
     const savings = getSavingsPercentage(product);
 
-    return (
-        <div className={`w-full ${className}`}>
-            {/* Billing Toggle */}
-            <div className='flex items-center justify-center gap-4 mt-2 sm:mt-4'>
-                <span className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'}`}>
-                    Monthly
-                </span>
-                <button
-                    onClick={handleBillingPeriodToggle}
-                    className='relative w-16 h-8 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#4cc7e8]/30 focus:outline-none focus:ring-2 focus:ring-[#4cc7e8]/50 focus:ring-offset-2 focus:ring-offset-[#050608]'
-                    aria-label={`Switch to ${billingPeriod === 'monthly' ? 'yearly' : 'monthly'} billing`}
-                >
-                    <div
-                        className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ease-in-out ${
-                            billingPeriod === 'yearly' ? 'translate-x-8' : 'translate-x-0'
-                        }`}
-                    />
-                </button>
-                <span className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'}`}>
-                    Yearly
-                </span>
-            </div>
+    const formRows = product.features.slice(0, 3);
+    const rowIcons = [Star, Mail, Lock];
 
-            {/* Single Pricing Card (EXACT styling & behavior from your grid card) */}
-            <div className='mt-8 sm:mt-10 max-w-3xl mx-auto'>
-                <div className='group animate-slide-in-up'>
-                    <Card
-                        className={`bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 rounded-3xl shadow-2xl backdrop-blur-2xl overflow-hidden transform hover:scale-105 transition-all duration-500 ${
-                            isPurchased
-                                ? 'border-green-500/50 shadow-green-500/20'
-                                : product.available
-                                ? 'border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 cursor-pointer'
-                                : 'border-gray-600/30 opacity-70'
-                        }`}
-                        onClick={() => product.available && !isPurchased && handlePurchase(product)}
-                    >
-                        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${isPurchased ? 'from-green-400 to-emerald-500' : product.color}`} />
+    const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
+        <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
+            <div
+                className={`relative rounded-[32px] border bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden ${
+                    isPurchased ? 'border-emerald-400/25' : 'border-white/10'
+                } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
+            >
+                {/* top accent line */}
+                <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${isPurchased ? 'from-emerald-400 to-green-500' : product.color}`} />
 
-                        <CardHeader className='p-6 sm:p-8 pb-4'>
-                            <div className='flex items-center justify-between mb-6'>
-                                <div className='flex items-center space-x-4'>
-                                    <div
-                                        className={`min-w-14 min-h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${
-                                            isPurchased ? 'from-green-400 to-emerald-500' : product.color
-                                        } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${
-                                            !product.available ? 'opacity-50' : ''
-                                        }`}
-                                    >
-                                        <product.icon className='min-w-7 min-h-7 sm:min-w-8 sm:min-h-8 text-white' />
-                                    </div>
-                                    <div>
-                                        <CardTitle className='text-xl sm:text-2xl font-black text-white'>{product.name}</CardTitle>
-                                        <p className='text-sm sm:text-base text-gray-400 mt-1'>{product.description}</p>
-                                    </div>
+                <div className='relative p-6 sm:p-8'>
+                    {/* Header */}
+                    <div className='flex items-start justify-between gap-4'>
+                        <div className='flex items-center gap-4'>
+                            <div className='h-12 w-12 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center'>
+                                <product.icon className='h-6 w-6 text-white/90' />
+                            </div>
+
+                            <div>
+                                <h3 className='text-2xl font-extrabold text-white leading-tight'>{product.name}</h3>
+                                <p className='text-xl font-semibold text-white/90 mt-0.5'>
+                                    {getProductPrice(product)}
+                                    <span className='text-white/60 font-medium'>{getProductPeriod(product)}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {product.popular && (
+                            <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>POPULAR</Badge>
+                        )}
+                    </div>
+
+                    {/* Segmented Toggle */}
+                    {product.hasSubscription && (
+                        <div className='mt-6 flex justify-center'>
+                            <div className='flex w-full max-w-[280px] rounded-2xl border border-white/10 bg-black/30 p-1'>
+                                <button
+                                    type='button'
+                                    onClick={() => setBillingPeriod('monthly')}
+                                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                                        billingPeriod === 'monthly' ? 'bg-white/10 text-white shadow' : 'text-white/50 hover:text-white/80'
+                                    }`}
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    type='button'
+                                    onClick={() => setBillingPeriod('yearly')}
+                                    className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                                        billingPeriod === 'yearly' ? 'bg-white/10 text-white shadow' : 'text-white/50 hover:text-white/80'
+                                    }`}
+                                >
+                                    Yearly
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
+                        <div className='mt-3 flex justify-center'>
+                            <div className='inline-flex items-center rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300'>
+                                Save {savings}% with yearly billing
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Form-like rows */}
+                    <div className='mt-6 space-y-3'>
+                        {formRows.map((text: string, i: number) => {
+                            const Icon = rowIcons[i] || CheckCircle;
+                            return (
+                                <div key={`${text}-${i}`} className='flex items-center gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3'>
+                                    <Icon className='h-5 w-5 text-white/55' />
+                                    <span className='text-sm text-white/70'>{text}</span>
                                 </div>
+                            );
+                        })}
 
-                                {product.popular && (
-                                    <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>
-                                        POPULAR
-                                    </Badge>
-                                )}
+                        {product.features.length > 3 && <div className='text-xs text-white/40 px-1'>+ {product.features.length - 3} more included</div>}
+                    </div>
+
+                    {/* Terms line (visual) */}
+                    <div className='mt-5 flex items-start gap-3 text-sm text-white/60'>
+                        <div className='mt-0.5 h-5 w-5 rounded-md border border-white/15 bg-black/30 flex items-center justify-center'>
+                            <CheckCircle className='h-4 w-4 text-white/55' />
+                        </div>
+                        <p className='leading-relaxed'>
+                            I agree to the <span className='text-[#4cc7e8] hover:underline cursor-pointer'>Terms</span> and the{' '}
+                            <span className='text-[#4cc7e8] hover:underline cursor-pointer'>Privacy</span> policies.
+                        </p>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className='mt-6'>
+                        {product.available ? (
+                            isPurchased ? (
+                                <Button
+                                    size='lg'
+                                    className='w-full rounded-2xl border border-red-400/20 bg-red-500/15 hover:bg-red-500/25 text-red-200 py-6 font-bold transition'
+                                    onClick={() => handleUnsubscribe(product)}
+                                    disabled={isLoadingUnsubscribe}
+                                >
+                                    {isLoadingUnsubscribe ? 'Unsubscribing...' : 'Unsubscribe'}
+                                    <ArrowRight className='h-5 w-5 ml-3 opacity-80' />
+                                </Button>
+                            ) : (
+                                <Button
+                                    size='lg'
+                                    className='w-full cursor-pointer rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-6 font-bold shadow-xl transition'
+                                    onClick={() => handlePurchase(product)}
+                                    disabled={isLoadingEmail}
+                                >
+                                    <DollarSign className='h-5 w-5 mr-2 opacity-90' />
+                                    {isLoadingEmail ? 'Loading...' : 'Continue'}
+                                    <ArrowRight className='h-5 w-5 ml-3 opacity-80' />
+                                </Button>
+                            )
+                        ) : (
+                            <div className='w-full py-6 text-center'>
+                                <span className='inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/30 px-5 py-3 text-sm font-bold text-white/70'>
+                                    <Clock className='h-5 w-5' />
+                                    Coming Soon
+                                </span>
                             </div>
+                        )}
+                    </div>
 
-                            <div className='text-center'>
-                                <div className='flex items-center justify-center gap-3'>
-                                    <div className={`text-4xl sm:text-5xl font-black ${isPurchased ? 'text-green-400' : 'text-[#4cc7e8]'}`}>
-                                        {getProductPrice(product)}
-                                        <span className='text-lg sm:text-2xl text-gray-400 ml-1'>{getProductPeriod(product)}</span>
-                                    </div>
-                                </div>
+                    {/* Footer */}
+                    <div className='mt-4 flex items-center justify-center gap-2 text-xs text-white/40'>
+                        <Lock className='h-4 w-4' />
+                        Secure Stripe Checkout
+                    </div>
 
-                                {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
-                                    <p className='text-sm text-green-400 mt-2 font-semibold'>Save {savings}% with yearly billing</p>
-                                )}
-
-                                {product.available && <p className='text-xs sm:text-sm text-gray-500 mt-2'>VAT & local taxes may apply</p>}
-                            </div>
-                        </CardHeader>
-
-                        <CardContent className='p-6 sm:p-8 pt-0'>
-                            <div className='space-y-3 mb-8'>
-                                {product.features.map((feature, i) => (
-                                    <div
-                                        key={i}
-                                        className='flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'
-                                    >
-                                        <CheckCircle className={`w-5 h-5 text-green-400 flex-shrink-0 ${!product.available && 'text-gray-500'}`} />
-                                        <span className={`text-sm sm:text-base leading-relaxed ${product.available ? 'text-gray-300' : 'text-gray-500'}`}>
-                                            {feature}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className='text-center'>
-                                {product.available ? (
-                                    isPurchased ? (
-                                        <Button
-                                            size='lg'
-                                            className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-800 text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-lg'
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleUnsubscribe(product);
-                                            }}
-                                            disabled={isLoadingUnsubscribe}
-                                        >
-                                            {isLoadingUnsubscribe ? 'Unsubscribing...' : 'Unsubscribe'}
-                                            <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            size='lg'
-                                            className={`w-full bg-gradient-to-r ${product.color} hover:from-[#4cc7e8] hover:hover:to-[#2a8dcc] text-white py-5 sm:py-6 text-base sm:text-lg font-bold shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl`}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePurchase(product);
-                                            }}
-                                            disabled={isLoadingEmail}
-                                        >
-                                            <DollarSign className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                            {isLoadingEmail ? 'Loading...' : 'Purchase'}
-                                            <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                        </Button>
-                                    )
-                                ) : (
-                                    <div className='w-full py-5 sm:py-6 text-center'>
-                                        <Badge className='uppercase bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-bold'>
-                                            <Clock className='w-5 h-5 mr-2' />
-                                            Coming Soon!
-                                        </Badge>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-
-                        <div
-                            className={`absolute inset-0 bg-gradient-to-r ${product.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}
-                        />
-                    </Card>
+                    {product.available && <p className='mt-3 text-center text-[11px] text-white/35'>VAT & local taxes may apply</p>}
                 </div>
             </div>
+        </div>
+    );
 
-            {/* Signup Modal (same as your page) */}
-            <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setShowSignupModal(false)}
-                        className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-
-                    <DialogHeader className='space-y-6 text-center'>
-                        <div className='flex flex-col items-center'>
-                            <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Image
-                                    src='/logocolored.png'
-                                    alt='Black Snow Logo'
-                                    width={100}
-                                    height={100}
-                                    className='object-contain drop-shadow-2xl'
-                                    priority
-                                />
-                            </div>
-                            <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                            <DialogDescription className='text-[#4cc7e8] font-semibold mt-2'>
-                                You can&apos;t access this feature until you sign up.
-                            </DialogDescription>
-                        </div>
-                    </DialogHeader>
-
-                    <div className='py-4'>
-                        <AuthModalTrigger
-                            buttonText='Signup Now'
-                            defaultView='signup'
-                            sourceRoute='/pricing'
-                            redirectAfterLogin='/pricing'
-                            redirectAfterSignup='/pricing'
+    // ✅ Modal Mode
+    if (asModal) {
+        return (
+            <div className={className}>
+                <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                    <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none'>
+                        {/* Close button like screenshot */}
+                        <button
+                            onClick={() => setModalOpen(false)}
+                            className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition z-10'
+                            aria-label='Close'
                         >
-                            <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'>
-                                Signup Now
-                            </Button>
-                        </AuthModalTrigger>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                            <X className='w-5 h-5 text-white/70' />
+                        </button>
 
-            {/* Confirm Unsubscribe Modal (same as your page) */}
-            <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setShowConfirmModal(false)}
-                        className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
+                        <CheckoutCard inModal={true} />
+                    </DialogContent>
+                </Dialog>
 
-                    <DialogHeader className='space-y-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Calendar className='w-6 h-6 text-white' />
-                            </div>
-                            <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Confirm Unsubscribe</DialogTitle>
-                                <DialogDescription className='text-red-400 font-semibold'>
-                                    Are you sure you want to unsubscribe from {selectedProduct?.name}?
+                {/* Signup Modal */}
+                <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
+                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                        <button
+                            onClick={() => setShowSignupModal(false)}
+                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        >
+                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        </button>
+
+                        <DialogHeader className='space-y-6 text-center'>
+                            <div className='flex flex-col items-center'>
+                                <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
+                                    <Image
+                                        src='/logocolored.png'
+                                        alt='Black Snow Logo'
+                                        width={100}
+                                        height={100}
+                                        className='object-contain drop-shadow-2xl'
+                                        priority
+                                    />
+                                </div>
+                                <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
+                                <DialogDescription className='text-[#4cc7e8] font-semibold mt-2'>
+                                    You can&apos;t access this feature until you sign up.
                                 </DialogDescription>
                             </div>
-                        </div>
-                    </DialogHeader>
+                        </DialogHeader>
 
-                    <div className='py-4 space-y-4'>
-                        <p className='text-gray-300 text-center'>This action cannot be undone.</p>
-                        <Button
-                            onClick={confirmUnsubscribe}
-                            className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 text-lg shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
-                            disabled={isLoadingUnsubscribe}
+                        <div className='py-4'>
+                            <AuthModalTrigger
+                                buttonText='Signup Now'
+                                defaultView='signup'
+                                sourceRoute='/pricing'
+                                redirectAfterLogin='/pricing'
+                                redirectAfterSignup='/pricing'
+                            >
+                                <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'>
+                                    Signup Now
+                                </Button>
+                            </AuthModalTrigger>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Confirm Unsubscribe Modal */}
+                <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                        <button
+                            onClick={() => setShowConfirmModal(false)}
+                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
                         >
-                            {isLoadingUnsubscribe ? 'Processing...' : 'Confirm Unsubscribe'}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        </button>
 
-            {/* Success Modal (same as your page) */}
-            <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setShowSuccessModal(false)}
-                        className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-
-                    <DialogHeader className='space-y-6 text-center'>
-                        <div className='flex flex-col items-center'>
-                            <div className='w-14 h-14 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl mb-4'>
-                                <CheckCircle className='w-8 h-8 text-white' />
+                        <DialogHeader className='space-y-6'>
+                            <div className='flex items-center space-x-4'>
+                                <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl'>
+                                    <Calendar className='w-6 h-6 text-white' />
+                                </div>
+                                <div>
+                                    <DialogTitle className='text-2xl font-black text-white'>Confirm Unsubscribe</DialogTitle>
+                                    <DialogDescription className='text-red-400 font-semibold'>
+                                        Are you sure you want to unsubscribe from {selectedProduct?.name}?
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <DialogTitle className='text-2xl font-black text-white'>Unsubscribed Successfully</DialogTitle>
-                            <DialogDescription className='text-green-400 font-semibold'>You have been removed from the plan.</DialogDescription>
+                        </DialogHeader>
+
+                        <div className='py-4 space-y-4'>
+                            <p className='text-gray-300 text-center'>This action cannot be undone.</p>
+                            <Button
+                                onClick={confirmUnsubscribe}
+                                className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 text-lg shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
+                                disabled={isLoadingUnsubscribe}
+                            >
+                                {isLoadingUnsubscribe ? 'Processing...' : 'Confirm Unsubscribe'}
+                                <ArrowRight className='w-5 h-5 ml-3 opacity-80' />
+                            </Button>
                         </div>
-                    </DialogHeader>
+                    </DialogContent>
+                </Dialog>
 
-                    <div className='py-4 text-center'>
-                        <p className='text-gray-300'>Redirecting to home page...</p>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                {/* Success Modal */}
+                <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        >
+                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        </button>
 
-            {/* Same global CSS used in your Pricing page (animations + grid contain) */}
-            <style jsx global>{`
-                @keyframes slide-in-up {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
+                        <DialogHeader className='space-y-6 text-center'>
+                            <div className='flex flex-col items-center'>
+                                <div className='w-14 h-14 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl mb-4'>
+                                    <CheckCircle className='w-8 h-8 text-white' />
+                                </div>
+                                <DialogTitle className='text-2xl font-black text-white'>Unsubscribed Successfully</DialogTitle>
+                                <DialogDescription className='text-green-400 font-semibold'>You have been removed from the plan.</DialogDescription>
+                            </div>
+                        </DialogHeader>
+
+                        <div className='py-4 text-center'>
+                            <p className='text-gray-300'>Redirecting to home page...</p>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                <style jsx global>{`
+                    @keyframes slide-in-up {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
                     }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
+
+                    .animate-slide-in-up {
+                        animation: slide-in-up 0.5s ease-out forwards;
+                        animation-fill-mode: both;
                     }
-                }
 
-                .animate-slide-in-up {
-                    animation: slide-in-up 0.5s ease-out forwards;
-                    animation-fill-mode: both;
-                }
+                    button,
+                    .transition-all {
+                        transition-property: all;
+                        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                        transition-duration: 300ms;
+                    }
+                `}</style>
+            </div>
+        );
+    }
 
-                button,
-                .transition-all {
-                    transition-property: all;
-                    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-                    transition-duration: 300ms;
-                }
-            `}</style>
+    // ✅ Inline Mode (kept in case you still want it somewhere)
+    return (
+        <div className={`w-full ${className}`}>
+            <CheckoutCard inModal={false} />
         </div>
     );
 }

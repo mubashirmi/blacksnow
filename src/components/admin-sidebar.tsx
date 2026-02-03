@@ -86,7 +86,6 @@ export function AdminSidebar() {
     };
 
     useEffect(() => {
-        // start timer
         resetAutoLogoutTimer();
         // eslint-disable-next-line
         const events: (keyof WindowEventMap)[] = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
@@ -131,8 +130,9 @@ export function AdminSidebar() {
             icon: Users,
             children: [
                 { title: 'Newsletter', url: '/admin/dashboard/newsletter', icon: Mail },
-                { title: 'Email Users', url: '/admin/dashboard/marketingSubscribers', icon: Users },
-                { title: 'Digital Billboard', url: '/admin/dashboard/billboard', icon: Monitor },
+                { title: 'Email Marketing', url: '/admin/dashboard/marketingSubscribers', icon: Users },
+                { title: 'Business Invoice', url: '/admin/dashboard/businessInvoiceUsers', icon: ReceiptText },
+                { title: 'Digital Billboard', url: '/admin/dashboard/digitalBillboardUsers', icon: Monitor },
             ],
         },
         { title: 'Sales', url: '/admin/dashboard/sales', icon: BarChart3 },
@@ -149,9 +149,8 @@ export function AdminSidebar() {
             ],
         },
         { title: 'Requisition', url: '/admin/dashboard/requisition', icon: FileText },
-        { title: 'Invoice', url: '/admin/dashboard/invoice', icon: ReceiptText },
-        { title: 'Contract', url: '/admin/dashboard/contract', icon: FilePen },
-        { title: 'Invoice Tool Users', url: '/admin/dashboard/marketingSubscribers', icon: Users },
+        { title: 'Business Invoice', url: '/admin/dashboard/businessInvoiceContract', icon: FilePen },
+        { title: 'Digital Billboard', url: '/admin/dashboard/billboard', icon: Monitor },
         { title: 'Blog', url: '/admin/dashboard/blog', icon: BookOpen },
         { title: 'Notes', url: '/admin/dashboard/notes', icon: StickyNote },
         { title: 'FAQ', url: '/admin/dashboard/faq', icon: HelpCircle },

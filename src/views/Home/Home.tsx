@@ -1,9 +1,10 @@
 import { AuthModalTrigger } from '@/components/AuthModal';
+import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription as DialogDesc, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/lib/auth';
 import {
@@ -16,81 +17,72 @@ import {
     Clock,
     DollarSign,
     Layers,
-    RefreshCw,
-    Rocket,
     Shield,
     Target,
     TrendingDown,
     TrendingUp,
     X,
 } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 
 const textOptions = ['Market Data', 'Swing Trades', 'Stock Options', 'Day Trades', 'Long Term Investment', 'Chart Patterns', 'Indicators', 'Stock Lists'];
-const paperTradingOptions = [
-    'Daytrade',
-    'Swing Trade',
-    'Bid–Ask',
-    'Liquidity',
-    'Volatility',
-    'Risk Management',
-    'Options Chain',
-    'Moving Averages',
-    'RSI',
-    'MACD',
-];
+// const paperTradingOptions = [
+//     'Daytrade',
+//     'Swing Trade',
+//     'Bid–Ask',
+//     'Liquidity',
+//     'Volatility',
+//     'Risk Management',
+//     'Options Chain',
+//     'Moving Averages',
+//     'RSI',
+//     'MACD',
+// ];
 
-const stockScreenerOptions = [
-    'Market Capitalization',
-    'Price Performance',
-    'Volume',
-    'Average Daily Volume',
-    'P/E Ratio',
-    'Dividend Yield',
-    '52-Week High / Low',
-    'Sector & Industry',
-    'Volatility (Beta)',
-    'Technical Signals',
-];
+// const stockScreenerOptions = [
+//     'Market Capitalization',
+//     'Price Performance',
+//     'Volume',
+//     'Average Daily Volume',
+//     'P/E Ratio',
+//     'Dividend Yield',
+//     '52-Week High / Low',
+//     'Sector & Industry',
+//     'Volatility (Beta)',
+//     'Technical Signals',
+// ];
 
-const watchlistOptions = [
-    'Real-Time Prices',
-    'Daily Change',
-    'Percent Change',
-    'Price Alerts',
-    'Dividend Calendar',
-    'Bid–Ask',
-    'Market Movers',
-    'News Updates',
-    'Earnings Date',
-    'Trend Direction',
-];
+// const watchlistOptions = [
+//     'Real-Time Prices',
+//     'Daily Change',
+//     'Percent Change',
+//     'Price Alerts',
+//     'Dividend Calendar',
+//     'Bid–Ask',
+//     'Market Movers',
+//     'News Updates',
+//     'Earnings Date',
+//     'Trend Direction',
+// ];
 
 function Home() {
-    const [paperIdx, setPaperIdx] = useState(0);
-    const [screenerIdx, setScreenerIdx] = useState(0);
-    const [watchlistIdx, setWatchlistIdx] = useState(0);
-    const { loading: authLoading } = useAuth();
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setPaperIdx((i) => (i + 1) % paperTradingOptions.length);
-            setScreenerIdx((i) => (i + 1) % stockScreenerOptions.length);
-            setWatchlistIdx((i) => (i + 1) % watchlistOptions.length);
-        }, 2000);
+    // const [paperIdx, setPaperIdx] = useState(0);
+    // const [screenerIdx, setScreenerIdx] = useState(0);
+    // const [watchlistIdx, setWatchlistIdx] = useState(0);
 
-        return () => clearInterval(interval);
-    }, []);
+    // ✅ Pricing modal (for logged-in but not purchased)
+    const [pricingOpen, setPricingOpen] = useState(false);
+
+    const { loading: authLoading } = useAuth();
+
     // eslint-disable-next-line
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
     // Modals
-    const [isSubscribeFormOpen, setIsSubscribeFormOpen] = useState(false); // Newsletter form modal
-    const [isSignupModalOpen, setIsSignupModalOpen] = useState(false); // Ask to sign up
-    const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false); // Ask to purchase Newsletter
+    const [isSubscribeFormOpen, setIsSubscribeFormOpen] = useState(false); // Newsletter form modal (only if purchased)
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // Success after POST
     const [isCheckingOpen, setIsCheckingOpen] = useState(false); // Loader dialog while checking entitlement
 
@@ -110,15 +102,33 @@ function Home() {
 
     const router = useRouter();
 
+    // ✅ Hidden AuthModalTrigger button ref (so we can open Auth modal programmatically)
+    const authTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // setPaperIdx((i) => (i + 1) % paperTradingOptions.length);
+            // setScreenerIdx((i) => (i + 1) % stockScreenerOptions.length);
+            // setWatchlistIdx((i) => (i + 1) % watchlistOptions.length);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTextIndex((prevIndex) => (prevIndex + 1) % textOptions.length);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         const trackRefIdClick = async () => {
-            // Get the refId from URL query parameters
             const { refId } = router.query;
-            localStorage.setItem('referredby', refId);
 
             if (refId) {
+                localStorage.setItem('referredby', String(refId));
                 try {
-                    // Get current URL without query parameters
                     const currentUrl = `https://blacksnowholdings.com`;
 
                     const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
@@ -142,38 +152,38 @@ function Home() {
             }
         };
 
-        // Only track when router is ready (to ensure query params are available)
         if (router.isReady) {
             trackRefIdClick();
         }
     }, [router.isReady, router.query]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTextIndex((prevIndex) => (prevIndex + 1) % textOptions.length);
-        }, 2000);
-        return () => clearInterval(interval);
-    }, []);
-
     // ---------- Handlers ----------
 
+    /**
+     * ✅ New behavior:
+     * - If NOT logged in -> open Auth modal (AuthModalTrigger) (NO "Signup Required" dialog)
+     * - If logged in but NOT purchased -> open PricingComponent modal
+     * - If purchased -> open subscribe form modal
+     * Everything else stays the same.
+     */
     const openSubscribeFlow = async () => {
-        if (authLoading) return;
+        if (authLoading || checkingAccess) return;
 
         const userId = localStorage.getItem('userId');
-        // 1) Not logged in → show signup modal
+
+        // 1) Not logged in -> open Auth modal
         if (!userId) {
-            setIsSignupModalOpen(true);
+            authTriggerRef.current?.click();
             return;
         }
 
-        // 2) Logged in → check product info
+        // 2) Logged in -> check entitlement
         const cookies = parseCookies();
         const id = cookies.id;
 
+        // If cookie missing, treat as not logged in enough to identify -> open Auth modal
         if (!id) {
-            // No id cookie found → treat as not logged in enough to identify
-            setIsSignupModalOpen(true);
+            authTriggerRef.current?.click();
             return;
         }
 
@@ -185,14 +195,15 @@ function Home() {
             const response = await fetch(`/api/v2/get-user-product-info/?id=${id}`);
             const data = await response.json();
 
-            // Simple shape guard; adapt if your API differs
             const newsLetterStatus = data?.data?.NewsLetter;
 
             if (newsLetterStatus !== 'Purchased') {
-                // 3) Not purchased → show purchase modal
-                setIsPurchaseModalOpen(true);
+                // 3) Logged in but not purchased -> open Pricing modal
+                setIsSubscribeFormOpen(false);
+                setPricingOpen(true);
             } else {
-                // 4) Purchased → open form modal
+                // 4) Purchased -> open form modal
+                setPricingOpen(false);
                 setIsSubscribeFormOpen(true);
             }
         } catch (err: any) {
@@ -236,11 +247,10 @@ function Home() {
             });
 
             if (!res.ok) {
-                // You can refine errors by reading res.json() if your API returns messages
                 throw new Error('Request failed');
             }
 
-            // Success → close form, show success
+            // Success -> close form, show success
             setIsSubscribeFormOpen(false);
             setIsSuccessModalOpen(true);
 
@@ -262,10 +272,51 @@ function Home() {
 
     const FieldError = ({ msg }: { msg?: string }) => (msg ? <p className='text-xs text-red-400 mt-1'>{msg}</p> : null);
 
+    // ✅ New Subscribe section design (matches the attached image style)
+    const NewsletterSubscribeBar = ({ className = '' }: { className?: string }) => (
+        <div
+            className={[
+                'relative w-full rounded-2xl border border-[#4cc7e8]/45 bg-[#0b0d12]/55 backdrop-blur-2xl',
+                'shadow-[0_0_0_1px_rgba(76,199,232,0.22),0_0_45px_rgba(76,199,232,0.14)]',
+                'p-5 sm:p-6',
+                className,
+            ].join(' ')}
+        >
+            <div className='absolute inset-0 rounded-2xl pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(76,199,232,0.12),transparent_55%)]' />
+            <div className='relative'>
+                <div className='space-y-2'>
+                    <h3 className='text-xl sm:text-2xl font-extrabold text-white'>Weekly Market Intelligence</h3>
+                    <p className='text-sm sm:text-base text-gray-400'>Subscribe for weekly trading insights and market data.</p>
+                </div>
+
+                <div className='mt-4 flex flex-col sm:flex-row gap-3 sm:gap-4'>
+                    <Input
+                        placeholder='Enter your email'
+                        readOnly
+                        onClick={openSubscribeFlow}
+                        className='h-12 sm:h-14 flex-1 rounded-xl bg-black/35 border-white/10 text-white placeholder:text-white/40 backdrop-blur-md'
+                    />
+                    <Button
+                        onClick={openSubscribeFlow}
+                        disabled={authLoading || checkingAccess}
+                        className='h-12 sm:h-14 rounded-xl px-8 font-black text-base bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] shadow-xl shadow-[#2c7bbe]/30'
+                    >
+                        {checkingAccess ? 'Checking…' : 'Subscribe'}
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+
     // ---------- JSX ----------
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
+            {/* ✅ Hidden AuthModalTrigger (opens when user clicks Subscribe and is not logged in) */}
+            <AuthModalTrigger buttonText='Join Now' defaultView='signup' sourceRoute='/' redirectAfterLogin='/pricing' redirectAfterSignup='/pricing'>
+                <button ref={authTriggerRef} type='button' className='hidden' />
+            </AuthModalTrigger>
+
             <section className='relative flex items-center justify-center py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
@@ -299,74 +350,49 @@ function Home() {
                             </div>
 
                             <div className='space-y-6 sm:space-y-8 animate-slide-in-left delay-400 overflow-hidden'>
-                                <div className='flex flex-col sm:flex-row gap-4 sm:gap-6'>
-                                    {/* Paper Trading - Green */}
-                                    <Button
-                                        size='lg'
+                                {/* <div className="flex flex-col sm:flex-row gap-4 sm:gap-6"> */}
+                                {/* Paper Trading - Green */}
+                                {/* <Button
+                                        size="lg"
                                         onClick={openSubscribeFlow}
                                         disabled={authLoading || checkingAccess}
-                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-green-400 to-emerald-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-green-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
+                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-green-400 to-emerald-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-green-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
                                     >
-                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-                                        <span
-                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
-                                            key={`paper-${paperTradingOptions[paperIdx]}`}
-                                        >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`paper-${paperTradingOptions[paperIdx]}`}>
                                             {checkingAccess ? 'Checking access…' : `${paperTradingOptions[paperIdx]}`}
                                         </span>
-                                    </Button>
+                                    </Button> */}
 
-                                    {/* Stock Screener - Yellow */}
-                                    <Button
-                                        size='lg'
+                                {/* Stock Screener - Yellow */}
+                                {/* <Button
+                                        size="lg"
                                         onClick={openSubscribeFlow}
                                         disabled={authLoading || checkingAccess}
-                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-orange-400 to-yellow-500 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-yellow-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
+                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-orange-400 to-yellow-500 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-yellow-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
                                     >
-                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-                                        <span
-                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
-                                            key={`screener-${stockScreenerOptions[screenerIdx]}`}
-                                        >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`screener-${stockScreenerOptions[screenerIdx]}`}>
                                             {checkingAccess ? 'Checking access…' : `${stockScreenerOptions[screenerIdx]}`}
                                         </span>
-                                    </Button>
+                                    </Button> */}
 
-                                    {/* Watchlist - Red */}
-                                    <Button
-                                        size='lg'
+                                {/* Watchlist - Red */}
+                                {/* <Button
+                                        size="lg"
                                         onClick={openSubscribeFlow}
                                         disabled={authLoading || checkingAccess}
-                                        className='group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-red-400 to-rose-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-red-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl'
+                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-red-400 to-rose-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-red-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
                                     >
-                                        <div className='absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-                                        <span
-                                            className='relative block w-full text-center whitespace-normal break-words leading-tight'
-                                            key={`watchlist-${watchlistOptions[watchlistIdx]}`}
-                                        >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`watchlist-${watchlistOptions[watchlistIdx]}`}>
                                             {checkingAccess ? 'Checking access…' : `${watchlistOptions[watchlistIdx]}`}
                                         </span>
-                                    </Button>
-                                </div>
+                                    </Button> */}
+                                {/* </div> */}
 
-                                {/* Newsletter Signup field (click opens same flow) */}
-                                <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20'>
-                                    <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
-                                        <Input
-                                            placeholder='Join our Newsletter'
-                                            className='flex-1 bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base sm:text-lg py-4 sm:py-5 md:py-6'
-                                            readOnly
-                                            onClick={openSubscribeFlow}
-                                        />
-                                        <Button
-                                            onClick={openSubscribeFlow}
-                                            className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white px-6 sm:px-8 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black cursor-pointer shadow-lg'
-                                            disabled={authLoading || checkingAccess}
-                                        >
-                                            {checkingAccess ? 'Checking…' : 'Subscribe'}
-                                        </Button>
-                                    </div>
-                                </div>
+                                {/* ✅ Redesigned newsletter subscribe section (new style image) */}
+                                <NewsletterSubscribeBar />
                             </div>
                         </div>
 
@@ -544,17 +570,17 @@ function Home() {
 
                         <h2 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-8 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent animate-gradient bg-300%'>
-                                Learn Multiple Day
+                                Learn Multiple <br className='inline sm:hidden' /> Day
                             </span>
-                            <br />
-                            <span className='text-white'>Trading</span>{' '}
+                            <br className='hidden sm:inline' />
+                            <span className='text-white'>&nbsp;Trading</span> <br className='inline sm:hidden' />
                             <span className='relative inline-block'>
                                 <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>Strategies</span>
                                 <div className='absolute -bottom-4 left-0 right-0 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full opacity-60 animate-pulse'></div>
                             </span>
                         </h2>
 
-                        <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light'>
+                        <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light mt-7'>
                             Transform from beginner to <span className='text-[#4cc7e8] font-bold'>elite trader</span> with our revolutionary framework that has
                             generated <span className='text-[#2c7bbe] font-bold'>$12.8M+</span> in profits
                         </p>
@@ -567,30 +593,18 @@ function Home() {
                         <div className='grid lg:grid-cols-3 gap-12 lg:gap-8 relative z-10'>
                             {/* Step 1: Problem Analysis */}
                             <div className='group relative animate-slide-in-right delay-400'>
-                                {/* Floating Number Badge */}
-                                <div className='absolute -top-6 left-8 z-20'>
-                                    <div className='w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-green-500/40 transform group-hover:scale-110 transition-transform duration-300'>
-                                        <span className='text-white font-black text-lg'>3</span>
-                                    </div>
-                                </div>
-
                                 {/* Glowing Background Effect */}
-                                <div className='absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
+                                {/* <div className='absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-green-500/30 hover:border-green-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-green-500/20 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-green-500/30 min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 rounded-t-3xl'></div>
-
-                                    {/* Floating Icons */}
-                                    <div className='absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-300'>
-                                        <Rocket className='w-8 h-8 text-green-400 animate-bounce' />
-                                    </div>
 
                                     {/* Header */}
                                     <div className='mb-8'>
                                         <div className='flex items-center space-x-4 mb-6'>
-                                            <div className='w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
+                                            <div className='w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl'>
                                                 <DollarSign className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
@@ -636,7 +650,7 @@ function Home() {
                                             ].map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className='flex items-center justify-between p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 transform hover:scale-105 transition-transform duration-300'
+                                                    className='flex items-center justify-between p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20'
                                                 >
                                                     <div className='flex items-center space-x-4'>
                                                         <div className='w-10 h-10 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center'>
@@ -665,40 +679,23 @@ function Home() {
                                             </div> */}
                                         </div>
                                     </div>
-
-                                    {/* Floating Elements */}
-                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
-                                        <Rocket className='w-8 h-8 text-white' />
-                                    </div>
                                 </div>
                             </div>
 
                             {/* Step 2: Strategy Selection */}
                             <div className='group relative animate-slide-in-up delay-200'>
-                                {/* Floating Number Badge */}
-                                <div className='absolute -top-6 left-8 z-20'>
-                                    <div className='w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-orange-500/40 transform group-hover:scale-110 transition-transform duration-300'>
-                                        <span className='text-white font-black text-lg'>2</span>
-                                    </div>
-                                </div>
-
                                 {/* Glowing Background Effect */}
-                                <div className='absolute inset-0 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
+                                {/* <div className='absolute inset-0 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-orange-500/30 hover:border-orange-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-orange-500/20 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-orange-500/30 min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-600 rounded-t-3xl'></div>
-
-                                    {/* Floating Icons */}
-                                    <div className='absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-300'>
-                                        <RefreshCw className='w-8 h-8 text-orange-400 animate-spin-slow' />
-                                    </div>
 
                                     {/* Header */}
                                     <div className='mb-8'>
                                         <div className='flex items-center space-x-4 mb-6'>
-                                            <div className='w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
+                                            <div className='w-16 h-16 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-xl'>
                                                 <Layers className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
@@ -741,7 +738,7 @@ function Home() {
                                             ].map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-2xl border border-orange-500/20 transform hover:scale-105 transition-transform duration-300'
+                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-2xl border border-orange-500/20'
                                                 >
                                                     <div className='w-10 h-10 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-xl flex items-center justify-center'>
                                                         <item.icon className={`w-5 h-5 ${item.color}`} />
@@ -766,40 +763,23 @@ function Home() {
                                             {/* <div className='text-gray-400 text-sm mt-2'>Optimized for current volatility</div> */}
                                         </div>
                                     </div>
-
-                                    {/* Floating Elements */}
-                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
-                                        <RefreshCw className='w-8 h-8 text-white animate-spin-slow' />
-                                    </div>
                                 </div>
                             </div>
+
                             {/* Step 3: Problem Analysis */}
-
                             <div className='group relative animate-slide-in-left'>
-                                {/* Floating Number Badge */}
-                                <div className='absolute -top-6 left-8 z-20'>
-                                    <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-500/40 transform group-hover:scale-110 transition-transform duration-300'>
-                                        <span className='text-white font-black text-lg'>1</span>
-                                    </div>
-                                </div>
-
                                 {/* Glowing Background Effect */}
-                                <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-60'></div>
+                                {/* <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-red-500/30 hover:border-red-400/60 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 shadow-2xl shadow-red-500/20 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-red-500/30 min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-rose-500 to-red-600 rounded-t-3xl'></div>
-
-                                    {/* Floating Icons */}
-                                    <div className='absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity duration-300'>
-                                        <AlertTriangle className='w-8 h-8 text-red-400 animate-pulse' />
-                                    </div>
 
                                     {/* Header */}
                                     <div className='mb-8'>
                                         <div className='flex items-center space-x-4 mb-6'>
-                                            <div className='w-16 h-16 bg-gradient-to-br from-red-400 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse'>
+                                            <div className='w-16 h-16 bg-gradient-to-br from-red-400 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl'>
                                                 <Clock className='w-8 h-8 text-white' />
                                             </div>
                                             <div>
@@ -812,7 +792,7 @@ function Home() {
                                     {/* Content */}
                                     <div className='flex-1 space-y-6'>
                                         <h4 className='text-3xl font-black text-white leading-tight'>
-                                            <span className='text-red-400'>Stop Losing Money on Stock Market Volatility</span>
+                                            <span className='text-red-400'>Manage Volatility</span>
                                         </h4>
 
                                         <p className='text-gray-300 leading-relaxed text-lg'>
@@ -842,7 +822,7 @@ function Home() {
                                             ].map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl border border-red-500/20 transform hover:scale-105 transition-transform duration-300'
+                                                    className='flex items-center space-x-4 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl border border-red-500/20'
                                                 >
                                                     <div className='w-10 h-10 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xl flex items-center justify-center'>
                                                         <item.icon className={`w-5 h-5 ${item.color}`} />
@@ -867,20 +847,14 @@ function Home() {
                                             <div className='text-red-400 text-sm mt-2'>Avoiding 73% of potential losses</div> */}
                                         </div>
                                     </div>
-
-                                    {/* Floating Elements */}
-                                    <div className='absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-2xl animate-bounce-slow opacity-80'>
-                                        <AlertTriangle className='w-8 h-8 text-white' />
-                                    </div>
                                 </div>
                             </div>
-                            {/* Step 3: Profit Execution */}
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Newsletter Section - Enhanced with Learn More Lottie Animation */}
+            {/* Newsletter Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
@@ -893,6 +867,7 @@ function Home() {
                             staying up to date with the latest information available.
                         </p>
                     </div>
+
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
                         {/* LEFT - Benefits List */}
                         <div className='space-y-6'>
@@ -907,16 +882,15 @@ function Home() {
                                     key={index}
                                     className='flex items-center space-x-3 p-4 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'
                                 >
-                                    <CheckCircle className={`w-5 h-5 text-green-400 flex-shrink-0 `} />
-                                    <span className={`text-sm sm:text-base leading-relaxed text-gray-300`}>{item}</span>
+                                    <CheckCircle className='w-5 h-5 text-green-400 flex-shrink-0' />
+                                    <span className='text-sm sm:text-base leading-relaxed text-gray-300'>{item}</span>
                                 </div>
                             ))}
                         </div>
 
-                        {/* RIGHT - Lottie Animation and Subscribe Form */}
+                        {/* RIGHT - Lottie + NEW subscribe bar design */}
                         <div className='space-y-8'>
-                            {/* Learn More Lottie Animation */}
-                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto bg-re'>
+                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
                                 <LottieAnimation
                                     src='/animations/LearnMore2.json'
                                     className='w-[90%] h-full sm:w-[400px] sm:h-[380px] md:w-[500px] md:h-[420px] lg:w-[550px] lg:h-[450px]'
@@ -925,24 +899,8 @@ function Home() {
                                 />
                             </div>
 
-                            {/* Newsletter Signup Form */}
-                            <div className='bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2a8dcc]/10 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#4cc7e8]/30 shadow-2xl shadow-[#2c7bbe]/20 w-full sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto'>
-                                <div className='flex flex-col sm:flex-row gap-3 sm:gap-4'>
-                                    <Input
-                                        placeholder='Join our Newsletter'
-                                        className='flex-1 bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base sm:text-lg py-4 sm:py-5 md:py-6'
-                                        readOnly
-                                        onClick={openSubscribeFlow}
-                                    />
-                                    <Button
-                                        onClick={openSubscribeFlow}
-                                        className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white px-6 sm:px-8 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black cursor-pointer shadow-lg'
-                                        disabled={authLoading || checkingAccess}
-                                    >
-                                        {checkingAccess ? 'Checking…' : 'Subscribe'}
-                                    </Button>
-                                </div>
-                            </div>
+                            {/* ✅ New design from your image */}
+                            <NewsletterSubscribeBar className='w-full sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto' />
                         </div>
                     </div>
                 </div>
@@ -955,7 +913,7 @@ function Home() {
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <DialogHeader className='space-y-2'>
                         <DialogTitle className='text-2xl font-black text-white'>Checking access…</DialogTitle>
-                        <DialogDescription className='text-[#4cc7e8] font-semibold'>Verifying your newsletter subscription status</DialogDescription>
+                        <DialogDesc className='text-[#4cc7e8] font-semibold'>Verifying your newsletter subscription status</DialogDesc>
                     </DialogHeader>
                     <div className='flex flex-col items-center justify-center py-8'>
                         <div className='w-10 h-10 rounded-full border-4 border-[#2c7bbe]/30 border-t-[#4cc7e8] animate-spin'></div>
@@ -972,84 +930,7 @@ function Home() {
                 </DialogContent>
             </Dialog>
 
-            {/* 2) Signup Required */}
-            <Dialog open={isSignupModalOpen} onOpenChange={setIsSignupModalOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-4xl rounded-4xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setIsSignupModalOpen(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-                    <DialogHeader className='space-y-6'>
-                        <div className='flex items-center justify-center flex-col space-x-4'>
-                            <div className='w-16 h-16 mb-4 p-2 border-[#2c7bbe] border-2 rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Image
-                                    src='/logocolored.png'
-                                    alt='Black Snow Logo'
-                                    width={100}
-                                    height={100}
-                                    className='object-contain w-full h-full  drop-shadow-2xl'
-                                    priority
-                                />
-                            </div>
-                            <div>
-                                <DialogTitle className='text-2xl font-black text-white text-center mb-2'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold text-center'>
-                                    You can&apos;t access the newsletter feature until you sign up.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <div className='text-center py-4 space-y-4'>
-                        {/* <p className='text-gray-300 leading-relaxed'>Please sign up to proceed with your subscription.</p> */}
-                        <AuthModalTrigger buttonText='Signup' defaultView='signup' sourceRoute='/' redirectAfterLogin='/' redirectAfterSignup='/pricing'>
-                            <Button
-                                onClick={() => router.push('/login?signup')}
-                                className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                            >
-                                Signup
-                            </Button>
-                        </AuthModalTrigger>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* 3) Purchase Required */}
-            <Dialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setIsPurchaseModalOpen(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-                    <DialogHeader className='space-y-6 pb-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Calendar className='w-6 h-6 text-white' />
-                            </div>
-                            <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Purchase Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
-                                    You need to purchase a Newsletter subscription to proceed.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>Please purchase a subscription to access the newsletter.</p>
-                        <Button
-                            onClick={() => router.push('/pricing')}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                        >
-                            Products
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* 4) Subscribe Form (only when purchased) */}
+            {/* 2) Subscribe Form (only when purchased) */}
             <Dialog open={isSubscribeFormOpen} onOpenChange={setIsSubscribeFormOpen}>
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <button
@@ -1066,14 +947,13 @@ function Home() {
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Subscribe to Newsletter</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>Enter your details to receive updates.</DialogDescription>
+                                <DialogDesc className='text-[#4cc7e8] font-semibold'>Enter your details to receive updates.</DialogDesc>
                             </div>
                         </div>
                     </DialogHeader>
 
                     <div className='space-y-5'>
                         <div>
-                            {/* <label className='text-sm text-gray-300 mb-2 block'>First Name</label> */}
                             <Input
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
@@ -1084,7 +964,6 @@ function Home() {
                         </div>
 
                         <div>
-                            {/* <label className='text-sm text-gray-300 mb-2 block'>Last Name</label> */}
                             <Input
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
@@ -1095,7 +974,6 @@ function Home() {
                         </div>
 
                         <div>
-                            {/* <label className='text-sm text-gray-300 mb-2 block'>Email</label> */}
                             <Input
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -1131,7 +1009,7 @@ function Home() {
                 </DialogContent>
             </Dialog>
 
-            {/* 5) Success Modal */}
+            {/* 3) Success Modal */}
             <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
                     <DialogHeader className='space-y-6 pb-2'>
@@ -1141,9 +1019,9 @@ function Home() {
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Request Submitted</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogDesc className='text-[#4cc7e8] font-semibold'>
                                     Your request was submitted successfully. We will inform you further via email.
-                                </DialogDescription>
+                                </DialogDesc>
                             </div>
                         </div>
                     </DialogHeader>
@@ -1157,6 +1035,9 @@ function Home() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* ✅ 4) Pricing Modal (logged in but NOT purchased) */}
+            <PricingComponent name='NewsLetter' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
 
             <CookieConsentBanner />
         </div>

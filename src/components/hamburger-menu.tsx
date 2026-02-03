@@ -23,7 +23,7 @@ const menuItems = [
         category: 'Resources',
         items: [
             { name: 'Affiliate Program', href: '/affiliate' },
-            { name: 'Invoice & Contract', href: '/InvoiceContract' },
+            { name: 'Business Invoice', href: '/InvoiceContract' },
             { name: 'Digital Billboard', href: '/advertising' },
             { name: 'Email Marketing', href: '/emailMarketing' },
         ],

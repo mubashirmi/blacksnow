@@ -14,6 +14,7 @@ import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
 
 function Advertising() {
+    // const pricingRef = useRef<HTMLDivElement | null>(null);
     const LottieAnimation = ({ src, loop, autoplay, style }) => {
         const containerRef = useRef(null);
 
@@ -34,6 +35,7 @@ function Advertising() {
         return <div ref={containerRef} style={style} />;
     };
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [pricingOpen, setPricingOpen] = useState(false);
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
     const [showFormModal, setShowFormModal] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -256,16 +258,15 @@ function Advertising() {
                                         </>
                                     )}
                                 </Button>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                         </div>
 
@@ -289,10 +290,6 @@ function Advertising() {
                     {/* Feature List */}
                 </div>
             </section>
-
-            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <PricingComponent name='DigitalBillboard' />
-            </div>
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
@@ -475,16 +472,15 @@ function Advertising() {
                                         </>
                                     )}
                                 </Button>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
-                                    >
-                                        <BarChart3 className='w-6 h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                >
+                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                         </div>
 
@@ -760,6 +756,8 @@ function Advertising() {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
+
+            <PricingComponent name='DigitalBillboard' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
         </div>
     );
 }

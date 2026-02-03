@@ -134,22 +134,22 @@ function Affiliate() {
 
                             {/* CTA Buttons */}
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
-                                <Link href={'/pricing'}>
+                                {/* <Link href={'/pricing'}>
                                     <Button
                                         size='lg'
                                         variant='outline'
                                         className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         <BarChart3 className='w-6 h-6 mr-3' />
-                                        View Pricings
+                                        Purchase
                                     </Button>
-                                </Link>
+                                </Link> */}
                                 <AuthModalTrigger
                                     buttonText='Join Now'
                                     defaultView='signup'
                                     sourceRoute='/affiliate'
                                     redirectAfterLogin='/affiliate'
-                                    redirectAfterSignup='/pricing'
+                                    redirectAfterSignup='/affiliate'
                                 >
                                     <Button
                                         size='lg'

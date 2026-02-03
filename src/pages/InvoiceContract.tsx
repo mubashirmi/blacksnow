@@ -22,11 +22,12 @@ import {
     Users,
     Zap,
 } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function InvoiceContractPage() {
     const howItWorksRef = useRef<HTMLDivElement | null>(null);
+    // const pricingRef = useRef<HTMLDivElement | null>(null);
+    const [pricingOpen, setPricingOpen] = useState(false);
 
     // 👉 NEW: scroll handler
     const handleScrollToHowItWorks = () => {
@@ -202,16 +203,15 @@ export default function InvoiceContractPage() {
                                 >
                                     Learn More
                                 </Button>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        <BarChart3 className='w-6 h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                         </div>
 
@@ -233,9 +233,9 @@ export default function InvoiceContractPage() {
                     </div>
                 </div>
             </section>
-            <div className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            {/* <div ref={pricingRef} className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <PricingComponent name='InvoiceTool' />
-            </div>
+            </div> */}
             {/* How It Works Section - IMPROVED */}
             <section ref={howItWorksRef} className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='absolute inset-0 bg-gradient-to-b from-transparent via-[#2c7bbe]/5 to-transparent pointer-events-none'></div>
@@ -488,16 +488,15 @@ export default function InvoiceContractPage() {
                                 >
                                     Learn More
                                 </Button>
-                                <Link href={'/pricing'}>
-                                    <Button
-                                        size='lg'
-                                        variant='outline'
-                                        className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
-                                    >
-                                        <BarChart3 className='w-6 h-6 mr-3' />
-                                        View Pricing
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setPricingOpen(true)}
+                                    variant='outline'
+                                    className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                >
+                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    Purchase
+                                </Button>
                             </div>
                         </div>
 
@@ -510,6 +509,8 @@ export default function InvoiceContractPage() {
                     </div>
                 </div>
             </section>
+
+            <PricingComponent name='InvoiceTool' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
         </div>
     );
 }

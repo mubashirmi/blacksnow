@@ -90,7 +90,6 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
-                                    { name: 'cookie policy', href: '/cookies' },
                                     // { name: 'Consultation', href: '/consultation' },
                                 ].map((link, index) => (
                                     <Link
@@ -112,7 +111,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
-                                    { name: 'Invoice & Contract', href: '/InvoiceContract' },
+                                    { name: 'Business Invoice', href: '/InvoiceContract' },
                                     { name: 'Digital Billboard', href: '/advertising' },
                                     { name: 'Email CRM', href: '/emailMarketing' },
                                 ].map((link, index) => (
@@ -139,7 +138,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Terms & Conditions', href: '/terms' },
                                     { name: 'Privacy Policy', href: '/privacy' },
                                     { name: 'GDPR', href: '/gdpr' },
-                                    { name: 'Admin dashboard', href: '/admin/dashboard' },
+                                    { name: 'Cookie Policy', href: '/cookies' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}
