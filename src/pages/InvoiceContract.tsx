@@ -177,14 +177,23 @@ export default function InvoiceContractPage() {
                         {/* Left Content */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
-                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    Create Invoices
-                                </Badge>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Business </span>
-                                    &nbsp;Invoice
-                                </h1>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div>
+                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                        Create Invoices
+                                    </Badge>
+                                </div>
+
+                                <div className='inline-block'>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                            Business{' '}
+                                        </span>
+                                        &nbsp;Invoice
+                                    </h1>
+
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                </div>
+
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Your Business Invoice system makes billing clean, fast, and effortless. Every payment is tracked, organized, and stored so
                                     you always know where your money stands. Clients receive clear, polished invoices that make paying simple and stress-free.
@@ -248,7 +257,7 @@ export default function InvoiceContractPage() {
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             How It <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Works</span>
                         </h2>
-                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Get started in four simple steps</p>
                     </div>
 
@@ -298,7 +307,7 @@ export default function InvoiceContractPage() {
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Professional Custom <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Invoices </span>
                         </h2>
-                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>
                             Send clean, branded invoices that make you look established and trustworthy. No design skills or formatting required.
                         </p>
@@ -350,7 +359,7 @@ export default function InvoiceContractPage() {
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'> Digital Solution</span>
                         </h2>
-                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Transform your document workflow</p>
                     </div>
 
@@ -389,7 +398,7 @@ export default function InvoiceContractPage() {
                         <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Perfect For Every <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Business</span>
                         </h2>
-                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Discover how our platform adapts to your needs</p>
                     </div>
 

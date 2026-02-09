@@ -59,9 +59,40 @@ function SignIn() {
         document.cookie = `${name}=${value}; expires=${expires}; path=/`;
     };
 
+    // ✅ Running banner data
+    // const bannerItems = [
+    //     'Paper Trading',
+    //     'Stock Screener',
+    //     'Watchlists',
+    //     'Calculators',
+    //     'Affiliate Programs',
+    //     'Paper Trading',
+    //     'Stock Screener',
+    //     'Watchlists',
+    //     'Calculators',
+    //     'Affiliate Programs',
+    //     'Paper Trading',
+    //     'Stock Screener',
+    //     'Watchlists',
+    //     'Calculators',
+    //     'Affiliate Programs',
+    // ];
+
+    // const BannerSegment = () => (
+    //     <div className='flex items-center gap-3 px-6'>
+    //         {bannerItems.map((item, idx) => (
+    //             <div key={`${item}-${idx}`} className='flex items-center gap-3'>
+    //                 <span className='text-gray-200 font-semibold tracking-wide'>{item}</span>
+    //                 <span className='text-[#4cc7e8]/80'>·</span>
+    //             </div>
+    //         ))}
+    //     </div>
+    // );
+
     const onSubmit = async (data: any) => {
         setIsLoading(true);
         setAlert({ type: '', message: '' });
+
         try {
             if (isSignUp) {
                 const cleaned = String(data.fullName || '')
@@ -86,6 +117,7 @@ function SignIn() {
                 } else {
                     response = await axios.post('/api/v2/signup', signupData);
                 }
+
                 const userId = response.data.user.id;
 
                 localStorage.setItem('userId', userId);
@@ -95,6 +127,7 @@ function SignIn() {
                     type: 'success',
                     message: 'Account created successfully! Please sign in.',
                 });
+
                 setIsSignUp(false);
                 reset();
                 router.push('/pricing');
@@ -159,7 +192,13 @@ function SignIn() {
     };
 
     return (
-        <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] py-10 relative overflow-hidden flex items-center justify-center'>
+        <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] py-10 pb-16 relative overflow-hidden flex flex-col items-center justify-center'>
+            {/* ✅ Background image + dark overlay */}
+            <div className='absolute inset-0'>
+                <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
+                <div className='absolute inset-0 bg-black/90' />
+            </div>
+
             <div className='relative z-10 w-full max-w-md px-6'>
                 {/* ✅ FIXED HEIGHT across login/signup AND across screens */}
                 <Card className='relative flex flex-col h-[min(600px,85vh)] sm:h-[min(600px,85vh)] bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20 animate-slide-in-up delay-200'>

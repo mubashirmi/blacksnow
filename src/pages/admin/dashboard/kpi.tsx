@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -212,7 +212,7 @@ async function fetchJSON<T>(url: string): Promise<T> {
     return (await res.json()) as T;
 }
 
-/** Builds the (Week/Month/Year) bar data from API */
+/** Builds the (Week/Month/Year) series data from API */
 function buildMetricSeries(metricData: KPIChartMetricResponse | null, metricType: MetricType) {
     if (!metricData) return [];
 
@@ -631,8 +631,8 @@ export default function KPIPage() {
                 )}
 
                 {/* ===================================================== */}
-                {/* FIXED CHART #1: Total Sales (Sales Team)              */}
-                {/* Uses: /api/v3/kpi-chart-metric?type=Sales&product=...  */}
+                {/* ✅ LINE CHART #1: Total Sales (Sales Team)            */}
+                {/* Uses: /api/v3/kpi-chart-metric?type=Sales&product=... */}
                 {/* ===================================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
@@ -691,7 +691,7 @@ export default function KPIPage() {
                     ) : salesSeries.length > 0 ? (
                         <div className='w-full'>
                             <ResponsiveContainer width='100%' height={240}>
-                                <BarChart data={salesSeries as any}>
+                                <LineChart data={salesSeries as any}>
                                     <CartesianGrid strokeDasharray='3 3' />
                                     <XAxis dataKey='period' />
                                     <YAxis />
@@ -705,15 +705,30 @@ export default function KPIPage() {
                                         }}
                                     />
                                     <Legend />
-                                    <Bar dataKey='value' name={salesMetricType === 'ChurnRate' ? 'Churn Rate' : salesMetricType}>
-                                        {(salesSeries as any).map((entry: any, idx: number) => (
-                                            <Cell
-                                                key={`sales-cell-${idx}`}
-                                                fill={entry.period === salesMetricPeriod ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'}
-                                            />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
+                                    <Line
+                                        type='monotone'
+                                        dataKey='value'
+                                        name={salesMetricType === 'ChurnRate' ? 'Churn Rate' : salesMetricType}
+                                        stroke='#2c7bbe'
+                                        strokeWidth={3}
+                                        dot={(props: any) => {
+                                            const { cx, cy, payload } = props || {};
+                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                            const active = payload?.period === salesMetricPeriod;
+                                            return (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={active ? 6 : 4}
+                                                    fill={active ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'}
+                                                    stroke='#2c7bbe'
+                                                    strokeWidth={active ? 2 : 1}
+                                                />
+                                            );
+                                        }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
                             </ResponsiveContainer>
                         </div>
                     ) : (
@@ -722,8 +737,8 @@ export default function KPIPage() {
                 </div>
 
                 {/* ===================================================== */}
-                {/* FIXED CHART #2: Total Affiliate (Basic Affiliate)      */}
-                {/* Uses: /api/v3/kpi-chart-metric?type=Affiliate&product= */}
+                {/* ✅ LINE CHART #2: Total Affiliate (Basic Affiliate)   */}
+                {/* Uses: /api/v3/kpi-chart-metric?type=Affiliate&product */}
                 {/* ===================================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
@@ -782,7 +797,7 @@ export default function KPIPage() {
                     ) : affiliateSeries.length > 0 ? (
                         <div className='w-full'>
                             <ResponsiveContainer width='100%' height={240}>
-                                <BarChart data={affiliateSeries as any}>
+                                <LineChart data={affiliateSeries as any}>
                                     <CartesianGrid strokeDasharray='3 3' />
                                     <XAxis dataKey='period' />
                                     <YAxis />
@@ -796,15 +811,30 @@ export default function KPIPage() {
                                         }}
                                     />
                                     <Legend />
-                                    <Bar dataKey='value' name={affiliateMetricType === 'ChurnRate' ? 'Churn Rate' : affiliateMetricType}>
-                                        {(affiliateSeries as any).map((entry: any, idx: number) => (
-                                            <Cell
-                                                key={`aff-cell-${idx}`}
-                                                fill={entry.period === affiliateMetricPeriod ? '#10b981' : 'rgba(16, 185, 129, 0.35)'}
-                                            />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
+                                    <Line
+                                        type='monotone'
+                                        dataKey='value'
+                                        name={affiliateMetricType === 'ChurnRate' ? 'Churn Rate' : affiliateMetricType}
+                                        stroke='#10b981'
+                                        strokeWidth={3}
+                                        dot={(props: any) => {
+                                            const { cx, cy, payload } = props || {};
+                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                            const active = payload?.period === affiliateMetricPeriod;
+                                            return (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={active ? 6 : 4}
+                                                    fill={active ? '#10b981' : 'rgba(16, 185, 129, 0.35)'}
+                                                    stroke='#10b981'
+                                                    strokeWidth={active ? 2 : 1}
+                                                />
+                                            );
+                                        }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
                             </ResponsiveContainer>
                         </div>
                     ) : (
@@ -813,7 +843,7 @@ export default function KPIPage() {
                 </div>
 
                 {/* ===================================== */}
-                {/* Chart #3: Total KPI (keep as-is)      */}
+                {/* ✅ LINE CHART #3: Total KPI           */}
                 {/* ===================================== */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex items-center justify-between gap-4 mb-4'>
@@ -829,18 +859,27 @@ export default function KPIPage() {
                         <div className='h-56 flex items-center justify-center text-gray-400'>Loading total KPI...</div>
                     ) : totalKpiChartData.length > 0 ? (
                         <ResponsiveContainer width='100%' height={260}>
-                            <BarChart data={totalKpiChartData}>
+                            <LineChart data={totalKpiChartData}>
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='name' />
                                 <YAxis />
                                 <Tooltip cursor={<HorizontalCursor />} />
                                 <Legend />
-                                <Bar dataKey='value' name='Total'>
-                                    {totalKpiChartData.map((_, idx) => (
-                                        <Cell key={`kpi-${idx}`} fill={COLORS[idx % COLORS.length]} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name='Total'
+                                    stroke='#6366f1'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, index } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const color = COLORS[(index ?? 0) % COLORS.length];
+                                        return <circle cx={cx} cy={cy} r={4} fill={color} stroke={color} strokeWidth={2} />;
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
                         </ResponsiveContainer>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No KPI totals available</div>

@@ -221,14 +221,22 @@ function Advertising() {
                         {/* Left Content */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
-                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    PREMIUM ADVERTISING
-                                </Badge>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Digital</span>
-                                    &nbsp;Billboards
-                                </h1>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div>
+                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                        PREMIUM ADVERTISING
+                                    </Badge>
+                                </div>
+                                <div className='inline-block'>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                            Digital
+                                        </span>
+                                        &nbsp;Billboards
+                                    </h1>
+
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                </div>
+
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Your Digital Billboard positions your business in front of active buyers exactly when intent is highest, running nonstop to
                                     funnel traffic back to your advertisement automatically. Every impression is monitored and optimized to maximize visibility,
@@ -242,21 +250,23 @@ function Advertising() {
                                 <Button
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    onClick={handleAdvertiseClick}
+                                    onClick={() => {
+                                        router.push('/billboards');
+                                    }}
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? (
+                                    {/* {isLoading ? (
                                         <>
                                             <Loader2 className='w-5 h-5 sm:w-6 sm:h-6 mr-3 animate-spin' />
                                             Loading...
                                         </>
-                                    ) : (
-                                        <>
-                                            <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                            Learn More
-                                            <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                        </>
-                                    )}
+                                    ) : ( */}
+                                    <>
+                                        <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        Billboards
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </>
+                                    {/* )} */}
                                 </Button>
                                 <Button
                                     size='lg'

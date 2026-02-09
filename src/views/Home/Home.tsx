@@ -318,6 +318,12 @@ function Home() {
             </AuthModalTrigger>
 
             <section className='relative flex items-center justify-center py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                {/* ✅ Background image + dark overlay */}
+                <div className='absolute inset-0'>
+                    <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
+                    <div className='absolute inset-0 bg-black/90' />
+                </div>
+
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* LEFT */}
@@ -350,48 +356,6 @@ function Home() {
                             </div>
 
                             <div className='space-y-6 sm:space-y-8 animate-slide-in-left delay-400 overflow-hidden'>
-                                {/* <div className="flex flex-col sm:flex-row gap-4 sm:gap-6"> */}
-                                {/* Paper Trading - Green */}
-                                {/* <Button
-                                        size="lg"
-                                        onClick={openSubscribeFlow}
-                                        disabled={authLoading || checkingAccess}
-                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-green-400 to-emerald-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-green-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`paper-${paperTradingOptions[paperIdx]}`}>
-                                            {checkingAccess ? 'Checking access…' : `${paperTradingOptions[paperIdx]}`}
-                                        </span>
-                                    </Button> */}
-
-                                {/* Stock Screener - Yellow */}
-                                {/* <Button
-                                        size="lg"
-                                        onClick={openSubscribeFlow}
-                                        disabled={authLoading || checkingAccess}
-                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-orange-400 to-yellow-500 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-yellow-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`screener-${stockScreenerOptions[screenerIdx]}`}>
-                                            {checkingAccess ? 'Checking access…' : `${stockScreenerOptions[screenerIdx]}`}
-                                        </span>
-                                    </Button> */}
-
-                                {/* Watchlist - Red */}
-                                {/* <Button
-                                        size="lg"
-                                        onClick={openSubscribeFlow}
-                                        disabled={authLoading || checkingAccess}
-                                        className="group relative w-full sm:flex-1 sm:h-[20px] flex items-center justify-center bg-gradient-to-br from-red-400 to-rose-600 animate-pulse text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-black shadow-2xl shadow-red-600/40 transition-all duration-500 transform rounded-xl sm:rounded-xl"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        <span className="relative block w-full text-center whitespace-normal break-words leading-tight" key={`watchlist-${watchlistOptions[watchlistIdx]}`}>
-                                            {checkingAccess ? 'Checking access…' : `${watchlistOptions[watchlistIdx]}`}
-                                        </span>
-                                    </Button> */}
-                                {/* </div> */}
-
-                                {/* ✅ Redesigned newsletter subscribe section (new style image) */}
                                 <NewsletterSubscribeBar />
                             </div>
                         </div>
@@ -433,19 +397,18 @@ function Home() {
                     <div className='grid lg:grid-cols-2 gap-12'>
                         {/* Covered Calls */}
                         <div className='group relative animate-slide-in-left'>
-                            <div className='absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500'></div>
-                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-green-500/30 hover:border-green-400/50 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105'>
-                                <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500'></div>
-
+                            {/* <div className='absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500'></div> */}
+                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-white/35 transition-all duration-500 rounded-3xl overflow-hidden'>
+                                <div className='absolute top-0 left-0 w-full h-[3px] bg-white/45'></div>
                                 <CardHeader className='p-8'>
                                     <div className='flex items-center justify-between mb-4'>
                                         <div className='flex items-center space-x-4'>
-                                            <div className='w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg animate-pulse'>
-                                                <TrendingUp className='w-7 h-7 text-white' />
+                                            <div className='w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border-white/5 border-[1px]'>
+                                                <TrendingUp className='w-7 h-7 text-[#2c7bbe]' />
                                             </div>
                                             <div>
-                                                <CardTitle className='text-2xl font-bold text-white'>MOBILE & TABLET COMPATIBILITY</CardTitle>
-                                                <CardDescription className='text-green-400 font-semibold text-base'>
+                                                <CardTitle className='text-2xl font-bold text-[#2c7bbe]'>MOBILE & TABLET COMPATIBILITY</CardTitle>
+                                                <CardDescription className='text-[#2c7bbe] font-semibold text-base'>
                                                     Paper Trade Anywhere — Fully Responsive Platform
                                                 </CardDescription>
                                             </div>
@@ -455,9 +418,9 @@ function Home() {
 
                                 <CardContent className='p-8 pt-0 space-y-6'>
                                     <div className='space-y-4'>
-                                        <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 Optimized for Touch & Efficiency:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
@@ -467,9 +430,9 @@ function Home() {
                                             </p>
                                         </div>
 
-                                        <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 Adaptive Screen Layouts:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
@@ -479,9 +442,9 @@ function Home() {
                                             </p>
                                         </div>
 
-                                        <div className='bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 Real-Time Data, Real Market Behavior:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
@@ -496,19 +459,19 @@ function Home() {
 
                         {/* Protective Puts */}
                         <div className='group relative animate-slide-in-right'>
-                            <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500'></div>
-                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-red-500/30 hover:border-red-400/50 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105'>
-                                <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 to-rose-500'></div>
+                            {/* <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500'></div> */}
+                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-white/35 transition-all duration-500 rounded-3xl overflow-hidden'>
+                                <div className='absolute top-0 left-0 w-full h-[3px] bg-white/45'></div>
 
                                 <CardHeader className='p-8'>
                                     <div className='flex items-center justify-between mb-4'>
                                         <div className='flex items-center space-x-4'>
-                                            <div className='w-14 h-14 bg-gradient-to-br from-red-400 to-rose-500 rounded-2xl flex items-center justify-center shadow-lg animate-pulse'>
-                                                <Shield className='w-7 h-7 text-white' />
+                                            <div className='w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border-white/5 border-[1px]'>
+                                                <Shield className='w-7 h-7 text-[#2c7bbe]' />
                                             </div>
                                             <div>
-                                                <CardTitle className='text-2xl font-bold text-white'>DESKTOP COMPATIBILITY</CardTitle>
-                                                <CardDescription className='text-red-400 font-semibold text-base'>
+                                                <CardTitle className='text-2xl font-bold text-[#2c7bbe]'>DESKTOP COMPATIBILITY</CardTitle>
+                                                <CardDescription className='text-[#2c7bbe] font-semibold text-base'>
                                                     Professional Desktop Trading Workspace
                                                 </CardDescription>
                                             </div>
@@ -518,9 +481,9 @@ function Home() {
 
                                 <CardContent className='p-8 pt-0 space-y-6'>
                                     <div className='space-y-4'>
-                                        <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 Multi-Panel Workspace:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
@@ -530,9 +493,9 @@ function Home() {
                                             </p>
                                         </div>
 
-                                        <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 High-Resolution Market Visualization:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>
@@ -541,9 +504,9 @@ function Home() {
                                             </p>
                                         </div>
 
-                                        <div className='bg-gradient-to-r from-red-500/10 to-rose-500/10 rounded-2xl p-6 border border-red-500/20 transform hover:scale-105 transition-transform duration-300'>
+                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
                                             <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-red-400 rounded-full mr-3 animate-pulse'></div>
+                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
                                                 Keyboard-Driven Speed & Precision:
                                             </h4>
                                             <p className='text-gray-300 leading-relaxed text-sm'>

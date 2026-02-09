@@ -146,14 +146,21 @@ function EmailMarketing() {
                         {/* Left Content */}
                         <div className='space-y-10 animate-slide-in-left'>
                             <div>
-                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    POWERFUL EMAIL MARKETING
-                                </Badge>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    Email/SMS{' '}
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
-                                </h1>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div>
+                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                        POWERFUL EMAIL MARKETING
+                                    </Badge>
+                                </div>
+
+                                <div className='inline-block'>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                        Email/SMS{' '}
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
+                                    </h1>
+
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                </div>
+
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     Our Combined Email/SMS CRM is designed for fast deployment, clean automation, and high deliverability. You can launch email
                                     campaigns and automated sequences in minutes with no technical setup. Upload your lists instantly and start messaging

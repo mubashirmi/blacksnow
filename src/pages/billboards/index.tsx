@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ExternalLink, Facebook, Globe, Monitor, Podcast, Twitter, Users, Youtube } from 'lucide-react';
+import { ArrowRight, ExternalLink, Facebook, Globe, Mail, MessageSquareText, Monitor, Podcast, Share2, Twitter, Users, X, Youtube } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
@@ -34,6 +34,12 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Share banner state (per selected billboard)
+    const [shareOpen, setShareOpen] = useState(false);
+    const [shareTitle, setShareTitle] = useState<string>('');
+    const [shareDescription, setShareDescription] = useState<string>('');
+    const [shareUrl, setShareUrl] = useState<string>('');
+
     useEffect(() => {
         const fetchBillboards = async () => {
             try {
@@ -53,8 +59,18 @@ export default function Page() {
         fetchBillboards();
     }, []);
 
+    const openShareForBillboard = (b: Billboard) => {
+        const path = `/billboards/${b.id}`;
+        const absolute = typeof window !== 'undefined' ? `${window.location.origin}${path}` : path;
+
+        setShareTitle(b.fullName || b.companyName || 'Billboard');
+        setShareDescription(b.description || b.companyName || 'Digital Billboard');
+        setShareUrl(absolute);
+        setShareOpen(true);
+    };
+
     return (
-        <div className='min-h-screen bg-black overflow-hidden relative'>
+        <div className='min-h-screen bg-black overflow-hidden relative pb-24'>
             {/* Five-dot spinner CSS (move to globals if you prefer) */}
             <style jsx global>{`
                 .dot-spinner {
@@ -162,7 +178,7 @@ export default function Page() {
                     ) : (
                         <div className='grid gap-8 md:grid-cols-2 xl:grid-cols-3'>
                             {billboards.map((b) => (
-                                <BillboardCard key={b.id} b={b} />
+                                <BillboardCard key={b.id} b={b} onShare={() => openShareForBillboard(b)} />
                             ))}
                         </div>
                     )}
@@ -178,7 +194,6 @@ export default function Page() {
                     <h2 className='text-4xl md:text-5xl font-black text-white mb-4'>
                         Ready to <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Showcase</span>?
                     </h2>
-                    {/* <p className='text-lg text-gray-300 max-w-3xl mx-auto'>Big impact without overwhelming the page.</p> */}
                     <div className='flex flex-col sm:flex-row gap-6 justify-center pt-8'>
                         <Link href='/login?signup'>
                             <Button className='group bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white px-10 py-6 text-base font-bold shadow-2xl shadow-[#259dd3]/40 transition-all duration-300 transform hover:scale-[1.02] cursor-pointer w-full sm:w-[300px]'>
@@ -199,6 +214,85 @@ export default function Page() {
                     </div>
                 </div>
             </section>
+
+            {/* ✅ Fixed Share Banner (shows ONLY after clicking share on a billboard card) */}
+            {shareOpen && <ShareBannerInline title={shareTitle} description={shareDescription} url={shareUrl} onClose={() => setShareOpen(false)} />}
+        </div>
+    );
+}
+
+/* ---------- Share Banner (INLINE in same page) ---------- */
+
+function isIOS() {
+    if (typeof window === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
+function ShareBannerInline({ title, description, url, onClose }: { title?: string; description?: string; url: string; onClose: () => void }) {
+    const shareText = useMemo(() => {
+        const parts = [title ? `Check this out: ${title}` : 'Check this out!', description || null, url || null].filter(Boolean);
+        return parts.join('\n');
+    }, [title, description, url]);
+
+    const smsHref = useMemo(() => {
+        const body = encodeURIComponent(shareText);
+        return isIOS() ? `sms:&body=${body}` : `sms:?&body=${body}`;
+    }, [shareText]);
+
+    const emailHref = useMemo(() => {
+        const subject = encodeURIComponent(title ? `Shared: ${title}` : 'Shared link');
+        const body = encodeURIComponent(shareText);
+        return `mailto:?subject=${subject}&body=${body}`;
+    }, [title, shareText]);
+
+    return (
+        <div
+            className='fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-black/70 backdrop-blur'
+            style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
+        >
+            <div className='mx-auto max-w-7xl px-4 py-3'>
+                <div className='flex items-center gap-3'>
+                    <div className='hidden sm:flex items-center gap-2 text-white/80 text-sm'>
+                        <Share2 className='w-4 h-4' />
+                        <span className='truncate max-w-[380px]'>{title || 'Share'}</span>
+                    </div>
+
+                    <div className='flex w-full gap-3'>
+                        {/* SMS LEFT (GREEN) */}
+                        <a
+                            href={smsHref}
+                            className='flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold bg-green-500 hover:bg-green-600 text-white transition'
+                            aria-label='Share via SMS'
+                            title='Share via SMS'
+                        >
+                            <MessageSquareText className='w-5 h-5' />
+                            SMS
+                        </a>
+
+                        {/* EMAIL RIGHT (YELLOW) */}
+                        <a
+                            href={emailHref}
+                            className='flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold bg-yellow-400 hover:bg-yellow-500 text-black transition'
+                            aria-label='Share via Email'
+                            title='Share via Email'
+                        >
+                            <Mail className='w-5 h-5' />
+                            Email
+                        </a>
+
+                        {/* Close */}
+                        <button
+                            type='button'
+                            onClick={onClose}
+                            className='shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition text-white'
+                            aria-label='Close share banner'
+                            title='Close'
+                        >
+                            <X className='w-5 h-5' />
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -215,7 +309,7 @@ function getDomain(url?: string | null) {
     }
 }
 
-function BillboardCard({ b }: { b: Billboard }) {
+function BillboardCard({ b, onShare }: { b: Billboard; onShare: () => void }) {
     const socials = useMemo(
         () =>
             [
@@ -276,30 +370,39 @@ function BillboardCard({ b }: { b: Billboard }) {
                     {b.companyName && <p className='text-[#7bd3f6] font-semibold text-sm md:text-base truncate'>{b.companyName}</p>}
                     {b.description && <p className='mt-2 text-gray-200 text-sm md:text-[15px] line-clamp-2'>{b.description}</p>}
 
-                    {/* Compact socials row */}
-                    {socials.length > 0 && (
-                        <div className='mt-3 flex items-center gap-2'>
-                            {socials.map((s, i) => (
-                                <Link
-                                    key={i}
-                                    href={s.url as string}
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                    className='inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 border border-white/15 hover:bg-white/15 transition text-white'
-                                    aria-label={s.label}
-                                    title={s.label}
-                                >
-                                    <s.icon className='w-4.5 h-4.5' />
-                                </Link>
-                            ))}
-                            <Link href={`/billboards/${b.id}`} className='ml-auto'>
-                                <Button className='h-9 px-3 text-xs bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white cursor-pointer'>
-                                    Visit
-                                    <ArrowRight className='w-3.5 h-3.5 ml-1.5' />
-                                </Button>
+                    {/* Actions row (socials + share + visit) */}
+                    <div className='mt-3 flex items-center gap-2'>
+                        {socials.map((s, i) => (
+                            <Link
+                                key={i}
+                                href={s.url as string}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 border border-white/15 hover:bg-white/15 transition text-white'
+                                aria-label={s.label}
+                                title={s.label}
+                            >
+                                <s.icon className='w-4.5 h-4.5' />
                             </Link>
-                        </div>
-                    )}
+                        ))}
+
+                        <button
+                            type='button'
+                            onClick={onShare}
+                            className='ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 border border-white/15 hover:bg-white/15 transition text-white'
+                            aria-label='Share billboard'
+                            title='Share'
+                        >
+                            <Share2 className='w-4.5 h-4.5' />
+                        </button>
+
+                        <Link href={`/billboards/${b.id}`}>
+                            <Button className='h-9 px-3 text-xs bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white cursor-pointer'>
+                                Visit
+                                <ArrowRight className='w-3.5 h-3.5 ml-1.5' />
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </article>

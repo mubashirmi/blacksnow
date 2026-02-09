@@ -29,12 +29,15 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             received: typeParam,
         });
     }
+    console.log(product);
 
     const revenueFrom = (from: Date, role: Role | null, product: string | null) =>
         prisma.checkout.aggregate({
             where: {
                 createdAt: { gte: from },
                 deleted: false,
+                // eslint-disable-next-line
+                product: product ? product : undefined,
                 paid: true,
                 ...(role ? { auth: { roles: { has: role } } } : {}),
             },

@@ -32,20 +32,28 @@ function CareersTitle() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
+                        <div className='animate-slide-in-left'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    FOR JOB SEEKERS
-                                </Badge>
-                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>Careers</h2>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div className='w-full'>
+                                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                        FOR JOB SEEKERS
+                                    </Badge>
+                                </div>
+
+                                {/* ✅ wrapper makes width = heading text width */}
+                                <div className='inline-block'>
+                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>Careers</h2>
+
+                                    {/* ✅ line now matches heading width */}
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-6'></div>
+                                </div>
+                            </div>
+
+                            <div className='space-y-4 sm:space-y-5 mb-8 sm:mb-10'>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Join us in reshaping the future for employee job search across all 50 States in the United States. Black Snow is committed
                                     to helping you find employment through a series of job posts across many different markets.
                                 </p>
-                            </div>
-
-                            <div className='space-y-4 sm:space-y-5'>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Our Recruiters work diligently to match your experience and credentials to jobs in{' '}
                                     <span className='text-[#4cc7e8] font-semibold'>Sales, Finance, Trucking, Warehouse, Medicine</span>,{' '}
@@ -129,20 +137,28 @@ function CareersTitle() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-right'>
+                        <div className='animate-slide-in-right'>
                             <div>
-                                <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    FOR EMPLOYERS
-                                </Badge>
-                                <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
-                                    <br />
-                                    Inquiry
-                                </h2>
-                                <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                <div className='w-full'>
+                                    <Badge className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                        FOR EMPLOYERS
+                                    </Badge>
+                                </div>
+
+                                {/* ✅ wrapper makes width = heading text width */}
+                                <div className='inline-block'>
+                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
+                                        <br />
+                                        Inquiry
+                                    </h2>
+
+                                    {/* ✅ line now matches heading width */}
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full  mb-4 sm:mb-6'></div>
+                                </div>
                             </div>
 
-                            <div className='space-y-4 sm:space-y-5'>
+                            <div className='space-y-4 sm:space-y-5  mb-8 sm:mb-10'>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     We take pride in helping you find the best candidates nationwide and around the world. Let us assist you in talent discovery
                                     as well as finding candidates that match your company criteria, work experience, and credentials.

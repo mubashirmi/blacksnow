@@ -1,14 +1,14 @@
 'use client';
 
-import { AuthModalTrigger } from '@/components/AuthModal';
+// import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import lottie from 'lottie-web';
-import { ArrowRight, Calendar, Clock, Eye, Mail, Settings } from 'lucide-react';
+// import lottie from 'lottie-web';
+import { ArrowRight, Calendar, Clock, Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function BlogDirectory() {
     const [blogs, setBlogs] = useState([]);
@@ -37,23 +37,23 @@ function BlogDirectory() {
 
     console.log(error);
 
-    const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
-        const containerRef = useRef<HTMLDivElement>(null);
-        useEffect(() => {
-            if (containerRef.current) {
-                const animation = lottie.loadAnimation({
-                    container: containerRef.current,
-                    renderer: 'svg',
-                    loop,
-                    autoplay,
-                    path: src,
-                });
-                return () => animation.destroy();
-            }
-        }, [src, loop, autoplay]);
+    // const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
+    //     const containerRef = useRef<HTMLDivElement>(null);
+    //     useEffect(() => {
+    //         if (containerRef.current) {
+    //             const animation = lottie.loadAnimation({
+    //                 container: containerRef.current,
+    //                 renderer: 'svg',
+    //                 loop,
+    //                 autoplay,
+    //                 path: src,
+    //             });
+    //             return () => animation.destroy();
+    //         }
+    //     }, [src, loop, autoplay]);
 
-        return <div ref={containerRef} style={style} />;
-    };
+    //     return <div ref={containerRef} style={style} />;
+    // };
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -89,30 +89,26 @@ function BlogDirectory() {
         );
     }
 
-    // if (error) {
-    //     return (
-    //         <div className='min-h-screen bg-[#050608] flex items-center justify-center'>
-    //             <p className='text-red-400 text-lg font-semibold'>{error}</p>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Hero Section */}
             <section className='relative pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                        INSIGHTS & STRATEGIES
-                    </Badge>
-                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog&nbsp;</span>
-                        <span className='text-white'>Directory</span>
-                    </h1>
-                    <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
-                    {/* <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
-                        Stay ahead with expert trading insights, market analysis, and exclusive strategies from Black Snow.
-                    </p> */}
+                    <div>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            INSIGHTS & STRATEGIES
+                        </Badge>
+                    </div>
+
+                    {/* underline = exact heading width */}
+                    <div className='inline-block'>
+                        <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog&nbsp;</span>
+                            <span className='text-white'>Directory</span>
+                        </h1>
+
+                        <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div>
+                    </div>
                 </div>
             </section>
 
@@ -203,7 +199,7 @@ function BlogDirectory() {
             </section>
 
             {/* Final CTA */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
@@ -260,7 +256,7 @@ function BlogDirectory() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     );
 }

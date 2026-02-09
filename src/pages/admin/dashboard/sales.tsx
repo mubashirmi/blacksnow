@@ -156,8 +156,6 @@ export default function SalesPage() {
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>First Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Last Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
-                                    {/* <th className='text-left py-3 px-4 font-medium text-slate-700'>Role</th> */}
-                                    {/* <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -167,15 +165,6 @@ export default function SalesPage() {
                                         <td className='py-3 px-4'>{person.firstName}</td>
                                         <td className='py-3 px-4'>{person.lastName}</td>
                                         <td className='py-3 px-4 text-blue-600'>{person.email}</td>
-                                        {/* <td className='py-3 px-4'>{person.role}</td> */}
-                                        {/* <td className='py-3 px-4'>
-                                            <span
-                                                className={`px-2 py-1 rounded-full text-xs font-medium ${person.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                                    }`}
-                                            >
-                                                {person.status}
-                                            </span>
-                                        </td> */}
                                         <td className='py-3 px-4'>
                                             <button
                                                 onClick={() =>
