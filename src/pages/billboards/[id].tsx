@@ -1,3 +1,4 @@
+import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ExternalLink, Facebook, Globe, Podcast, Twitter, Youtube } from 'lucide-react';
@@ -122,7 +123,7 @@ export default function BillboardDetailPage() {
                 <div className='absolute -bottom-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#4cc7e8]/15 blur-[120px]' />
                 <div className='absolute inset-0 bg-gradient-to-b from-[#0a0b0f] via-[#050608] to-black' />
             </div>
-
+            <ShareBanner />
             <div className='relative container mx-auto max-w-6xl px-6 pt-10 pb-24'>
                 {/* Back */}
                 <div className='mb-6'>

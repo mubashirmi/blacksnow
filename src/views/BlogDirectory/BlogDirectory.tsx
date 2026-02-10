@@ -1,6 +1,7 @@
 'use client';
 
 // import { AuthModalTrigger } from '@/components/AuthModal';
+import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,6 +92,7 @@ function BlogDirectory() {
 
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
+            <ShareBanner />
             {/* Hero Section */}
             <section className='relative pt-24 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl text-center'>

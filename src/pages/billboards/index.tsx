@@ -1,5 +1,6 @@
 'use client';
 
+import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ExternalLink, Facebook, Globe, Mail, MessageSquareText, Monitor, Podcast, Share2, Twitter, Users, X, Youtube } from 'lucide-react';
@@ -137,6 +138,7 @@ export default function Page() {
                     }
                 }
             `}</style>
+            <ShareBanner />
 
             {/* Hero (compact) */}
             <section className='relative pt-24 pb-6 px-6'>

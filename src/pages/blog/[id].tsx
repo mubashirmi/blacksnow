@@ -1,3 +1,4 @@
+import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -128,6 +129,7 @@ export default function BlogPostPage() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Header */}
+            <ShareBanner />
             <div className='relative z-10 pt-24 pb-12 px-6'>
                 <div className='container mx-auto max-w-4xl'>
                     <Button
