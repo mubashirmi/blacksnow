@@ -33,7 +33,11 @@ export default function AffiliatesPage() {
     const [rows, setRows] = React.useState<AffiliateRow[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
+    const [success, setSuccess] = React.useState<string | null>(null);
     const [page, setPage] = React.useState<number>(1);
+
+    // Delete per-row loading
+    const [deleteLoadingId, setDeleteLoadingId] = React.useState<number | null>(null);
 
     React.useEffect(() => {
         const controller = new AbortController();
@@ -42,6 +46,7 @@ export default function AffiliatesPage() {
             try {
                 setLoading(true);
                 setError(null);
+
                 const res = await fetch('/api/v2/get-affiliate', {
                     method: 'GET',
                     headers: { Accept: 'application/json' },
@@ -49,16 +54,13 @@ export default function AffiliatesPage() {
                     signal: controller.signal,
                 });
 
-                if (!res.ok) {
-                    throw new Error(`Request failed (${res.status})`);
-                }
+                if (!res.ok) throw new Error(`Request failed (${res.status})`);
 
                 const data: { message?: string; auths?: ApiAffiliate[] } = await res.json();
                 const affiliates = (data.auths ?? []).map<AffiliateRow>((a) => ({
                     id: a.id,
                     name: `${a.firstName ?? ''} ${a.lastName ?? ''}`.trim() || '(No name)',
                     email: a.email,
-                    // If API doesn't provide explicit status, default Affiliates to Active; otherwise show status/role
                     status: (a.status ?? null) !== null && a.status !== undefined ? String(a.status) : a.role === 'Affiliate' ? 'Active' : a.role ?? 'Unknown',
                     joinDate: a.createdAt,
                 }));
@@ -95,11 +97,44 @@ export default function AffiliatesPage() {
         }
     };
 
+    const handleDeleteAffiliate = async (userId: number, name: string) => {
+        const ok = window.confirm(`Are you sure you want to delete ${name}?`);
+        if (!ok) return;
+
+        setError(null);
+        setSuccess(null);
+        setDeleteLoadingId(userId);
+
+        try {
+            const res = await fetch(`/api/v2/delete-user?authId=${userId}`, {
+                method: 'DELETE',
+                headers: { Accept: 'application/json' },
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                let msg = `Failed to delete user (${res.status})`;
+                try {
+                    const data = await res.json();
+                    msg = (data as any)?.message || msg;
+                } catch {}
+                throw new Error(msg);
+            }
+
+            setRows((prev) => prev.filter((r) => r.id !== userId));
+            setSuccess('User deleted successfully!');
+            setTimeout(() => setSuccess(null), 3000);
+        } catch (err: any) {
+            setError(err?.message || 'Failed to delete user. Please try again.');
+        } finally {
+            setDeleteLoadingId(null);
+        }
+    };
+
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     return (
         <div className='space-y-6'>
-            {/* Card shell with dark gradient header (shared design) */}
             <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
                 <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
                     <h2 className='text-2xl font-bold text-white'>Affiliates</h2>
@@ -107,7 +142,8 @@ export default function AffiliatesPage() {
                 </div>
 
                 <div className='p-6'>
-                    {/* Error state */}
+                    {/* Success / Error */}
+                    {success && <div className='mb-4 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700'>{success}</div>}
                     {error && <div className='mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>{error}</div>}
 
                     <div className='overflow-x-auto'>
@@ -117,11 +153,11 @@ export default function AffiliatesPage() {
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Join Date</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loading ? (
-                                    // Skeleton rows
                                     Array.from({ length: 3 }).map((_, i) => (
                                         <tr key={`skeleton-${i}`} className='border-b border-slate-100'>
                                             <td className='py-3 px-4'>
@@ -134,7 +170,7 @@ export default function AffiliatesPage() {
                                                 <div className='h-5 w-20 animate-pulse rounded-full bg-slate-200' />
                                             </td>
                                             <td className='py-3 px-4'>
-                                                <div className='h-4 w-28 animate-pulse rounded bg-slate-200' />
+                                                <div className='h-4 w-44 animate-pulse rounded bg-slate-200' />
                                             </td>
                                         </tr>
                                     ))
@@ -145,21 +181,32 @@ export default function AffiliatesPage() {
                                             <td className='py-3 px-4 text-blue-600'>{affiliate.email}</td>
                                             <td className='py-3 px-4'>{formatDate(affiliate.joinDate)}</td>
                                             <td className='py-3 px-4'>
-                                                <button
-                                                    onClick={() =>
-                                                        router.push(
-                                                            {
-                                                                pathname: `/admin/dashboard/affiliate/kpi/${affiliate.id}`,
-                                                                query: { name: affiliate.name }, // ⬅️ add this
-                                                            },
-                                                            undefined,
-                                                            { shallow: true }
-                                                        )
-                                                    }
-                                                    className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all'
-                                                >
-                                                    View KPI
-                                                </button>
+                                                <div className='flex items-center gap-3'>
+                                                    <button
+                                                        onClick={() =>
+                                                            router.push(
+                                                                {
+                                                                    pathname: `/admin/dashboard/affiliate/kpi/${affiliate.id}`,
+                                                                    query: { name: affiliate.name },
+                                                                },
+                                                                undefined,
+                                                                { shallow: true }
+                                                            )
+                                                        }
+                                                        className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all disabled:opacity-60'
+                                                        disabled={deleteLoadingId === affiliate.id}
+                                                    >
+                                                        View KPI
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleDeleteAffiliate(affiliate.id, affiliate.name)}
+                                                        className='rounded-lg text-white cursor-pointer py-2 px-5 bg-red-500 hover:bg-red-600 duration-200 ease-in-out transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+                                                        disabled={deleteLoadingId === affiliate.id}
+                                                    >
+                                                        {deleteLoadingId === affiliate.id ? 'Deleting...' : 'Delete'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))

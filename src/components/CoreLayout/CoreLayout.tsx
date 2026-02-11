@@ -134,7 +134,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Agreement', href: '/affiliateagreement' },
-                                    { name: 'Investment Risk Disclosure', href: '/riskdisclosure' },
+                                    { name: 'Market Data Disclosure', href: '/riskdisclosure' },
                                     { name: 'Terms & Conditions', href: '/terms' },
                                     { name: 'Privacy Policy', href: '/privacy' },
                                     { name: 'GDPR', href: '/gdpr' },

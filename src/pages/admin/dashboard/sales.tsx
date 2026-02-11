@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 type UserRow = {
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -31,6 +32,9 @@ export default function SalesPage() {
     });
     const [formErrors, setFormErrors] = useState<Partial<typeof form>>({});
 
+    // Delete state
+    const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+
     const validateForm = () => {
         const errs: Partial<typeof form> = {};
         if (!form.email.trim()) errs.email = 'Email is required';
@@ -50,17 +54,17 @@ export default function SalesPage() {
         setError(null);
         try {
             const response = await axios.get('/api/v2/get-all-user-data');
-            // Filter users who have "Sales" in their roles array
             const filteredData = response.data.filter((user: any) => user.roles && user.roles.includes('Sales'));
 
             const formattedData: UserRow[] = filteredData.map((user: any) => ({
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 role: user.roles.join(', '),
                 status: 'Active',
-                id: user.id,
             }));
+
             setSalesData(formattedData);
             setSuccess('Data loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
@@ -87,18 +91,46 @@ export default function SalesPage() {
                 role: 'Sales',
             });
 
-            // Reset form and close modal
             setForm({ email: '', firstName: '', lastName: '', password: '' });
             setIsCreateOpen(false);
             setSuccess('User created successfully!');
             setTimeout(() => setSuccess(null), 3000);
 
-            // Refresh table data immediately
             await fetchData();
         } catch (err: any) {
             setCreateError(err?.response?.data?.message || 'Failed to create user. Please try again.');
         } finally {
             setCreateLoading(false);
+        }
+    };
+
+    const handleDeleteUser = async (userId: string, fullName: string) => {
+        const ok = window.confirm(`Are you sure you want to delete ${fullName}?`);
+        if (!ok) return;
+
+        setError(null);
+        setSuccess(null);
+        setDeleteLoadingId(userId);
+
+        try {
+            // Calls: /api/v2/delete-user?authId=userId
+            await axios.delete('/api/v2/delete-user', {
+                params: { authId: userId },
+            });
+
+            setSuccess('User deleted successfully!');
+            setTimeout(() => setSuccess(null), 3000);
+
+            // Optimistic remove (fast UI)
+            setSalesData((prev) => prev.filter((u) => u.id !== userId));
+
+            // Optional: refresh from server (keeps table perfectly in sync)
+            await fetchData();
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Failed to delete user. Please try again.');
+            setTimeout(() => setError(null), 5000);
+        } finally {
+            setDeleteLoadingId(null);
         }
     };
 
@@ -121,21 +153,18 @@ export default function SalesPage() {
                 </div>
             )}
 
-            {/* Success Alert */}
             {success && (
                 <div className='bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative' role='alert'>
                     <span className='block sm:inline'>{success}</span>
                 </div>
             )}
 
-            {/* Error Alert */}
             {error && (
                 <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative' role='alert'>
                     <span className='block sm:inline'>{error}</span>
                 </div>
             )}
 
-            {/* Card shell with dark gradient header (shared design) */}
             <div className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
                 <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
                     <h2 className='text-2xl font-bold text-white'>Sales</h2>
@@ -156,38 +185,52 @@ export default function SalesPage() {
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>First Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Last Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 {salesData.map((person, index) => (
-                                    <tr key={index} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                                    <tr key={person.id} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
                                         <td className='py-3 px-4 text-slate-600'>{index + 1}</td>
                                         <td className='py-3 px-4'>{person.firstName}</td>
                                         <td className='py-3 px-4'>{person.lastName}</td>
                                         <td className='py-3 px-4 text-blue-600'>{person.email}</td>
+
                                         <td className='py-3 px-4'>
-                                            <button
-                                                onClick={() =>
-                                                    router.push(
-                                                        {
-                                                            pathname: `/admin/dashboard/sales/kpi/${person.id}`,
-                                                            query: { name: person.firstName + ' ' + person.lastName },
-                                                        },
-                                                        undefined,
-                                                        { shallow: true }
-                                                    )
-                                                }
-                                                className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all'
-                                            >
-                                                View KPI
-                                            </button>
+                                            <div className='flex items-center gap-3'>
+                                                <button
+                                                    onClick={() =>
+                                                        router.push(
+                                                            {
+                                                                pathname: `/admin/dashboard/sales/kpi/${person.id}`,
+                                                                query: { name: person.firstName + ' ' + person.lastName },
+                                                            },
+                                                            undefined,
+                                                            { shallow: true }
+                                                        )
+                                                    }
+                                                    className='rounded-lg text-white cursor-pointer py-2 px-5 bg-blue-400 hover:bg-blue-500 duration-200 ease-in-out transition-all'
+                                                    disabled={deleteLoadingId === person.id}
+                                                >
+                                                    View KPI
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleDeleteUser(person.id, `${person.firstName} ${person.lastName}`)}
+                                                    className='rounded-lg text-white cursor-pointer py-2 px-5 bg-red-500 hover:bg-red-600 duration-200 ease-in-out transition-all disabled:opacity-60 disabled:cursor-not-allowed'
+                                                    disabled={deleteLoadingId === person.id}
+                                                >
+                                                    {deleteLoadingId === person.id ? 'Deleting...' : 'Delete'}
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
 
                                 {salesData.length === 0 && !isLoading && (
                                     <tr>
-                                        <td colSpan={6} className='py-6 px-4 text-center text-slate-500'>
+                                        <td colSpan={5} className='py-6 px-4 text-center text-slate-500'>
                                             No sales users found.
                                         </td>
                                     </tr>
@@ -198,12 +241,10 @@ export default function SalesPage() {
                 </div>
             </div>
 
-            {/* Create User Modal — shared visual style, logic unchanged */}
             {isCreateOpen && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center'>
                     <div className='absolute inset-0 bg-black/70' onClick={() => !createLoading && setIsCreateOpen(false)} />
                     <div className='relative z-10 w-full max-w-md bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden'>
-                        {/* Dark gradient header */}
                         <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between'>
                             <h3 className='text-lg font-bold text-white'>Create User</h3>
                             <button

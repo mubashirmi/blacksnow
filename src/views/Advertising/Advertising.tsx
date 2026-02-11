@@ -171,6 +171,7 @@ function Advertising() {
         }
     };
 
+    // eslint-disable-next-line
     const handleStartCampaignClick = handleAdvertiseClick;
 
     const validateForm = () => {
@@ -253,20 +254,12 @@ function Advertising() {
                                     onClick={() => {
                                         router.push('/billboards');
                                     }}
-                                    disabled={isLoading}
                                 >
-                                    {/* {isLoading ? (
-                                        <>
-                                            <Loader2 className='w-5 h-5 sm:w-6 sm:h-6 mr-3 animate-spin' />
-                                            Loading...
-                                        </>
-                                    ) : ( */}
                                     <>
                                         <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         Billboards
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </>
-                                    {/* )} */}
                                 </Button>
                                 <Button
                                     size='lg'
@@ -465,22 +458,16 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button
                                     size='lg'
-                                    className='bg-gradient-to-r border-2 box-border border-[#4cc7e8] from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
-                                    onClick={handleStartCampaignClick}
-                                    disabled={isLoading}
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    onClick={() => {
+                                        router.push('/billboards');
+                                    }}
                                 >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className='w-6 h-6 mr-3 animate-spin' />
-                                            Loading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Megaphone className='w-6 h-6 mr-3' />
-                                            Learn More
-                                            <ArrowRight className='w-5 h-5 ml-3' />
-                                        </>
-                                    )}
+                                    <>
+                                        <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        Billboards
+                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    </>
                                 </Button>
                                 <Button
                                     size='lg'

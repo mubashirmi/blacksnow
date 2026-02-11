@@ -482,7 +482,7 @@ export default function InvoiceContractPage() {
                                 START MANAGING DOCUMENTS LIKE A PRO
                             </Badge>
                             <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Create New
+                                Create New <br className='inline sm:hidden' />
                                 <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>&nbsp;Transactions</span>
                                 <br />
                             </h2>
