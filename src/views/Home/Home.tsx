@@ -560,7 +560,7 @@ function Home() {
                                 {/* <div className='absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-green-500/30 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-[#5edc7a] min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 rounded-t-3xl'></div>
 
@@ -651,7 +651,7 @@ function Home() {
                                 {/* <div className='absolute inset-0 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-orange-500/30 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-[#f5a623] min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-600 rounded-t-3xl'></div>
 
@@ -735,7 +735,7 @@ function Home() {
                                 {/* <div className='absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-xs blur-xs'></div> */}
 
                                 {/* Main Card */}
-                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-red-500/30 min-h-[600px] flex flex-col h-full'>
+                                <div className='overflow-hidden relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-10 border-2 border-[#e74c3c] min-h-[600px] flex flex-col h-full'>
                                     {/* Animated Top Border */}
                                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-rose-500 to-red-600 rounded-t-3xl'></div>
 
