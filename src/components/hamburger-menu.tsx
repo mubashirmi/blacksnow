@@ -63,16 +63,20 @@ const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Aff
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [userid, setUserid] = useState<string | null>(userId ?? null);
+    const [adminId, setAdminId] = useState<string | null>(null);
     const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
     const [showDashboardMenu, setShowDashboardMenu] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const router = useRouter();
 
-    // Prevent body scroll when menu is open + load userId / roles
+    // Prevent body scroll when menu is open + load userId / roles / adminId
     useEffect(() => {
         const iid = localStorage.getItem('userId') || userId || null;
         setUserid(iid);
+
+        const aid = localStorage.getItem('adminId') || null;
+        setAdminId(aid);
 
         const storedRoles = localStorage.getItem('roles');
 
@@ -138,12 +142,16 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     const confirmLogout = () => {
         destroyCookie(null, 'id');
         destroyCookie(null, 'token');
+        destroyCookie(null, 'admin_token');
+        destroyCookie(null, 'adminId');
         localStorage.removeItem('userId');
+        localStorage.removeItem('adminId');
         localStorage.removeItem('roles');
         localStorage.removeItem('referredby');
         setShowLogoutModal(false);
         setIsOpen(false);
         setUserid(null);
+        setAdminId(null);
         setDashboards([]);
         setShowDashboardMenu(false);
         router.push('/');
@@ -279,30 +287,46 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 <div className='text-sm text-gray-400 mt-1'>Professional Trading Solutions</div>
                             </div>
 
-                            {/* Dashboard Button – only if userId AND at least one allowed dashboard */}
-                            {userid && dashboards.length > 0 && (
+                            {/* Dashboards section + Admin Dashboard validation */}
+                            {((userid && dashboards.length > 0) || adminId) && (
                                 <div className='space-y-2'>
-                                    <Button
-                                        onClick={handleDashboardClick}
-                                        className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
-                                    >
-                                        Dashboard
-                                    </Button>
+                                    {/* Existing Dashboard button + selector (role based) */}
+                                    {userid && dashboards.length > 0 && (
+                                        <div className='space-y-2'>
+                                            <Button
+                                                onClick={handleDashboardClick}
+                                                className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                            >
+                                                Dashboard
+                                            </Button>
 
-                                    {/* If multiple dashboards, show a small selector under the same button */}
-                                    {dashboards.length > 1 && showDashboardMenu && (
-                                        <div className='mt-2 space-y-2'>
-                                            {dashboards.map((dash) => (
-                                                <Button
-                                                    key={dash.path}
-                                                    variant='outline'
-                                                    onClick={() => goToDashboard(dash.path)}
-                                                    className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
-                                                >
-                                                    {dash.label}
-                                                </Button>
-                                            ))}
+                                            {/* If multiple dashboards, show a small selector under the same button */}
+                                            {dashboards.length > 1 && showDashboardMenu && (
+                                                <div className='mt-2 space-y-2'>
+                                                    {dashboards.map((dash) => (
+                                                        <Button
+                                                            key={dash.path}
+                                                            variant='outline'
+                                                            onClick={() => goToDashboard(dash.path)}
+                                                            className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
+                                                        >
+                                                            {dash.label}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
+                                    )}
+
+                                    {/* Admin Dashboard button (ONLY if adminId is present) - shown below dashboards */}
+                                    {adminId && (
+                                        <Button
+                                            variant='outline'
+                                            onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
+                                            className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
+                                        >
+                                            {roleDashboardMap.Admin.label}
+                                        </Button>
                                     )}
                                 </div>
                             )}
