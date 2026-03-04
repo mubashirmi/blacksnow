@@ -9,6 +9,7 @@ import {
     FileText,
     HelpCircle,
     LinkIcon,
+    ListRestart,
     LogOut,
     Mail,
     Monitor,
@@ -136,7 +137,7 @@ export function AdminSidebar() {
             ],
         },
         { title: 'Sales', url: '/admin/dashboard/sales', icon: BarChart3 },
-        { title: 'Billing Cycles', url: '/admin/dashboard/billingCycles', icon: BarChart3 },
+        { title: 'Billing Cycles', url: '/admin/dashboard/billingCycles', icon: ListRestart },
         { title: 'Affiliates', url: '/admin/dashboard/affiliates', icon: Users },
         {
             title: 'CRM',
