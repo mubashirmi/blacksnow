@@ -74,7 +74,7 @@ export default function AffiliatesPage() {
         }
 
         load();
-        return () => controller.abort();
+        return () => controller.abort('cleanup');
     }, []);
 
     const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));

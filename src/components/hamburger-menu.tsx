@@ -30,10 +30,17 @@ const menuItems = [
     },
 ];
 
-const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing', { label: string; path: string }> = {
+const roleDashboardMap: Record<
+    'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing' | 'SuperAffiliate',
+    { label: string; path: string }
+> = {
     Affiliate: {
         label: 'Affiliate Dashboard',
         path: '/affiliate/dashboard/links',
+    },
+    SuperAffiliate: {
+        label: 'Lightning Gold Dashboard',
+        path: '/superAffiliate/dashboard/links',
     },
     Sales: {
         label: 'Sales Dashboard',
@@ -57,7 +64,7 @@ const roleDashboardMap: Record<'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' |
     },
 };
 
-const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Affiliate', 'DigitalBillboard', 'EmailMarketing'];
+const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Affiliate', 'DigitalBillboard', 'SuperAffiliate', 'EmailMarketing'];
 
 // Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {

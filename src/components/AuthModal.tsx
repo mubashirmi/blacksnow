@@ -1,23 +1,13 @@
 'use client';
-
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { ArrowRight, Eye, EyeOff, Lock, Mail, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-// shadcn/ui
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-
-// OPTIONAL: keep your existing Card look inside the modal
-import { Card, CardContent } from '@/components/ui/card';
-
-/**
- * Reusable auth modal that supports both Sign In and Sign Up flows.
- */
 
 export type AuthModalProps = {
     open: boolean;
@@ -39,7 +29,6 @@ function splitFullName(fullName: string) {
         .trim()
         .replace(/\s+/g, ' ');
     if (!cleaned) return { firstName: '', lastName: '' };
-
     const parts = cleaned.split(' ');
     const firstName = parts[0] || '';
     const lastName = parts.length > 1 ? parts.slice(1).join(' ') : ' ';
@@ -65,11 +54,14 @@ export default function AuthModal({
     onSuccess,
 }: AuthModalProps) {
     const router = useRouter();
-
     const [showPassword, setShowPassword] = useState(false);
     const [isSignUp, setIsSignUp] = useState(defaultView === 'signup');
     const [isLoading, setIsLoading] = useState(false);
-    const [alert, setAlert] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [alert, setAlert] = useState<{ type: 'success' | 'error' | ''; message: string }>({
+        type: '',
+        message: '',
+    });
 
     const {
         register,
@@ -81,9 +73,7 @@ export default function AuthModal({
     const currentRoute = useMemo(() => {
         const fromProp = sourceRoute ?? '';
         if (fromProp) return fromProp;
-        if (typeof window !== 'undefined') {
-            return window.location.pathname || '';
-        }
+        if (typeof window !== 'undefined') return window.location.pathname || '';
         return '';
     }, [sourceRoute]);
 
@@ -104,7 +94,6 @@ export default function AuthModal({
     async function onSubmit(data: any) {
         setIsLoading(true);
         setAlert({ type: '', message: '' });
-
         try {
             if (isSignUp) {
                 const { firstName, lastName } = splitFullName(data.fullName);
@@ -113,62 +102,54 @@ export default function AuthModal({
                     firstName,
                     lastName,
                     password: data.password,
-                    role: currentRoute === '/affiliate' ? 'Affiliate' : 'Sales',
+                    role: currentRoute === '/lightningSilver' ? 'Affiliate' : '',
                 };
-
                 const response = await axios.post('/api/v2/signup', signupData);
                 const userId = response.data.user.id as string | undefined;
                 const userRoles = response.data.user.roles as string[] | undefined;
-
                 if (userId) {
                     localStorage.setItem('userId', userId);
                     setCookie('id', userId);
                 }
                 if (userRoles) localStorage.setItem('roles', JSON.stringify(userRoles));
-
                 setAlert({ type: 'success', message: 'Account created successfully! Please sign in.' });
                 setIsSignUp(false);
                 reset();
+                const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId }) === false;
+                if (prevent) return;
 
-                const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId });
+                // close modal after successful signup
+                onOpenChange(false);
 
-                if (!prevent) {
-                    // ✅ If opened from pricing, refresh page and stay there
-                    if (currentRoute === '/pricing') {
-                        if (typeof window !== 'undefined') window.location.reload();
-                        else router.reload();
-                        return;
-                    }
-
-                    if (currentRoute === '/affiliate') {
-                        router.push('/affiliate/dashboard/kpi');
-                    } else {
-                        router.push(redirectAfterSignup);
-                    }
+                if (currentRoute === '/lightningSilver') {
+                    router.push('/affiliate/dashboard/kpi');
+                    return;
                 }
+                // if you want pricing to "refresh", do this instead of reload:
+                router.push(redirectAfterSignup || '/pricing');
             } else {
                 const loginData = { email: data.email, password: data.password };
                 const response = await axios.post('/api/v2/login', loginData);
-
                 if (response.data.role === 'admin') {
                     setCookie('admin_token', response.data.token);
                     setCookie('role', response.data.role);
                     setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
-
                     const prevent = onSuccess?.({ kind: 'login', role: 'admin' });
                     if (!prevent) {
                         onOpenChange(false);
                         router.push('/admin/dashboard/sales');
                     }
                 } else if (response.data.paymentRequired) {
-                    setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
+                    setAlert({
+                        type: 'error',
+                        message: 'Access denied. Please complete your payment to access the system.',
+                    });
                 } else {
                     setCookie('token', response.data.token);
                     setCookie('id', response.data.user.id);
                     setAlert({ type: 'success', message: 'Login successful!' });
                     reset();
-
                     const prevent = onSuccess?.({ kind: 'login', role: response.data.role });
                     if (!prevent) {
                         onOpenChange(false);
@@ -177,7 +158,10 @@ export default function AuthModal({
                 }
             }
         } catch (error: any) {
-            setAlert({ type: 'error', message: error?.response?.data?.message || 'Something went wrong. Please try again.' });
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Something went wrong. Please try again.',
+            });
         } finally {
             setIsLoading(false);
         }
@@ -190,40 +174,69 @@ export default function AuthModal({
                 if (!isLoading) onOpenChange(v);
             }}
         >
-            <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent'>
-                {/* ✅ FIXED HEIGHT: card has a consistent height; content scrolls if needed */}
-                <Card className='relative flex flex-col h-[min(600px,90vh)] bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-4xl overflow-hidden shadow-4xl shadow-[#2c7bbe]/20'>
-                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
+            <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
+                {/* ── Glassmorphic card matching PricingComponent aesthetic ── */}
+                <div className='relative rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden'>
+                    {/* Top accent line */}
+                    <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
 
-                    <DialogHeader className='p-8 text-center shrink-0'>
-                        <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6'>
-                            <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
+                    {/* Close button */}
+                    <DialogClose asChild>
+                        <button className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all duration-300 z-10'>
+                            <X className='w-5 h-5 text-white/70' />
+                        </button>
+                    </DialogClose>
+
+                    {/* Header */}
+                    <DialogHeader className='px-8 pt-8 pb-0 text-center'>
+                        <div className='flex flex-col items-center mb-6'>
+                            <div className='h-16 w-16 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center mb-5 shadow-xl'>
+                                <Image width={120} height={120} src='/logocolored.png' alt='Logo' className='object-contain' />
+                            </div>
+                            <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
+                                {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                            </DialogTitle>
+                            <DialogDescription className='text-white/55 text-sm mt-2 font-medium'>
+                                {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
+                            </DialogDescription>
                         </div>
-                        <DialogTitle className='text-2xl font-bold text-white mb-2 text-center'>
-                            {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
-                        </DialogTitle>
-                        <DialogDescription className='text-gray-300 text-base text-center'>
-                            {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
-                        </DialogDescription>
                     </DialogHeader>
 
-                    {/* ✅ scroll area so height stays fixed on toggle */}
-                    <CardContent className='p-8 pt-0 flex-1 overflow-y-auto'>
+                    {/* Body */}
+                    <div className='px-8 pb-8 overflow-y-auto max-h-[calc(90vh-160px)]'>
+                        {/* Alert */}
                         {alert.message && (
-                            <Alert className={`mb-6 ${alert.type === 'success' ? 'bg-green-900/50 border-green-500' : 'bg-red-900/50 border-red-500'}`}>
-                                <AlertTitle className='text-white'>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
-                                <AlertDescription className='text-gray-200'>{alert.message}</AlertDescription>
-                            </Alert>
+                            <div
+                                className={`mb-5 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
+                                    alert.type === 'success'
+                                        ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                                        : 'border-red-400/30 bg-red-500/10 text-red-300'
+                                }`}
+                            >
+                                <div className='mt-0.5 shrink-0'>
+                                    {alert.type === 'success' ? (
+                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                                        </svg>
+                                    ) : (
+                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                        </svg>
+                                    )}
+                                </div>
+                                <span>{alert.message}</span>
+                            </div>
                         )}
 
-                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+                            {/* Full Name (sign-up only) */}
                             {isSignUp && (
-                                <div className='space-y-2'>
+                                <div className='space-y-1'>
                                     <div className='relative'>
                                         <Input
                                             id='fullName'
                                             type='text'
-                                            placeholder='Enter your full name'
+                                            placeholder='Full name'
                                             {...register('fullName', {
                                                 required: 'Full name is required',
                                                 validate: (v: string) => {
@@ -233,63 +246,86 @@ export default function AuthModal({
                                                     return cleaned.length >= 2 || 'Please enter your name';
                                                 },
                                             })}
-                                            className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                         />
-                                        <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                            <User className='w-5 h-5 text-[#4cc7e8]' />
-                                        </div>
+                                        <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                     </div>
-                                    {errors?.fullName && <p className='text-red-400 text-sm'>{(errors as any).fullName.message}</p>}
+                                    {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
                                 </div>
                             )}
 
-                            <div className='space-y-2'>
+                            {/* Email */}
+                            <div className='space-y-1'>
                                 <div className='relative'>
                                     <Input
                                         id='email'
                                         type='email'
-                                        placeholder='Enter your email'
-                                        {...register('email', { required: 'Email is required', validate: validateEmail as any })}
-                                        className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                        placeholder='Email address'
+                                        {...register('email', {
+                                            required: 'Email is required',
+                                            validate: validateEmail as any,
+                                        })}
+                                        className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                     />
-                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                        <Mail className='w-5 h-5 text-[#4cc7e8]' />
-                                    </div>
+                                    <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                 </div>
-                                {errors?.email && <p className='text-red-400 text-sm'>{(errors as any).email.message}</p>}
+                                {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
                             </div>
 
-                            <div className='space-y-2'>
+                            {/* Password */}
+                            <div className='space-y-1'>
                                 <div className='relative'>
                                     <Input
                                         id='password'
                                         type={showPassword ? 'text' : 'password'}
-                                        placeholder='Enter your password'
-                                        {...register('password', { required: 'Password is required', validate: validatePassword as any })}
-                                        className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 pr-12 rounded-2xl transition-all duration-300'
+                                        placeholder='Password'
+                                        {...register('password', {
+                                            required: 'Password is required',
+                                            validate: validatePassword as any,
+                                        })}
+                                        className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                     />
-                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                        <Lock className='w-5 h-5 text-[#4cc7e8]' />
-                                    </div>
+                                    <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                     <button
                                         type='button'
                                         onClick={() => setShowPassword((p) => !p)}
-                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
+                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
                                     >
                                         {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
                                     </button>
                                 </div>
-                                {errors?.password && <p className='text-red-400 text-sm'>{(errors as any).password.message}</p>}
+                                {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
                             </div>
 
+                            {/* Terms line */}
+                            <button type='button' onClick={() => setTermsAccepted((v) => !v)} className='flex items-start gap-3 pt-1 w-full text-left group'>
+                                <div
+                                    className={`mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 ${
+                                        termsAccepted ? 'border-[#4cc7e8]/60 bg-[#4cc7e8]/20' : 'border-white/20 bg-black/30 group-hover:border-white/40'
+                                    }`}
+                                >
+                                    {termsAccepted && (
+                                        <svg className='w-3 h-3 text-[#4cc7e8]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M5 13l4 4L19 7' />
+                                        </svg>
+                                    )}
+                                </div>
+                                <p className={`leading-relaxed text-xs transition-colors duration-200 ${termsAccepted ? 'text-white/60' : 'text-white/40'}`}>
+                                    By continuing, you agree to our <span className='text-[#4cc7e8] hover:underline'>Terms of Service</span> and{' '}
+                                    <span className='text-[#4cc7e8] hover:underline'>Privacy Policy</span>.
+                                </p>
+                            </button>
+                            {!termsAccepted && <p className='text-white/30 text-xs px-1 -mt-1'>You must accept the terms to continue.</p>}
+
+                            {/* Submit button */}
                             <Button
                                 type='submit'
-                                disabled={isLoading}
-                                className='w-full bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] hover:from-[#4cc7e8] hover:via-[#2a8dcc] hover:to-[#2c7bbe] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group disabled:opacity-50 cursor-pointer'
+                                disabled={isLoading || !termsAccepted}
+                                className='w-full rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-6 font-bold text-base shadow-xl transition-all duration-300 group disabled:opacity-50 cursor-pointer mt-2'
                             >
                                 {isLoading ? (
-                                    <div className='flex items-center justify-center'>
-                                        <svg className='animate-spin h-5 w-5 mr-2 text-white' viewBox='0 0 24 24'>
+                                    <div className='flex items-center justify-center gap-2'>
+                                        <svg className='animate-spin h-5 w-5 text-white' viewBox='0 0 24 24'>
                                             <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
                                             <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
                                         </svg>
@@ -297,13 +333,14 @@ export default function AuthModal({
                                     </div>
                                 ) : (
                                     <>
-                                        {isSignUp ? 'Create Account' : 'Dashboard'}
+                                        {isSignUp ? 'Create Account' : 'Sign In'}
                                         <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
                                     </>
                                 )}
                             </Button>
 
-                            <div className='text-center'>
+                            {/* Toggle sign-in / sign-up */}
+                            <div className='text-center pt-1'>
                                 <button
                                     type='button'
                                     onClick={() => {
@@ -311,23 +348,23 @@ export default function AuthModal({
                                         setAlert({ type: '', message: '' });
                                         reset();
                                     }}
-                                    className='text-[#fff] text-sm font-semibold'
+                                    className='text-white/50 text-sm'
                                 >
                                     {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                                    <span className='cursor-pointer text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'>
+                                    <span className='text-[#4cc7e8] hover:text-white transition-colors duration-300 cursor-pointer font-semibold'>
                                         {isSignUp ? 'Sign In' : 'Sign Up'}
                                     </span>
                                 </button>
                             </div>
                         </form>
-                    </CardContent>
 
-                    <DialogClose asChild>
-                        <button className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'>
-                            <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                        </button>
-                    </DialogClose>
-                </Card>
+                        {/* Footer */}
+                        <div className='mt-5 flex items-center justify-center gap-2 text-xs text-white/30'>
+                            <Lock className='h-3.5 w-3.5' />
+                            Secure &amp; encrypted connection
+                        </div>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );

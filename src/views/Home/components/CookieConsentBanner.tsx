@@ -1,7 +1,6 @@
-// ✅ Create this file: /components/CookieConsentBanner.tsx
 'use client';
 
-import { Cookie, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -9,118 +8,118 @@ const STORAGE_KEY = 'bs_cookie_consent_v1';
 
 export function CookieConsentBanner() {
     const [open, setOpen] = useState(false);
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        // show only if not already accepted/rejected
         const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-        if (!saved) setOpen(true);
+        if (!saved) {
+            setOpen(true);
+            // slight delay so the slide-up animation plays on mount
+            setTimeout(() => setVisible(true), 50);
+        }
     }, []);
 
     const close = (value: 'accepted' | 'rejected') => {
-        try {
-            localStorage.setItem(STORAGE_KEY, value);
-        } catch {}
-        setOpen(false);
+        setVisible(false);
+        setTimeout(() => {
+            try {
+                localStorage.setItem(STORAGE_KEY, value);
+            } catch {}
+            setOpen(false);
+        }, 350);
     };
 
     if (!open) return null;
 
     return (
-        <div className='fixed min-w-full inset-x-0 bottom-0 z-[9999]'>
+        <>
+            {/* Backdrop — subtle dim on mobile */}
             <div
-                className='
-          mx-auto 
-          border border-[#2c7bbe]/30
-          bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]
-          shadow-2xl shadow-[#2c7bbe]/20
-          backdrop-blur-2xl
-        '
+                className='fixed inset-0 z-[9998] bg-black/30 sm:hidden transition-opacity duration-350'
+                style={{ opacity: visible ? 1 : 0 }}
+                onClick={() => close('rejected')}
+            />
+
+            {/* Banner */}
+            <div
+                className='fixed inset-x-0 bottom-0 z-[9999] transition-transform duration-350 ease-out'
+                style={{ transform: visible ? 'translateY(0)' : 'translateY(100%)' }}
             >
-                <div className='p-4 sm:p-5'>
-                    <div className='flex items-start gap-3'>
-                        {/* icon */}
-                        <div className='mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] shadow-lg'>
-                            <Cookie className='h-5 w-5 text-white' />
-                        </div>
+                {/* ── Mobile (< sm): full bottom sheet ── */}
+                <div className='sm:hidden'>
+                    <div className='rounded-t-3xl bg-[#0d0f14] border-t border-x border-[#2c7bbe]/25 shadow-2xl shadow-black/60 px-6 pt-3 pb-8'>
+                        {/* Drag handle */}
+                        <div className='w-10 h-1 rounded-full bg-white/20 mx-auto mb-5' />
 
-                        {/* text */}
-                        <div className='min-w-0 flex-1'>
-                            <div className='flex items-start justify-between gap-3'>
-                                <div>
-                                    <p className='text-white font-black text-base sm:text-lg'>We use cookies</p>
-                                    <p className='mt-1 text-sm sm:text-base text-gray-300 leading-relaxed'>
-                                        We use cookies to improve performance, personalize your experience, and analyze traffic. You can accept or reject
-                                        non-essential cookies. Read our{' '}
-                                        <Link href='/cookie-policy' className='text-[#4cc7e8] underline underline-offset-2 hover:text-white transition'>
-                                            Cookie Policy
-                                        </Link>
-                                        .
-                                    </p>
-                                </div>
+                        {/* Text */}
+                        <p className='text-white/80 text-base leading-relaxed mb-6'>
+                            To create a seamless experience and for website quality and improvement purposes, we use cookie technologies for verification and
+                            quality purposes, to personalize the content presented, and to provide advertising that may be of specific interest to you. Learn
+                            our{' '}
+                            <Link href='/privacy' className='text-[#4cc7e8] hover:underline'>
+                                Privacy Policy
+                            </Link>{' '}
+                            here.
+                        </p>
 
-                                {/* close (X) */}
-                                <button
-                                    onClick={() => close('rejected')}
-                                    className='
-                    flex h-9 w-9 items-center justify-center
-                    rounded-xl
-                    border border-white/10
-                    bg-white/5
-                    hover:bg-white/10
-                    transition
-                  '
-                                    aria-label='Close cookie banner'
-                                >
-                                    <X className='h-4 w-4 text-white/80' />
-                                </button>
-                            </div>
+                        {/* Accept All — filled pill */}
+                        <button
+                            onClick={() => close('accepted')}
+                            className='w-full cursor-pointer py-4 rounded-2xl bg-gradient-to-r from-[#1a2a3a] to-[#1e3044] hover:from-[#2c7bbe]/40 hover:to-[#4cc7e8]/30 text-white font-bold text-lg transition-all duration-300 border border-white/10'
+                        >
+                            Accept All
+                        </button>
 
-                            {/* buttons */}
-                            <div className='mt-4 flex flex-col sm:flex-row gap-3 sm:items-center'>
-                                {/* Accept */}
+                        {/* Reject All — plain text */}
+                        <button
+                            onClick={() => close('rejected')}
+                            className='w-full cursor-pointer py-4 mt-1 text-white/70 hover:text-white font-semibold text-base transition-colors duration-200'
+                        >
+                            Reject All
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── Desktop (≥ sm): floating bar ── */}
+                <div className='hidden sm:block'>
+                    <div className='mx-4 mb-4 lg:mx-auto lg:max-w-3xl rounded-2xl bg-[#0d0f14] border border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/15 backdrop-blur-xl px-6 py-5'>
+                        <div className='flex items-start gap-4'>
+                            {/* Text */}
+                            <p className='flex-1 text-sm text-white/75 leading-relaxed'>
+                                To create a seamless experience and for website quality and improvement purposes, we use cookie technologies for verification,
+                                personalization, and advertising purposes. Learn our{' '}
+                                <Link href='/privacy' className='text-[#4cc7e8] hover:underline'>
+                                    Privacy Policy
+                                </Link>
+                                .
+                            </p>
+
+                            {/* Buttons */}
+                            <div className='flex items-center gap-3 flex-shrink-0'>
                                 <button
                                     onClick={() => close('accepted')}
-                                    className='
-                    w-full sm:w-auto cursor-pointer
-                    px-5 py-3
-                    rounded-md
-                    font-black text-white
-                    bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8]
-                    hover:from-[#4cc7e8] hover:to-[#2c7bbe]
-                    shadow-xl shadow-[#2c7bbe]/30
-                    transition-all duration-300
-                    transform hover:scale-[1.02]
-                  '
+                                    className='cursor-pointer px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-bold text-sm shadow-lg shadow-[#2c7bbe]/30 transition-all duration-300 hover:scale-[1.03] whitespace-nowrap'
                                 >
-                                    Accept
+                                    Accept All
                                 </button>
-
-                                {/* Reject (hollow) */}
                                 <button
                                     onClick={() => close('rejected')}
-                                    className='
-                    w-full sm:w-auto cursor-pointer
-                    px-5 py-3
-                    rounded-md
-                    font-black
-                    text-[#4cc7e8]
-                    border-2 border-[#4cc7e8]/60
-                    bg-transparent
-                    hover:bg-[#4cc7e8]
-                    hover:text-[#050608]
-                    transition-all duration-300
-                    transform hover:scale-[1.02]
-                  '
+                                    className='cursor-pointer px-6 py-2.5 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-white/30 font-semibold text-sm transition-all duration-200 whitespace-nowrap'
                                 >
-                                    Reject
+                                    Reject All
                                 </button>
-
-                                <p className='text-xs text-white/50 sm:ml-auto'>You can change this anytime in your browser settings.</p>
+                                <button
+                                    onClick={() => close('rejected')}
+                                    className='flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition'
+                                    aria-label='Close'
+                                >
+                                    <X className='h-4 w-4 text-white/60' />
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

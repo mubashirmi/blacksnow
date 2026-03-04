@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import axios from 'axios';
 import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, Lock, Mail, MessageSquare, Monitor, Newspaper, Star, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/router'; // App Router: import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -74,7 +74,6 @@ const PRODUCTS = [
         productComission: '150',
         hasSubscription: true,
     },
-    // IMPORTANT: apiName is EmailMarketing but id is Sales
     {
         id: 'Sales',
         apiName: 'EmailMarketing',
@@ -98,6 +97,30 @@ const PRODUCTS = [
         productComission: '100',
         hasSubscription: true,
     },
+    {
+        id: 'SuperAffiliate',
+        apiName: 'SuperAffiliate',
+        name: 'Lightning Gold',
+        price: 250, // one-time
+        period: 'One-time',
+        description:
+            'Earn 75% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to maximize every sale.',
+        features: [
+            '75% lifetime commissions (monthly + annual referrals)',
+            'Automated payouts with no income cap',
+            'Subscriber referral bonuses',
+            'Commission table (monthly + annual) in one view',
+            'KPI performance dashboard',
+            'Email & SMS CRM included to promote offers',
+        ],
+        icon: Star,
+        color: 'from-[#fbbf24] to-[#f59e0b]',
+        available: true,
+        popular: false,
+        productLink: 'https://blacksnowholdings.com/lightningGold',
+        productComission: '100',
+        hasSubscription: false,
+    },
 ];
 
 type BillingPeriod = 'monthly' | 'yearly';
@@ -106,11 +129,7 @@ type PricingComponentProps = {
     name: string;
     defaultBillingPeriod?: BillingPeriod;
     className?: string;
-
-    /** ✅ If true, component renders inside a Dialog modal */
     asModal?: boolean;
-
-    /** ✅ Controlled modal state (recommended) */
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 };
@@ -128,7 +147,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod);
 
-    // ✅ internal modal state (only used if parent doesn’t control it)
     const [internalOpen, setInternalOpen] = useState(false);
     const modalOpen = open ?? internalOpen;
     const setModalOpen = onOpenChange ?? setInternalOpen;
@@ -214,6 +232,9 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 case 'DigitalBillboard':
                     role = 'DigitalBillboard';
                     break;
+                case 'SuperAffiliate':
+                    role = 'SuperAffiliate';
+                    break;
                 case 'Sales':
                     role = 'EmailMarketing';
                     break;
@@ -290,6 +311,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
     const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
     const savings = getSavingsPercentage(product);
+    const isLightningGold = router.pathname === '/lightningGold';
 
     const formRows = product.features.slice(0, 3);
     const rowIcons = [Star, Mail, Lock];
@@ -305,29 +327,33 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${isPurchased ? 'from-emerald-400 to-green-500' : product.color}`} />
 
                 <div className='relative p-6 sm:p-8'>
-                    {/* Header */}
-                    <div className='flex items-start justify-between gap-4'>
+                    {/* ✅ UPDATED Header — logo left, text stacked right, badge top-right */}
+                    <div className='flex items-center justify-between gap-4'>
                         <div className='flex items-center gap-4'>
-                            <div className='h-12 w-12 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center'>
-                                <product.icon className='h-6 w-6 text-white/90' />
+                            {/* ✅ FIX 1: Use /logowhite.png instead of product.icon */}
+                            <div className='h-16 w-16 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                                <Image src='/logowhite.png' alt='Logo' width={48} height={48} className='object-contain w-full h-full' />
                             </div>
 
-                            <div>
-                                <h3 className='text-2xl font-extrabold text-white leading-tight'>{product.name}</h3>
-                                <p className='text-xl font-semibold text-white/90 mt-0.5'>
+                            {/* ✅ FIX 2: Text stacked vertically, tighter and cleaner */}
+                            <div className='flex flex-col justify-center'>
+                                <h3 className='text-xl font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
+                                <p className='text-lg font-semibold text-white leading-snug mt-0.5'>
                                     {getProductPrice(product)}
-                                    <span className='text-white/60 font-medium'>{getProductPeriod(product)}</span>
+                                    <span className='text-white/55 font-medium text-base'>{getProductPeriod(product)}</span>
                                 </p>
                             </div>
                         </div>
 
                         {product.popular && (
-                            <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>POPULAR</Badge>
+                            <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs self-start'>
+                                POPULAR
+                            </Badge>
                         )}
                     </div>
 
-                    {/* Segmented Toggle */}
-                    {product.hasSubscription && (
+                    {/* Segmented Toggle — hidden on /lightningGold route */}
+                    {product.hasSubscription && !isLightningGold && (
                         <div className='mt-6 flex justify-center'>
                             <div className='flex w-full max-w-[280px] rounded-2xl border border-white/10 bg-black/30 p-1'>
                                 <button
@@ -352,7 +378,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         </div>
                     )}
 
-                    {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
+                    {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && !isLightningGold && (
                         <div className='mt-3 flex justify-center'>
                             <div className='inline-flex items-center rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300'>
                                 Save {savings}% with yearly billing
@@ -439,7 +465,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
             <div className={className}>
                 <Dialog open={modalOpen} onOpenChange={setModalOpen}>
                     <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none'>
-                        {/* Close button like screenshot */}
                         <button
                             onClick={() => setModalOpen(false)}
                             className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition z-10'
@@ -589,7 +614,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         );
     }
 
-    // ✅ Inline Mode (kept in case you still want it somewhere)
+    // ✅ Inline Mode
     return (
         <div className={`w-full ${className}`}>
             <CheckoutCard inModal={false} />

@@ -1,0 +1,312 @@
+'use client';
+
+import AuthModal from '@/components/AuthModal';
+import { PricingComponent } from '@/components/PricingComponent'; // ✅ adjust path if yours differs
+import ShareBanner from '@/components/ShareBanner';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import lottie from 'lottie-web';
+import { ArrowRight, BarChart3, CheckCircle2, Megaphone, Rocket, Target } from 'lucide-react';
+import { parseCookies } from 'nookies';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+type LottieAnimationProps = {
+    src: string;
+    loop?: boolean;
+    autoplay?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
+};
+
+function LightningGold() {
+    const ROUTES = {
+        afterLogin: '/pricing?plan=gold',
+        afterSignup: '/pricing?plan=gold',
+    };
+
+    // ✅ Modal states
+    const [authOpen, setAuthOpen] = useState(false);
+    const [pricingOpen, setPricingOpen] = useState(false);
+    const [authDefaultView, setAuthDefaultView] = useState<'signin' | 'signup'>('signup');
+    // eslint-disable-next-line
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    // ✅ Check login status (cookie id or localStorage userId)
+    const computeLoggedIn = useCallback(() => {
+        const cookies = parseCookies();
+        const cookieId = cookies?.id;
+        const localId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+        return Boolean(cookieId || localId);
+    }, []);
+
+    useEffect(() => {
+        setIsLoggedIn(computeLoggedIn());
+    }, [computeLoggedIn]);
+
+    const handleJoinGold = useCallback(() => {
+        const logged = computeLoggedIn();
+        setIsLoggedIn(logged);
+
+        if (!logged) {
+            setAuthDefaultView('signup'); // or 'signin' if you prefer
+            setAuthOpen(true);
+            return;
+        }
+
+        // ✅ Logged in → open pricing modal (SuperAffiliate)
+        setPricingOpen(true);
+    }, [computeLoggedIn]);
+
+    const LottieAnimation = ({ src, loop = true, autoplay = true, className, style }: LottieAnimationProps) => {
+        const containerRef = useRef<HTMLDivElement | null>(null);
+
+        useEffect(() => {
+            if (!containerRef.current) return;
+
+            const animation = lottie.loadAnimation({
+                container: containerRef.current,
+                renderer: 'svg',
+                loop,
+                autoplay,
+                path: src,
+            });
+
+            return () => animation.destroy();
+        }, [src, loop, autoplay]);
+
+        return <div ref={containerRef} className={className} style={style} />;
+    };
+
+    const commissionRows = useMemo(
+        () => [
+            { product: 'Newsletter', monthly: '$7.50 / mo', annual: '$37.50 / year' },
+            { product: 'Business Invoice', monthly: '$15 / mo', annual: '$150 / year' },
+            { product: 'Digital Billboard', monthly: '$112.50 / mo', annual: '$450 / year' },
+            { product: 'Email/SMS CRM', monthly: '$375 / mo', annual: '$3,000 / year' },
+        ],
+        []
+    );
+
+    const perks = useMemo(
+        () => [
+            { label: '$250/month Membership', icon: Rocket },
+            { label: '75% lifetime commissions', icon: Target },
+            { label: 'Subscriber referral bonuses', icon: CheckCircle2 },
+            { label: 'Email & SMS CRM included to promote offers', icon: Megaphone },
+            { label: 'KPI performance dashboard', icon: BarChart3 },
+            { label: 'Automated payouts with no income cap', icon: CheckCircle2 },
+        ],
+        []
+    );
+
+    return (
+        <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
+            <ShareBanner />
+
+            {/* ✅ Auth modal (opens if not logged in) */}
+            <AuthModal
+                open={authOpen}
+                onOpenChange={setAuthOpen}
+                defaultView={authDefaultView}
+                redirectAfterLogin={ROUTES.afterLogin}
+                redirectAfterSignup={ROUTES.afterSignup}
+                sourceRoute='/lightningGold'
+                onSuccess={(ctx) => {
+                    // ✅ Only open pricing after LOGIN (signup flow in your modal does not log user in)
+                    if (ctx.kind === 'login') {
+                        setIsLoggedIn(true);
+                        setAuthOpen(false);
+                        setPricingOpen(true);
+                        return true; // prevent AuthModal from routing away
+                    }
+                    // ✅ For signup: prevent routing away; user will be switched to Sign In inside the modal
+                    return true;
+                }}
+            />
+
+            {/* ✅ Pricing modal (opens if logged in) */}
+            <PricingComponent name='SuperAffiliate' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />
+
+            {/* ── HERO ─────────────────────────────────────────────────────── */}
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
+                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                        {/* Left */}
+                        <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
+                            <div>
+                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                    Lightning Gold
+                                </Badge>
+
+                                <div style={{ display: 'table' }}>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-3 sm:mb-4 leading-tight'>
+                                        Scale Faster.{' '}
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                            Maximize Every Sale
+                                        </span>
+                                    </h1>
+                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' />
+                                </div>
+
+                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                    Earn 75% lifetime commissions, paid on both monthly and annual subscriptions, for every active customer you refer with a
+                                    $250/month membership. Gain more from the same subscribers by increasing your commission rate without changing your effort.
+                                    Build faster and scale more efficiently by converting the same traffic into higher recurring payouts.
+                                </p>
+                            </div>
+
+                            {/* CTA */}
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                                <Button
+                                    onClick={handleJoinGold}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    <Rocket className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    Join Gold
+                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right – Lottie */}
+                        <div className='relative animate-slide-in-right'>
+                            <div className='relative flex items-center justify-center w-full h-full'>
+                                <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <LottieAnimation
+                                        src='/animations/rocketicon.json'
+                                        className='w-[90%] h-full sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:min-w-[550px] lg:h-[500px]'
+                                        loop
+                                        autoplay
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── COMMISSION TABLE ─────────────────────────────────────────── */}
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
+                    <div className='text-center mb-16 sm:mb-20'>
+                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            Build Faster and Maximize Earnings
+                        </Badge>
+                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            Build Faster and{' '}
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Maximize Earnings</span>
+                        </h2>
+                        <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
+                            Every active subscriber you refer generates a 75% lifetime commission—paid monthly or annually for as long as they stay subscribed.
+                            The highest commission rate available, with no income cap and no expiry.
+                        </p>
+                    </div>
+
+                    {/* Table card */}
+                    <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl overflow-hidden mb-8 sm:mb-10'>
+                        <CardContent className='p-6 sm:p-8'>
+                            <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
+                                <div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-white'>Commission Table</div>
+                                    <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                </div>
+                                <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>
+                                    $250 / mo
+                                </Badge>
+                            </div>
+
+                            <div className='overflow-x-auto rounded-xl border border-[#2c7bbe]/25'>
+                                <table className='w-full text-left'>
+                                    <thead className='bg-white/5'>
+                                        <tr>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Product</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Monthly</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Annual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {commissionRows.map((row) => (
+                                            <tr key={row.product} className='border-t border-[#2c7bbe]/20 hover:bg-white/[0.02] transition-colors'>
+                                                <td className='p-4 sm:p-5 text-gray-200 font-medium text-sm sm:text-base'>{row.product}</td>
+                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.monthly}</td>
+                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.annual}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p className='text-xs sm:text-sm text-gray-400 mt-4 sm:mt-5'>
+                                Commissions are lifetime and continue as long as subscribers remain active.
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    {/* Perks grid */}
+                    <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
+                        {perks.map(({ label, icon: Icon }) => (
+                            <div key={label} className='group'>
+                                <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105 h-full'>
+                                    <CardContent className='p-6 sm:p-8 flex gap-4 items-start'>
+                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform duration-300'>
+                                            <Icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
+                                        </div>
+                                        <div className='text-gray-200 font-semibold text-sm sm:text-base leading-snug group-hover:text-[#4cc7e8] transition-colors duration-300 pt-1'>
+                                            {label}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ── FINAL CTA ────────────────────────────────────────────────── */}
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
+                    <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
+                        {/* Left copy */}
+                        <div className='space-y-6 sm:space-y-8'>
+                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                Ready to Unlock Maximum Commissions?
+                            </Badge>
+                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                                Earn <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>75% Lifetime</span>{' '}
+                                Commissions
+                            </h2>
+                            <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
+                                Earn 75% lifetime commissions on every referral, for both monthly and annual plans. Scale faster with full automation, KPI
+                                tracking, and Email &amp; SMS CRM tools designed to maximize every sale.
+                            </p>
+
+                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                                <Button
+                                    onClick={handleJoinGold}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    Join Gold
+                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right – Lottie */}
+                        <div className='flex items-center justify-center'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                                <LottieAnimation src='/animations/nightskymoonicon.json' loop autoplay className='w-full h-full' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
+}
+
+export default LightningGold;
+export { LightningGold };

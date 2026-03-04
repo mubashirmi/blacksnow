@@ -138,6 +138,10 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Terms & Conditions', href: '/terms' },
                                     { name: 'Privacy Policy', href: '/privacy' },
                                     { name: 'GDPR', href: '/gdpr' },
+                                    { name: 'Independent Contract', href: '/independentContract' },
+                                    { name: 'No Financial Advice', href: '/nofinancialadvice' },
+                                    { name: 'Subscription Policy', href: '/subscriptionpolicy' },
+                                    { name: 'Earnings Disclosure', href: '/earningsdisclosure' },
                                     { name: 'Cookie Policy', href: '/cookies' },
                                 ].map((link, index) => (
                                     <Link

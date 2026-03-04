@@ -10,30 +10,31 @@ datasource db {
 
 // schema.prisma (only the Auth model changed: role -> roles)
 model Auth {
-  id                         Int                         @id @default(autoincrement())
-  createdAt                  DateTime                    @default(now())
-  updatedAt                  DateTime                    @updatedAt
-  email                      String                      @unique
-  firstName                  String
-  lastName                   String
-  password                   String
-  roles                      Role[]                      @default([])
-  referralProducts           ReferralProducts[]
-  adminStripeConnectId       String?                     @unique
-  adminStripeConnectIdStatus Boolean?                    @default(false)
-  Checkouts                  Checkout[]
-  Subscription               Subscription[]
-  referredSales              Auth[]                      @relation("AffiliateToSales")
-  referredBy                 Auth?                       @relation("AffiliateToSales", fields: [referredById], references: [id])
-  referredById               Int?
-  digitalBillboards          DigitalBillboard[]
-  emailMarketingCredentials  emailMarketingCredentials[]
-  emailUsers                 EmailUser[]
-  EmailJobResult             EmailJobResult[]
-  AdminPayouts               AdminPayouts[]
-  AdminRevenue               AdminRevenue[]
-  Notes                      Notes[]
-  emailSentHistories         EmailSentHistory[]
+  id                           Int                            @id @default(autoincrement())
+  createdAt                    DateTime                       @default(now())
+  updatedAt                    DateTime                       @updatedAt
+  email                        String                         @unique
+  firstName                    String
+  lastName                     String
+  password                     String
+  roles                        Role[]                         @default([])
+  referralProducts             ReferralProducts[]
+  adminStripeConnectId         String?                        @unique
+  adminStripeConnectIdStatus   Boolean?                       @default(false)
+  Checkouts                    Checkout[]
+  Subscription                 Subscription[]
+  referredSales                Auth[]                         @relation("AffiliateToSales")
+  referredBy                   Auth?                          @relation("AffiliateToSales", fields: [referredById], references: [id])
+  referredById                 Int?
+  digitalBillboards            DigitalBillboard[]
+  emailMarketingCredentials    emailMarketingCredentials[]
+  emailUsers                   EmailUser[]
+  EmailJobResult               EmailJobResult[]
+  AdminPayouts                 AdminPayouts[]
+  AdminRevenue                 AdminRevenue[]
+  Notes                        Notes[]
+  emailSentHistories           EmailSentHistory[]
+  googleMicrosoftAccountTokens GoogleMicrosoftAccountTokens[]
 
   // NEW: Newsletter relations
   newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
@@ -44,6 +45,7 @@ model Auth {
 
 enum Role {
   Affiliate
+  SuperAffiliate
   Sales
   Admin
   NewsLetter
@@ -61,6 +63,26 @@ model AdminPayouts {
   adminStripeConnectId String
   auth                 Auth     @relation(fields: [authId], references: [id])
   authId               Int
+}
+
+model GoogleMicrosoftAccountTokens {
+  id                String @id @default(cuid())
+  authId            Int
+  type              String
+  provider          String
+  providerAccountId String
+
+  refresh_token String? @db.Text
+  access_token  String? @db.Text
+  expires_at    Int?
+  token_type    String?
+  scope         String? @db.Text
+  id_token      String? @db.Text
+  session_state String?
+  auth          Auth    @relation(fields: [authId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@index([authId])
 }
 
 model emailMarketingCredentials {
@@ -113,11 +135,13 @@ model AdminRevenue {
 }
 
 model EmailUser {
-  id                 Int                @id @default(autoincrement())
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  email              String
-  fullName           String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String
+  fullName  String
+  optType   String   @default("default")
+
   auth               Auth               @relation(fields: [authId], references: [id])
   authId             Int
   emailUserCSV       EmailUserCSV?      @relation(fields: [emailUserCSVId], references: [id], onDelete: SetNull)
@@ -300,18 +324,20 @@ model NewsLetterContent {
 }
 
 model Checkout {
-  id                Int      @id @default(autoincrement())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deleted           Boolean  @default(false)
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deleted           Boolean   @default(false)
   transactionId     String?
   AuthId            Int
   amount            Float
-  paid              Boolean  @default(false)
-  period            String   @default("") // montly/yearly
-  auth              Auth     @relation(fields: [AuthId], references: [id])
+  paid              Boolean   @default(false)
+  period            String    @default("") // montly/yearly
+  auth              Auth      @relation(fields: [AuthId], references: [id])
   product           String?
   cancelSubscripton Boolean
+  nextBillingDate   DateTime?
+  startDate         DateTime?
 }
 
 model FrequentQuestions {

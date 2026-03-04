@@ -27,6 +27,8 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
                 localStorage.removeItem('roles');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('affiliateId'); // (safe extra)
+                document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
             }
         } catch (e) {
             console.error('Logout error:', e);

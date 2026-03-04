@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-type ProductKey = 'NewsLetter' | 'DigitalBillboard' | 'RSVP' | 'Affiliate' | 'Sales' | 'Admin' | 'EmailMarketing' | 'InvoiceTool';
+type ProductKey = 'NewsLetter' | 'DigitalBillboard' | 'RSVP' | 'Affiliate' | 'Sales' | 'Admin' | 'EmailMarketing' | 'InvoiceTool' | 'SuperAffiliate';
 
 type ProductsStatus = Record<ProductKey, 'Purchased' | 'NotPurchased'>;
 
@@ -44,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             Admin: 'NotPurchased',
             EmailMarketing: 'NotPurchased',
             InvoiceTool: 'NotPurchased',
+            SuperAffiliate: 'NotPurchased',
         };
 
         // Mark purchased products

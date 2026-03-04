@@ -131,6 +131,8 @@ function SubscriptionConfirmation() {
             router.push('/invoicecontractdashboard/contract');
         } else if (productLink === 'https://blacksnowholdings.com/advertising') {
             router.push('/digitalBillboard/dashboard');
+        } else if (productLink === 'https://blacksnowholdings.com/lightningGold') {
+            router.push('/superAffiliate/dashboard/kpi');
         } else {
             router.push('/');
         }

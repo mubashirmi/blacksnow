@@ -11,7 +11,7 @@ function nextFromWeekdays(from: Date, weekdays: number[], hour = from.getHours()
         const base = new Date(from);
         base.setHours(hour, minute, 0, 0);
         let daysToAdd = (dow - base.getDay() + 7) % 7;
-        if (daysToAdd === 0) daysToAdd = 7; // strictly future
+        if (daysToAdd === 0) daysToAdd = 7;
         const out = new Date(base);
         out.setDate(base.getDate() + daysToAdd);
         return out;
@@ -44,6 +44,9 @@ cron.schedule('* * * * *', async () => {
             const admin = await prisma.emailMarketingCredentials.findUnique({ where: { authId: job.authId } });
             if (!admin) throw new Error('No admin email credentials found');
 
+            if (!job.emailUserId) {
+                continue;
+            }
             const user = await prisma.emailUser.findUnique({ where: { id: job.emailUserId } });
             if (!user) throw new Error('No user email found');
 
@@ -56,8 +59,8 @@ cron.schedule('* * * * *', async () => {
             });
 
             await transporter.sendMail({
-                from: admin.email, // 1) FROM ReferralProducts.email
-                to: user.email, //    TO EmailUser.email
+                from: admin.email,
+                to: user.email,
                 subject: job.subject,
                 text: job.text ?? undefined,
                 html: job.html ?? undefined,
@@ -71,7 +74,7 @@ cron.schedule('* * * * *', async () => {
                     html: job.html,
                     sentAt: new Date(),
                     status: 'sent',
-                    messageId: null, // you can capture if nodemailer returns it
+                    messageId: null,
                     authId: job.authId,
                     emailUserId: job.emailUserId,
                     credentialsId: admin.id,

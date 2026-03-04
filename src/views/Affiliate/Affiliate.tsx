@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthModalTrigger } from '@/components/AuthModal';
+import { AffiliateOnboardingPopup } from '@/components/Affiliateonboardingpopup';
 import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,12 @@ type LottieAnimationProps = {
 
 function Affiliate() {
     const [showDashboardButton, setShowDashboardButton] = useState(false);
+    // Ref for the "Earn Big Commissions" section
+    const earnBigRef = useRef<HTMLElement | null>(null);
+
+    const handleScrollToEarnBig = () => {
+        earnBigRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     const LottieAnimation = ({ src, loop = true, autoplay = true, className, style }: LottieAnimationProps) => {
         const containerRef = useRef<HTMLDivElement | null>(null);
@@ -43,7 +49,7 @@ function Affiliate() {
 
     const plans = [
         {
-            title: 'Lightning Basic',
+            title: 'Lightning Silver',
             kicker: 'Start Free. Build Recurring Income',
             priceMonthly: '$0 / month',
             commission: '25% lifetime commissions',
@@ -59,10 +65,11 @@ function Affiliate() {
             ],
             icon: Rocket,
             color: 'from-[#4cc7e8] to-[#2c7bbe]',
-            cta: { joinText: 'Join Basic', joinRedirect: '/pricing', learnHref: '/about' },
+            // Silver plan redirects to /lightningSilver
+            cta: { joinText: 'Join Silver', joinRedirect: '/lightningSilver', learnHref: '/lightningSilver' },
         },
         {
-            title: 'Lightning Max',
+            title: 'Lightning Gold',
             kicker: 'Scale Faster. Maximize Every Sale',
             priceMonthly: '$250 / month',
             commission: '75% lifetime commissions',
@@ -78,7 +85,8 @@ function Affiliate() {
             ],
             icon: Target,
             color: 'from-[#2c7bbe] to-[#4cc7e8]',
-            cta: { joinText: 'Join Max', joinRedirect: '/pricing', learnHref: '/about' },
+            // Gold plan redirects to /lightningGold
+            cta: { joinText: 'Join Gold', joinRedirect: '/lightningGold', learnHref: '/lightningGold' },
         },
     ];
 
@@ -95,7 +103,7 @@ function Affiliate() {
             icon: Target,
         },
         {
-            title: "Real-Time KPI's",
+            title: 'Real-Time KPIs',
             description: 'A centralized KPI dashboard gives full visibility into sales, referrals, traffic, and growth at all times.',
             icon: BarChart3,
         },
@@ -116,6 +124,7 @@ function Affiliate() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             <ShareBanner />
+            <AffiliateOnboardingPopup />
 
             {/* Hero Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
@@ -130,7 +139,7 @@ function Affiliate() {
 
                                 <div className='inline-block'>
                                     <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
-                                        Join the{' '}
+                                        Join Our{' '}
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Lightning
                                         </span>{' '}
@@ -144,29 +153,25 @@ function Affiliate() {
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     The Lightning Affiliate Program allows you to earn recurring monthly income by promoting proven, subscription-based business
                                     tools. It is designed for individuals and businesses seeking predictable, long-term earnings rather than one-time
-                                    commissions. Affiliates gain access to automated tracking, built-in Email and SMS marketing tools, and real-time KPI metrics
-                                    with full visibility into sales, referrals, and growth—supporting both beginners and experienced marketers looking to scale.
+                                    commissions. Affiliates gain access to automated tracking that removes uncertainty from performance measurement. Built-in
+                                    Email and SMS marketing tools make it easy to promote offers from one platform. Real-time KPI metrics provide full
+                                    visibility into sales, referrals, and growth. The program supports both beginners and experienced marketers looking to
+                                    scale.
                                 </p>
                             </div>
 
                             {/* CTA Buttons */}
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
-                                <AuthModalTrigger
-                                    buttonText='Join Now'
-                                    defaultView='signup'
-                                    sourceRoute='/affiliate'
-                                    redirectAfterLogin='/affiliate'
-                                    redirectAfterSignup='/pricing'
+                                {/* Join Now scrolls smoothly to Earn Big Commissions section */}
+                                <Button
+                                    onClick={handleScrollToEarnBig}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <Button
-                                        size='lg'
-                                        className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Join Now
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
-                                    </Button>
-                                </AuthModalTrigger>
+                                    <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    Join Now
+                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                </Button>
 
                                 {showDashboardButton && (
                                     <Link href={'/affiliate/dashboard/kpi'}>
@@ -202,19 +207,21 @@ function Affiliate() {
                 </div>
             </section>
 
-            {/* Earn Big Commissions */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+            {/* Earn Big Commissions — ref attached here for smooth scroll target */}
+            <section ref={earnBigRef} className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             Earn Big Commissions
                         </Badge>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Recurring <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Lifetime</span> Earnings
+                            Earn <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Big</span> Commissions
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Lightning affiliates earn recurring monthly and annual lifetime commissions on every subscription product they refer. Commissions
-                            continue as long as customers remain active—no income caps, automated payouts, and a model built for long-term retention and volume.
+                            continue as long as customers remain active, creating income that compounds over time. There are no income caps, allowing earnings
+                            to scale with traffic and effort. Payouts are automated and structured for consistency and reliability. The commission model rewards
+                            both long-term retention and volume. This creates a sustainable earning framework rather than short-term payouts.
                         </p>
                     </div>
 
@@ -258,13 +265,8 @@ function Affiliate() {
                                         </ul>
 
                                         <div className='flex flex-col sm:flex-row gap-3 pt-2'>
-                                            <AuthModalTrigger
-                                                buttonText={plan.cta.joinText}
-                                                defaultView='signup'
-                                                sourceRoute='/affiliate'
-                                                redirectAfterLogin={plan.cta.joinRedirect}
-                                                redirectAfterSignup={plan.cta.joinRedirect}
-                                            >
+                                            {/* Join Silver/Gold → direct Link, no AuthModalTrigger redirect confusion */}
+                                            <Link href={plan.cta.joinRedirect} className='w-full'>
                                                 <Button
                                                     size='lg'
                                                     className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 py-5 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full cursor-pointer'
@@ -272,8 +274,9 @@ function Affiliate() {
                                                     {plan.cta.joinText}
                                                     <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                                 </Button>
-                                            </AuthModalTrigger>
+                                            </Link>
 
+                                            {/* Learn More → /lightningSilver or /lightningGold */}
                                             <Link href={plan.cta.learnHref} className='w-full'>
                                                 <Button
                                                     size='lg'
@@ -301,13 +304,14 @@ function Affiliate() {
                             Referral Program
                         </Badge>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Stack <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Monthly</span> Bonuses
+                            Referral <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Program</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             In addition to standard commissions, Lightning offers a recurring referral bonus program to increase total monthly earnings.
-                            Affiliates earn <span className='text-white font-semibold'>$100 per month for every 10 products sold</span>, paid on an ongoing
-                            basis. These bonuses stack and remain active as long as referred customers continue their subscriptions—simple, transparent, and
-                            performance-based.
+                            Affiliates earn $100 per month for every 10 products sold, paid on an ongoing basis. These referral bonuses stack and remain active
+                            as long as referred customers continue their subscriptions. This creates an additional revenue layer separate from direct
+                            commissions. The referral structure is simple, transparent, and performance-based. It is designed to reward consistent growth and
+                            long-term engagement.
                         </p>
                     </div>
 
@@ -319,7 +323,7 @@ function Affiliate() {
                                 </div>
                                 <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>$100 / month bonus</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
-                                    Earn a recurring $100/month bonus for every 10 products sold—bonuses stack as your volume grows.
+                                    Earn $100 per month for every 10 products sold—paid on an ongoing basis as long as customers stay subscribed.
                                 </p>
                             </CardContent>
                         </Card>
@@ -331,7 +335,7 @@ function Affiliate() {
                                 </div>
                                 <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>Stacks with commissions</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
-                                    Referral bonuses are separate from direct commissions—adding a second layer of recurring revenue.
+                                    Referral bonuses stack on top of standard commissions—creating an extra recurring revenue layer.
                                 </p>
                             </CardContent>
                         </Card>
@@ -341,9 +345,9 @@ function Affiliate() {
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg'>
                                     <BarChart3 className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
-                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>Long-term compounding</h3>
+                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>Built for long-term growth</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
-                                    Bonuses remain active as long as referred customers stay subscribed—built for retention and growth.
+                                    Bonuses remain active as long as referred customers continue their subscriptions—rewarding consistency and retention.
                                 </p>
                             </CardContent>
                         </Card>
@@ -359,11 +363,13 @@ function Affiliate() {
                             Why Join Our Program
                         </Badge>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Built for <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recurring</span> Growth
+                            Why Join Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Program</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
-                            Lightning combines real products, automation, and analytics into one unified affiliate ecosystem—so you can focus on traffic and
-                            conversions while the system handles tracking, reporting, and payouts.
+                            Lightning combines real products, automation, and analytics into one unified affiliate ecosystem. Affiliates promote tools that
+                            businesses already use and pay for on a monthly or annual basis. The included Email and SMS CRM removes the need for third-party
+                            marketing software. A centralized KPI dashboard provides clear insights into performance at all times. Automation reduces friction
+                            so affiliates can focus on traffic and conversions. The result is a scalable system built for recurring income and long-term growth.
                         </p>
                     </div>
 
@@ -404,39 +410,27 @@ function Affiliate() {
                             </p>
 
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
-                                <AuthModalTrigger
-                                    buttonText='Join Basic'
-                                    defaultView='signup'
-                                    sourceRoute='/affiliate'
-                                    redirectAfterLogin='/pricing'
-                                    redirectAfterSignup='/pricing'
-                                >
+                                <Link href='/lightningSilver'>
                                     <Button
                                         size='lg'
                                         className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
                                     >
                                         <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Join Basic
+                                        Lightning Silver
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
-                                </AuthModalTrigger>
+                                </Link>
 
-                                <AuthModalTrigger
-                                    buttonText='Join Max'
-                                    defaultView='signup'
-                                    sourceRoute='/affiliate'
-                                    redirectAfterLogin='/pricing'
-                                    redirectAfterSignup='/pricing'
-                                >
+                                <Link href='/lightningGold'>
                                     <Button
                                         size='lg'
                                         variant='outline'
                                         className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
                                     >
                                         <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
-                                        Join Max
+                                        Lightning Gold
                                     </Button>
-                                </AuthModalTrigger>
+                                </Link>
                             </div>
                         </div>
 

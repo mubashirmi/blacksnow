@@ -4,6 +4,7 @@ import AdminLayout from '@/components/AdminLayout';
 import AffiliateLayout from '@/components/AffiliateDashboardLayout';
 import EmailMarketingLayout from '@/components/EmailMarketingLayout';
 import SalesDashboardLayout from '@/components/SalesDashboardLayout';
+import SuperAffiliateLayout from '@/components/SuperAffiliateDashboardLayout';
 import { mantineTheme } from '@/constants/mantineTheme';
 import { useGlobalState } from '@/store';
 import '@aws-amplify/ui-react/styles.css';
@@ -62,12 +63,14 @@ export default function App({ Component, pageProps }: AppProps) {
         const isAdminRoute = router.pathname.startsWith('/admin');
         const isEmailMarketingRoute = router.pathname.startsWith('/emailMarketing/dashboard');
         const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
+        const isSuperAffiliateRoute = router.pathname.startsWith('/superAffiliate/dashboard');
         const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
 
         if (isAdminRoute) return <AdminLayout>{page}</AdminLayout>;
         if (isEmailMarketingRoute) return <EmailMarketingLayout>{page}</EmailMarketingLayout>;
         if (isSalesRoute) return <SalesDashboardLayout>{page}</SalesDashboardLayout>;
         if (isAffiliateRoute) return <AffiliateLayout>{page}</AffiliateLayout>;
+        if (isSuperAffiliateRoute) return <SuperAffiliateLayout>{page}</SuperAffiliateLayout>;
         return <CoreLayout>{page}</CoreLayout>;
     };
 

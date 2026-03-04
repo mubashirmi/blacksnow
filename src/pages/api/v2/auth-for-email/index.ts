@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../verify/[...nextauth]';
+import { authOptions } from '../../auth/[...nextauth]';
 
 // function base64UrlEncode(str: Buffer) {
 //     return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');

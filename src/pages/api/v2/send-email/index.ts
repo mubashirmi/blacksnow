@@ -1,11 +1,12 @@
 // pages/api/send-email.ts
+import { signOptToken } from '@/lib/optToken';
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 
 type BodyItem = {
     id?: number; // EmailUser.id (single) OR Auth.id for newsletter
-    recipients?: number[]; // NEW: many EmailUser.id OR Auth.id in one item
+    recipients?: number[]; // many EmailUser.id OR Auth.id in one item
     subject?: string;
     text?: string;
     html?: string;
@@ -31,6 +32,8 @@ type BodyItem = {
     };
 };
 
+type Recipient = { id: number; email: string; optType?: string | null; fullName?: string | null };
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         res.setHeader('Allow', 'POST');
@@ -49,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             repeated, // legacy schedule
             timeInterval, // legacy schedule
             items, // new flexible
-            isNewsletter, // NEW: flag to indicate newsletter mode
+            isNewsletter, // flag to indicate newsletter mode
         } = req.body ?? {};
 
         // ---- Validation ----
@@ -79,6 +82,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const toDate = (d?: string | Date) => (d ? new Date(d) : undefined);
         const addSeconds = (d: Date, s: number) => new Date(d.getTime() + s * 1000);
 
+        const getBaseUrlFromReq = () => {
+            const proto = (req.headers['x-forwarded-proto'] as string) || 'http';
+            const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'localhost:3000';
+            return `${proto}://${host}`;
+        };
+
+        const baseUrl = getBaseUrlFromReq();
+
         const nextWeekdayAt = (from: Date, dayOfWeek: number, hour = 9, minute = 0) => {
             const base = new Date(from);
             base.setHours(hour, minute, 0, 0);
@@ -103,6 +114,87 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             !!it.weeklyRotation ||
             !!it.intervalRotation;
 
+        const normalizeOptType = (v?: string | null) => (v ?? 'default').toString().trim().toLowerCase();
+        const isTrueOpt = (v?: string | null) => {
+            const n = normalizeOptType(v);
+            return n === 'true' || n === 'optin' || n === 'in' || n === '1' || n === 'yes';
+        };
+        const isDefaultOpt = (v?: string | null) => normalizeOptType(v) === 'default';
+
+        const injectBeforeClosingBody = (htmlStr: string, footerHtml: string) => {
+            if (!htmlStr) return htmlStr;
+            const re = /<\/body\s*>/i;
+            if (re.test(htmlStr)) return htmlStr.replace(re, `${footerHtml}</body>`);
+            return `${htmlStr}${footerHtml}`;
+        };
+
+        const buildPrefLink = (emailUserId: number, action: 'optin' | 'optout') => {
+            const { token } = signOptToken(emailUserId, action);
+            return `${baseUrl}/change-opt-setting?token=${encodeURIComponent(token)}`;
+        };
+
+        const buildOptFooter = (u: Recipient) => {
+            // Only for EmailUser (not newsletter)
+            const optinUrl = buildPrefLink(u.id, 'optin');
+            const optoutUrl = buildPrefLink(u.id, 'optout');
+
+            const showBoth = isDefaultOpt(u.optType);
+            const showOnlyOptout = isTrueOpt(u.optType);
+
+            // Requested:
+            // - default => optin + optout
+            // - true => only optout
+            // For other values (e.g. false/optout) we'll show optin (resubscribe)
+            const showOptIn = showBoth || (!showOnlyOptout && !showBoth);
+            const showOptOut = showBoth || showOnlyOptout;
+
+            const btn = (label: string, href: string) => `
+        <a href="${href}"
+           style="display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;border:1px solid #d1d5db;margin-right:10px;">
+          ${label}
+        </a>`;
+
+            const footerHtml = `
+        <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;font-family:Arial,sans-serif;">
+          <p style="margin:0 0 12px 0;color:#374151;font-size:14px;">
+            Manage your email preference:
+          </p>
+          <div>
+            ${showOptIn ? btn('Opt In', optinUrl) : ''}
+            ${showOptOut ? btn('Opt Out', optoutUrl) : ''}
+          </div>
+          <p style="margin:12px 0 0 0;color:#6b7280;font-size:12px;">
+            If the buttons don’t work, copy &amp; paste:
+            ${showOptIn ? `<br/>Opt In: ${optinUrl}` : ''}
+            ${showOptOut ? `<br/>Opt Out: ${optoutUrl}` : ''}
+          </p>
+        </div>
+      `;
+
+            const footerText = [
+                '',
+                '---',
+                'Manage your email preference:',
+                showOptIn ? `Opt In: ${optinUrl}` : null,
+                showOptOut ? `Opt Out: ${optoutUrl}` : null,
+            ]
+                .filter(Boolean)
+                .join('\n');
+
+            return { footerHtml, footerText };
+        };
+
+        const appendOptFooterIfNeeded = (payload: { text?: string; html?: string }, recipient: Recipient) => {
+            if (isNewsletter) return payload; // do not apply to newsletter sends
+            // Only apply when recipient has optType field (EmailUser)
+            const { footerHtml, footerText } = buildOptFooter(recipient);
+
+            const outText = payload.text ? `${payload.text}${footerText}` : payload.text;
+            const outHtml = payload.html ? injectBeforeClosingBody(payload.html, footerHtml) : payload.html;
+
+            return { text: outText, html: outHtml };
+        };
+
         // ---------- IMMEDIATE MANY-TO-MANY via items[] ----------
         if (Array.isArray(items) && items.length > 0 && items.every((it: BodyItem) => !hasSchedulingHints(it))) {
             const allTargetIds = [...new Set(items.flatMap((it: BodyItem) => getTargetsFromItem(it)))];
@@ -111,7 +203,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Fetch recipients based on mode
-            let recipientsMap: Map<number, { id: number; email: string }>;
+            let recipientsMap: Map<number, Recipient>;
 
             if (isNewsletter) {
                 const authUsers = await prisma.auth.findMany({
@@ -119,6 +211,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         id: { in: allTargetIds },
                         roles: { has: 'NewsLetter' },
                     },
+                    select: { id: true, email: true },
                 });
                 recipientsMap = new Map(authUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
                 if (authUsers.length === 0) {
@@ -127,8 +220,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             } else {
                 const emailUsers = await prisma.emailUser.findMany({
                     where: { id: { in: allTargetIds } },
+                    select: { id: true, email: true, optType: true, fullName: true },
                 });
-                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email, optType: u.optType, fullName: u.fullName }]));
                 if (emailUsers.length === 0) {
                     return res.status(404).json({ message: 'No email users found for provided recipients.' });
                 }
@@ -174,21 +268,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         continue;
                     }
 
+                    const finalPayload = appendOptFooterIfNeeded({ text: bodyText, html: bodyHtml }, u);
+
                     try {
                         const info = await transporter.sendMail({
                             from: fromName ? { name: fromName, address: senderEmail } : senderEmail,
                             to: u.email,
                             subject: subj,
-                            text: bodyText,
-                            html: bodyHtml,
+                            text: finalPayload.text,
+                            html: finalPayload.html,
                         });
 
                         // Save to history
                         await prisma.emailSentHistory.create({
                             data: {
                                 subject: subj,
-                                text: bodyText ?? null,
-                                html: bodyHtml ?? null,
+                                text: finalPayload.text ?? null,
+                                html: finalPayload.html ?? null,
                                 status: 'sent',
                                 messageId: info.messageId ?? null,
                                 sentAt: new Date(),
@@ -204,8 +300,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         if (!isNewsletter) {
                             await prisma.emailJobResult.create({
                                 data: {
-                                    text: bodyText ?? null,
-                                    html: bodyHtml ?? null,
+                                    text: finalPayload.text ?? null,
+                                    html: finalPayload.html ?? null,
                                     subject: subj,
                                     authId: Number(adminId),
                                     emailUserId: u.id,
@@ -226,8 +322,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         await prisma.emailSentHistory.create({
                             data: {
                                 subject: subj,
-                                text: bodyText ?? null,
-                                html: bodyHtml ?? null,
+                                text: finalPayload.text ?? null,
+                                html: finalPayload.html ?? null,
                                 status: 'failed',
                                 errorMessage: e?.message ?? 'Unknown error',
                                 sentAt: null,
@@ -266,7 +362,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).json({ message: '"ids" must be a non-empty array.' });
             }
 
-            let recipients: Array<{ id: number; email: string }>;
+            let recipients: Array<Recipient>;
 
             if (isNewsletter) {
                 const authUsers = await prisma.auth.findMany({
@@ -274,20 +370,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         id: { in: ids },
                         roles: { has: 'NewsLetter' },
                     },
+                    select: { id: true, email: true },
                 });
                 recipients = authUsers.map((u) => ({ id: u.id, email: u.email }));
                 if (recipients.length === 0) {
                     return res.status(404).json({ message: 'No newsletter users found for provided ids.' });
                 }
             } else {
-                const emailUsers = await prisma.emailUser.findMany({ where: { id: { in: ids } } });
-                recipients = emailUsers;
+                const emailUsers = await prisma.emailUser.findMany({
+                    where: { id: { in: ids } },
+                    select: { id: true, email: true, optType: true, fullName: true },
+                });
+                recipients = emailUsers.map((u) => ({ id: u.id, email: u.email, optType: u.optType, fullName: u.fullName }));
                 if (recipients.length === 0) {
                     return res.status(404).json({ message: 'No email users found for provided ids.' });
                 }
             }
 
-            // FIX: createTransporter -> createTransport
             const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 465,
@@ -298,20 +397,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const results = await Promise.all(
                 recipients.map(async (u) => {
+                    const finalPayload = appendOptFooterIfNeeded({ text: text ?? undefined, html: html ?? undefined }, u);
+
                     try {
                         const info = await transporter.sendMail({
                             from: fromName ? { name: fromName, address: senderEmail } : senderEmail,
                             to: u.email,
                             subject: subject ?? '(no subject)',
-                            text: text ?? undefined,
-                            html: html ?? undefined,
+                            text: finalPayload.text,
+                            html: finalPayload.html,
                         });
 
                         await prisma.emailSentHistory.create({
                             data: {
                                 subject: subject ?? '(no subject)',
-                                text: text ?? null,
-                                html: html ?? null,
+                                text: finalPayload.text ?? null,
+                                html: finalPayload.html ?? null,
                                 status: 'sent',
                                 messageId: info.messageId,
                                 sentAt: new Date(),
@@ -325,8 +426,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         if (!isNewsletter) {
                             await prisma.emailJobResult.create({
                                 data: {
-                                    text: text ?? null,
-                                    html: html ?? null,
+                                    text: finalPayload.text ?? null,
+                                    html: finalPayload.html ?? null,
                                     subject: subject ?? '(no subject)',
                                     authId: Number(adminId),
                                     emailUserId: u.id,
@@ -364,18 +465,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // ---------- SCHEDULED/AUTOMATION ----------
         const rowsToCreate: Array<any> = [];
-
         const pushRow = (data: any) => rowsToCreate.push(data);
 
         const expandTargets = (it: BodyItem): number[] => {
-            const ids = getTargetsFromItem(it);
-            if (ids.length === 0) throw new Error('Each item must include "id" or "recipients".');
-            return ids;
+            const ids2 = getTargetsFromItem(it);
+            if (ids2.length === 0) throw new Error('Each item must include "id" or "recipients".');
+            return ids2;
         };
 
         const allIdsReferenced = Array.isArray(items) && items.length > 0 ? [...new Set(items.flatMap((it: BodyItem) => expandTargets(it)))] : [];
 
-        let recipientsMap = new Map<number, { id: number; email: string }>();
+        let recipientsMap = new Map<number, Recipient>();
         if (allIdsReferenced.length > 0) {
             if (isNewsletter) {
                 const authUsers = await prisma.auth.findMany({
@@ -383,6 +483,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         id: { in: allIdsReferenced },
                         roles: { has: 'NewsLetter' },
                     },
+                    select: { id: true, email: true },
                 });
                 recipientsMap = new Map(authUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
                 if (authUsers.length === 0) {
@@ -391,8 +492,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             } else {
                 const emailUsers = await prisma.emailUser.findMany({
                     where: { id: { in: allIdsReferenced } },
+                    select: { id: true, email: true, optType: true, fullName: true },
                 });
-                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email, optType: u.optType, fullName: u.fullName }]));
                 if (emailUsers.length === 0) {
                     return res.status(404).json({ message: 'No email users found for provided ids in "items".' });
                 }
@@ -421,10 +523,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const rotationSpanSeconds = totalSteps * 7 * 24 * 3600;
 
                     for (const rid of targets) {
-                        if (!recipientsMap.get(rid)) continue;
+                        const rec = recipientsMap.get(rid);
+                        if (!rec) continue;
+
+                        const finalPayload = appendOptFooterIfNeeded({ text: bodyText ?? undefined, html: bodyHtml ?? undefined }, rec);
+
                         pushRow({
-                            text: bodyText,
-                            html: bodyHtml,
+                            text: finalPayload.text ?? null,
+                            html: finalPayload.html ?? null,
                             subject: subj,
                             authId: Number(adminId),
                             emailUserId: isNewsletter ? null : rid,
@@ -433,7 +539,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
-                            weekdays: [], // explicitly empty for rotation
+                            weekdays: [],
                             status: 'pending',
                             isNewsletter: !!isNewsletter,
                         });
@@ -454,10 +560,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const rotationSpanSeconds = totalSteps * intervalSeconds;
 
                     for (const rid of targets) {
-                        if (!recipientsMap.get(rid)) continue;
+                        const rec = recipientsMap.get(rid);
+                        if (!rec) continue;
+
+                        const finalPayload = appendOptFooterIfNeeded({ text: bodyText ?? undefined, html: bodyHtml ?? undefined }, rec);
+
                         pushRow({
-                            text: bodyText,
-                            html: bodyHtml,
+                            text: finalPayload.text ?? null,
+                            html: finalPayload.html ?? null,
                             subject: subj,
                             authId: Number(adminId),
                             emailUserId: isNewsletter ? null : rid,
@@ -466,7 +576,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             repeated: true,
                             timeInterval: null,
                             rotationSpanSeconds,
-                            weekdays: [], // explicitly empty for rotation
+                            weekdays: [],
                             status: 'pending',
                             isNewsletter: !!isNewsletter,
                         });
@@ -484,10 +594,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const first = candidates[0];
 
                     for (const rid of targets) {
-                        if (!recipientsMap.get(rid)) continue;
+                        const rec = recipientsMap.get(rid);
+                        if (!rec) continue;
+
+                        const finalPayload = appendOptFooterIfNeeded({ text: bodyText ?? undefined, html: bodyHtml ?? undefined }, rec);
+
                         pushRow({
-                            text: bodyText,
-                            html: bodyHtml,
+                            text: finalPayload.text ?? null,
+                            html: finalPayload.html ?? null,
                             subject: subj,
                             authId: Number(adminId),
                             emailUserId: isNewsletter ? null : rid,
@@ -507,10 +621,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const runAtFinal = it.runAt ? new Date(it.runAt) : runAt ? new Date(runAt) : null;
 
                 for (const rid of targets) {
-                    if (!recipientsMap.get(rid)) continue;
+                    const rec = recipientsMap.get(rid);
+                    if (!rec) continue;
+
+                    const finalPayload = appendOptFooterIfNeeded({ text: bodyText ?? undefined, html: bodyHtml ?? undefined }, rec);
+
                     pushRow({
-                        text: bodyText,
-                        html: bodyHtml,
+                        text: finalPayload.text ?? null,
+                        html: finalPayload.html ?? null,
                         subject: subj,
                         authId: Number(adminId),
                         emailUserId: isNewsletter ? null : rid,
@@ -518,7 +636,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         runAt: runAtFinal,
                         repeated: it.repeated ?? repeated ?? false,
                         timeInterval: it.timeInterval ?? timeInterval ?? null,
-                        weekdays: [], // no specific weekdays
+                        weekdays: [],
                         status: 'pending',
                         isNewsletter: !!isNewsletter,
                     });
@@ -530,18 +648,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(400).json({ message: '"ids" must be a non-empty array or use "items".' });
             }
 
+            // For scheduled legacy, we need recipients to append correct footer per user
+            if (!isNewsletter) {
+                const emailUsers = await prisma.emailUser.findMany({
+                    where: { id: { in: ids } },
+                    select: { id: true, email: true, optType: true, fullName: true },
+                });
+                recipientsMap = new Map(emailUsers.map((u) => [u.id, { id: u.id, email: u.email, optType: u.optType, fullName: u.fullName }]));
+            } else {
+                const authUsers = await prisma.auth.findMany({
+                    where: { id: { in: ids }, roles: { has: 'NewsLetter' } },
+                    select: { id: true, email: true },
+                });
+                recipientsMap = new Map(authUsers.map((u) => [u.id, { id: u.id, email: u.email }]));
+            }
+
             for (const uid of ids) {
+                const rid = Number(uid);
+                const rec = recipientsMap.get(rid);
+                if (!rec) continue;
+
+                const finalPayload = appendOptFooterIfNeeded({ text: text ?? undefined, html: html ?? undefined }, rec);
+
                 rowsToCreate.push({
-                    text: text ?? null,
-                    html: html ?? null,
+                    text: finalPayload.text ?? null,
+                    html: finalPayload.html ?? null,
                     subject: subject ?? '(no subject)',
                     authId: Number(adminId),
-                    emailUserId: isNewsletter ? null : Number(uid),
-                    newsletterAuthId: isNewsletter ? Number(uid) : null,
+                    emailUserId: isNewsletter ? null : rid,
+                    newsletterAuthId: isNewsletter ? rid : null,
                     runAt: runAt ? new Date(runAt) : null,
                     repeated: !!repeated,
                     timeInterval: timeInterval ?? null,
-                    weekdays: [], // no specific weekdays
+                    weekdays: [],
                     status: 'pending',
                     isNewsletter: !!isNewsletter,
                 });
@@ -552,7 +691,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Nothing to schedule. Provide "items" or "ids".' });
         }
 
-        // ---- FIX: avoid interactive transaction, use createMany (single round-trip) ----
         await prisma.emailJobResult.createMany({
             data: rowsToCreate,
         });
