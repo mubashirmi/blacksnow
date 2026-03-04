@@ -186,7 +186,7 @@ export function HomeTourPopup() {
     const { Icon, accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets, lottie } = SLIDES[current];
 
     const slideAnim: React.CSSProperties = {
-        transition: 'opacity 0.26s ease, transform 0.26s ease',
+        transition: 'opacity 0.26s ease, transform 0.27s ease',
         opacity: animating ? 0 : 1,
         transform: animating ? `translateX(${dir === 'next' ? '-20px' : '20px'})` : 'translateX(0)',
     };
