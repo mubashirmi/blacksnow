@@ -1,5 +1,5 @@
 import { AuthModalTrigger } from '@/components/AuthModal';
-import { HomeTourPopup } from '@/components/HomeTourpopup';
+import { HomeTourPopup } from '@/components/HomeTourPopup';
 import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Badge } from '@/components/ui/badge';

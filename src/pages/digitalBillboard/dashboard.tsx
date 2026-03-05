@@ -177,13 +177,9 @@ function DigitalBillboardPage() {
                                 <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
                             </svg>
                         </div>
-                        <h3 className='text-xl font-bold text-gray-900'>
-                            {successMode === 'create' ? 'Billboard Created!' : 'Billboard Updated!'}
-                        </h3>
+                        <h3 className='text-xl font-bold text-gray-900'>{successMode === 'create' ? 'Billboard Created!' : 'Billboard Updated!'}</h3>
                         <p className='text-gray-500 text-center text-sm'>
-                            {successMode === 'create'
-                                ? 'Your billboard has been successfully submitted.'
-                                : 'Your billboard has been successfully updated.'}
+                            {successMode === 'create' ? 'Your billboard has been successfully submitted.' : 'Your billboard has been successfully updated.'}
                         </p>
                         <button
                             onClick={() => {

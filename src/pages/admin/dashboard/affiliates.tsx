@@ -90,10 +90,7 @@ export default function AffiliatesPage() {
                 // ✅ Ignore stale/aborted request errors
                 const msg = String(err?.message || '');
                 const isAbort =
-                    controller.signal.aborted ||
-                    err?.name === 'AbortError' ||
-                    msg.toLowerCase().includes('abort') ||
-                    msg.toLowerCase().includes('canceled');
+                    controller.signal.aborted || err?.name === 'AbortError' || msg.toLowerCase().includes('abort') || msg.toLowerCase().includes('canceled');
 
                 if (loadReqIdRef.current === reqId && !isAbort) {
                     setError(err?.message || 'Failed to load affiliates');
@@ -149,7 +146,7 @@ export default function AffiliatesPage() {
                 try {
                     const data = await res.json();
                     msg = (data as any)?.message || msg;
-                } catch { }
+                } catch {}
                 throw new Error(msg);
             }
 
