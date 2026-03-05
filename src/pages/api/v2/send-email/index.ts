@@ -82,13 +82,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const toDate = (d?: string | Date) => (d ? new Date(d) : undefined);
         const addSeconds = (d: Date, s: number) => new Date(d.getTime() + s * 1000);
 
-        const getBaseUrlFromReq = () => {
-            const proto = (req.headers['x-forwarded-proto'] as string) || 'http';
-            const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'localhost:3000';
-            return `${proto}://${host}`;
-        };
+        // const getBaseUrlFromReq = () => {
+        //     const proto = (req.headers['x-forwarded-proto'] as string) || 'http';
+        //     const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'localhost:3000';
+        //     return `${proto}://${host}`;
+        // };
 
-        const baseUrl = getBaseUrlFromReq();
+        const baseUrl = 'https://www.blacksnowholdings.com';
 
         const nextWeekdayAt = (from: Date, dayOfWeek: number, hour = 9, minute = 0) => {
             const base = new Date(from);
