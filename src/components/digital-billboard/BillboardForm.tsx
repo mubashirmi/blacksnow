@@ -111,136 +111,75 @@ export function BillboardForm({
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Full Name *</label>
-                        <input
-                            type='text'
-                            name='fullName'
-                            value={formData.fullName}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='fullName' value={formData.fullName} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                         {errors.fullName && <p className='text-red-500 text-sm mt-1'>{errors.fullName}</p>}
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Company Name *</label>
-                        <input
-                            type='text'
-                            name='companyName'
-                            value={formData.companyName}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='companyName' value={formData.companyName} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                         {errors.companyName && <p className='text-red-500 text-sm mt-1'>{errors.companyName}</p>}
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Website</label>
-                        <input
-                            type='text'
-                            name='website'
-                            value={formData.website}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='website' value={formData.website} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Podcast</label>
-                        <input
-                            type='text'
-                            name='podcast'
-                            value={formData.podcast}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='podcast' value={formData.podcast} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Twitter</label>
-                        <input
-                            type='text'
-                            name='twitter'
-                            value={formData.twitter}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='twitter' value={formData.twitter} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>YouTube</label>
-                        <input
-                            type='text'
-                            name='youTube'
-                            value={formData.youTube}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='youTube' value={formData.youTube} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     </div>
-
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>Facebook</label>
-                        <input
-                            type='text'
-                            name='facebook'
-                            value={formData.facebook}
-                            onChange={handleInputChange}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                        />
+                        <input type='text' name='facebook' value={formData.facebook} onChange={handleInputChange}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     </div>
                 </div>
 
                 <div>
                     <label className='block text-sm font-medium text-gray-700 mb-2'>Description *</label>
-                    <textarea
-                        name='description'
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                    />
+                    <textarea name='description' value={formData.description} onChange={handleInputChange} rows={4}
+                        className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     {errors.description && <p className='text-red-500 text-sm mt-1'>{errors.description}</p>}
                 </div>
 
                 <div>
                     <label className='block text-sm font-medium text-gray-700 mb-2'>Billboard Image *</label>
-                    <input
-                        type='file'
-                        accept='image/*'
-                        onChange={handleFileChange}
-                        className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                    />
+                    <input type='file' accept='image/*' onChange={handleFileChange}
+                        className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' />
                     {uploadingImage && <p className='text-blue-500 text-sm mt-1'>Uploading image...</p>}
-
                     {formData.image && (
                         <div className='mt-4 relative w-full max-w-md h-48'>
                             <Image src={formData.image} alt='Billboard' fill className='object-cover rounded-lg' sizes='(max-width: 768px) 100vw, 400px' />
                         </div>
                     )}
-
                     {errors.image && <p className='text-red-500 text-sm mt-1'>{errors.image}</p>}
                 </div>
 
                 <div className='flex gap-4'>
-                    <button
-                        type='submit'
-                        disabled={!canSubmit}
-                        className='flex-1 px-6 py-3 bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc]
-              text-white rounded-lg hover:from-[#2a8dcc] hover:to-[#4cc7e8]
-              font-semibold duration-200 transition-all ease-in-out
-              disabled:opacity-50 disabled:cursor-not-allowed'
-                    >
+                    <button type='submit' disabled={!canSubmit}
+                        className='flex-1 px-6 py-3 bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] text-white rounded-lg hover:from-[#2a8dcc] hover:to-[#4cc7e8] font-semibold duration-200 transition-all ease-in-out disabled:opacity-50 disabled:cursor-not-allowed'>
                         {saving ? 'Saving...' : mode === 'create' ? 'Submit Billboard' : 'Update Billboard'}
                     </button>
-
                     <button type='button' onClick={onCancel} className='px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors'>
                         Cancel
                     </button>
                 </div>
 
                 {mode === 'create' && (
-                    <p className='text-sm text-gray-600'>
-                        {usedCount}/{MAX_BILLBOARDS} billboards used.
-                    </p>
+                    <p className='text-sm text-gray-600'>{usedCount}/{MAX_BILLBOARDS} billboards used.</p>
                 )}
             </form>
         </div>

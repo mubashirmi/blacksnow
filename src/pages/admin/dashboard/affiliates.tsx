@@ -4,17 +4,18 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-// Shape coming back from /api/v2/get-affiliate (based on sample provided)
-type ApiAffiliate = {
+// Shape coming back from /api/v2/get-all-user-data (based on sample provided)
+type ApiUser = {
     id: number;
     createdAt: string;
     updatedAt?: string;
     email: string;
     firstName?: string;
     lastName?: string;
-    role?: string;
-    status?: string | null;
+    password?: string;
+    roles?: string[];
     adminStripeConnectId?: string | null;
+    adminStripeConnectIdStatus?: boolean;
     referredById?: number | null;
 };
 
@@ -22,7 +23,7 @@ type AffiliateRow = {
     id: number;
     name: string;
     email: string;
-    status: string;
+    status: 'Silver' | 'Gold';
     joinDate: string;
 };
 
@@ -39,15 +40,19 @@ export default function AffiliatesPage() {
     // Delete per-row loading
     const [deleteLoadingId, setDeleteLoadingId] = React.useState<number | null>(null);
 
+    // ✅ Used to ignore stale/aborted requests (fixes "Failed to load affiliates" showing permanently in dev/StrictMode)
+    const loadReqIdRef = React.useRef(0);
+
     React.useEffect(() => {
         const controller = new AbortController();
+        const reqId = ++loadReqIdRef.current;
 
         async function load() {
             try {
                 setLoading(true);
                 setError(null);
 
-                const res = await fetch('/api/v2/get-affiliate', {
+                const res = await fetch('/api/v2/get-all-user-data', {
                     method: 'GET',
                     headers: { Accept: 'application/json' },
                     credentials: 'include',
@@ -56,20 +61,47 @@ export default function AffiliatesPage() {
 
                 if (!res.ok) throw new Error(`Request failed (${res.status})`);
 
-                const data: { message?: string; auths?: ApiAffiliate[] } = await res.json();
-                const affiliates = (data.auths ?? []).map<AffiliateRow>((a) => ({
-                    id: a.id,
-                    name: `${a.firstName ?? ''} ${a.lastName ?? ''}`.trim() || '(No name)',
-                    email: a.email,
-                    status: (a.status ?? null) !== null && a.status !== undefined ? String(a.status) : a.role === 'Affiliate' ? 'Active' : a.role ?? 'Unknown',
-                    joinDate: a.createdAt,
-                }));
+                const data: ApiUser[] = await res.json();
+
+                const affiliates = (data ?? [])
+                    .filter((u) => {
+                        const roles = u.roles ?? [];
+                        return roles.includes('Affiliate') || roles.includes('SuperAffiliate');
+                    })
+                    .map<AffiliateRow>((u) => {
+                        const roles = u.roles ?? [];
+                        const isSuper = roles.includes('SuperAffiliate');
+
+                        return {
+                            id: u.id,
+                            name: `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || '(No name)',
+                            email: u.email,
+                            status: isSuper ? 'Gold' : 'Silver',
+                            joinDate: u.createdAt,
+                        };
+                    });
+
+                // ✅ Ignore if this is not the latest request or it got aborted
+                if (controller.signal.aborted || loadReqIdRef.current !== reqId) return;
 
                 setRows(affiliates);
+                setError(null); // extra safety
             } catch (err: any) {
-                if (err?.name !== 'AbortError') setError(err?.message || 'Failed to load affiliates');
+                // ✅ Ignore stale/aborted request errors
+                const msg = String(err?.message || '');
+                const isAbort =
+                    controller.signal.aborted ||
+                    err?.name === 'AbortError' ||
+                    msg.toLowerCase().includes('abort') ||
+                    msg.toLowerCase().includes('canceled');
+
+                if (loadReqIdRef.current === reqId && !isAbort) {
+                    setError(err?.message || 'Failed to load affiliates');
+                }
             } finally {
-                setLoading(false);
+                if (!controller.signal.aborted && loadReqIdRef.current === reqId) {
+                    setLoading(false);
+                }
             }
         }
 
@@ -117,7 +149,7 @@ export default function AffiliatesPage() {
                 try {
                     const data = await res.json();
                     msg = (data as any)?.message || msg;
-                } catch {}
+                } catch { }
                 throw new Error(msg);
             }
 
@@ -144,7 +176,10 @@ export default function AffiliatesPage() {
                 <div className='p-6'>
                     {/* Success / Error */}
                     {success && <div className='mb-4 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700'>{success}</div>}
-                    {error && <div className='mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>{error}</div>}
+                    {/* ✅ Only show load error if we have no rows */}
+                    {error && !loading && rows.length === 0 && (
+                        <div className='mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>{error}</div>
+                    )}
 
                     <div className='overflow-x-auto'>
                         <table className='w-full'>
@@ -152,6 +187,7 @@ export default function AffiliatesPage() {
                                 <tr className='border-b border-slate-200'>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Name</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Email</th>
+                                    <th className='text-left py-3 px-4 font-medium text-slate-700'>Status</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Join Date</th>
                                     <th className='text-left py-3 px-4 font-medium text-slate-700'>Actions</th>
                                 </tr>
@@ -170,6 +206,9 @@ export default function AffiliatesPage() {
                                                 <div className='h-5 w-20 animate-pulse rounded-full bg-slate-200' />
                                             </td>
                                             <td className='py-3 px-4'>
+                                                <div className='h-4 w-32 animate-pulse rounded bg-slate-200' />
+                                            </td>
+                                            <td className='py-3 px-4'>
                                                 <div className='h-4 w-44 animate-pulse rounded bg-slate-200' />
                                             </td>
                                         </tr>
@@ -179,6 +218,16 @@ export default function AffiliatesPage() {
                                         <tr key={affiliate.id} className='border-b border-slate-100 hover:bg-slate-50'>
                                             <td className='py-3 px-4'>{affiliate.name}</td>
                                             <td className='py-3 px-4 text-blue-600'>{affiliate.email}</td>
+                                            <td className='py-3 px-4'>
+                                                <span
+                                                    className={[
+                                                        'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium',
+                                                        affiliate.status === 'Gold' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800',
+                                                    ].join(' ')}
+                                                >
+                                                    {affiliate.status}
+                                                </span>
+                                            </td>
                                             <td className='py-3 px-4'>{formatDate(affiliate.joinDate)}</td>
                                             <td className='py-3 px-4'>
                                                 <div className='flex items-center gap-3'>
@@ -212,7 +261,7 @@ export default function AffiliatesPage() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} className='py-6 text-center text-slate-500'>
+                                        <td colSpan={5} className='py-6 text-center text-slate-500'>
                                             No affiliates found.
                                         </td>
                                     </tr>

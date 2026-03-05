@@ -25,8 +25,11 @@ function DigitalBillboardPage() {
     const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
     const [activeBillboard, setActiveBillboard] = useState<BillboardData | null>(null);
 
-    // ✅ View modal
     const [viewModalBillboard, setViewModalBillboard] = useState<BillboardData | null>(null);
+
+    // ✅ Success modal lives in the PAGE — survives regardless of view state
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMode, setSuccessMode] = useState<'create' | 'edit'>('create');
 
     const canCreateMore = billboards.length < MAX_BILLBOARDS;
 
@@ -61,6 +64,11 @@ function DigitalBillboardPage() {
         setView('form');
     };
 
+    const backToList = () => {
+        setView('list');
+        setActiveBillboard(null);
+    };
+
     const logout = () => {
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
@@ -75,7 +83,6 @@ function DigitalBillboardPage() {
         return formMode === 'create' ? ('create' as const) : ('edit' as const);
     }, [view, formMode]);
 
-    // ✅ Sidebar as normal component
     const Sidebar = ({ closeMobile }: { closeMobile: () => void }) => (
         <DigitalBillboardSidebar
             activeKey={activeKey}
@@ -126,7 +133,7 @@ function DigitalBillboardPage() {
                         initialValues={formMode === 'edit' && activeBillboard ? toFormValues(activeBillboard) : undefined}
                         usedCount={billboards.length}
                         canCreateMore={canCreateMore}
-                        onCancel={() => setView('list')}
+                        onCancel={backToList}
                         onSave={async (values) => {
                             setError('');
                             if (formMode === 'create') {
@@ -137,13 +144,14 @@ function DigitalBillboardPage() {
                                 await createBillboard(values);
                             } else {
                                 if (!activeBillboard?.id) throw new Error('Missing billboard id');
-                                // ✅ Requirement: update uses id=billboardId handled in hook
                                 await updateBillboard(activeBillboard.id, values);
                             }
 
                             await refresh();
-                            setView('list');
-                            setActiveBillboard(null);
+
+                            // ✅ Show success modal BEFORE navigating away
+                            setSuccessMode(formMode);
+                            setShowSuccessModal(true);
                         }}
                     />
                 )}
@@ -159,6 +167,36 @@ function DigitalBillboardPage() {
                     openEdit(bb);
                 }}
             />
+
+            {/* ✅ Success modal — lives in the page, never unmounts with the form */}
+            {showSuccessModal && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
+                    <div className='bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 flex flex-col items-center gap-4'>
+                        <div className='flex items-center justify-center w-16 h-16 rounded-full bg-green-100'>
+                            <svg className='w-8 h-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
+                                <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
+                            </svg>
+                        </div>
+                        <h3 className='text-xl font-bold text-gray-900'>
+                            {successMode === 'create' ? 'Billboard Created!' : 'Billboard Updated!'}
+                        </h3>
+                        <p className='text-gray-500 text-center text-sm'>
+                            {successMode === 'create'
+                                ? 'Your billboard has been successfully submitted.'
+                                : 'Your billboard has been successfully updated.'}
+                        </p>
+                        <button
+                            onClick={() => {
+                                setShowSuccessModal(false);
+                                backToList();
+                            }}
+                            className='mt-2 w-full px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors duration-200'
+                        >
+                            Done
+                        </button>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 }
