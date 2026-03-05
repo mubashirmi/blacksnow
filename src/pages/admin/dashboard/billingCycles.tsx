@@ -62,7 +62,7 @@ export default function BillingPage() {
         setIsLoading(true);
         setError(null);
         try {
-            const { data } = await axios.get('http://localhost:3000/api/v3/all-users-checkout-details');
+            const { data } = await axios.get('/api/v3/all-users-checkout-details');
             setCheckouts(data.checkouts ?? []);
             setSuccess('Billing data loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
