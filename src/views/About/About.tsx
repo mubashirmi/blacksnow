@@ -1,33 +1,32 @@
-import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import lottie from 'lottie-web';
-import { ArrowRight, BookOpen, Brain, Target, Users, Zap } from 'lucide-react';
+// import lottie from 'lottie-web';
+import { ArrowRight, Brain, Target, Users } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+// import { useEffect, useRef } from 'react';
 
 function About() {
     // Make sure your LottieAnimation component looks something like this:
-    const LottieAnimation = ({ src, loop, autoplay, style }) => {
-        const containerRef = useRef(null);
+    // const LottieAnimation = ({ src, loop, autoplay, style }) => {
+    //     const containerRef = useRef(null);
 
-        useEffect(() => {
-            if (containerRef.current) {
-                const animation = lottie.loadAnimation({
-                    container: containerRef.current,
-                    renderer: 'svg',
-                    loop,
-                    autoplay,
-                    path: src,
-                });
+    //     useEffect(() => {
+    //         if (containerRef.current) {
+    //             const animation = lottie.loadAnimation({
+    //                 container: containerRef.current,
+    //                 renderer: 'svg',
+    //                 loop,
+    //                 autoplay,
+    //                 path: src,
+    //             });
 
-                return () => animation.destroy(); // Cleanup
-            }
-        }, [src, loop, autoplay]);
+    //             return () => animation.destroy(); // Cleanup
+    //         }
+    //     }, [src, loop, autoplay]);
 
-        return <div ref={containerRef} style={style} />;
-    };
+    //     return <div ref={containerRef} style={style} />;
+    // };
 
     return (
         <div className='min-h-screen bg-[#050608]'>
@@ -45,12 +44,12 @@ function About() {
 
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
-                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight'>
                                         Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Story</span>
                                     </h2>
 
                                     {/* ✅ line now matches heading width */}
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div> */}
                                 </div>
                             </div>
 
@@ -78,7 +77,7 @@ function About() {
                                     size='lg'
                                     className='group border-2 box-border cursor-pointer border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full max-w-[320px] sm:min-w-[300px]'
                                 >
-                                    <BookOpen className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    {/* <BookOpen className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Learn More
                                     <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                 </Button>
@@ -198,10 +197,9 @@ function About() {
             </section>
 
             {/* Call to Action Section - Adjusted to match Billboard CTA spacing */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
-                        {/* Left Content */}
                         <div className='space-y-8'>
                             <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 JOIN OUR MISSION
@@ -227,7 +225,6 @@ function About() {
                                         size='lg'
                                         className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
                                     >
-                                        <Zap className='w-6 h-6 mr-3' />
                                         Get Started
                                         <ArrowRight className='w-5 h-5 ml-3' />
                                     </Button>
@@ -235,7 +232,6 @@ function About() {
                             </div>
                         </div>
 
-                        {/* Right Animation */}
                         <div className='flex items-center justify-center'>
                             <div className='w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
                                 <div className='relative bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center overflow-hidden'>
@@ -245,7 +241,7 @@ function About() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     );
 }

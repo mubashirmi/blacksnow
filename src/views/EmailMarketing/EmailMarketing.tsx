@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, Calendar, Clock, Edit3, Globe, Mail, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, Calendar, Clock, Edit3, Globe, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -158,7 +158,7 @@ function EmailMarketing() {
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
                                     </h1>
 
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div> */}
                                 </div>
 
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
@@ -180,7 +180,7 @@ function EmailMarketing() {
                                                 size='lg'
                                                 className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
                                             >
-                                                <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                                {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                                 Learn more
                                                 <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                             </Button>
@@ -191,7 +191,7 @@ function EmailMarketing() {
                                                 size='lg'
                                                 className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
                                             >
-                                                <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                                {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                                 Learn more
                                                 <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                             </Button>
@@ -204,7 +204,7 @@ function EmailMarketing() {
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
@@ -351,7 +351,7 @@ function EmailMarketing() {
                                         size='lg'
                                         className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
                                     >
-                                        <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Learn More
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -362,7 +362,7 @@ function EmailMarketing() {
                                     variant='outline'
                                     className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                 >
-                                    <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    {/* <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>

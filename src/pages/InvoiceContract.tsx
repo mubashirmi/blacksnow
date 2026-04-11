@@ -191,7 +191,7 @@ export default function InvoiceContractPage() {
                                         &nbsp;Invoice
                                     </h1>
 
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div> */}
                                 </div>
 
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
@@ -218,23 +218,18 @@ export default function InvoiceContractPage() {
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
                         </div>
 
                         {/* RIGHT */}
-                        <div className='relative animate-slide-in-right '>
-                            <div className='relative overflow-hidden '>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
-                                        <LottieAnimation
-                                            src='/animations/invoivecontracticon.json'
-                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
-                                            loop={true}
-                                            autoplay={true}
-                                        />
+                        <div className='relative animate-slide-in-right'>
+                            <div className='relative flex items-center justify-center w-full'>
+                                <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 px-4 py-4 sm:px-5 sm:py-5'>
+                                    <div className='w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px] lg:w-[330px] lg:h-[330px]'>
+                                        <LottieAnimation src='/animations/invoivecontracticon.json' className='w-full h-full' loop autoplay={true} />
                                     </div>
                                 </div>
                             </div>
@@ -503,7 +498,7 @@ export default function InvoiceContractPage() {
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
-                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>

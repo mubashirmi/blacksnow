@@ -237,7 +237,7 @@ function Advertising() {
                                         &nbsp;Billboards
                                     </h1>
 
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div> */}
                                 </div>
 
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
@@ -258,7 +258,7 @@ function Advertising() {
                                     }}
                                 >
                                     <>
-                                        <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Billboards
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </>
@@ -269,7 +269,7 @@ function Advertising() {
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    {/* <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
@@ -466,7 +466,7 @@ function Advertising() {
                                     }}
                                 >
                                     <>
-                                        <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Billboards
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </>
@@ -477,7 +477,7 @@ function Advertising() {
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
-                                    <BarChart3 className='w-6 h-6 mr-3' />
+                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>

@@ -5,7 +5,17 @@ import { baseResponse, errorResponse } from '@/lib/baseResponse';
 import logger from '@/lib/logger';
 import prisma from '@/lib/prisma';
 
-type ProductType = 'NewsLetter' | 'RSVP' | 'DigitalBillboard' | 'Affiliate' | 'Sales' | 'EmailMarketing' | 'InvoiceTool' | 'SuperAffiliate';
+type ProductType =
+    | 'NewsLetter'
+    | 'RSVP'
+    | 'DigitalBillboard'
+    | 'Affiliate'
+    | 'Sales'
+    | 'EmailMarketing'
+    | 'InvoiceTool'
+    | 'SuperAffiliate'
+    | 'LightningSilver'
+    | 'LightningGold';
 
 const stripe = new Stripe(process.env.NEXT_PRIVATE_STRIPE_SECRET as string, {
     apiVersion: '2024-06-20',
@@ -24,6 +34,9 @@ const SALES_PRICE = 40.0;
 
 const EMAIL_MARKETING_MONTHLY_PRICE = 500.0;
 const EMAIL_MARKETING_YEARLY_PRICE = 4000.0;
+
+const LIGHTNING_SILVER_MONTHLY_PRICE = 5.0;
+const LIGHTNING_GOLD_MONTHLY_PRICE = 250.0;
 
 const INVOICETOOL_MONTHLY_PRICE = 20.0;
 const INVOICETOOL_YEARLY_PRICE = 200.0;
@@ -105,6 +118,10 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
 
         case 'Sales':
             return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_SALES, price: SALES_PRICE };
+        case 'LightningSilver':
+            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_LIGHTNING_SILVER_MONTHLY, price: LIGHTNING_SILVER_MONTHLY_PRICE };
+        case 'LightningGold':
+            return { priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_LIGHTNING_GOLD_MONTHLY, price: LIGHTNING_GOLD_MONTHLY_PRICE };
 
         case 'EmailMarketing': {
             const isYearly = period === 'yearly';

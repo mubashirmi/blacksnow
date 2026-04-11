@@ -108,8 +108,7 @@ function BlogDirectory() {
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog&nbsp;</span>
                             <span className='text-white'>Directory</span>
                         </h1>
-
-                        <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div>
+                        {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div> */}
                     </div>
                 </div>
             </section>

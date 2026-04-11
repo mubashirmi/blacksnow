@@ -44,6 +44,8 @@ function validatePassword(value: string) {
     return value.length >= 6 || 'Password must be at least 6 characters long';
 }
 
+const UNIFIED_CARD_HEIGHT = 580;
+
 export default function AuthModal({
     open,
     onOpenChange,
@@ -176,7 +178,10 @@ export default function AuthModal({
         >
             <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
                 {/* ── Glassmorphic card matching PricingComponent aesthetic ── */}
-                <div className='relative rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden'>
+                <div
+                    className='relative rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden flex flex-col'
+                    style={{ minHeight: UNIFIED_CARD_HEIGHT }}
+                >
                     {/* Top accent line */}
                     <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
 
@@ -203,7 +208,7 @@ export default function AuthModal({
                     </DialogHeader>
 
                     {/* Body */}
-                    <div className='px-8 pb-8 overflow-y-auto max-h-[calc(90vh-160px)]'>
+                    <div className='px-8 pb-8 overflow-y-auto max-h-[calc(90vh-160px)] flex-1'>
                         {/* Alert */}
                         {alert.message && (
                             <div

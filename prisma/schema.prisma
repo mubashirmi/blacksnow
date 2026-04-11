@@ -53,6 +53,8 @@ enum Role {
   DigitalBillboard
   EmailMarketing
   InvoiceTool
+  LightningSilver
+  LightningGold
 }
 
 model AdminPayouts {

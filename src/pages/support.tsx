@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import lottie from 'lottie-web';
-import { AlertTriangle, ArrowRight, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, MessageCircle, Phone, Shield, Users, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, Shield, Users, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -118,10 +118,9 @@ export default function Page() {
             </div>
 
             {/* Hero Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-[90rem] relative z-10'>
                     <div className='text-center max-w-8xl mx-auto'>
-                        {/* Status Badge */}
                         <div className='inline-flex items-center space-x-3 bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/20 to-[#2c7bbe]/10 backdrop-blur-2xl border border-[#2c7bbe]/30 rounded-full px-6 sm:px-8 py-2.5 sm:py-3 shadow-2xl shadow-[#2c7bbe]/20 animate-slide-in-up mb-4 sm:mb-5'>
                             <div className='relative'>
                                 <div className='w-3 h-3 bg-[#4cc7e8] rounded-full'></div>
@@ -130,7 +129,6 @@ export default function Page() {
                             <Shield className='w-5 h-5 text-[#4cc7e8]' />
                         </div>
 
-                        {/* Headline */}
                         <div className='space-y-6 sm:space-y-8 animate-slide-in-up delay-200'>
                             <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight'>
                                 <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
@@ -146,7 +144,6 @@ export default function Page() {
                             </p>
                         </div>
 
-                        {/* CTA Buttons */}
                         <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center pt-8 sm:pt-10 animate-slide-in-up delay-400'>
                             <Button
                                 size='lg'
@@ -167,7 +164,7 @@ export default function Page() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* How We Support You */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
@@ -250,7 +247,7 @@ export default function Page() {
                                         className='bg-red-700 hover:bg-red-800 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-md shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
                                         onClick={handleUnsubscribeClick}
                                     >
-                                        <CreditCard className='mr-2 h-5 w-5' />
+                                        {/* <CreditCard className='mr-2 h-5 w-5' /> */}
                                         Unsubscribe
                                     </Button>
                                 </div>
@@ -356,7 +353,7 @@ export default function Page() {
                                         variant='outline'
                                         className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
                                     >
-                                        <Eye className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Eye className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Were here to support you
                                     </Button>
                                 </Link>

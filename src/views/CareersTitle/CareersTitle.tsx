@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import lottie from 'lottie-web';
-import { ArrowRight, Award, Calendar, CheckCircle, Globe, Search, Star, Target, UserCheck, Users, Zap } from 'lucide-react';
+import { ArrowRight, Award, CheckCircle, Globe, Star, Target, UserCheck, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
@@ -45,7 +45,7 @@ function CareersTitle() {
                                     <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>Careers</h2>
 
                                     {/* ✅ line now matches heading width */}
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-6'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-6'></div> */}
                                 </div>
                             </div>
 
@@ -73,7 +73,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
-                                        <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Career Opportunities
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -122,7 +122,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
-                                        <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Career Opportunities
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -154,7 +154,7 @@ function CareersTitle() {
                                     </h2>
 
                                     {/* ✅ line now matches heading width */}
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full  mb-4 sm:mb-6'></div>
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full  mb-4 sm:mb-6'></div> */}
                                 </div>
                             </div>
 
@@ -179,7 +179,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Opportunities
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -189,7 +189,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Consultation
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -237,7 +237,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Opportunities
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -247,7 +247,7 @@ function CareersTitle() {
                                         size='lg'
                                         className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
-                                        <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                        {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Consultation
                                         <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
@@ -278,7 +278,7 @@ function CareersTitle() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Link href={'/careeroptions'}>
                                     <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
-                                        <Search className='w-6 h-6 mr-3' />
+                                        {/* <Search className='w-6 h-6 mr-3' /> */}
                                         Browse Jobs
                                         <ArrowRight className='w-5 h-5 ml-3' />
                                     </Button>
@@ -288,7 +288,7 @@ function CareersTitle() {
                                         variant='outline'
                                         className='border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
-                                        <Users className='w-6 h-6 mr-3' />
+                                        {/* <Users className='w-6 h-6 mr-3' /> */}
                                         Hire Talent
                                     </Button>
                                 </Link>

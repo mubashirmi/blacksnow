@@ -4,7 +4,7 @@ import { AuthModalTrigger } from '@/components/AuthModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Cookie, ExternalLink, Mail, Settings, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Cookie, ExternalLink, Settings, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 function Cookies() {
@@ -164,7 +164,7 @@ function Cookies() {
                             Cookie <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Policy</span>
                         </h1>
 
-                        <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full' />
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full' /> */}
 
                         <p className='text-base sm:text-lg text-gray-300 max-w-3xl leading-relaxed'>
                             This Cookie Policy explains how <span className='text-[#4cc7e8] font-semibold'>Black Snow</span> uses cookies and similar
@@ -252,7 +252,7 @@ function Cookies() {
                         hover:text-[#050608]
                       '
                                         >
-                                            <Mail className='w-4 h-4' />
+                                            {/* <Mail className='w-4 h-4' /> */}
                                             Email Support
                                             <ArrowRight className='w-4 h-4' />
                                         </a>

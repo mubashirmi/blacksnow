@@ -92,6 +92,8 @@ function Snowflakes() {
 }
 
 // ── Carousel data — Lottie JSON paths ────────────────────────
+const UNIFIED_CARD_HEIGHT = 580;
+
 const SLIDES = [
     {
         lottie: '/animations/papertradingicon.json',
@@ -342,7 +344,7 @@ function SignIn() {
                     <div className='hidden lg:block w-[1px] flex-shrink-0 self-stretch bg-gradient-to-b from-transparent via-white/10 to-transparent my-8' />
 
                     {/* RIGHT — Form: min-height locks the card to SignUp height at all times */}
-                    <div className='flex-1 flex flex-col justify-center px-8 sm:px-10 py-10' style={{ minHeight: '580px' }}>
+                    <div className='flex-1 flex flex-col justify-center px-8 sm:px-10 py-10' style={{ minHeight: UNIFIED_CARD_HEIGHT }}>
                         <div className='text-center mb-8'>
                             <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5'>
                                 <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />

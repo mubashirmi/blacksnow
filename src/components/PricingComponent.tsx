@@ -5,12 +5,265 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
-import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, Lock, Mail, MessageSquare, Monitor, Newspaper, Star, X } from 'lucide-react';
+import {
+    ArrowRight,
+    Calendar,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    DollarSign,
+    FilePen,
+    FileText,
+    Lock,
+    Mail,
+    MessageSquare,
+    Monitor,
+    Newspaper,
+    Shield,
+    Star,
+    X,
+    Zap,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+// ─── Terms Slides ─────────────────────────────────────────────────────────────
+type TermsSlide = {
+    id: string;
+    accent: string;
+    Icon: any;
+    badge: string;
+    titleGrad: string;
+    titlePlain: string;
+    gradAtEnd?: boolean;
+    summary: string;
+    link: string;
+    bullets: string[];
+};
+
+const UNIFIED_CARD_HEIGHT = 580;
+const TERMS_MODAL_HEIGHT = 560;
+
+const TERMS_SLIDES: TermsSlide[] = [
+    {
+        id: 'terms',
+        accent: '#2c7bbe',
+        Icon: FileText,
+        badge: 'Terms & Conditions',
+        titleGrad: 'Terms',
+        titlePlain: ' & Conditions',
+        summary:
+            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+        link: '/terms',
+        bullets: ['Governs platform and tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    },
+    {
+        id: 'privacy',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Privacy Policy',
+        titleGrad: 'Privacy',
+        titlePlain: ' Policy',
+        summary:
+            'We collect only the data necessary to operate the platform and process payments. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
+        link: '/privacy',
+        bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    },
+];
+
+// ─── Terms Slide Modal ────────────────────────────────────────────────────────
+function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; onOpenChange: (v: boolean) => void; onComplete: () => void }) {
+    const [current, setCurrent] = useState(0);
+    const [dir, setDir] = useState<'next' | 'prev'>('next');
+    const [animating, setAnimating] = useState(false);
+
+    useEffect(() => {
+        if (open) {
+            setCurrent(0);
+            setDir('next');
+            setAnimating(false);
+        }
+    }, [open]);
+
+    const goTo = (next: number, direction: 'next' | 'prev') => {
+        if (animating) return;
+        setDir(direction);
+        setAnimating(true);
+        setTimeout(() => {
+            setCurrent(next);
+            setAnimating(false);
+        }, 220);
+    };
+
+    const handleNext = () => {
+        if (animating) return;
+
+        if (current < TERMS_SLIDES.length - 1) {
+            goTo(current + 1, 'next');
+            return;
+        }
+
+        onComplete();
+        onOpenChange(false);
+    };
+
+    const handlePrev = () => {
+        if (animating || current === 0) return;
+        goTo(current - 1, 'prev');
+    };
+
+    const slide = TERMS_SLIDES[current];
+    const { accent, Icon, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
+    const isLast = current === TERMS_SLIDES.length - 1;
+
+    const slideAnim: React.CSSProperties = {
+        transition: 'opacity 0.22s ease, transform 0.22s ease',
+        opacity: animating ? 0 : 1,
+        transform: animating ? `translateX(${dir === 'next' ? '-18px' : '18px'})` : 'translateX(0)',
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+                <DialogTitle className='sr-only'>{badge}</DialogTitle>
+
+                <div
+                    className='relative rounded-[32px] border-2 overflow-hidden flex flex-col'
+                    style={{
+                        minHeight: TERMS_MODAL_HEIGHT,
+                        backgroundColor: '#080b12',
+                        borderColor: `${accent}45`,
+                        boxShadow: `0 0 60px ${accent}20, 0 24px 60px rgba(0,0,0,0.8)`,
+                    }}
+                >
+                    <div
+                        className='absolute top-0 left-0 right-0 h-[2px]'
+                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                    />
+                    <div
+                        className='absolute top-0 left-0 right-0 h-48 pointer-events-none'
+                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}12 0%, transparent 70%)` }}
+                    />
+
+                    <button
+                        type='button'
+                        onClick={() => onOpenChange(false)}
+                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
+                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                        <X className='w-4 h-4 text-white/60' />
+                    </button>
+
+                    <div className='relative z-10 flex-1 px-7 pt-8 pb-6' style={slideAnim}>
+                        <div
+                            className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
+                            style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
+                        >
+                            <Icon className='w-3.5 h-3.5' />
+                            {badge}
+                        </div>
+
+                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>
+                            {gradAtEnd ? (
+                                <>
+                                    {titlePlain}
+                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                        {titleGrad}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                        {titleGrad}
+                                    </span>
+                                    {titlePlain}
+                                </>
+                            )}
+                        </h2>
+
+                        <div className='h-0.5 rounded-full mb-4 w-12' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+
+                        <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
+                            <p className='text-xs font-bold uppercase mb-2' style={{ color: accent }}>
+                                Summary
+                            </p>
+                            <p className='text-white/60 text-xs leading-relaxed'>{summary}</p>
+
+                            <a
+                                href={link}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='inline-flex items-center gap-1 mt-3 text-xs font-semibold hover:underline'
+                                style={{ color: accent }}
+                            >
+                                Read full document →
+                            </a>
+                        </div>
+
+                        <ul className='space-y-2'>
+                            {bullets.map((b, i) => (
+                                <li key={i} className='flex items-start gap-2.5'>
+                                    <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
+                                    <span className='text-white/70 text-sm leading-snug'>{b}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className='relative z-10 px-7 pb-6 flex items-center justify-between'>
+                        <div className='flex items-center gap-1.5'>
+                            {TERMS_SLIDES.map((_, i) => (
+                                <div
+                                    key={i}
+                                    className='rounded-full transition-all duration-300'
+                                    style={{
+                                        width: i === current ? 20 : 6,
+                                        height: 6,
+                                        backgroundColor: i === current ? accent : i < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
+                                    }}
+                                />
+                            ))}
+                            <span className='text-xs text-white/30 ml-2'>
+                                {current + 1}/{TERMS_SLIDES.length}
+                            </span>
+                        </div>
+
+                        <div className='flex items-center gap-2'>
+                            <button
+                                type='button'
+                                onClick={handlePrev}
+                                disabled={current === 0}
+                                className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                                style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                            >
+                                <ChevronLeft className='w-4 h-4 text-white' />
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={handleNext}
+                                className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
+                                style={{
+                                    background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                    border: `1px solid ${accent}60`,
+                                    boxShadow: `0 2px 12px ${accent}30`,
+                                }}
+                            >
+                                {isLast ? 'I Understand ✓' : 'Next'}
+                                {!isLast && <ChevronRight className='w-3.5 h-3.5' />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// ─── Products ─────────────────────────────────────────────────────────────────
 const PRODUCTS = [
     {
         id: 'NewsLetter',
@@ -98,11 +351,35 @@ const PRODUCTS = [
         hasSubscription: true,
     },
     {
+        id: 'LightningSilver',
+        apiName: 'LightningSilver',
+        name: 'Lightning Silver',
+        monthlyPrice: 5,
+        yearlyPrice: 60, // change if you want a discounted annual plan
+        description:
+            'Earn 25% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to help you grow consistently.',
+        features: [
+            '25% lifetime commissions (monthly + annual referrals)',
+            'Automated payouts with no income cap',
+            'Subscriber referral bonuses',
+            'Commission table (monthly + annual) in one view',
+            'KPI performance dashboard',
+            'Email & SMS CRM included to promote offers',
+        ],
+        icon: Zap,
+        color: 'from-[#4cc7e8] to-[#2c7bbe]',
+        available: true,
+        popular: false,
+        productLink: 'https://blacksnowholdings.com/lightningSilver',
+        productComission: '100',
+        hasSubscription: true,
+    },
+    {
         id: 'SuperAffiliate',
         apiName: 'SuperAffiliate',
         name: 'Lightning Gold',
-        price: 250, // one-time
-        period: 'One-time',
+        monthlyPrice: 250,
+        yearlyPrice: 3000, // change if you want a discounted annual plan
         description:
             'Earn 75% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to maximize every sale.',
         features: [
@@ -119,7 +396,7 @@ const PRODUCTS = [
         popular: false,
         productLink: 'https://blacksnowholdings.com/lightningGold',
         productComission: '100',
-        hasSubscription: false,
+        hasSubscription: true,
     },
 ];
 
@@ -146,6 +423,11 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const [isLoadingEmail, setIsLoadingEmail] = useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod);
+
+    // ── Terms state ──
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [termsCompleted, setTermsCompleted] = useState(false);
+    const [termsChecked, setTermsChecked] = useState(false);
 
     const [internalOpen, setInternalOpen] = useState(false);
     const modalOpen = open ?? internalOpen;
@@ -235,6 +517,9 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 case 'SuperAffiliate':
                     role = 'SuperAffiliate';
                     break;
+                case 'LightningSilver':
+                    role = 'LightningSilver';
+                    break;
                 case 'Sales':
                     role = 'EmailMarketing';
                     break;
@@ -311,7 +596,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
     const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
     const savings = getSavingsPercentage(product);
-    const isLightningGold = router.pathname === '/lightningGold';
 
     const formRows = product.features.slice(0, 3);
     const rowIcons = [Star, Mail, Lock];
@@ -319,41 +603,42 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
-                className={`relative rounded-[32px] border bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden ${
+                className={`relative rounded-[32px] border bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden flex flex-col ${
                     isPurchased ? 'border-emerald-400/25' : 'border-white/10'
                 } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
+                style={{ minHeight: UNIFIED_CARD_HEIGHT }}
             >
                 {/* top accent line */}
                 <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${isPurchased ? 'from-emerald-400 to-green-500' : product.color}`} />
 
-                <div className='relative p-6 sm:p-8'>
-                    {/* ✅ UPDATED Header — logo left, text stacked right, badge top-right */}
-                    <div className='flex items-center justify-between gap-4'>
-                        <div className='flex items-center gap-4'>
-                            {/* ✅ FIX 1: Use /logowhite.png instead of product.icon */}
-                            <div className='h-16 w-16 rounded-2xl flex items-center justify-center flex-shrink-0'>
-                                <Image src='/logowhite.png' alt='Logo' width={48} height={48} className='object-contain w-full h-full' />
+                <div className='relative flex flex-1 flex-col p-6 sm:p-8'>
+                    {/* ── Header: logo left, name + price centered ── */}
+                    <div className='relative grid grid-cols-[64px_minmax(0,1fr)_64px] items-start gap-4 pb-2'>
+                        {product.popular && (
+                            <div className='absolute top-0 right-0'>
+                                <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs'>
+                                    POPULAR
+                                </Badge>
                             </div>
+                        )}
 
-                            {/* ✅ FIX 2: Text stacked vertically, tighter and cleaner */}
-                            <div className='flex flex-col justify-center'>
-                                <h3 className='text-xl font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
-                                <p className='text-lg font-semibold text-white leading-snug mt-0.5'>
-                                    {getProductPrice(product)}
-                                    <span className='text-white/55 font-medium text-base'>{getProductPeriod(product)}</span>
-                                </p>
-                            </div>
+                        <div className='h-16 w-16 rounded-2xl flex items-center justify-center justify-self-start'>
+                            <Image src='/logowhite.png' alt='Logo' width={48} height={48} className='object-contain w-full h-full' />
                         </div>
 
-                        {product.popular && (
-                            <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-4 py-1 text-xs self-start'>
-                                POPULAR
-                            </Badge>
-                        )}
+                        <div className='min-w-0 flex flex-col items-center justify-center text-center'>
+                            <h3 className='text-xl font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
+
+                            <p className='text-lg font-semibold text-white leading-snug mt-1'>
+                                {getProductPrice(product)}
+                                <span className='text-white/55 font-medium text-base'>{getProductPeriod(product)}</span>
+                            </p>
+                        </div>
+
+                        <div aria-hidden='true' className='h-16 w-16' />
                     </div>
 
-                    {/* Segmented Toggle — hidden on /lightningGold route */}
-                    {product.hasSubscription && !isLightningGold && (
+                    {product.hasSubscription && (
                         <div className='mt-6 flex justify-center'>
                             <div className='flex w-full max-w-[280px] rounded-2xl border border-white/10 bg-black/30 p-1'>
                                 <button
@@ -378,7 +663,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         </div>
                     )}
 
-                    {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && !isLightningGold && (
+                    {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
                         <div className='mt-3 flex justify-center'>
                             <div className='inline-flex items-center rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300'>
                                 Save {savings}% with yearly billing
@@ -386,33 +671,51 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         </div>
                     )}
 
-                    {/* Form-like rows */}
-                    <div className='mt-6 space-y-3'>
+                    <div className='mt-6 flex-1 space-y-3'>
                         {formRows.map((text: string, i: number) => {
                             const Icon = rowIcons[i] || CheckCircle;
                             return (
-                                <div key={`${text}-${i}`} className='flex items-center gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3'>
-                                    <Icon className='h-5 w-5 text-white/55' />
-                                    <span className='text-sm text-white/70'>{text}</span>
+                                <div
+                                    key={`${text}-${i}`}
+                                    className='flex items-center gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3'
+                                    style={{ minHeight: 52 }}
+                                >
+                                    <Icon className='h-5 w-5 flex-shrink-0 text-white/55' />
+                                    <span className='text-sm text-white/70 leading-snug'>{text}</span>
                                 </div>
                             );
                         })}
-
-                        {product.features.length > 3 && <div className='text-xs text-white/40 px-1'>+ {product.features.length - 3} more included</div>}
                     </div>
 
-                    {/* Terms line (visual) */}
                     <div className='mt-5 flex items-start gap-3 text-sm text-white/60'>
-                        <div className='mt-0.5 h-5 w-5 rounded-md border border-white/15 bg-black/30 flex items-center justify-center'>
-                            <CheckCircle className='h-4 w-4 text-white/55' />
-                        </div>
+                        <button
+                            type='button'
+                            disabled={!termsCompleted}
+                            onClick={() => termsCompleted && setTermsChecked(!termsChecked)}
+                            className='mt-0.5 h-5 w-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
+                            style={{
+                                backgroundColor: termsChecked ? '#4cc7e8' : 'transparent',
+                                borderColor: termsChecked ? '#4cc7e8' : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                                opacity: termsCompleted ? 1 : 0.5,
+                            }}
+                        >
+                            {termsChecked && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
+                        </button>
+
                         <p className='leading-relaxed'>
-                            I agree to the <span className='text-[#4cc7e8] hover:underline cursor-pointer'>Terms</span> and the{' '}
-                            <span className='text-[#4cc7e8] hover:underline cursor-pointer'>Privacy</span> policies.
+                            I agree to{' '}
+                            <button
+                                type='button'
+                                onClick={() => setShowTermsModal(true)}
+                                className='text-sm font-semibold underline underline-offset-2 transition-colors hover:text-white'
+                                style={{ color: '#93c5fd' }}
+                            >
+                                Terms and Conditions
+                            </button>
+                            {!termsCompleted && <span className='ml-1.5 text-xs text-white/35 italic'>(click to review)</span>}
                         </p>
                     </div>
 
-                    {/* Action Button */}
                     <div className='mt-6'>
                         {product.available ? (
                             isPurchased ? (
@@ -428,9 +731,10 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                             ) : (
                                 <Button
                                     size='lg'
-                                    className='w-full cursor-pointer rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-6 font-bold shadow-xl transition'
+                                    className='w-full cursor-pointer rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-6 font-bold shadow-xl transition disabled:opacity-40 disabled:cursor-not-allowed'
                                     onClick={() => handlePurchase(product)}
-                                    disabled={isLoadingEmail}
+                                    disabled={isLoadingEmail || !termsChecked}
+                                    title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
                                 >
                                     <DollarSign className='h-5 w-5 mr-2 opacity-90' />
                                     {isLoadingEmail ? 'Loading...' : 'Continue'}
@@ -447,7 +751,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className='mt-4 flex items-center justify-center gap-2 text-xs text-white/40'>
                         <Lock className='h-4 w-4' />
                         Secure Stripe Checkout
@@ -459,7 +762,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         </div>
     );
 
-    // ✅ Modal Mode
+    // ─── Modal Mode ───────────────────────────────────────────────────────────
     if (asModal) {
         return (
             <div className={className}>
@@ -476,6 +779,15 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         <CheckoutCard inModal={true} />
                     </DialogContent>
                 </Dialog>
+
+                {/* ── Terms Slide Modal ── */}
+                <TermsSlideModal
+                    open={showTermsModal}
+                    onOpenChange={setShowTermsModal}
+                    onComplete={() => {
+                        setTermsCompleted(true);
+                    }}
+                />
 
                 {/* Signup Modal */}
                 <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
@@ -597,12 +909,10 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                             transform: translateY(0);
                         }
                     }
-
                     .animate-slide-in-up {
                         animation: slide-in-up 0.5s ease-out forwards;
                         animation-fill-mode: both;
                     }
-
                     button,
                     .transition-all {
                         transition-property: all;
@@ -614,10 +924,19 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         );
     }
 
-    // ✅ Inline Mode
+    // ─── Inline Mode ──────────────────────────────────────────────────────────
     return (
         <div className={`w-full ${className}`}>
             <CheckoutCard inModal={false} />
+
+            {/* ── Terms Slide Modal (inline mode) ── */}
+            <TermsSlideModal
+                open={showTermsModal}
+                onOpenChange={setShowTermsModal}
+                onComplete={() => {
+                    setTermsCompleted(true);
+                }}
+            />
         </div>
     );
 }

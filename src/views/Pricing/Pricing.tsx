@@ -50,7 +50,7 @@ function Pricing() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isLoadingEmail, setIsLoadingEmail] = useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
-    const [billingPeriod, setBillingPeriod] = useState('monthly'); // 'monthly' or 'yearly'
+    const [billingPeriod, setBillingPeriod] = useState('monthly');
     const router = useRouter();
 
     useEffect(() => {
@@ -114,7 +114,6 @@ function Pricing() {
                     'Add Multiple Users',
                     'Recurring Invoices',
                 ],
-
                 icon: FilePen,
                 color: 'from-[#2c7bbe] to-[#4cc7e8]',
                 available: true,
@@ -139,7 +138,6 @@ function Pricing() {
                     'Add Multiple Users',
                     'Create Up to 4 Billboards',
                 ],
-
                 icon: Monitor,
                 color: 'from-[#4cc7e8] to-[#2a8dcc]',
                 available: true,
@@ -164,7 +162,6 @@ function Pricing() {
                     'Email Scheduling',
                     'List Upload Tools',
                 ],
-
                 icon: MessageSquare,
                 color: 'from-[#2a8dcc] to-[#2c7bbe]',
                 available: true,
@@ -175,53 +172,81 @@ function Pricing() {
                 hasSubscription: true,
                 redirectRoute: '/emailMarketing',
             },
+        ],
+        []
+    );
+
+    const digitalTools = useMemo(
+        () => [
             {
-                id: 'LightningSilver',
-                name: 'Lightning Silver',
-                price: 0,
-                period: 'Free',
-                description: 'Start Free. Build Recurring Income',
+                id: 'dt-newsletter',
+                name: 'Newsletter',
+                description: 'Receive curated market updates and structured insight in one consistent format.',
                 features: [
-                    '25% lifetime commissions (monthly & annual)',
-                    'Subscriber referral bonuses',
-                    'Email & SMS CRM included to promote offers',
-                    'KPI performance dashboard',
-                    'Automated payouts with no income cap',
+                    'Curated market updates delivered directly to you',
+                    'Actionable intel and clear overviews',
+                    'Stay informed on price movement, trends, and platform activity',
+                    'Structured insight instead of information overload',
                 ],
-                icon: Zap,
-                color: 'from-[#94a3b8] to-[#4cc7e8]',
-                available: true,
-                popular: false,
-                apiName: 'LightningSilver',
-                productLink: '',
-                productComission: '0',
-                hasSubscription: false, // FREE
-                redirectRoute: '/lightningSilver',
-                ctaText: 'Join Silver',
+                icon: Newspaper,
+                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                redirectRoute: '/',
             },
             {
-                id: 'LightningGold',
-                name: 'Lightning Gold',
-                price: 250,
-                period: 'One-time',
-                description: 'Scale Faster. Maximize Every Sale',
+                id: 'dt-billboard',
+                name: 'Digital Billboard',
+                description: 'Promote your business, services, or content with a public-facing platform display.',
                 features: [
-                    '75% lifetime commissions (monthly & annual)',
-                    'Subscriber referral bonuses',
-                    'Email & SMS CRM included to promote offers',
-                    'KPI performance dashboard',
-                    'Automated payouts with no income cap',
+                    'Showcase offers, announcements, or featured tools',
+                    'Built for visibility, discovery, and engagement',
+                    'Acts as a real-time digital storefront',
+                    'No external ad systems required',
                 ],
-                icon: Zap,
-                color: 'from-[#f59e0b] to-[#fbbf24]',
-                available: true,
-                popular: true,
-                apiName: 'LightningGold',
-                productLink: '',
-                productComission: '0',
-                hasSubscription: false, // one-time
-                redirectRoute: '/lightningGold',
-                ctaText: 'Join Gold',
+                icon: Monitor,
+                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                redirectRoute: '/advertising',
+            },
+            {
+                id: 'dt-invoice',
+                name: 'Business Invoice',
+                description: 'Create, send, and manage invoices through a streamlined billing workflow.',
+                features: [
+                    'Generate professional invoices directly from the platform',
+                    'Track payments and organize customer records',
+                    'Manage recurring charges with more clarity',
+                    'Keep billing connected to customer data',
+                ],
+                icon: FilePen,
+                color: 'from-[#4cc7e8] to-[#2a8dcc]',
+                redirectRoute: '/InvoiceContract',
+            },
+            {
+                id: 'dt-crm',
+                name: 'Email & SMS CRM',
+                description: 'Manage conversations, follow-ups, and relationships from one centralized system.',
+                features: [
+                    'Send emails and SMS messages from one place',
+                    'Organize contacts and track interactions',
+                    'Communication is logged automatically',
+                    'Turn outreach into a repeatable workflow',
+                ],
+                icon: MessageSquare,
+                color: 'from-[#2a8dcc] to-[#2c7bbe]',
+                redirectRoute: '/emailMarketing',
+            },
+            {
+                id: 'dt-users',
+                name: 'Unlimited Users',
+                description: 'Scale your operations without limits by keeping teams, partners, and contributors connected.',
+                features: [
+                    'Add unlimited users to any digital tool',
+                    'Keep everyone connected to the same data and workflows',
+                    'Make coordination simple and transparent',
+                    'Grow without worrying about account restrictions',
+                ],
+                icon: Users,
+                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                redirectRoute: null,
             },
         ],
         []
@@ -266,6 +291,7 @@ function Pricing() {
             setIsLoadingEmail(false);
         }
     }, []);
+
     // eslint-disable-next-line
     const handlePurchase = useCallback(
         async (product) => {
@@ -318,13 +344,11 @@ function Pricing() {
                     productType,
                 };
 
-                // Add period only for products with subscription
                 if (product.hasSubscription) {
                     requestBody.period = billingPeriod;
                 }
 
                 const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
-
                 window.location.href = stripeResponse.data.data;
             } catch (error) {
                 console.error('Error in handlePurchase:', error);
@@ -372,50 +396,24 @@ function Pricing() {
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Hero Section */}
+            {/* ── Hero Section ─────────────────────────────────────────── */}
             <section className='relative pt-16 sm:pt-20 md:pt-24 pb-5 sm:pb-7 px-4 sm:px-6 md:px-8'>
                 <div className='container max-w-8xl mx-auto'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20'>
+                    <div className='grid lg:grid-cols-1 gap-8 sm:gap-12 md:gap-16 lg:gap-20'>
                         <div>
-                            <div>
-                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                    PREMIUM PRODUCTS & SERVICES
-                                </Badge>
-                            </div>
                             <div className='inline-block'>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Pricing</span>
                                 </h1>
-
-                                <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div>
                             </div>
-
                             <p className='text-lg sm:text-xl text-gray-300 max-w-3xl leading-relaxed mb-8'>
                                 Discover our comprehensive suite of trading tools, educational resources, and premium services designed to elevate your trading
                                 success.
                             </p>
                         </div>
-
-                        {/* RIGHT - Fixed container to prevent layout shift */}
-                        {/* <div className='relative min-h-[300px] sm:min-h-[400px] md:min-h-[330px] lg:min-h-[370px] animate-slide-in-right'>
-                            <div className='absolute inset-0 flex items-center justify-center'>
-                                <div className='relative w-full h-full max-w-[500px] max-h-[500px] mx-auto'>
-                                    <div className='w-full h-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 p-4'>
-                                        {isClient && (
-                                            <LottieAnimation
-                                                src='/animations/pricingicon.json'
-                                                loop={true}
-                                                autoplay={true}
-                                                className='w-full h-full object-contain'
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
                     </div>
 
-                    {/* Billing Toggle - Fixed positioning */}
+                    {/* Billing Toggle */}
                     <div className='flex items-center justify-center gap-4 mt-10 sm:mt-14'>
                         <span
                             className={`text-base font-semibold transition-colors duration-300 ${
@@ -446,8 +444,8 @@ function Pricing() {
                 </div>
             </section>
 
-            {/* Products Grid */}
-            <section className=' px-4 sm:px-6 md:px-8'>
+            {/* ── Products Grid ─────────────────────────────────────────── */}
+            <section className='px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8 pricing-grid pt-5 md:px-8 pb:10 sm:pb-16'>
                         {products.map((product, index) => {
@@ -464,7 +462,6 @@ function Pricing() {
                                                 ? 'border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 cursor-pointer'
                                                 : 'border-gray-600/30 opacity-70'
                                         }`}
-                                        // onClick={() => product.available && !isPurchased && handlePurchase(product)}
                                     >
                                         <div
                                             className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${
@@ -582,7 +579,123 @@ function Pricing() {
                 </div>
             </section>
 
-            {/* Features Comparison */}
+            {/* ── Digital Tools Section ─────────────────────────────────── */}
+            <section className='py-16 sm:py-20 px-4 sm:px-6 md:px-8 bg-[#050608]'>
+                <div className='container mx-auto max-w-7xl'>
+                    <div className='text-center max-w-4xl mx-auto mb-12'>
+                        <Badge className='uppercase bg-[#2c7bbe] text-white mb-4 px-4 py-2 text-xs sm:text-sm font-semibold tracking-wide'>DIGITAL TOOLS</Badge>
+
+                        <h2 className='text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4'>
+                            One Platform. <span className='text-[#4cc7e8]'>Every Tool You Need.</span>
+                        </h2>
+
+                        <div className='space-y-4 text-sm sm:text-base md:text-lg text-gray-400 leading-relaxed text-center'>
+                            <p>
+                                Our digital tools are built to help you communicate, promote, and manage operations through simple, connected systems.
+                                Everything is designed around real usage, whether you’re sharing updates, advertising services, invoicing clients, or building
+                                customer relationships. Instead of juggling multiple platforms, you operate from one unified environment. Each tool works
+                                independently while becoming more powerful when combined.
+                            </p>
+
+                            <p>
+                                These tools aren’t just about automation, they’re about clarity, reach, and measurable interaction. From newsletters to digital
+                                advertising to billing and messaging, every feature is designed to help you stay organized and visible. You control your
+                                communication, your customers, and your growth from one place. Simple tools, structured data, real results.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Main tools */}
+                    <div className='grid md:grid-cols-2 gap-6 mb-6'>
+                        {digitalTools
+                            .filter((tool) => tool.id !== 'dt-users')
+                            .map((tool) => (
+                                <Card
+                                    key={tool.id}
+                                    className='bg-[#0a0b0f] border border-[#1a2230] rounded-2xl shadow-none hover:border-[#2c7bbe] transition-colors duration-300'
+                                >
+                                    <CardContent className='p-6 sm:p-7'>
+                                        <div className='flex items-start gap-4 mb-5'>
+                                            <div
+                                                className={`w-12 h-12 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center flex-shrink-0`}
+                                            >
+                                                <tool.icon className='w-6 h-6 text-white' />
+                                            </div>
+
+                                            <div>
+                                                <h3 className='text-lg sm:text-xl font-semibold text-white'>{tool.name}</h3>
+                                                <p className='text-sm sm:text-base text-gray-400 mt-1'>{tool.description}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className='space-y-3 mb-6'>
+                                            {tool.features.map((feature, i) => (
+                                                <div key={i} className='flex items-start gap-3'>
+                                                    <CheckCircle className='w-4 h-4 text-[#4cc7e8] mt-1 flex-shrink-0' />
+                                                    <span className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <Button
+                                            size='lg'
+                                            className='bg-[#2c7bbe] hover:bg-[#2567a3] text-white rounded-xl px-5'
+                                            onClick={() => router.push(tool.redirectRoute)}
+                                        >
+                                            Open {tool.name}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                    </div>
+
+                    {/* Unlimited Users - full width */}
+                    {digitalTools
+                        .filter((tool) => tool.id === 'dt-users')
+                        .map((tool) => (
+                            <Card
+                                key={tool.id}
+                                className='bg-[#0a0b0f] border border-[#1a2230] rounded-2xl shadow-none hover:border-[#2c7bbe] transition-colors duration-300'
+                            >
+                                <CardContent className='p-6 sm:p-8'>
+                                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6'>
+                                        <div className='flex-1'>
+                                            <div className='flex items-start gap-4 mb-5'>
+                                                <div
+                                                    className={`w-12 h-12 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center flex-shrink-0`}
+                                                >
+                                                    <tool.icon className='w-6 h-6 text-white' />
+                                                </div>
+
+                                                <div>
+                                                    <h3 className='text-xl sm:text-2xl font-semibold text-white'>{tool.name}</h3>
+                                                    <p className='text-sm sm:text-base text-gray-400 mt-1'>{tool.description}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className='grid md:grid-cols-2 gap-3'>
+                                                {tool.features.map((feature, i) => (
+                                                    <div key={i} className='flex items-start gap-3'>
+                                                        <CheckCircle className='w-4 h-4 text-[#4cc7e8] mt-1 flex-shrink-0' />
+                                                        <span className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className='lg:min-w-[240px]'>
+                                            <Badge className='bg-[#111827] text-gray-200 border border-[#1f2937] px-4 py-2 rounded-lg'>
+                                                Included With All Plans
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                </div>
+            </section>
+
+            {/* ── Features Comparison ───────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
@@ -638,7 +751,7 @@ function Pricing() {
                 </div>
             </section>
 
-            {/* Signup Modal */}
+            {/* ── Signup Modal ──────────────────────────────────────────── */}
             <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
                     <button
@@ -647,7 +760,6 @@ function Pricing() {
                     >
                         <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-
                     <DialogHeader className='space-y-6 text-center'>
                         <div className='flex flex-col items-center'>
                             <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
@@ -666,7 +778,6 @@ function Pricing() {
                             </DialogDescription>
                         </div>
                     </DialogHeader>
-
                     <div className='py-4'>
                         <AuthModalTrigger
                             buttonText='Signup Now'
@@ -683,7 +794,7 @@ function Pricing() {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm Unsubscribe Modal */}
+            {/* ── Confirm Unsubscribe Modal ─────────────────────────────── */}
             <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
                     <button
@@ -692,7 +803,6 @@ function Pricing() {
                     >
                         <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-
                     <DialogHeader className='space-y-6'>
                         <div className='flex items-center space-x-4'>
                             <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl'>
@@ -706,7 +816,6 @@ function Pricing() {
                             </div>
                         </div>
                     </DialogHeader>
-
                     <div className='py-4 space-y-4'>
                         <p className='text-gray-300 text-center'>This action cannot be undone.</p>
                         <Button
@@ -720,7 +829,7 @@ function Pricing() {
                 </DialogContent>
             </Dialog>
 
-            {/* Success Modal */}
+            {/* ── Success Modal ─────────────────────────────────────────── */}
             <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
                 <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
                     <button
@@ -729,7 +838,6 @@ function Pricing() {
                     >
                         <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
                     </button>
-
                     <DialogHeader className='space-y-6 text-center'>
                         <div className='flex flex-col items-center'>
                             <div className='w-14 h-14 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl mb-4'>
@@ -739,14 +847,13 @@ function Pricing() {
                             <DialogDescription className='text-green-400 font-semibold'>You have been removed from the plan.</DialogDescription>
                         </div>
                     </DialogHeader>
-
                     <div className='py-4 text-center'>
                         <p className='text-gray-300'>Redirecting to home page...</p>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* Add CSS to prevent layout shifts */}
+            {/* ── Global Styles ─────────────────────────────────────────── */}
             <style jsx global>{`
                 @keyframes slide-in-right {
                     from {
@@ -758,11 +865,9 @@ function Pricing() {
                         transform: translateX(0);
                     }
                 }
-
                 .animate-slide-in-right {
                     animation: slide-in-right 0.6s ease-out forwards;
                 }
-
                 @keyframes slide-in-up {
                     from {
                         opacity: 0;
@@ -773,26 +878,19 @@ function Pricing() {
                         transform: translateY(0);
                     }
                 }
-
                 .animate-slide-in-up {
                     animation: slide-in-up 0.5s ease-out forwards;
                     animation-fill-mode: both;
                 }
-
-                /* Prevent layout shifts */
                 .pricing-grid {
                     contain: layout style paint;
                 }
-
-                /* Smooth transitions */
                 button,
                 .transition-all {
                     transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 300ms;
                 }
-
-                /* Fix for Lottie container */
                 .lottie-container {
                     backface-visibility: hidden;
                     transform: translateZ(0);

@@ -4,17 +4,369 @@ import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription as DialogDesc, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/lib/auth';
-import { BarChart2, Calendar, CheckCircle, DollarSign, Globe, List, Shield, TrendingUp, X } from 'lucide-react';
+import { BarChart2, Calendar, CheckCircle, DollarSign, Globe, LayoutGrid, List, Shield, Smartphone, TrendingUp, X, Zap } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 
 const textOptions = ['Market Data', 'Swing Trades', 'Stock Options', 'Day Trades', 'Long Term Investment', 'Chart Patterns', 'Indicators', 'Stock Lists'];
+
+// ─── Strategy Panels Data ───────────────────────────────────────────────────
+const strategyPanels = [
+    {
+        id: 'paper-trading',
+        label: 'Paper Trading',
+        accent: '#5EDC7A',
+        HeaderIcon: DollarSign,
+        headerSubtitle: 'Stock Market Simulator',
+        title: 'Generate Consistent Profits',
+        description: `Practice trading in a risk-free environment using real market data.\nDevelop strategies, test your skills, and build confidence before transitioning to a live account.`,
+        bullets: ['Test trading strategies risk-free', 'Gain experience with real market data', 'Build confidence for live trading'],
+        cta: 'Start Paper Trading',
+        discoveryContent: `Practice real strategies with zero risk across stock trading, options trading, and crypto using a simulation environment that mirrors live market behavior. Execute trades, test position sizing, and refine entries and exits without putting real capital on the line. This gives you space to build confidence while developing consistency across multiple asset classes. Every move is tracked so you can analyze performance, identify strengths, and correct mistakes before stepping into live markets.`,
+        discoveryCta: 'Launch Paper Trading',
+    },
+    {
+        id: 'stock-screener',
+        label: 'Stock Screener',
+        accent: '#F5A623',
+        HeaderIcon: BarChart2,
+        headerSubtitle: 'Market Analysis Tool',
+        title: 'Find Your Next Trade',
+        description: `Discover top stock opportunities with advanced screening tools.\nIdentify trends, filter by metrics, and spot winning setups in the market.`,
+        bullets: ['Search for stocks with precise criteria', 'Analyze fundamental & technical data', 'Uncover trade opportunities fast'],
+        cta: 'Start Screening',
+        discoveryContent: `Instantly surface high-potential opportunities using customizable filters for volume, momentum, price action, and fundamentals. Instead of scanning hundreds of charts, the screener narrows the market down to only stocks that meet your exact criteria. This saves time and removes guesswork from your daily routine. You stay focused on quality setups while eliminating unnecessary noise from your workflow.`,
+        discoveryCta: 'Open Stock Screener',
+    },
+    {
+        id: 'watchlist',
+        label: 'Watchlist',
+        accent: '#E74C3C',
+        HeaderIcon: List,
+        headerSubtitle: 'Track Stock Performance',
+        title: 'Monitor Your Favorites',
+        description: `Keep an eye on your top stocks. Easily organize and track price movements.\nStay informed and react quickly to market changes.`,
+        bullets: ['Create and manage a personalized watchlist', 'Get real-time price updates and alerts', 'Track performance in one convenient view'],
+        cta: 'Start Watching',
+        discoveryContent: `Track your favorite assets in one centralized dashboard built for speed and clarity. Monitor real-time price movement, volume changes, and trend shifts throughout the trading day. Your watchlist becomes your daily command center for planning entries and managing opportunities. With everything organized in one place, you're always prepared when momentum appears.`,
+        discoveryCta: 'Build Your Watchlist',
+    },
+    {
+        id: 'economic-kpis',
+        label: 'Global KPI',
+        accent: '#4A90D9',
+        HeaderIcon: Globe,
+        headerSubtitle: 'World Economic KPI Dashboard',
+        title: 'Explore Key Economic KPIs',
+        description: `Access economic health metrics, analyze global trends,\ncompare countries, and stay informed on key long-term indicators.`,
+        bullets: ['View GDP, inflation, unemployment & more', 'Compare country data for informed decisions', 'Track economic trends across the world'],
+        cta: 'Explore KPIs',
+        discoveryContent: `Gain a macro-level edge by monitoring the economic forces that drive market cycles and sector rotation. Our global KPI dashboard aggregates real-time data on GDP growth, inflation rates, central bank policy, and employment trends across major economies. Understanding these indicators helps you anticipate broader market movements, position ahead of macro shifts, and make more informed long-term investment decisions grounded in economic reality.`,
+        discoveryCta: 'Explore Global KPIs',
+    },
+];
+
+// ─── Mobile & Desktop Compatible Section ────────────────────────────────────
+const MOBILE_DESKTOP_FEATURES = [
+    {
+        Icon: TrendingUp,
+        title: 'Data & Analytics',
+        desc: 'Advanced tools for stock screening, paper trading, watchlists, and monitoring global economic KPIs.',
+    },
+    {
+        Icon: Smartphone,
+        title: 'Optimized for Touch & Efficiency',
+        desc: 'Every button, chart, and trade entry field designed for fast tap-based interaction on mobile and tablet devices.',
+    },
+    {
+        Icon: LayoutGrid,
+        title: 'Adaptive Screen Layouts',
+        desc: 'Responsive interface that auto-adjusts for iPhone, Android, or tablets, prioritizing key market data and tools.',
+    },
+    {
+        Icon: Zap,
+        title: 'Real-Time Data, Real Market Behavior',
+        desc: 'Live updating market data that mirrors real-time movements and market conditions.',
+    },
+];
+
+function MobileDesktopSection() {
+    const router = useRouter();
+
+    return (
+        <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
+            <div className='container mx-auto max-w-6xl'>
+                <div className='text-center mb-8 sm:mb-10'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 px-4 sm:px-5 py-2 text-[11px] sm:text-xs font-bold tracking-[0.22em]'>
+                        TRADE FROM ANYWHERE
+                    </Badge>
+                    <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3'>
+                        Mobile & Desktop <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Compatible</span>
+                    </h2>
+                    <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
+                        A clean, seamless experience across every screen — designed for modern traders.
+                    </p>
+                </div>
+
+                <div className='max-w-5xl mx-auto rounded-[28px] border border-[#2c7bbe]/30 bg-[#050a12] shadow-[0_0_0_1px_rgba(44,123,190,0.08),0_20px_60px_rgba(0,0,0,0.45)] overflow-hidden'>
+                    {MOBILE_DESKTOP_FEATURES.map(({ Icon, title, desc }, i) => (
+                        <div
+                            key={title}
+                            className='flex items-start gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6'
+                            style={{
+                                borderBottom: i < MOBILE_DESKTOP_FEATURES.length - 1 ? '1px solid rgba(76,199,232,0.10)' : 'none',
+                            }}
+                        >
+                            <div className='flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#2c7bbe] to-[#4cc7e8] flex items-center justify-center shadow-[0_8px_30px_rgba(76,199,232,0.18)]'>
+                                <Icon className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
+                            </div>
+
+                            <div className='min-w-0'>
+                                <h3 className='text-white font-extrabold text-base sm:text-[28px] leading-tight mb-1.5'>{title}</h3>
+                                <p className='text-gray-400 text-sm sm:text-xl leading-relaxed max-w-4xl'>{desc}</p>
+                            </div>
+                        </div>
+                    ))}
+
+                    <div className='px-4 sm:px-8 pb-4 sm:pb-8 pt-2 sm:pt-5'>
+                        <Button
+                            onClick={() => router.push('/pricing')}
+                            size='lg'
+                            className='w-full h-14 sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
+                        >
+                            Open Account
+                            <span className='ml-3 text-lg sm:text-2xl'>→</span>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ─── Black Snow Mathematics Banner ──────────────────────────────────────────
+function BSMBanner() {
+    const router = useRouter();
+
+    const ChevronCluster = ({ reverse = false }: { reverse?: boolean }) => (
+        <div className='flex items-center flex-shrink-0' style={reverse ? { transform: 'scaleX(-1)' } : undefined}>
+            <div
+                className='hidden sm:block h-[1px] w-6 md:w-10 lg:w-14 mr-2'
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.65))' }}
+            />
+
+            <div className='flex items-center gap-[3px]'>
+                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                    <div
+                        key={`a-${i}`}
+                        style={{
+                            width: 0,
+                            height: 0,
+                            borderTop: '9px solid transparent',
+                            borderBottom: '9px solid transparent',
+                            borderLeft: `10px solid rgba(76,199,232,${opacity})`,
+                            filter: opacity === 1 ? 'drop-shadow(0 0 6px rgba(76,199,232,0.95))' : 'none',
+                        }}
+                    />
+                ))}
+            </div>
+
+            <div className='mx-[3px] flex items-center gap-[3px]'>
+                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                    <div
+                        key={`b-${i}`}
+                        style={{
+                            width: 0,
+                            height: 0,
+                            borderTop: '9px solid transparent',
+                            borderBottom: '9px solid transparent',
+                            borderLeft: `10px solid rgba(76,199,232,${opacity})`,
+                            filter: opacity === 1 ? 'drop-shadow(0 0 6px rgba(76,199,232,0.95))' : 'none',
+                        }}
+                    />
+                ))}
+            </div>
+
+            <div className='hidden sm:flex items-center gap-[3px] ml-2'>
+                <div className='h-[1px] w-3' style={{ background: '#4cc7e8', boxShadow: '0 0 5px rgba(76,199,232,0.7)' }} />
+                <div className='h-[1px] w-3' style={{ background: '#4cc7e8', boxShadow: '0 0 5px rgba(76,199,232,0.7)' }} />
+            </div>
+        </div>
+    );
+
+    return (
+        <section className='relative px-4 sm:px-6 md:px-8 py-6 sm:py-8'>
+            <div className='container mx-auto max-w-7xl'>
+                <button
+                    onClick={() => router.push('/blacksnowmathematics')}
+                    className='group relative w-full overflow-hidden cursor-pointer rounded-md transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
+                    style={{
+                        background: 'linear-gradient(180deg, #07111e 0%, #0a1324 50%, #07111e 100%)',
+                        border: '1px solid rgba(56,126,189,0.55)',
+                        boxShadow: '0 0 24px rgba(44,123,190,0.20), inset 0 0 28px rgba(0,0,0,0.55)',
+                    }}
+                >
+                    <div
+                        className='absolute inset-0 pointer-events-none'
+                        style={{
+                            background:
+                                'linear-gradient(90deg, transparent 0%, rgba(76,199,232,0.06) 20%, rgba(76,199,232,0.12) 50%, rgba(76,199,232,0.06) 80%, transparent 100%)',
+                        }}
+                    />
+
+                    <div
+                        className='absolute top-0 left-0 right-0 h-[1px]'
+                        style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.9), transparent)' }}
+                    />
+                    <div
+                        className='absolute bottom-0 left-0 right-0 h-[1px]'
+                        style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.7), transparent)' }}
+                    />
+
+                    <div className='relative flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-5 md:px-7 py-2.5 sm:py-3.5'>
+                        <ChevronCluster />
+
+                        <div className='flex items-center justify-center min-w-0 flex-1 gap-2 sm:gap-3 md:gap-4'>
+                            <div
+                                className='hidden md:block h-[1px] w-10 lg:w-16'
+                                style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
+                            />
+
+                            <h2 className='min-w-0 whitespace-nowrap text-center uppercase font-black tracking-[0.06em] sm:tracking-[0.12em] text-[13px] sm:text-xl md:text-2xl lg:text-[30px] leading-none'>
+                                <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
+                                <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
+                            </h2>
+
+                            <div
+                                className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
+                                style={{
+                                    borderColor: 'rgba(76,199,232,0.55)',
+                                    background: 'rgba(76,199,232,0.08)',
+                                    boxShadow: '0 0 10px rgba(76,199,232,0.22)',
+                                }}
+                            >
+                                <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
+                                    ›
+                                </span>
+                            </div>
+
+                            <div
+                                className='hidden md:block h-[1px] w-10 lg:w-16'
+                                style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
+                            />
+                        </div>
+
+                        <ChevronCluster reverse />
+                    </div>
+                </button>
+            </div>
+        </section>
+    );
+}
+
+// ─── Data Driven Analytics Section ──────────────────────────────────────────
+function DataAnalyticsSection() {
+    const analyticsBlocks = [
+        {
+            label: 'Analytics',
+            title: 'Performance Analytics',
+            accent: '#4cc7e8',
+            icon: BarChart2,
+            body: `Turn raw market data into clear, actionable insight. Our analytics engine breaks down performance, patterns, and trading behavior so you can see exactly what's working — and what isn't. Review win rates, risk exposure, and strategy effectiveness with precision. Every trade becomes feedback, helping you continuously optimize your approach using measurable results.`,
+        },
+        {
+            label: 'Infrastructure',
+            title: 'Trading Infrastructure',
+            accent: '#5EDC7A',
+            icon: Zap,
+            body: `Built on modern, scalable technology, the platform delivers fast execution, real time updates, and automated workflows designed for serious traders. From performance tracking to intelligent alerts, every component works together seamlessly. The infrastructure is engineered for reliability, speed, and growth — allowing you to move faster, trade smarter, and stay focused on strategy instead of software.`,
+        },
+        {
+            label: 'Philosophy',
+            title: 'Black Snow Philosophy',
+            accent: '#F5A623',
+            icon: Shield,
+            body: `Black Snow is built to make trading more accessible, clear, and practical for everyone. Whether you're learning the basics or refining advanced strategies, the platform is designed to support confident decision-making across stocks, options, and crypto. We focus on simple, powerful tools that remove complexity without removing control. Our goal is to provide an open trading environment where anyone can learn, practice, and grow at their own pace.`,
+        },
+    ];
+
+    return (
+        <section className='relative py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-[#050608] overflow-hidden'>
+            {/* Background decoration */}
+            <div
+                className='pointer-events-none absolute inset-0'
+                style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(44,123,190,0.06) 0%, transparent 60%)' }}
+            />
+            <div
+                className='pointer-events-none absolute inset-0'
+                style={{
+                    backgroundImage: `linear-gradient(rgba(44,123,190,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(44,123,190,0.025) 1px, transparent 1px)`,
+                    backgroundSize: '64px 64px',
+                }}
+            />
+
+            <div className='container mx-auto max-w-7xl relative z-10'>
+                {/* Section header */}
+                <div className='text-center mb-12 sm:mb-14'>
+                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 px-5 py-2 text-[11px] font-bold tracking-[0.22em]'>
+                        PLATFORM FOUNDATION
+                    </Badge>
+                    <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 leading-tight'>
+                        Built for Modern{' '}
+                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Trading Workflows</span>
+                    </h2>
+                    <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
+                        Professional tools, cleaner presentation, and a sharper focus on what matters most.
+                    </p>
+                </div>
+
+                {/* Three blocks */}
+                <div className='grid md:grid-cols-3 gap-5 lg:gap-6'>
+                    {analyticsBlocks.map(({ label, title, accent, icon: Icon, body }) => (
+                        <div
+                            key={label}
+                            className='relative rounded-2xl border border-white/10 p-6 sm:p-7 transition-all duration-300 hover:border-white/15'
+                            style={{
+                                background: 'linear-gradient(180deg, rgba(13,17,23,0.98) 0%, rgba(11,19,32,0.98) 100%)',
+                                boxShadow: '0 18px 40px rgba(0,0,0,0.35)',
+                            }}
+                        >
+                            <div
+                                className='absolute top-0 left-0 right-0 h-[1px]'
+                                style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                            />
+
+                            <div className='flex items-center gap-4 mb-5'>
+                                <div
+                                    className='w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0'
+                                    style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}35` }}
+                                >
+                                    <Icon className='w-5 h-5' style={{ color: accent }} />
+                                </div>
+
+                                <div>
+                                    <p className='text-[11px] font-bold tracking-[0.22em] uppercase' style={{ color: accent }}>
+                                        {label}
+                                    </p>
+                                    <h3 className='text-xl sm:text-2xl font-bold text-white mt-1 leading-tight'>{title}</h3>
+                                </div>
+                            </div>
+
+                            <div className='h-px w-14 mb-5' style={{ background: `${accent}55` }} />
+
+                            <p className='text-gray-400 text-sm sm:text-base leading-relaxed'>{body}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
 
 function Home() {
     const [pricingOpen, setPricingOpen] = useState(false);
@@ -32,6 +384,9 @@ function Home() {
     const [agree, setAgree] = useState(false);
     const [formErrors, setFormErrors] = useState<{ firstName?: string; lastName?: string; email?: string; agree?: string }>({});
     const [entitlementError, setEntitlementError] = useState<string | null>(null);
+
+    // Per-panel discovery/details tab state (one per panel)
+    const [panelTabs, setPanelTabs] = useState<Record<string, 'Details' | 'Discovery'>>(Object.fromEntries(strategyPanels.map((p) => [p.id, 'Details'])));
 
     const router = useRouter();
     const authTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -194,38 +549,23 @@ function Home() {
         </div>
     );
 
-    // ==========================
-    // REDESIGN HELPERS
-    // ==========================
-
-    const BSHeader = ({ accent, title, subtitle, Icon }: { accent: string; title: string; subtitle: string; Icon: any }) => (
-        <div className='flex items-center gap-5'>
-            <div
-                className='flex items-center justify-center rounded-xl h-14 md:h-20 lg:h-28 w-14 md:w-20 lg:w-28 flex-shrink-0'
-                style={{ backgroundColor: accent }}
-            >
-                <Icon className='h-10 md:h-16 lg:h-20 w-10 md:w-16 lg:w-20' style={{ color: '#0B1320' }} />
-            </div>
-            <div className='leading-tight'>
-                <div className='text-3xl sm:text-4xl md:text-7xl font-extralight text-white'>{title}</div>
-                <div className='text:xl md:text-2xl lg:text-3xl font-medium mt-1' style={{ color: accent }}>
-                    {subtitle}
-                </div>
-            </div>
-        </div>
-    );
-
     // Bolds the first word of each bullet
-    const BSBullets = ({ accent, items }: { accent: string; items: string[] }) => (
-        <div className='space-y-5'>
+    const BSBullets = ({ accent, items, large = false }: { accent: string; items: string[]; large?: boolean }) => (
+        <div className={large ? 'space-y-5 md:space-y-7' : 'space-y-4'}>
             {items.map((text, idx) => {
                 const spaceIdx = text.indexOf(' ');
                 const boldPart = spaceIdx !== -1 ? text.slice(0, spaceIdx) : text;
                 const restPart = spaceIdx !== -1 ? text.slice(spaceIdx) : '';
                 return (
-                    <div key={idx} className='flex items-start gap-4'>
-                        <CheckCircle strokeWidth={3} className='h-6 w-6 mt-0.5 flex-shrink-0' style={{ color: accent }} />
-                        <div className='text-lg md:text-xl lg:text-2xl text-white/80 leading-snug'>
+                    <div key={idx} className='flex items-start gap-3 md:gap-4'>
+                        <CheckCircle
+                            strokeWidth={3}
+                            className={large ? 'h-6 w-6 md:h-7 md:w-7 mt-0.5 flex-shrink-0' : 'h-5 w-5 mt-0.5 flex-shrink-0'}
+                            style={{ color: accent }}
+                        />
+                        <div
+                            className={large ? 'text-lg md:text-xl lg:text-2xl text-white/80 leading-snug' : 'text-base md:text-lg text-white/80 leading-snug'}
+                        >
                             <span className='font-bold text-white'>{boldPart}</span>
                             {restPart}
                         </div>
@@ -235,76 +575,169 @@ function Home() {
         </div>
     );
 
-    // Filled glowing pill button
-    const BSButton = ({ accent, label }: { accent: string; label: string }) => (
-        <button
-            type='button'
-            className='h-14 px-10 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
-            style={{
-                background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
-                border: `2px solid ${accent}`,
-                boxShadow: `0 0 24px ${accent}55`,
-            }}
-        >
-            {label}
-            <span aria-hidden className='leading-none text-xl'>
-                →
-            </span>
-        </button>
-    );
-
-    // Full-screen panel — takes up 100vh, centers content
-    const FullScreenPanel = ({
-        accent,
-        headerTitle,
-        headerSubtitle,
-        HeaderIcon,
-        title,
-        description,
-        bullets,
-        cta,
-    }: {
-        accent: string;
-        headerTitle: string;
-        headerSubtitle: string;
-        HeaderIcon: any;
-        title: string;
-        description: string;
-        bullets: string[];
-        cta: string;
-    }) => {
-        const lines = description.split('\n');
+    // ─── STACKED STRATEGIES SECTION — each panel has its own Details/Discovery tabs ──
+    const StackedStrategiesSection = () => {
         return (
-            <div
-                className='relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden bg-[#0B1320]'
-                style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-            >
-                {/* Content — constrained width, centered */}
-                <div className='relative z-10 w-full max-w-7xl mx-auto px-8 sm:px-12 md:px-16 py-20'>
-                    {/* Header */}
-                    <BSHeader accent={accent} title={headerTitle} subtitle={headerSubtitle} Icon={HeaderIcon} />
+            <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-[#0B1320] overflow-hidden'>
+                <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_55%)]' />
 
-                    {/* Title */}
-                    <h3 className='mt-10 lg:mt-14 text-4xl sm:text-5xl md:text-7xl font-extralight text-white leading-tight'>{title}</h3>
-
-                    {/* Description */}
-                    <div className='mt-6 space-y-2'>
-                        {lines.map((l, i) => (
-                            <p key={i} className='text-xl sm:text-2xl text-white/50 leading-relaxed'>
-                                {l}
-                            </p>
-                        ))}
+                <div className='container mx-auto max-w-7xl relative z-10'>
+                    {/* Section Heading */}
+                    <div className='text-center mb-12'>
+                        <h2 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6 leading-tight'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                Explore Data-Driven
+                            </span>
+                            <br />
+                            <span className='text-white'>Market </span>
+                            <div className='relative inline-block'>
+                                <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                    {' '}
+                                    Intelligence Hub
+                                </span>
+                                {/* <div className='absolute -bottom-3 left-0 right-0 h-1.5 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full opacity-60 animate-pulse'></div> */}
+                            </div>
+                        </h2>
+                        <p className='text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed font-light mt-6'>
+                            Master every tool in your trading arsenal. Explore each strategy and discover how it works.
+                        </p>
                     </div>
 
-                    {/* Bullets + CTA */}
-                    <div className='mt-14 lg:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-10'>
-                        <BSBullets accent={accent} items={bullets} />
-                        <div className='flex-shrink-0'>
-                            <BSButton accent={accent} label={cta} />
-                        </div>
+                    {/* Stacked panels — one per strategy */}
+                    <div className='flex flex-col gap-8'>
+                        {strategyPanels.map((panel) => {
+                            const { HeaderIcon, accent, id } = panel;
+                            const activeTab = panelTabs[id] ?? 'details';
+
+                            return (
+                                <div
+                                    key={id}
+                                    className='relative rounded-3xl overflow-hidden border border-white/10 flex flex-col'
+                                    style={{
+                                        background: 'linear-gradient(135deg, #0d1117 0%, #0B1320 50%, #0d1117 100%)',
+                                        boxShadow: `0 0 0 1px rgba(255,255,255,0.06), 0 40px 80px rgba(0,0,0,0.6), 0 0 80px ${accent}18`,
+                                    }}
+                                >
+                                    {/* Glow accent line at top */}
+                                    <div
+                                        className='absolute top-0 left-0 right-0 h-[2px]'
+                                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                                    />
+                                    <div
+                                        className='pointer-events-none absolute inset-0'
+                                        style={{ background: `radial-gradient(ellipse at 20% 30%, ${accent}0d 0%, transparent 55%)` }}
+                                    />
+
+                                    {/* Header Row */}
+                                    <div className='relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 sm:px-12 md:px-16 pt-10 md:pt-14 pb-0'>
+                                        <div className='flex items-center gap-5'>
+                                            <div
+                                                className='flex items-center justify-center rounded-2xl h-14 w-14 md:h-24 md:w-24 flex-shrink-0'
+                                                style={{ backgroundColor: accent }}
+                                            >
+                                                <HeaderIcon className='h-8 w-9 md:h-16 md:w-16' style={{ color: '#0B1320' }} />
+                                            </div>
+                                            <div>
+                                                <div className='text-xl md:text-6xl lg:mb-2 font-bold text-white'>{panel.label}</div>
+                                                <div className='text-lg md:text-2xl font-medium' style={{ color: accent }}>
+                                                    {panel.headerSubtitle}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Details / Discovery Tab Bar */}
+                                    <div className='relative z-10 flex items-end border-b border-white/8 px-6 sm:px-12 md:px-16 mt-8 md:mt-10'>
+                                        {(['Details', 'Discovery'] as const).map((tab) => (
+                                            <button
+                                                key={tab}
+                                                onClick={() => setPanelTabs((prev) => ({ ...prev, [id]: tab }))}
+                                                className='relative flex-shrink-0 px-4 sm:px-6 md:px-8 py-3 md:py-4 text-sm sm:text-base md:text-lg font-semibold transition-all duration-200 whitespace-nowrap uppercase tracking-widest'
+                                                style={{ color: activeTab === tab ? '#ffffff' : 'rgba(255,255,255,0.30)' }}
+                                            >
+                                                {tab}
+                                                <span
+                                                    className='absolute bottom-0 left-0 right-0 h-[2px] rounded-full transition-all duration-300'
+                                                    style={{
+                                                        backgroundColor: activeTab === tab ? accent : 'transparent',
+                                                        opacity: activeTab === tab ? 1 : 0,
+                                                    }}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Tab Content */}
+                                    <div
+                                        key={`${id}-${activeTab}`}
+                                        className='relative z-10 flex-1 flex flex-col px-6 sm:px-12 md:px-16 py-10 md:py-14 lg:py-20 animate-slide-in-left'
+                                    >
+                                        {activeTab === 'Details' ? (
+                                            /* ── DETAILS TAB (original content) ── */
+                                            <>
+                                                <div>
+                                                    <h3 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight mb-6 md:mb-8'>
+                                                        {panel.title}
+                                                    </h3>
+                                                    <div className='space-y-2 md:space-y-3'>
+                                                        {panel.description.split('\n').map((line, i) => (
+                                                            <p key={i} className='text-lg sm:text-xl md:text-2xl text-white/45 leading-relaxed'>
+                                                                {line}
+                                                            </p>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className='flex flex-col sm:flex-row sm:items-end justify-between gap-8 md:gap-12 mt-8 md:mt-12 lg:mt-16'>
+                                                    <BSBullets accent={accent} items={panel.bullets} large />
+                                                    <div className='flex-shrink-0'>
+                                                        <button
+                                                            type='button'
+                                                            className='h-14 md:h-16 px-10 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
+                                                            style={{
+                                                                background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                                                border: `2px solid ${accent}`,
+                                                                boxShadow: `0 0 28px ${accent}45`,
+                                                            }}
+                                                        >
+                                                            {panel.cta}
+                                                            <span aria-hidden className='leading-none text-xl'>
+                                                                →
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            /* ── DISCOVERY TAB ── */
+                                            <div className='flex flex-col gap-8 md:gap-12'>
+                                                <p className='text-xl sm:text-2xl md:text-3xl text-white/70 leading-relaxed font-light '>
+                                                    {panel.discoveryContent}
+                                                </p>
+                                                <div className='flex-shrink-0'>
+                                                    <button
+                                                        type='button'
+                                                        className='h-14 md:h-16 px-10 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
+                                                        style={{
+                                                            background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                                            border: `2px solid ${accent}`,
+                                                            boxShadow: `0 0 28px ${accent}45`,
+                                                        }}
+                                                    >
+                                                        {panel.discoveryCta}
+                                                        <span aria-hidden className='leading-none text-xl'>
+                                                            →
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
-            </div>
+            </section>
         );
     };
 
@@ -327,12 +760,6 @@ function Home() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* ── LEFT ── */}
                         <div className='flex flex-col gap-5 sm:gap-8 md:gap-10'>
-                            {/* Badge — hidden on mobile, visible on lg+ */}
-                            <Badge className='inline-flex uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold w-fit'>
-                                PAPER BROKERAGE
-                            </Badge>
-
-                            {/* Title — 2 lines */}
                             <div className='space-y-3 animate-slide-in-left delay-200'>
                                 <h1 className='text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight'>
                                     <span className='text-[#f4f4f4]'>Global Multi-Asset</span>
@@ -341,14 +768,11 @@ function Home() {
                                         Intelligence Engine
                                     </span>
                                 </h1>
-
-                                {/* Updated blurb — shown on both mobile and desktop */}
                                 <p className='text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light'>
                                     Data-driven global paper trading, stock screening, watchlists, and economic KPI&apos;s
                                 </p>
                             </div>
 
-                            {/* Mobile-only inline Lottie — hidden on lg+ */}
                             <div className='block lg:hidden w-full animate-slide-in-left delay-300'>
                                 <div className='flex items-center justify-center w-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
@@ -360,7 +784,6 @@ function Home() {
                                 </div>
                             </div>
 
-                            {/* Newsletter subscribe bar */}
                             <div className='animate-slide-in-left delay-400 overflow-hidden'>
                                 <NewsletterSubscribeBar />
                             </div>
@@ -385,209 +808,16 @@ function Home() {
                 </div>
             </section>
 
-            {/* Trading Strategies Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-8xl'>
-                    <div className='text-center mb-20'>
-                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                            MASTER THE MARKETS
-                        </Badge>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Device <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Compatibility</span>
-                        </h2>
-                        <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
-                            Understand the sophisticated differences between covered calls and protective puts with our comprehensive analysis framework
-                        </p>
-                    </div>
+            {/* ─── MOBILE & DESKTOP COMPATIBLE ─── */}
+            <MobileDesktopSection />
 
-                    <div className='grid lg:grid-cols-2 gap-12'>
-                        {/* Mobile & Tablet */}
-                        <div className='group relative animate-slide-in-left'>
-                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-white/35 transition-all duration-500 rounded-3xl overflow-hidden'>
-                                <div className='absolute top-0 left-0 w-full h-[3px] bg-white/45'></div>
-                                <CardHeader className='p-8'>
-                                    <div className='flex items-center justify-between mb-4'>
-                                        <div className='flex items-center space-x-4'>
-                                            <div className='w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border-white/5 border-[1px]'>
-                                                <TrendingUp className='w-7 h-7 text-[#2c7bbe]' />
-                                            </div>
-                                            <div>
-                                                <CardTitle className='text-2xl font-bold text-[#2c7bbe]'>MOBILE & TABLET COMPATIBILITY</CardTitle>
-                                                <CardDescription className='text-[#2c7bbe] font-semibold text-base'>
-                                                    Paper Trade Anywhere — Fully Responsive Platform
-                                                </CardDescription>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className='p-8 pt-0 space-y-6'>
-                                    <div className='space-y-4'>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                Optimized for Touch & Efficiency:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Every button, chart, and trade entry field is designed for tap-based interaction, making it effortless to place
-                                                simulated trades, adjust filters, and navigate charts without accidental clicks or zooming issues. Built for
-                                                speed, clarity, and fingertip execution
-                                            </p>
-                                        </div>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                Adaptive Screen Layouts:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Whether you&apos;re on an iPhone, Android, or tablet, the interface automatically reorganizes to keep the most
-                                                important market data visible, prioritizing watchlists, screener results, and open simulations in a clean
-                                                vertical flow.
-                                            </p>
-                                        </div>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                Real-Time Data, Real Market Behavior:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Market data updates live while you move between screens, allowing you to practice strategy execution and monitor
-                                                positions without constantly refreshing the page or losing your place in the platform.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+            {/* ─── EXPLORE DATA-DRIVEN MARKET INTELLIGENCE HUB — Stacked panels with Details/Discovery tabs ─── */}
+            <StackedStrategiesSection />
 
-                        {/* Desktop */}
-                        <div className='group relative animate-slide-in-right'>
-                            <Card className='relative bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-white/35 transition-all duration-500 rounded-3xl overflow-hidden'>
-                                <div className='absolute top-0 left-0 w-full h-[3px] bg-white/45'></div>
-                                <CardHeader className='p-8'>
-                                    <div className='flex items-center justify-between mb-4'>
-                                        <div className='flex items-center space-x-4'>
-                                            <div className='w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border-white/5 border-[1px]'>
-                                                <Shield className='w-7 h-7 text-[#2c7bbe]' />
-                                            </div>
-                                            <div>
-                                                <CardTitle className='text-2xl font-bold text-[#2c7bbe]'>DESKTOP COMPATIBILITY</CardTitle>
-                                                <CardDescription className='text-[#2c7bbe] font-semibold text-base'>
-                                                    Professional Desktop Trading Workspace
-                                                </CardDescription>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className='p-8 pt-0 space-y-6'>
-                                    <div className='space-y-4'>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                Multi-Panel Workspace:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Analyze charts, run the stock screener, and execute simulated trades side-by-side without switching tabs. The
-                                                desktop layout allows expandable windows and panel stacking, enabling professional workflow efficiency. Maximum
-                                                visibility, total control, advanced analysis.
-                                            </p>
-                                        </div>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                High-Resolution Market Visualization:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Larger screens unlock fullwidth technical charts, deeper analytic tools, and expanded data tables so you can
-                                                identify trends, study patterns, and break down market setups with precision. <br /> <br />
-                                            </p>
-                                        </div>
-                                        <div className='bg-black/30 rounded-2xl p-6 border border-white/20'>
-                                            <h4 className='font-bold text-white mb-3 flex items-center'>
-                                                <div className='w-2 h-2 bg-white/40 rounded-full mr-3'></div>
-                                                Keyboard-Driven Speed & Precision:
-                                            </h4>
-                                            <p className='text-gray-300 leading-relaxed text-sm'>
-                                                Designed for desktop power users, the platform incorporates keyboard shortcuts, faster data entry, and
-                                                drag-and-drop modules, making trade execution and stock research significantly faster than on mobile.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
+            <DataAnalyticsSection />
 
-            {/* ✅ UPDATED: Learn Multiple Day Trading Strategies */}
-            {/* Section heading — sits above the full-screen panels */}
-            <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-[#0B1320] overflow-hidden'>
-                <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_55%)]' />
-                <div className='container mx-auto max-w-8xl relative z-10 text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                        Elite Framework
-                    </Badge>
-                    <h2 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-8 leading-tight'>
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Learn Multiple Day</span>
-                        <br />
-                        <span className='text-white'>Trading </span>
-                        <span className='relative inline-block'>
-                            <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>Strategies</span>
-                            <div className='absolute -bottom-4 left-0 right-0 h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full opacity-60 animate-pulse'></div>
-                        </span>
-                    </h2>
-                    <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light mt-7'>
-                        Clear, consistent UI across device sizes — without mixing layouts.
-                    </p>
-                </div>
-            </section>
-
-            {/* Each panel = full viewport height, full width */}
-            <FullScreenPanel
-                accent='#5EDC7A'
-                headerTitle='Paper Trading'
-                headerSubtitle='Stock Market Simulator'
-                HeaderIcon={DollarSign}
-                title='Generate Consistent Profits'
-                description={`Practice trading in a risk-free environment using real market data.\nDevelop strategies, test your skills, and build confidence before transitioning to a live account.`}
-                bullets={['Test trading strategies risk-free', 'Gain experience with real market data', 'Build confidence for live trading']}
-                cta='Start Paper Trading'
-            />
-
-            <FullScreenPanel
-                accent='#F5A623'
-                headerTitle='Stock Screener'
-                headerSubtitle='Market Analysis Tool'
-                HeaderIcon={BarChart2}
-                title='Find Your Next Trade'
-                description={`Discover top stock opportunities with advanced screening tools.\nIdentify trends, filter by metrics, and spot winning setups in the market.`}
-                bullets={['Search for stocks with precise criteria', 'Analyze fundamental & technical data', 'Uncover trade opportunities fast']}
-                cta='Start Screening'
-            />
-
-            <FullScreenPanel
-                accent='#E74C3C'
-                headerTitle='Watchlist'
-                headerSubtitle='Track Stock Performance'
-                HeaderIcon={List}
-                title='Monitor Your Favorites'
-                description={`Keep an eye on your top stocks. Easily organize and track price movements.\nStay informed and react quickly to market changes.`}
-                bullets={['Create and manage a personalized watchlist', 'Get real-time price updates and alerts', 'Track performance in one convenient view']}
-                cta='Start Watching'
-            />
-
-            <FullScreenPanel
-                accent='#4A90D9'
-                headerTitle='Global Economic Indicators'
-                headerSubtitle='World Economic KPI Dashboard'
-                HeaderIcon={Globe}
-                title='Explore Key Economic KPIs'
-                description={`Access economic health metrics, analyze global trends,\ncompare countries, and stay informed on key long-term indicators.`}
-                bullets={['View GDP, inflation, unemployment & more', 'Compare country data for informed decisions', 'Track economic trends across the world']}
-                cta='Explore KPIs'
-            />
-
-            {/* Newsletter Section */}
+            {/* ─── NEWSLETTER SECTION ─── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
@@ -636,6 +866,9 @@ function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* ─── BLACK SNOW MATHEMATICS BANNER ─── */}
+            <BSMBanner />
 
             {/* --- MODALS --- */}
 

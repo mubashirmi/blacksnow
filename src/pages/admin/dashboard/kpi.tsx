@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -128,7 +128,6 @@ type KPIResponse = {
     userProducts?: ProductUser[];
 };
 
-/** NEW (Correct) API response */
 type KPIChartMetricResponse = {
     message: string;
     weeklyRevenue: number;
@@ -148,9 +147,48 @@ type TotalKPIResponse = {
     countsByRole: Record<string, number>;
 };
 
+// ─── NEW: v4 API types ────────────────────────────────────────────────────────
+
+type ProductRevenueEntry = {
+    product: string;
+    monthly: number;
+    yearly: number;
+};
+
+type ProductRevenueChartResponse = {
+    message: string;
+    revenueData: Record<string, ProductRevenueEntry>;
+};
+
+type LightningMembershipEntry = {
+    product: string;
+    monthly: number;
+    yearly: number;
+};
+
+type LightningMembershipResponse = {
+    message: string;
+    revenueData: Record<string, LightningMembershipEntry>;
+};
+
+type BillingCycleEntry = {
+    id: number;
+    amount: number;
+    period: string;
+    product: string;
+    startDate: string | null;
+    nextBillingDate: string | null;
+};
+
+type LightningBillingCycleResponse = {
+    message: string;
+    data: BillingCycleEntry[];
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-/** EXACT products your client listed for this metric endpoint */
 const METRIC_PRODUCTS = [
     { label: 'Email Marketing', value: 'EmailMarketing' },
     { label: 'Invoice Tool', value: 'InvoiceTool' },
@@ -172,7 +210,6 @@ function currency(n?: number | null) {
 }
 
 function normalizePercent(rate: number) {
-    // handles 0..1 or 0..100
     if (!Number.isFinite(rate)) return 0;
     if (rate <= 1) return rate * 100;
     return rate;
@@ -190,6 +227,18 @@ function formatProductName(product?: string) {
             return 'Digital Billboard';
         case 'NewsLetter':
             return 'Newsletter';
+        case 'EmailMarketing':
+            return 'Email Marketing';
+        case 'InvoiceTool':
+            return 'Invoice Tool';
+        case 'LightningGold':
+            return 'Lightning Gold';
+        case 'LightningSilver':
+            return 'Lightning Silver';
+        case 'lightningSilver':
+            return 'Lightning Silver';
+        case 'lightningGold':
+            return 'Lightning Gold';
         case 'RSVP':
             return 'RSVP';
         default:
@@ -197,7 +246,6 @@ function formatProductName(product?: string) {
     }
 }
 
-/** Recharts custom cursor: horizontal line */
 function HorizontalCursor(props: any) {
     const { points, width } = props || {};
     if (!points || !points.length || typeof width !== 'number') return null;
@@ -212,31 +260,26 @@ async function fetchJSON<T>(url: string): Promise<T> {
     return (await res.json()) as T;
 }
 
-/** Builds the (Week/Month/Year) series data from API */
 function buildMetricSeries(metricData: KPIChartMetricResponse | null, metricType: MetricType) {
     if (!metricData) return [];
-
     const weekly =
         metricType === 'Revenue'
             ? safeNumber(metricData.weeklyRevenue)
             : metricType === 'Subscribers'
             ? safeNumber(metricData.weeklySubscribers)
             : safeNumber(metricData.weeklyChurnRate);
-
     const monthly =
         metricType === 'Revenue'
             ? safeNumber(metricData.monthlyRevenue)
             : metricType === 'Subscribers'
             ? safeNumber(metricData.monthlySubscribers)
             : safeNumber(metricData.monthlyChurnRate);
-
     const yearly =
         metricType === 'Revenue'
             ? safeNumber(metricData.yearlyRevenue)
             : metricType === 'Subscribers'
             ? safeNumber(metricData.yearlySubscribers)
             : safeNumber(metricData.yearlyChurnRate);
-
     return [
         { period: 'Week', value: weekly },
         { period: 'Month', value: monthly },
@@ -254,19 +297,27 @@ function formatMetricValue(metricType: MetricType, value: number) {
     return percent(safeNumber(value));
 }
 
+// ─── Stat pill used in v4 chart headers ──────────────────────────────────────
+function StatPill({ label, value, color }: { label: string; value: string; color: string }) {
+    return (
+        <div className={`flex flex-col items-center px-4 py-2 rounded-xl border ${color}`}>
+            <span className='text-xs font-medium uppercase tracking-wide opacity-70'>{label}</span>
+            <span className='text-base font-bold mt-0.5'>{value}</span>
+        </div>
+    );
+}
+
 export default function KPIPage() {
-    /** Existing KPI data */
     const [data, setData] = useState<KPIResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    /** Existing table state */
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState<'revenue' | 'date'>('revenue');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const itemsPerPage = 10;
 
-    /** Chart #1 (Correct): Total Sales (Sales Team) */
+    // Chart #1 Sales
     const [salesProduct, setSalesProduct] = useState<(typeof METRIC_PRODUCTS)[number]['value']>('DigitalBillboard');
     const [salesMetricType, setSalesMetricType] = useState<MetricType>('Revenue');
     const [salesMetricPeriod, setSalesMetricPeriod] = useState<MetricPeriod>('Week');
@@ -274,7 +325,7 @@ export default function KPIPage() {
     const [salesMetricLoading, setSalesMetricLoading] = useState(false);
     const [salesMetricError, setSalesMetricError] = useState<string | null>(null);
 
-    /** Chart #2 (Correct): Total Affiliate (Basic Affiliate) */
+    // Chart #2 Affiliate
     const [affiliateProduct, setAffiliateProduct] = useState<(typeof METRIC_PRODUCTS)[number]['value']>('NewsLetter');
     const [affiliateMetricType, setAffiliateMetricType] = useState<MetricType>('Revenue');
     const [affiliateMetricPeriod, setAffiliateMetricPeriod] = useState<MetricPeriod>('Week');
@@ -282,12 +333,33 @@ export default function KPIPage() {
     const [affiliateMetricLoading, setAffiliateMetricLoading] = useState(false);
     const [affiliateMetricError, setAffiliateMetricError] = useState<string | null>(null);
 
-    /** Chart #3 (Already fixed): Total KPI */
+    // Chart #3 Total KPI
     const [totalKpi, setTotalKpi] = useState<TotalKPIResponse | null>(null);
     const [totalKpiLoading, setTotalKpiLoading] = useState(false);
     const [totalKpiError, setTotalKpiError] = useState<string | null>(null);
 
-    /** Fetch existing KPI */
+    // ─── NEW v4 state ─────────────────────────────────────────────────────────
+
+    // Chart A: Product Revenue (MRR/ARR)
+    const [productRevenue, setProductRevenue] = useState<ProductRevenueChartResponse | null>(null);
+    const [productRevenueLoading, setProductRevenueLoading] = useState(false);
+    const [productRevenueError, setProductRevenueError] = useState<string | null>(null);
+    const [selectedRevenueProduct, setSelectedRevenueProduct] = useState<string>('All');
+
+    // Chart B: Lightning Membership Revenue
+    const [lightningMembership, setLightningMembership] = useState<LightningMembershipResponse | null>(null);
+    const [lightningMembershipLoading, setLightningMembershipLoading] = useState(false);
+    const [lightningMembershipError, setLightningMembershipError] = useState<string | null>(null);
+    const [lightningFilter, setLightningFilter] = useState<'All' | 'LightningGold' | 'LightningSilver'>('All');
+
+    // Chart C: Lightning Billing Cycle
+    const [billingCycle, setBillingCycle] = useState<LightningBillingCycleResponse | null>(null);
+    const [billingCycleLoading, setBillingCycleLoading] = useState(false);
+    const [billingCycleError, setBillingCycleError] = useState<string | null>(null);
+    const [billingPeriodFilter, setBillingPeriodFilter] = useState<'all' | 'monthly' | 'yearly'>('all');
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     useEffect(() => {
         const fetchKPI = async () => {
             try {
@@ -297,7 +369,6 @@ export default function KPIPage() {
                 setData(json);
             } catch (e: any) {
                 setErrorMsg(e?.message || 'Failed to load KPI data');
-                console.error('KPI fetch error:', e);
             } finally {
                 setIsLoading(false);
             }
@@ -305,7 +376,6 @@ export default function KPIPage() {
         fetchKPI();
     }, []);
 
-    /** Fetch metric by (type + product) */
     async function fetchMetric(type: 'Sales' | 'Affiliate', product: string) {
         const qs = new URLSearchParams();
         qs.set('type', type);
@@ -313,7 +383,6 @@ export default function KPIPage() {
         return await fetchJSON<KPIChartMetricResponse>(`/api/v3/kpi-chart-metric?${qs.toString()}`);
     }
 
-    /** Fetch Chart #1 data (Sales) when product changes */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
@@ -326,7 +395,6 @@ export default function KPIPage() {
             } catch (e: any) {
                 if (cancelled) return;
                 setSalesMetricError(e?.message || 'Failed to load Sales metric chart');
-                console.error('Sales metric error:', e);
                 setSalesMetricData(null);
             } finally {
                 if (!cancelled) setSalesMetricLoading(false);
@@ -338,7 +406,6 @@ export default function KPIPage() {
         };
     }, [salesProduct]);
 
-    /** Fetch Chart #2 data (Affiliate) when product changes */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
@@ -351,7 +418,6 @@ export default function KPIPage() {
             } catch (e: any) {
                 if (cancelled) return;
                 setAffiliateMetricError(e?.message || 'Failed to load Affiliate metric chart');
-                console.error('Affiliate metric error:', e);
                 setAffiliateMetricData(null);
             } finally {
                 if (!cancelled) setAffiliateMetricLoading(false);
@@ -363,7 +429,6 @@ export default function KPIPage() {
         };
     }, [affiliateProduct]);
 
-    /** Fetch Chart #3 (Total KPI) */
     useEffect(() => {
         let cancelled = false;
         const run = async () => {
@@ -376,7 +441,6 @@ export default function KPIPage() {
             } catch (e: any) {
                 if (cancelled) return;
                 setTotalKpiError(e?.message || 'Failed to load total KPI chart');
-                console.error('Total KPI error:', e);
                 setTotalKpi(null);
             } finally {
                 if (!cancelled) setTotalKpiLoading(false);
@@ -388,14 +452,162 @@ export default function KPIPage() {
         };
     }, []);
 
-    /** Existing derived KPI */
+    // ─── NEW v4 fetches ───────────────────────────────────────────────────────
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setProductRevenueLoading(true);
+                setProductRevenueError(null);
+                const json = await fetchJSON<ProductRevenueChartResponse>('/api/v4/product-revenue-chart');
+                if (cancelled) return;
+                setProductRevenue(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setProductRevenueError(e?.message || 'Failed to load product revenue chart');
+                setProductRevenue(null);
+            } finally {
+                if (!cancelled) setProductRevenueLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setLightningMembershipLoading(true);
+                setLightningMembershipError(null);
+                const json = await fetchJSON<LightningMembershipResponse>('/api/v4/lightning-membership-revenue');
+                if (cancelled) return;
+                setLightningMembership(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setLightningMembershipError(e?.message || 'Failed to load lightning membership chart');
+                setLightningMembership(null);
+            } finally {
+                if (!cancelled) setLightningMembershipLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setBillingCycleLoading(true);
+                setBillingCycleError(null);
+                const json = await fetchJSON<LightningBillingCycleResponse>('/api/v4/lightning-billing-cycle');
+                if (cancelled) return;
+                setBillingCycle(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setBillingCycleError(e?.message || 'Failed to load billing cycle data');
+                setBillingCycle(null);
+            } finally {
+                if (!cancelled) setBillingCycleLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // ─── v4 derived data ──────────────────────────────────────────────────────
+
+    /** Product Revenue: build bar chart data from /api/v4/product-revenue-chart */
+    const productRevenueChartData = useMemo(() => {
+        const entries = Object.values(productRevenue?.revenueData ?? {});
+        const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((e) => e.product === selectedRevenueProduct);
+        return filtered.map((e) => ({
+            product: formatProductName(e.product),
+            productKey: e.product,
+            MRR: safeNumber(e.monthly),
+            ARR: safeNumber(e.yearly),
+        }));
+    }, [productRevenue, selectedRevenueProduct]);
+
+    const productRevenueOptions = useMemo(() => {
+        const keys = Object.keys(productRevenue?.revenueData ?? {});
+        return ['All', ...keys];
+    }, [productRevenue]);
+
+    const productRevenueTotals = useMemo(() => {
+        const all = Object.values(productRevenue?.revenueData ?? {});
+        return {
+            totalMRR: all.reduce((s, e) => s + safeNumber(e.monthly), 0),
+            totalARR: all.reduce((s, e) => s + safeNumber(e.yearly), 0),
+        };
+    }, [productRevenue]);
+
+    /** Lightning Membership: filter + chart data */
+    const lightningChartData = useMemo(() => {
+        const entries = Object.values(lightningMembership?.revenueData ?? {});
+        const filtered = lightningFilter === 'All' ? entries : entries.filter((e) => e.product === lightningFilter);
+        return filtered.map((e) => ({
+            product: formatProductName(e.product),
+            productKey: e.product,
+            Monthly: safeNumber(e.monthly),
+            Yearly: safeNumber(e.yearly),
+        }));
+    }, [lightningMembership, lightningFilter]);
+
+    const lightningTotals = useMemo(() => {
+        const all = Object.values(lightningMembership?.revenueData ?? {});
+        return {
+            totalMonthly: all.reduce((s, e) => s + safeNumber(e.monthly), 0),
+            totalYearly: all.reduce((s, e) => s + safeNumber(e.yearly), 0),
+        };
+    }, [lightningMembership]);
+
+    /** Billing Cycle: filter + stats */
+    const filteredBillingData = useMemo(() => {
+        const rows = billingCycle?.data ?? [];
+        return billingPeriodFilter === 'all' ? rows : rows.filter((r) => r.period.toLowerCase() === billingPeriodFilter);
+    }, [billingCycle, billingPeriodFilter]);
+
+    const billingStats = useMemo(() => {
+        const rows = billingCycle?.data ?? [];
+        const totalRevenue = rows.reduce((s, r) => s + safeNumber(r.amount), 0);
+        const monthly = rows.filter((r) => r.period.toLowerCase() === 'monthly');
+        const yearly = rows.filter((r) => r.period.toLowerCase() === 'yearly');
+        const monthlyRevenue = monthly.reduce((s, r) => s + safeNumber(r.amount), 0);
+        const yearlyRevenue = yearly.reduce((s, r) => s + safeNumber(r.amount), 0);
+        return { total: rows.length, totalRevenue, monthlyRevenue, yearlyRevenue, monthlyCount: monthly.length, yearlyCount: yearly.length };
+    }, [billingCycle]);
+
+    /** Billing Cycle bar chart: group by product+period */
+    const billingBarData = useMemo(() => {
+        const rows = billingCycle?.data ?? [];
+        const map: Record<string, { product: string; monthly: number; yearly: number }> = {};
+        rows.forEach((r) => {
+            const key = r.product;
+            if (!map[key]) map[key] = { product: formatProductName(r.product), monthly: 0, yearly: 0 };
+            if (r.period.toLowerCase() === 'monthly') map[key].monthly += safeNumber(r.amount);
+            else map[key].yearly += safeNumber(r.amount);
+        });
+        return Object.values(map);
+    }, [billingCycle]);
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     const affiliates = data?.affiliateUsers ?? [];
     const sales = data?.salesUsers ?? [];
-    const latestNotes = data?.latestThreeNotes ?? [];
+    // const latestNotes = data?.latestThreeNotes ?? [];
     const billboardApprovals = data?.latestBillBoardApprovels ?? [];
     const latestApplicants = data?.latestJobApplicants ?? [];
-    const rsvpEvents = data?.rsvpEvents ?? [];
-    const checkoutRevenues = (data?.checkoutRevenues ?? []) as CheckoutRevenue[];
+    // const rsvpEvents = data?.rsvpEvents ?? [];
+    // const checkoutRevenues = (data?.checkoutRevenues ?? []) as CheckoutRevenue[];
     const userProducts = (data?.userProducts ?? []) as ProductUser[];
 
     const timeAgo = (iso?: string) => {
@@ -425,59 +637,43 @@ export default function KPIPage() {
         return allActivity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
     };
 
-    function getRevenueBreakdownFromUsers(users: ProductUser[]) {
-        const productMap: Record<string, { revenue: number; transactions: number; customers: Set<number> }> = {};
-
-        users.forEach((user) => {
-            const checkouts = Array.isArray(user.Checkouts) ? user.Checkouts : [];
-            checkouts.forEach((checkout) => {
-                if (!checkout || checkout.deleted || !checkout.paid) return;
-                const key = checkout.product || 'Unknown';
-                if (!productMap[key]) {
-                    productMap[key] = { revenue: 0, transactions: 0, customers: new Set<number>() };
-                }
-                productMap[key].revenue += checkout.amount || 0;
-                productMap[key].transactions += 1;
-                productMap[key].customers.add(user.id);
-            });
-        });
-
-        return Object.entries(productMap)
-            .map(([product, info]) => ({
-                product: formatProductName(product),
-                revenue: info.revenue,
-                transactions: info.transactions,
-                customers: info.customers.size,
-            }))
-            .sort((a, b) => b.revenue - a.revenue);
-    }
+    // function getRevenueBreakdownFromUsers(users: ProductUser[]) {
+    //     const productMap: Record<string, { revenue: number; transactions: number; customers: Set<number> }> = {};
+    //     users.forEach((user) => {
+    //         const checkouts = Array.isArray(user.Checkouts) ? user.Checkouts : [];
+    //         checkouts.forEach((checkout) => {
+    //             if (!checkout || checkout.deleted || !checkout.paid) return;
+    //             const key = checkout.product || 'Unknown';
+    //             if (!productMap[key]) productMap[key] = { revenue: 0, transactions: 0, customers: new Set<number>() };
+    //             productMap[key].revenue += checkout.amount || 0;
+    //             productMap[key].transactions += 1;
+    //             productMap[key].customers.add(user.id);
+    //         });
+    //     });
+    //     return Object.entries(productMap)
+    //         .map(([product, info]) => ({
+    //             product: formatProductName(product),
+    //             revenue: info.revenue,
+    //             transactions: info.transactions,
+    //             customers: info.customers.size,
+    //         }))
+    //         .sort((a, b) => b.revenue - a.revenue);
+    // }
 
     function getAllPayingCustomers(users: ProductUser[]) {
-        const rows: {
-            id: number;
-            name: string;
-            email: string;
-            totalRevenue: number;
-            productsBought: string[];
-            lastPurchaseDate: string | null;
-        }[] = [];
-
+        const rows: { id: number; name: string; email: string; totalRevenue: number; productsBought: string[]; lastPurchaseDate: string | null }[] = [];
         users.forEach((user) => {
             const checkouts = Array.isArray(user.Checkouts) ? user.Checkouts : [];
             let total = 0;
             const products = new Set<string>();
             let lastPurchase: string | null = null;
-
             checkouts.forEach((checkout) => {
                 if (!checkout || checkout.deleted || !checkout.paid) return;
                 total += checkout.amount || 0;
                 products.add(formatProductName(checkout.product));
-                if (!lastPurchase || new Date(checkout.createdAt) > new Date(lastPurchase)) {
-                    lastPurchase = checkout.createdAt;
-                }
+                if (!lastPurchase || new Date(checkout.createdAt) > new Date(lastPurchase)) lastPurchase = checkout.createdAt;
             });
-
-            if (total > 0) {
+            if (total > 0)
                 rows.push({
                     id: user.id,
                     name: `${user.firstName} ${user.lastName}`.trim(),
@@ -486,99 +682,43 @@ export default function KPIPage() {
                     productsBought: Array.from(products),
                     lastPurchaseDate: lastPurchase,
                 });
-            }
         });
-
         return rows;
     }
 
     function sortCustomers(customers: ReturnType<typeof getAllPayingCustomers>) {
         return customers.sort((a, b) => {
-            if (sortBy === 'revenue') {
-                return sortOrder === 'desc' ? b.totalRevenue - a.totalRevenue : a.totalRevenue - b.totalRevenue;
-            } else {
-                const dateA = a.lastPurchaseDate ? new Date(a.lastPurchaseDate).getTime() : 0;
-                const dateB = b.lastPurchaseDate ? new Date(b.lastPurchaseDate).getTime() : 0;
-                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-            }
+            if (sortBy === 'revenue') return sortOrder === 'desc' ? b.totalRevenue - a.totalRevenue : a.totalRevenue - b.totalRevenue;
+            const dateA = a.lastPurchaseDate ? new Date(a.lastPurchaseDate).getTime() : 0;
+            const dateB = b.lastPurchaseDate ? new Date(b.lastPurchaseDate).getTime() : 0;
+            return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
         });
     }
 
-    function getRevenuePieData(revenues: CheckoutRevenue[]) {
-        return revenues
-            .filter((item) => item?._sum?.amount && safeNumber(item._sum.amount) > 0)
-            .map((item) => ({
-                name: formatProductName(item.product),
-                value: safeNumber(item._sum.amount, 0),
-            }));
-    }
-
-    function getProductComparisons(revenues: CheckoutRevenue[]) {
-        const products = revenues.map((r) => ({ product: formatProductName(r.product), revenue: safeNumber(r._sum?.amount, 0) }));
-        if (products.length < 2) return null;
-        const sorted = [...products].sort((a, b) => b.revenue - a.revenue);
-        const highest = sorted[0];
-        const lowest = sorted[sorted.length - 1];
-        const avg = products.reduce((sum, p) => sum + p.revenue, 0) / products.length;
-        return { highest, lowest, average: avg };
-    }
-
     const recentActivity = getRecentActivity();
-
-    const revenueBreakdown = getRevenueBreakdownFromUsers(userProducts);
     const allPayingCustomersRaw = getAllPayingCustomers(userProducts);
     const sortedCustomers = sortCustomers(allPayingCustomersRaw);
     const totalPages = Math.max(1, Math.ceil(sortedCustomers.length / itemsPerPage));
     const paginatedCustomers = sortedCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-    const productRevenueChartData = checkoutRevenues
-        .filter((item) => item && typeof item.product === 'string')
-        .map((item) => {
-            const rawProduct = item.product;
-            const amount = item._sum?.amount ?? 0;
-            return {
-                productKey: rawProduct,
-                product: formatProductName(rawProduct),
-                revenue: safeNumber(amount, 0),
-            };
-        })
-        .filter((item) => item.revenue > 0);
-
-    const revenuePieData = getRevenuePieData(checkoutRevenues);
-    const productComparisons = getProductComparisons(checkoutRevenues);
-
-    const derivedTotalRevenue = productRevenueChartData.reduce((sum, item) => sum + item.revenue, 0);
-    const apiTotalProfit = data?.totalProfit?._sum?.amount;
-    const totalProfit = typeof apiTotalProfit === 'number' && Number.isFinite(apiTotalProfit) ? apiTotalProfit : derivedTotalRevenue;
-
-    const totalPayingCustomers = userProducts.filter(
-        (user) => Array.isArray(user.Checkouts) && user.Checkouts.some((checkout) => checkout && checkout.paid && !checkout.deleted)
-    ).length;
-
-    const totalPaidTransactions = userProducts.reduce((sum, user) => {
-        if (!Array.isArray(user.Checkouts)) return sum;
-        const paidCount = user.Checkouts.filter((checkout) => checkout && checkout.paid && !checkout.deleted).length;
-        return sum + paidCount;
-    }, 0);
-
-    const avgRevenuePerCustomer = totalPayingCustomers > 0 ? totalProfit / totalPayingCustomers : 0;
+    // const derivedTotalRevenue = (data?.checkoutRevenues ?? []).reduce((s, r) => s + safeNumber(r._sum?.amount), 0);
+    // const apiTotalProfit = data?.totalProfit?._sum?.amount;
+    // const totalProfit = typeof apiTotalProfit === 'number' && Number.isFinite(apiTotalProfit) ? apiTotalProfit : derivedTotalRevenue;
+    // const totalPayingCustomers = userProducts.filter((u) => Array.isArray(u.Checkouts) && u.Checkouts.some((c) => c && c.paid && !c.deleted)).length;
 
     const handleSort = (column: 'revenue' | 'date') => {
-        if (sortBy === column) {
-            setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-        } else {
+        if (sortBy === column) setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+        else {
             setSortBy(column);
             setSortOrder('desc');
         }
         setCurrentPage(1);
     };
 
-    /** Chart #1 (Sales) derived */
     const salesSeries = useMemo(() => buildMetricSeries(salesMetricData, salesMetricType), [salesMetricData, salesMetricType]);
     const salesSelectedValue = useMemo(() => getSelectedMetricValue(salesSeries as any, salesMetricPeriod), [salesSeries, salesMetricPeriod]);
     const salesSelectedLabel = useMemo(() => formatMetricValue(salesMetricType, safeNumber(salesSelectedValue, 0)), [salesMetricType, salesSelectedValue]);
 
-    /** Chart #2 (Affiliate) derived */
     const affiliateSeries = useMemo(() => buildMetricSeries(affiliateMetricData, affiliateMetricType), [affiliateMetricData, affiliateMetricType]);
     const affiliateSelectedValue = useMemo(
         () => getSelectedMetricValue(affiliateSeries as any, affiliateMetricPeriod),
@@ -589,18 +729,11 @@ export default function KPIPage() {
         [affiliateMetricType, affiliateSelectedValue]
     );
 
-    /** Chart #3 (Total KPI) derived */
     const totalKpiChartData = useMemo(() => {
         const counts = totalKpi?.countsByRole ?? {};
-        const entries = Object.entries(counts).map(([key, val]) => ({
-            name: formatProductName(key),
-            key,
-            value: safeNumber(val, 0),
-        }));
-
+        const entries = Object.entries(counts).map(([key, val]) => ({ name: formatProductName(key), key, value: safeNumber(val, 0) }));
         const priority = ['Sales', 'Affiliate', 'SuperiorAffiliate', 'WebsiteSales', 'Website Sales', 'Superior Affiliate'];
         const sorted = [...entries.filter((e) => priority.includes(e.key)), ...entries.filter((e) => !priority.includes(e.key))];
-
         const seen = new Set<string>();
         return sorted.filter((e) => {
             if (seen.has(e.key)) return false;
@@ -619,7 +752,6 @@ export default function KPIPage() {
                     {isLoading && <div className='mt-4 text-sm'>Loading data...</div>}
                 </div>
 
-                {/* Non-blocking error banner */}
                 {errorMsg && (
                     <div className='bg-red-50 border border-red-200 rounded-lg p-6'>
                         <h3 className='text-lg font-semibold text-red-800 mb-2'>KPI API Error</h3>
@@ -630,19 +762,324 @@ export default function KPIPage() {
                     </div>
                 )}
 
-                {/* ===================================================== */}
-                {/* ✅ LINE CHART #1: Total Sales (Sales Team)            */}
-                {/* Uses: /api/v3/kpi-chart-metric?type=Sales&product=... */}
-                {/* ===================================================== */}
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART A: Product Revenue — MRR & ARR                  */}
+                {/* GET /api/v4/product-revenue-chart                            */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Product Revenue — MRR &amp; ARR</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Monthly and annual recurring revenue per product</p>
+                        </div>
+                        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
+                            {/* Product filter */}
+                            <select
+                                value={selectedRevenueProduct}
+                                onChange={(e) => setSelectedRevenueProduct(e.target.value)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {productRevenueOptions.map((opt) => (
+                                    <option key={opt} value={opt}>
+                                        {opt === 'All' ? 'All Products' : formatProductName(opt)}
+                                    </option>
+                                ))}
+                            </select>
+                            {/* Summary pills */}
+                            <div className='flex gap-2'>
+                                <StatPill label='Total MRR' value={currency(productRevenueTotals.totalMRR)} color='border-blue-200 bg-blue-50 text-blue-800' />
+                                <StatPill
+                                    label='Total ARR'
+                                    value={currency(productRevenueTotals.totalARR)}
+                                    color='border-indigo-200 bg-indigo-50 text-indigo-800'
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {productRevenueError && <div className='mb-4 text-sm text-red-600'>{productRevenueError}</div>}
+
+                    {productRevenueLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading product revenue...</div>
+                    ) : productRevenueChartData.length > 0 ? (
+                        <>
+                            <ResponsiveContainer width='100%' height={280}>
+                                <BarChart data={productRevenueChartData} barCategoryGap='30%' barGap={4}>
+                                    <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                    <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any) => currency(safeNumber(value))}
+                                        labelFormatter={(label) => `Product: ${label}`}
+                                    />
+                                    <Legend />
+                                    <Bar dataKey='MRR' name='MRR (Monthly)' fill='#3b82f6' radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey='ARR' name='ARR (Yearly)' fill='#6366f1' radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+
+                            {/* Breakdown table */}
+                            <div className='mt-4 overflow-x-auto'>
+                                <table className='w-full text-sm'>
+                                    <thead>
+                                        <tr className='border-b border-gray-100'>
+                                            <th className='py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Product</th>
+                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>MRR</th>
+                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>ARR</th>
+                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>Combined</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className='divide-y divide-gray-50'>
+                                        {productRevenueChartData.map((row) => (
+                                            <tr key={row.productKey} className='hover:bg-gray-50'>
+                                                <td className='py-2 font-medium text-gray-800'>{row.product}</td>
+                                                <td className='py-2 text-right text-blue-700'>{currency(row.MRR)}</td>
+                                                <td className='py-2 text-right text-indigo-700'>{currency(row.ARR)}</td>
+                                                <td className='py-2 text-right font-semibold text-gray-900'>{currency(row.MRR + row.ARR)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No product revenue data</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART B: Lightning Membership Revenue                  */}
+                {/* GET /api/v4/lightning-membership-revenue                      */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Lightning Membership Revenue</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Monthly &amp; annual revenue by membership tier</p>
+                        </div>
+                        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
+                            {/* Tier filter toggle */}
+                            <div className='flex rounded-lg border border-gray-200 overflow-hidden text-sm'>
+                                {(['All', 'LightningGold', 'LightningSilver'] as const).map((tier) => (
+                                    <button
+                                        key={tier}
+                                        onClick={() => setLightningFilter(tier)}
+                                        className={`px-3 py-2 transition-colors ${
+                                            lightningFilter === tier ? 'bg-slate-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {tier === 'All' ? 'All Tiers' : tier === 'LightningGold' ? '⚡ Gold' : '⚡ Silver'}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className='flex gap-2'>
+                                <StatPill
+                                    label='Total Monthly'
+                                    value={currency(lightningTotals.totalMonthly)}
+                                    color='border-amber-200 bg-amber-50 text-amber-800'
+                                />
+                                <StatPill
+                                    label='Total Yearly'
+                                    value={currency(lightningTotals.totalYearly)}
+                                    color='border-slate-200 bg-slate-50 text-slate-700'
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {lightningMembershipError && <div className='mb-4 text-sm text-red-600'>{lightningMembershipError}</div>}
+
+                    {lightningMembershipLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading membership revenue...</div>
+                    ) : lightningChartData.length > 0 ? (
+                        <>
+                            <ResponsiveContainer width='100%' height={260}>
+                                <BarChart data={lightningChartData} barCategoryGap='40%' barGap={6}>
+                                    <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                    <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${v}`} />
+                                    <Tooltip cursor={<HorizontalCursor />} formatter={(value: any) => currency(safeNumber(value))} />
+                                    <Legend />
+                                    <Bar dataKey='Monthly' fill='#f59e0b' radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey='Yearly' fill='#78716c' radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+
+                            <div className='mt-4 flex flex-wrap gap-4'>
+                                {lightningChartData.map((row, i) => (
+                                    <div
+                                        key={row.productKey}
+                                        className={`flex-1 min-w-[200px] rounded-xl p-4 border ${
+                                            i === 0 ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-slate-50'
+                                        }`}
+                                    >
+                                        <div className={`text-sm font-semibold mb-2 ${i === 0 ? 'text-amber-800' : 'text-slate-700'}`}>⚡ {row.product}</div>
+                                        <div className='flex justify-between text-sm'>
+                                            <span className='text-gray-500'>Monthly</span>
+                                            <span className='font-semibold text-gray-900'>{currency(row.Monthly)}</span>
+                                        </div>
+                                        <div className='flex justify-between text-sm mt-1'>
+                                            <span className='text-gray-500'>Yearly</span>
+                                            <span className='font-semibold text-gray-900'>{currency(row.Yearly)}</span>
+                                        </div>
+                                        <div className='flex justify-between text-sm mt-2 pt-2 border-t border-gray-200'>
+                                            <span className='text-gray-500 font-medium'>Combined</span>
+                                            <span className='font-bold text-gray-900'>{currency(row.Monthly + row.Yearly)}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No membership revenue data</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART C: Lightning Billing Cycle                       */}
+                {/* GET /api/v4/lightning-billing-cycle                           */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Lightning Billing Cycles</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Active subscription billing schedules and revenue per cycle</p>
+                        </div>
+                        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
+                            {/* Period filter toggle */}
+                            <div className='flex rounded-lg border border-gray-200 overflow-hidden text-sm'>
+                                {(['all', 'monthly', 'yearly'] as const).map((p) => (
+                                    <button
+                                        key={p}
+                                        onClick={() => setBillingPeriodFilter(p)}
+                                        className={`px-3 py-2 capitalize transition-colors ${
+                                            billingPeriodFilter === p ? 'bg-slate-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {p === 'all' ? 'All' : p}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className='flex gap-2 flex-wrap'>
+                                <StatPill label='Subscriptions' value={String(billingStats.total)} color='border-gray-200 bg-gray-50 text-gray-700' />
+                                <StatPill
+                                    label='Monthly Rev'
+                                    value={currency(billingStats.monthlyRevenue)}
+                                    color='border-emerald-200 bg-emerald-50 text-emerald-800'
+                                />
+                                <StatPill
+                                    label='Yearly Rev'
+                                    value={currency(billingStats.yearlyRevenue)}
+                                    color='border-violet-200 bg-violet-50 text-violet-700'
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {billingCycleError && <div className='mb-4 text-sm text-red-600'>{billingCycleError}</div>}
+
+                    {billingCycleLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading billing cycles...</div>
+                    ) : (billingCycle?.data ?? []).length > 0 ? (
+                        <div className='space-y-6'>
+                            {/* Grouped bar chart */}
+                            {billingBarData.length > 0 && (
+                                <ResponsiveContainer width='100%' height={220}>
+                                    <BarChart data={billingBarData} barCategoryGap='40%' barGap={4}>
+                                        <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                        <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                        <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${v}`} />
+                                        <Tooltip cursor={<HorizontalCursor />} formatter={(v: any) => currency(safeNumber(v))} />
+                                        <Legend />
+                                        <Bar dataKey='monthly' name='Monthly' fill='#10b981' radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey='yearly' name='Yearly' fill='#8b5cf6' radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
+
+                            {/* Billing records table */}
+                            <div className='overflow-x-auto'>
+                                <table className='w-full text-sm'>
+                                    <thead className='bg-gray-50'>
+                                        <tr>
+                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>ID</th>
+                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Product</th>
+                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Period</th>
+                                            <th className='px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>Amount</th>
+                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Start Date</th>
+                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Next Billing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className='divide-y divide-gray-100'>
+                                        {filteredBillingData.map((row) => {
+                                            const isMonthly = row.period.toLowerCase() === 'monthly';
+                                            const nextDate = row.nextBillingDate ? new Date(row.nextBillingDate) : null;
+                                            const daysUntilNext = nextDate ? Math.ceil((nextDate.getTime() - Date.now()) / 86400000) : null;
+                                            return (
+                                                <tr key={row.id} className='hover:bg-gray-50'>
+                                                    <td className='px-4 py-2.5 text-gray-500 font-mono text-xs'>#{row.id}</td>
+                                                    <td className='px-4 py-2.5 font-medium text-gray-800'>{formatProductName(row.product)}</td>
+                                                    <td className='px-4 py-2.5'>
+                                                        <span
+                                                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                isMonthly ? 'bg-emerald-100 text-emerald-700' : 'bg-violet-100 text-violet-700'
+                                                            }`}
+                                                        >
+                                                            {row.period}
+                                                        </span>
+                                                    </td>
+                                                    <td className='px-4 py-2.5 text-right font-semibold text-gray-900'>{currency(row.amount)}</td>
+                                                    <td className='px-4 py-2.5 text-gray-500'>
+                                                        {row.startDate ? formatDate(row.startDate) : <span className='text-gray-300'>—</span>}
+                                                    </td>
+                                                    <td className='px-4 py-2.5'>
+                                                        {nextDate ? (
+                                                            <div className='flex items-center gap-2'>
+                                                                <span className='text-gray-500'>{formatDate(row.nextBillingDate!)}</span>
+                                                                {daysUntilNext !== null && (
+                                                                    <span
+                                                                        className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                                                                            daysUntilNext <= 7
+                                                                                ? 'bg-red-100 text-red-600'
+                                                                                : daysUntilNext <= 30
+                                                                                ? 'bg-amber-100 text-amber-600'
+                                                                                : 'bg-gray-100 text-gray-500'
+                                                                        }`}
+                                                                    >
+                                                                        {daysUntilNext > 0 ? `${daysUntilNext}d` : 'Due'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <span className='text-gray-300'>—</span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                                {filteredBillingData.length === 0 && (
+                                    <div className='py-8 text-center text-gray-400 text-sm'>No records for the selected period</div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No billing cycle data</div>
+                    )}
+                </div>
+
+                {/* ──────────────────── Existing v3 Charts ──────────────────── */}
+
+                {/* LINE CHART #1: Total Sales */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
                         <div>
                             <h3 className='text-lg font-semibold text-gray-800'>Total Sales (Sales Team)</h3>
                             <p className='text-sm text-gray-500'>Choose product + metric + timeframe (Week/Month/Year)</p>
                         </div>
-
                         <div className='flex flex-col sm:flex-row gap-3'>
-                            {/* Product dropdown */}
                             <select
                                 value={salesProduct}
                                 onChange={(e) => setSalesProduct(e.target.value as any)}
@@ -654,8 +1091,6 @@ export default function KPIPage() {
                                     </option>
                                 ))}
                             </select>
-
-                            {/* Metric dropdown */}
                             <select
                                 value={salesMetricType}
                                 onChange={(e) => setSalesMetricType(e.target.value as any)}
@@ -665,8 +1100,6 @@ export default function KPIPage() {
                                 <option value='Subscribers'>Subscribers</option>
                                 <option value='ChurnRate'>Churn Rate</option>
                             </select>
-
-                            {/* Period dropdown */}
                             <select
                                 value={salesMetricPeriod}
                                 onChange={(e) => setSalesMetricPeriod(e.target.value as any)}
@@ -676,79 +1109,69 @@ export default function KPIPage() {
                                 <option value='Month'>Month</option>
                                 <option value='Year'>Year</option>
                             </select>
-
                             <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
                                 <span className='text-gray-500 mr-2'>Selected:</span>
                                 <span className='font-semibold text-gray-900'>{salesSelectedLabel}</span>
                             </div>
                         </div>
                     </div>
-
                     {salesMetricError && <div className='mb-4 text-sm text-red-600'>{salesMetricError}</div>}
-
                     {salesMetricLoading ? (
                         <div className='h-56 flex items-center justify-center text-gray-400'>Loading sales chart...</div>
                     ) : salesSeries.length > 0 ? (
-                        <div className='w-full'>
-                            <ResponsiveContainer width='100%' height={240}>
-                                <LineChart data={salesSeries as any}>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='period' />
-                                    <YAxis />
-                                    <Tooltip
-                                        cursor={<HorizontalCursor />}
-                                        formatter={(value: any) => {
-                                            const v = safeNumber(value, 0);
-                                            if (salesMetricType === 'Revenue') return currency(v);
-                                            if (salesMetricType === 'Subscribers') return `${v}`;
-                                            return percent(v);
-                                        }}
-                                    />
-                                    <Legend />
-                                    <Line
-                                        type='monotone'
-                                        dataKey='value'
-                                        name={salesMetricType === 'ChurnRate' ? 'Churn Rate' : salesMetricType}
-                                        stroke='#2c7bbe'
-                                        strokeWidth={3}
-                                        dot={(props: any) => {
-                                            const { cx, cy, payload } = props || {};
-                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                            const active = payload?.period === salesMetricPeriod;
-                                            return (
-                                                <circle
-                                                    cx={cx}
-                                                    cy={cy}
-                                                    r={active ? 6 : 4}
-                                                    fill={active ? '#2c7bbe' : 'rgba(44, 123, 190, 0.35)'}
-                                                    stroke='#2c7bbe'
-                                                    strokeWidth={active ? 2 : 1}
-                                                />
-                                            );
-                                        }}
-                                        activeDot={{ r: 7 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                        <ResponsiveContainer width='100%' height={240}>
+                            <LineChart data={salesSeries as any}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='period' />
+                                <YAxis />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (salesMetricType === 'Revenue') return currency(v);
+                                        if (salesMetricType === 'Subscribers') return `${v}`;
+                                        return percent(v);
+                                    }}
+                                />
+                                <Legend />
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name={salesMetricType === 'ChurnRate' ? 'Churn Rate' : salesMetricType}
+                                    stroke='#2c7bbe'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, payload } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const active = payload?.period === salesMetricPeriod;
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={active ? 6 : 4}
+                                                fill={active ? '#2c7bbe' : 'rgba(44,123,190,0.35)'}
+                                                stroke='#2c7bbe'
+                                                strokeWidth={active ? 2 : 1}
+                                            />
+                                        );
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No sales data</div>
                     )}
                 </div>
 
-                {/* ===================================================== */}
-                {/* ✅ LINE CHART #2: Total Affiliate (Basic Affiliate)   */}
-                {/* Uses: /api/v3/kpi-chart-metric?type=Affiliate&product */}
-                {/* ===================================================== */}
+                {/* LINE CHART #2: Total Affiliate */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
                         <div>
                             <h3 className='text-lg font-semibold text-gray-800'>Total Affiliate (Basic Affiliate)</h3>
                             <p className='text-sm text-gray-500'>Choose product + metric + timeframe (Week/Month/Year)</p>
                         </div>
-
                         <div className='flex flex-col sm:flex-row gap-3'>
-                            {/* Product dropdown */}
                             <select
                                 value={affiliateProduct}
                                 onChange={(e) => setAffiliateProduct(e.target.value as any)}
@@ -760,8 +1183,6 @@ export default function KPIPage() {
                                     </option>
                                 ))}
                             </select>
-
-                            {/* Metric dropdown */}
                             <select
                                 value={affiliateMetricType}
                                 onChange={(e) => setAffiliateMetricType(e.target.value as any)}
@@ -771,8 +1192,6 @@ export default function KPIPage() {
                                 <option value='Subscribers'>Subscribers</option>
                                 <option value='ChurnRate'>Churn Rate</option>
                             </select>
-
-                            {/* Period dropdown */}
                             <select
                                 value={affiliateMetricPeriod}
                                 onChange={(e) => setAffiliateMetricPeriod(e.target.value as any)}
@@ -782,69 +1201,62 @@ export default function KPIPage() {
                                 <option value='Month'>Month</option>
                                 <option value='Year'>Year</option>
                             </select>
-
                             <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
                                 <span className='text-gray-500 mr-2'>Selected:</span>
                                 <span className='font-semibold text-gray-900'>{affiliateSelectedLabel}</span>
                             </div>
                         </div>
                     </div>
-
                     {affiliateMetricError && <div className='mb-4 text-sm text-red-600'>{affiliateMetricError}</div>}
-
                     {affiliateMetricLoading ? (
                         <div className='h-56 flex items-center justify-center text-gray-400'>Loading affiliate chart...</div>
                     ) : affiliateSeries.length > 0 ? (
-                        <div className='w-full'>
-                            <ResponsiveContainer width='100%' height={240}>
-                                <LineChart data={affiliateSeries as any}>
-                                    <CartesianGrid strokeDasharray='3 3' />
-                                    <XAxis dataKey='period' />
-                                    <YAxis />
-                                    <Tooltip
-                                        cursor={<HorizontalCursor />}
-                                        formatter={(value: any) => {
-                                            const v = safeNumber(value, 0);
-                                            if (affiliateMetricType === 'Revenue') return currency(v);
-                                            if (affiliateMetricType === 'Subscribers') return `${v}`;
-                                            return percent(v);
-                                        }}
-                                    />
-                                    <Legend />
-                                    <Line
-                                        type='monotone'
-                                        dataKey='value'
-                                        name={affiliateMetricType === 'ChurnRate' ? 'Churn Rate' : affiliateMetricType}
-                                        stroke='#10b981'
-                                        strokeWidth={3}
-                                        dot={(props: any) => {
-                                            const { cx, cy, payload } = props || {};
-                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                            const active = payload?.period === affiliateMetricPeriod;
-                                            return (
-                                                <circle
-                                                    cx={cx}
-                                                    cy={cy}
-                                                    r={active ? 6 : 4}
-                                                    fill={active ? '#10b981' : 'rgba(16, 185, 129, 0.35)'}
-                                                    stroke='#10b981'
-                                                    strokeWidth={active ? 2 : 1}
-                                                />
-                                            );
-                                        }}
-                                        activeDot={{ r: 7 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                        <ResponsiveContainer width='100%' height={240}>
+                            <LineChart data={affiliateSeries as any}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='period' />
+                                <YAxis />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (affiliateMetricType === 'Revenue') return currency(v);
+                                        if (affiliateMetricType === 'Subscribers') return `${v}`;
+                                        return percent(v);
+                                    }}
+                                />
+                                <Legend />
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name={affiliateMetricType === 'ChurnRate' ? 'Churn Rate' : affiliateMetricType}
+                                    stroke='#10b981'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, payload } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const active = payload?.period === affiliateMetricPeriod;
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={active ? 6 : 4}
+                                                fill={active ? '#10b981' : 'rgba(16,185,129,0.35)'}
+                                                stroke='#10b981'
+                                                strokeWidth={active ? 2 : 1}
+                                            />
+                                        );
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No affiliate data</div>
                     )}
                 </div>
 
-                {/* ===================================== */}
-                {/* ✅ LINE CHART #3: Total KPI           */}
-                {/* ===================================== */}
+                {/* LINE CHART #3: Total KPI */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex items-center justify-between gap-4 mb-4'>
                         <div>
@@ -852,9 +1264,7 @@ export default function KPIPage() {
                             <p className='text-sm text-gray-500'>Sales + Affiliate + other channels</p>
                         </div>
                     </div>
-
                     {totalKpiError && <div className='mb-4 text-sm text-red-600'>{totalKpiError}</div>}
-
                     {totalKpiLoading ? (
                         <div className='h-56 flex items-center justify-center text-gray-400'>Loading total KPI...</div>
                     ) : totalKpiChartData.length > 0 ? (
@@ -886,124 +1296,6 @@ export default function KPIPage() {
                     )}
                 </div>
 
-                {/* ========================= */}
-                {/* Existing Revenue Analytics */}
-                {/* ========================= */}
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <div className='flex items-center justify-between mb-4'>
-                            <h3 className='text-lg font-semibold text-gray-800'>Revenue by Product</h3>
-                            {!isLoading && (
-                                <div className='text-right text-sm text-gray-500'>
-                                    <div className='font-semibold text-gray-900'>{currency(totalProfit)}</div>
-                                    <div className='text-xs'>Total checkout revenue</div>
-                                </div>
-                            )}
-                        </div>
-
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading revenue...</div>
-                        ) : productRevenueChartData.length > 0 ? (
-                            <>
-                                <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-sm'>
-                                    <div>
-                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Paying customers</div>
-                                        <div className='text-lg font-semibold text-gray-900'>{totalPayingCustomers}</div>
-                                    </div>
-                                    <div>
-                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Paid checkouts</div>
-                                        <div className='text-lg font-semibold text-gray-900'>{totalPaidTransactions}</div>
-                                    </div>
-                                    <div>
-                                        <div className='text-xs text-gray-500 uppercase tracking-wide'>Avg / customer</div>
-                                        <div className='text-lg font-semibold text-gray-900'>{currency(avgRevenuePerCustomer)}</div>
-                                    </div>
-                                </div>
-
-                                <ResponsiveContainer width='100%' height={260}>
-                                    <BarChart data={productRevenueChartData}>
-                                        <CartesianGrid strokeDasharray='3 3' />
-                                        <XAxis dataKey='product' />
-                                        <YAxis />
-                                        <Tooltip
-                                            cursor={<HorizontalCursor />}
-                                            formatter={(value) => currency(value as number)}
-                                            labelFormatter={(label) => `Product: ${label}`}
-                                        />
-                                        <Legend />
-                                        <Bar dataKey='revenue' name='Revenue' fill='#6366f1' />
-                                    </BarChart>
-                                </ResponsiveContainer>
-
-                                {revenueBreakdown.length > 0 && (
-                                    <div className='mt-4 space-y-1 text-xs text-gray-600'>
-                                        {revenueBreakdown.map((row) => (
-                                            <div key={row.product} className='flex items-center justify-between'>
-                                                <span className='font-medium text-gray-700'>{row.product}</span>
-                                                <span>
-                                                    {currency(row.revenue)} · {row.customers} customers · {row.transactions} tx
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No revenue data</div>
-                        )}
-                    </div>
-
-                    <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-4'>Revenue Breakdown Pie</h3>
-                        {isLoading ? (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>Loading chart...</div>
-                        ) : revenuePieData.length > 0 ? (
-                            <ResponsiveContainer width='100%' height={300}>
-                                <PieChart>
-                                    <Pie
-                                        data={revenuePieData}
-                                        cx='50%'
-                                        cy='50%'
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                        outerRadius={80}
-                                        fill='#8884d8'
-                                        dataKey='value'
-                                    >
-                                        {revenuePieData.map((_, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip cursor={<HorizontalCursor />} formatter={(value) => currency(value as number)} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div className='h-64 flex items-center justify-center text-gray-400'>No revenue data</div>
-                        )}
-
-                        {productComparisons && (
-                            <div className='mt-4 space-y-2 text-sm text-gray-600'>
-                                <div className='flex justify-between'>
-                                    <span>Highest Revenue Product:</span>
-                                    <span className='font-medium'>
-                                        {productComparisons.highest.product} ({currency(productComparisons.highest.revenue)})
-                                    </span>
-                                </div>
-                                <div className='flex justify-between'>
-                                    <span>Lowest Revenue Product:</span>
-                                    <span className='font-medium'>
-                                        {productComparisons.lowest.product} ({currency(productComparisons.lowest.revenue)})
-                                    </span>
-                                </div>
-                                <div className='flex justify-between'>
-                                    <span>Average Revenue per Product:</span>
-                                    <span className='font-medium'>{currency(productComparisons.average)}</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
                 {/* All Paying Customers */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex justify-between items-center mb-4'>
@@ -1019,7 +1311,6 @@ export default function KPIPage() {
                             </button>
                         </div>
                     </div>
-
                     {isLoading ? (
                         <div className='h-64 flex items-center justify-center text-gray-400'>Loading customers...</div>
                     ) : paginatedCustomers.length > 0 ? (
@@ -1050,7 +1341,6 @@ export default function KPIPage() {
                                     </tbody>
                                 </table>
                             </div>
-
                             <div className='mt-4 flex justify-between items-center'>
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -1059,11 +1349,9 @@ export default function KPIPage() {
                                 >
                                     Previous
                                 </button>
-
                                 <span className='text-sm text-gray-600'>
                                     Page {currentPage} of {totalPages}
                                 </span>
-
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage >= totalPages}
@@ -1081,7 +1369,6 @@ export default function KPIPage() {
                 {/* Recent Activity Table */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <h3 className='text-lg font-semibold text-gray-800 mb-4'>Recent Activity</h3>
-
                     {isLoading ? (
                         <div className='text-center py-8 text-gray-400'>Loading activities...</div>
                     ) : recentActivity.length > 0 ? (
@@ -1125,40 +1412,6 @@ export default function KPIPage() {
                         <div className='text-center py-8 text-gray-400'>No recent activity</div>
                     )}
                 </div>
-
-                {/* Summary Statistics Grid */}
-                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                    <h3 className='text-lg font-semibold text-gray-800 mb-6'>Summary Statistics</h3>
-                    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
-                        <div className='text-center p-4 bg-blue-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-blue-600'>{affiliates.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Total Affiliates</div>
-                        </div>
-                        <div className='text-center p-4 bg-green-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-green-600'>{sales.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Sales Team</div>
-                        </div>
-                        <div className='text-center p-4 bg-orange-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-orange-600'>{latestApplicants.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Applicants</div>
-                        </div>
-                        <div className='text-center p-4 bg-purple-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-purple-600'>{billboardApprovals.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Billboards</div>
-                        </div>
-                        <div className='text-center p-4 bg-pink-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-pink-600'>{rsvpEvents.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Events</div>
-                        </div>
-                        <div className='text-center p-4 bg-indigo-50 rounded-lg'>
-                            <div className='text-2xl font-bold text-indigo-600'>{latestNotes.length}</div>
-                            <div className='text-xs text-gray-600 mt-1'>Notes</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Footer */}
-                <div className='text-center text-sm text-gray-500 py-4'>Last updated: {new Date().toLocaleString()}</div>
             </div>
         </div>
     );

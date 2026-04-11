@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, CheckCircle2, Megaphone, Rocket, Target } from 'lucide-react';
+import { ArrowRight, Rocket, Target } from 'lucide-react';
 import { parseCookies } from 'nookies';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -88,17 +88,17 @@ function LightningGold() {
         []
     );
 
-    const perks = useMemo(
-        () => [
-            { label: '$250/month Membership', icon: Rocket },
-            { label: '75% lifetime commissions', icon: Target },
-            { label: 'Subscriber referral bonuses', icon: CheckCircle2 },
-            { label: 'Email & SMS CRM included to promote offers', icon: Megaphone },
-            { label: 'KPI performance dashboard', icon: BarChart3 },
-            { label: 'Automated payouts with no income cap', icon: CheckCircle2 },
-        ],
-        []
-    );
+    // const perks = useMemo(
+    //     () => [
+    //         { label: '$250/month Membership', icon: Rocket },
+    //         { label: '75% lifetime commissions', icon: Target },
+    //         { label: 'Subscriber referral bonuses', icon: CheckCircle2 },
+    //         { label: 'Email & SMS CRM included to promote offers', icon: Megaphone },
+    //         { label: 'KPI performance dashboard', icon: BarChart3 },
+    //         { label: 'Automated payouts with no income cap', icon: CheckCircle2 },
+    //     ],
+    //     []
+    // );
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
@@ -135,18 +135,18 @@ function LightningGold() {
                         {/* Left */}
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
-                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                                {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     Lightning Gold
-                                </Badge>
+                                </Badge> */}
 
                                 <div style={{ display: 'table' }}>
                                     <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-3 sm:mb-4 leading-tight'>
-                                        Scale Faster.{' '}
+                                        Lightning Gold{' '}
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
-                                            Maximize Every Sale
+                                            Earn 75% Commission
                                         </span>
                                     </h1>
-                                    <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' />
+                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' /> */}
                                 </div>
 
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
@@ -176,7 +176,7 @@ function LightningGold() {
                                 <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
                                         src='/animations/rocketicon.json'
-                                        className='w-[90%] h-full sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:min-w-[550px] lg:h-[500px]'
+                                        className='w-[90%] lg:w-[85%] max-w-[255px] sm:max-w-[295px] md:max-w-[340px] lg:max-w-[360px] h-[315px] sm:h-[355px] md:h-[395px] lg:h-[415px]'
                                         loop
                                         autoplay
                                     />
@@ -191,9 +191,9 @@ function LightningGold() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                        {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                             Build Faster and Maximize Earnings
-                        </Badge>
+                        </Badge> */}
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Build Faster and{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Maximize Earnings</span>
@@ -205,47 +205,45 @@ function LightningGold() {
                     </div>
 
                     {/* Table card */}
-                    <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl overflow-hidden mb-8 sm:mb-10'>
+                    <Card className='bg-[#fabd3c] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
                                 <div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-white'>Commission Table</div>
-                                    <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>Commission Table</div>
+                                    <div className='text-gray-800 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
                                 </div>
-                                <Badge className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>
-                                    $250 / mo
-                                </Badge>
+                                <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge>
                             </div>
 
-                            <div className='overflow-x-auto rounded-xl border border-[#2c7bbe]/25'>
+                            <div className='overflow-x-auto rounded-xl border border-gray-800/40'>
                                 <table className='w-full text-left'>
-                                    <thead className='bg-white/5'>
+                                    <thead className='bg-[#e9a427]/50'>
                                         <tr>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Product</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Monthly</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Annual</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Product</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Monthly</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Annual</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {commissionRows.map((row) => (
-                                            <tr key={row.product} className='border-t border-[#2c7bbe]/20 hover:bg-white/[0.02] transition-colors'>
-                                                <td className='p-4 sm:p-5 text-gray-200 font-medium text-sm sm:text-base'>{row.product}</td>
-                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.monthly}</td>
-                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.annual}</td>
+                                            <tr key={row.product} className='border-t border-gray-800/40 hover:bg-white/[0.02] transition-colors'>
+                                                <td className='p-4 sm:p-5 text-gray-700 font-medium text-sm sm:text-base'>{row.product}</td>
+                                                <td className='p-4 sm:p-5 text-[#23a5e2] font-bold text-sm sm:text-base'>{row.monthly}</td>
+                                                <td className='p-4 sm:p-5 text-[#23a5e2] font-bold text-sm sm:text-base'>{row.annual}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
 
-                            <p className='text-xs sm:text-sm text-gray-400 mt-4 sm:mt-5'>
+                            <p className='text-xs sm:text-sm text-gray-700 mt-4 sm:mt-5'>
                                 Commissions are lifetime and continue as long as subscribers remain active.
                             </p>
                         </CardContent>
                     </Card>
 
                     {/* Perks grid */}
-                    <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
+                    {/* <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
                         {perks.map(({ label, icon: Icon }) => (
                             <div key={label} className='group'>
                                 <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105 h-full'>
@@ -260,7 +258,7 @@ function LightningGold() {
                                 </Card>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
             </section>
 
@@ -270,9 +268,9 @@ function LightningGold() {
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         {/* Left copy */}
                         <div className='space-y-6 sm:space-y-8'>
-                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 Ready to Unlock Maximum Commissions?
-                            </Badge>
+                            </Badge> */}
                             <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Earn <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>75% Lifetime</span>{' '}
                                 Commissions

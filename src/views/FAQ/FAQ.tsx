@@ -66,7 +66,7 @@ function FAQ() {
                             <span className='text-white'>Asked Questions</span>
                         </h1>
 
-                        <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 mb:5'></div>
+                        {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 mb:5'></div> */}
                     </div>
 
                     <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>

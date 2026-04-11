@@ -84,7 +84,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Company</h4>
                             <div className='space-y-3'>
                                 {[
-                                    { name: 'Our Story', href: '/about' },
+                                    { name: 'Market Intelligence Platform', href: '/about' },
                                     { name: 'Careers', href: '/careers' },
                                     { name: 'Blogs', href: '/blogdirectory' },
                                     { name: 'FAQ', href: '/faq' },
@@ -114,6 +114,8 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Business Invoice', href: '/InvoiceContract' },
                                     { name: 'Digital Billboard', href: '/advertising' },
                                     { name: 'Email CRM', href: '/emailMarketing' },
+                                    { name: 'Lightning Silver', href: '/lightningSilver' },
+                                    { name: 'Lightning Gold', href: '/lightningGold' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}

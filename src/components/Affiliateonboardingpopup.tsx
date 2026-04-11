@@ -214,6 +214,38 @@ const SLIDES: Slide[] = [
         legalLink: '/gdpr',
         bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
     },
+    {
+        id: 'legal-terms',
+        variant: 'legal',
+        accent: '#9B59B6',
+        Icon: FileText,
+        badge: 'Legal — Terms & Conditions',
+        title: 'Terms & Conditions',
+        titleGrad: 'Terms',
+        titlePlain: ' & Conditions',
+        desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
+        legalTitle: 'Key Terms',
+        legalSummary:
+            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+        legalLink: '/terms',
+        bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    },
+    {
+        id: 'legal-privacy',
+        variant: 'legal',
+        accent: '#1ABC9C',
+        Icon: Shield,
+        badge: 'Legal — Privacy Policy',
+        title: 'Privacy Policy',
+        titleGrad: 'Privacy',
+        titlePlain: ' Policy',
+        desc: 'Our Privacy Policy explains how Black Snow Holdings collects, uses, and protects your personal information as an affiliate partner.',
+        legalTitle: 'What We Cover',
+        legalSummary:
+            'We collect only the data necessary to operate the affiliate program and pay commissions. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
+        legalLink: '/privacy',
+        bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    },
 
     // ── FINAL ACKNOWLEDGE SLIDE (must be last) ──
     {
@@ -228,17 +260,23 @@ const SLIDES: Slide[] = [
         gradAtEnd: true,
         desc: 'By proceeding you confirm you have read and agree to all the legal documents listed below. You understand that earnings are not guaranteed and you operate as an independent contractor.',
         isLast: true,
-        bullets: ['Affiliate Agreement', 'Independent Contractor Agreement', 'Earnings Disclosure', 'GDPR & Privacy Policy'],
+        bullets: [
+            'Affiliate Agreement',
+            'Independent Contractor Agreement',
+            'Earnings Disclosure',
+            'GDPR & Privacy Policy',
+            'Terms & Conditions',
+            'Privacy Policy',
+        ],
     },
 ];
 
 // ── Sub-components ────────────────────────────────────────────
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (i: number) => void }) {
-    // Group dots: instructions (0-5), legal (6-9), acknowledge (10)
     const groups = [
         { label: 'Instructions', range: [0, 5] },
-        { label: 'Legal', range: [6, 9] },
-        { label: 'Confirm', range: [10, 10] },
+        { label: 'Legal', range: [6, 11] },
+        { label: 'Confirm', range: [12, 12] },
     ];
 
     return (
@@ -268,7 +306,7 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
 }
 
 function SectionLabel({ current }: { current: number }) {
-    const label = current <= 5 ? 'Instructions' : current <= 9 ? 'Legal Review' : 'Confirm';
+    const label = current <= 5 ? 'Instructions' : current <= 11 ? 'Legal Review' : 'Confirm';
     const colors: Record<string, string> = { Instructions: '#4cc7e8', 'Legal Review': '#F5A623', Confirm: '#5EDC7A' };
     return (
         <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: colors[label], backgroundColor: `${colors[label]}18` }}>
@@ -469,7 +507,16 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                                 <span className='text-white/70 text-sm leading-snug'>
                                                     {isLastSlide ? (
                                                         <a
-                                                            href={['affiliateagreement', '/independentcontract', '/earningsdisclosure', '/gdpr'][i]}
+                                                            href={
+                                                                [
+                                                                    '/affiliateagreement',
+                                                                    '/independentcontract',
+                                                                    '/earningsdisclosure',
+                                                                    '/gdpr',
+                                                                    '/terms',
+                                                                    '/privacy',
+                                                                ][i]
+                                                            }
                                                             target='_blank'
                                                             rel='noopener noreferrer'
                                                             className='hover:underline'
@@ -500,8 +547,9 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                             {agreed && <CheckCircle className='w-3 h-3 text-[#080b12]' strokeWidth={3} />}
                                         </div>
                                         <span className='text-white/60 text-xs leading-relaxed group-hover:text-white/80 transition-colors'>
-                                            I have read and agree to the Affiliate Agreement, Independent Contractor Agreement, Earnings Disclosure, and GDPR
-                                            policy. I understand that earnings are not guaranteed and I act as an independent contractor.
+                                            I have read and agree to the Affiliate Agreement, Independent Contractor Agreement, Earnings Disclosure, GDPR
+                                            Policy, Terms & Conditions, and Privacy Policy. I understand that earnings are not guaranteed and I act as an
+                                            independent contractor.
                                         </span>
                                     </label>
                                 )}
@@ -557,7 +605,7 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                             {/* Section progress */}
                             <div className='text-center'>
                                 <p className='text-xs font-semibold mb-1' style={{ color: accent }}>
-                                    {current <= 5 ? 'Instructions' : current <= 9 ? 'Legal Review' : 'Final Step'}
+                                    {current <= 5 ? 'Instructions' : current <= 11 ? 'Legal Review' : 'Final Step'}
                                 </p>
                                 <p className='text-white/30 text-xs'>
                                     Step {current + 1} of {SLIDES.length}
@@ -567,8 +615,8 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                             <div className='flex flex-col gap-2 w-full mt-2'>
                                 {[
                                     { label: '6 instruction slides', done: current >= 6, active: current <= 5 },
-                                    { label: '4 legal documents', done: current >= 10, active: current >= 6 && current <= 9 },
-                                    { label: 'Confirmation', done: false, active: current === 10 },
+                                    { label: '6 legal documents', done: current >= 12, active: current >= 6 && current <= 11 },
+                                    { label: 'Confirmation', done: false, active: current === 12 },
                                 ].map((s, i) => (
                                     <div key={i} className='flex items-center gap-2'>
                                         <div
@@ -658,7 +706,9 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                         <span className='text-white/65 text-xs leading-snug'>
                                             {isLastSlide ? (
                                                 <a
-                                                    href={['/affiliateagreement', '/independentcontract', '/earningsdisclosure', '/gdpr'][i]}
+                                                    href={
+                                                        ['/affiliateagreement', '/independentcontract', '/earningsdisclosure', '/gdpr', '/terms', '/privacy'][i]
+                                                    }
                                                     target='_blank'
                                                     rel='noopener noreferrer'
                                                     className='hover:underline'
