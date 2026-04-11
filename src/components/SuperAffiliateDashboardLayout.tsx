@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { LightningGoldTourPopup } from './Lightninggoldtourpopup ';
 import { SuperAffiliateSidebar } from './super-affiliate-sidebar';
 
 interface UserData {
@@ -227,6 +228,7 @@ export default function SuperAffiliateLayout({ children }: { children: React.Rea
 
     return (
         <div className='min-h-screen bg-gray-50 relative'>
+            <LightningGoldTourPopup onComplete={() => console.log('Gold tour complete')} />
             {/* Fixed Sidebar */}
             <SuperAffiliateSidebar />
 

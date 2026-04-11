@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { LightningSilverTourPopup } from './Lightningsilvertourpopup';
 
 interface UserData {
     id: number;
@@ -227,6 +228,7 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
 
     return (
         <div className='min-h-screen bg-gray-50 relative'>
+            <LightningSilverTourPopup onComplete={() => console.log('Tour complete')} />
             {/* Fixed Sidebar */}
             <AffiliateSidebar />
 

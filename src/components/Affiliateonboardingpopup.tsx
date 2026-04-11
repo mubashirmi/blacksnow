@@ -412,7 +412,7 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
         );
 
     // Nav button label
-    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Continue →' : 'Please agree to continue') : current === 5 ? 'Review Legal →' : 'Next';
+    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Continue' : 'Please agree to continue') : current === 5 ? 'Review Legal →' : 'Next';
 
     return (
         <>

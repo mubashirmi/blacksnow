@@ -3,6 +3,7 @@ import { AlertCircle, Info, Loader2, Lock, Mail, ShieldCheck } from 'lucide-reac
 import { useRouter } from 'next/router';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { EmailMarketingTourPopup } from './Emailmarketingtourpopup';
 
 export default function EmailMarketingLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -172,6 +173,7 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
 
     return (
         <div className='min-h-screen bg-gray-50'>
+            <EmailMarketingTourPopup onComplete={() => console.log('Tour complete')} />
             <div className='flex pl-64'>
                 <EmailMarketingSidebar />
                 <main className='flex-1 p-8'>

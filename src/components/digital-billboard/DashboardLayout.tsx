@@ -1,5 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import React, { useState } from 'react';
+import { DigitalBillboardTourPopup } from '../Digitalbillboardtourpopup';
 
 type DashboardLayoutProps = {
     Sidebar: React.ComponentType<{ closeMobile: () => void }>;
@@ -14,6 +15,7 @@ export function DashboardLayout({ Sidebar, children }: DashboardLayoutProps) {
 
     return (
         <div className='min-h-screen bg-gray-50'>
+            <DigitalBillboardTourPopup onComplete={() => console.log('Tour complete')} />
             {/* Mobile top bar */}
             <div className='md:hidden sticky top-0 z-40 bg-white border-b border-gray-100'>
                 <div className='px-4 py-3 flex items-center justify-between'>
