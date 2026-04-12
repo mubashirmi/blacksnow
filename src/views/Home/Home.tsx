@@ -153,58 +153,12 @@ function MobileDesktopSection() {
 function BSMBanner() {
     const router = useRouter();
 
-    const ChevronCluster = ({ reverse = false }: { reverse?: boolean }) => (
-        <div className='flex items-center flex-shrink-0' style={reverse ? { transform: 'scaleX(-1)' } : undefined}>
-            <div
-                className='hidden sm:block h-[1px] w-6 md:w-10 lg:w-14 mr-2'
-                style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.65))' }}
-            />
-
-            <div className='flex items-center gap-[3px]'>
-                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                    <div
-                        key={`a-${i}`}
-                        style={{
-                            width: 0,
-                            height: 0,
-                            borderTop: '9px solid transparent',
-                            borderBottom: '9px solid transparent',
-                            borderLeft: `10px solid rgba(76,199,232,${opacity})`,
-                            filter: opacity === 1 ? 'drop-shadow(0 0 6px rgba(76,199,232,0.95))' : 'none',
-                        }}
-                    />
-                ))}
-            </div>
-
-            <div className='mx-[3px] flex items-center gap-[3px]'>
-                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                    <div
-                        key={`b-${i}`}
-                        style={{
-                            width: 0,
-                            height: 0,
-                            borderTop: '9px solid transparent',
-                            borderBottom: '9px solid transparent',
-                            borderLeft: `10px solid rgba(76,199,232,${opacity})`,
-                            filter: opacity === 1 ? 'drop-shadow(0 0 6px rgba(76,199,232,0.95))' : 'none',
-                        }}
-                    />
-                ))}
-            </div>
-
-            <div className='hidden sm:flex items-center gap-[3px] ml-2'>
-                <div className='h-[1px] w-3' style={{ background: '#4cc7e8', boxShadow: '0 0 5px rgba(76,199,232,0.7)' }} />
-                <div className='h-[1px] w-3' style={{ background: '#4cc7e8', boxShadow: '0 0 5px rgba(76,199,232,0.7)' }} />
-            </div>
-        </div>
-    );
-
     return (
         <section className='relative px-4 sm:px-6 md:px-8 py-6 sm:py-8'>
             <div className='container mx-auto max-w-7xl'>
                 <button
                     onClick={() => router.push('/blacksnowmathematics')}
-                    className='group relative w-full overflow-hidden cursor-pointer rounded-md transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
+                    className='group relative block w-full overflow-hidden cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
                     style={{
                         background: 'linear-gradient(180deg, #07111e 0%, #0a1324 50%, #07111e 100%)',
                         border: '1px solid rgba(56,126,189,0.55)',
@@ -218,7 +172,6 @@ function BSMBanner() {
                                 'linear-gradient(90deg, transparent 0%, rgba(76,199,232,0.06) 20%, rgba(76,199,232,0.12) 50%, rgba(76,199,232,0.06) 80%, transparent 100%)',
                         }}
                     />
-
                     <div
                         className='absolute top-0 left-0 right-0 h-[1px]'
                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.9), transparent)' }}
@@ -228,40 +181,98 @@ function BSMBanner() {
                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.7), transparent)' }}
                     />
 
-                    <div className='relative flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-5 md:px-7 py-2.5 sm:py-3.5'>
-                        <ChevronCluster />
-
-                        <div className='flex items-center justify-center min-w-0 flex-1 gap-2 sm:gap-3 md:gap-4'>
-                            <div
-                                className='hidden md:block h-[1px] w-10 lg:w-16'
-                                style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
-                            />
-
-                            <h2 className='min-w-0 whitespace-nowrap text-center uppercase font-black tracking-[0.06em] sm:tracking-[0.12em] text-[13px] sm:text-xl md:text-2xl lg:text-[30px] leading-none'>
-                                <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
-                                <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
-                            </h2>
-
-                            <div
-                                className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
-                                style={{
-                                    borderColor: 'rgba(76,199,232,0.55)',
-                                    background: 'rgba(76,199,232,0.08)',
-                                    boxShadow: '0 0 10px rgba(76,199,232,0.22)',
-                                }}
-                            >
-                                <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
-                                    ›
-                                </span>
+                    <div className='relative px-4 sm:px-6 md:px-10 py-4 sm:py-5'>
+                        <div className='flex w-full items-center justify-center gap-2 sm:gap-4 md:gap-6'>
+                            <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0'>
+                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                                    <div
+                                        key={`lA-${i}`}
+                                        style={{
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '8px solid transparent',
+                                            borderBottom: '8px solid transparent',
+                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+                                        }}
+                                    />
+                                ))}
+                                <span className='mx-1' />
+                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                                    <div
+                                        key={`lB-${i}`}
+                                        style={{
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '8px solid transparent',
+                                            borderBottom: '8px solid transparent',
+                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+                                        }}
+                                    />
+                                ))}
                             </div>
 
-                            <div
-                                className='hidden md:block h-[1px] w-10 lg:w-16'
-                                style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
-                            />
-                        </div>
+                            <div className='flex min-w-0 flex-1 items-center justify-center gap-2 sm:gap-3 md:gap-4'>
+                                <div
+                                    className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
+                                    style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
+                                />
 
-                        <ChevronCluster reverse />
+                                <h2 className='min-w-0 text-center uppercase font-black tracking-[0.05em] sm:tracking-[0.09em] leading-tight text-[13px] xs:text-[15px] sm:text-lg md:text-2xl lg:text-[28px] whitespace-normal break-words'>
+                                    <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
+                                    <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
+                                </h2>
+
+                                <div
+                                    className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
+                                    style={{
+                                        borderColor: 'rgba(76,199,232,0.55)',
+                                        background: 'rgba(76,199,232,0.08)',
+                                        boxShadow: '0 0 10px rgba(76,199,232,0.22)',
+                                    }}
+                                >
+                                    <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
+                                        ›
+                                    </span>
+                                </div>
+
+                                <div
+                                    className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
+                                    style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
+                                />
+                            </div>
+
+                            <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0' style={{ transform: 'scaleX(-1)' }}>
+                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                                    <div
+                                        key={`rA-${i}`}
+                                        style={{
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '8px solid transparent',
+                                            borderBottom: '8px solid transparent',
+                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+                                        }}
+                                    />
+                                ))}
+                                <span className='mx-1' />
+                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+                                    <div
+                                        key={`rB-${i}`}
+                                        style={{
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '8px solid transparent',
+                                            borderBottom: '8px solid transparent',
+                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </button>
             </div>
@@ -297,7 +308,6 @@ function DataAnalyticsSection() {
 
     return (
         <section className='relative py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-[#050608] overflow-hidden'>
-            {/* Background decoration */}
             <div
                 className='pointer-events-none absolute inset-0'
                 style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(44,123,190,0.06) 0%, transparent 60%)' }}
@@ -311,7 +321,6 @@ function DataAnalyticsSection() {
             />
 
             <div className='container mx-auto max-w-7xl relative z-10'>
-                {/* Section header */}
                 <div className='text-center mb-12 sm:mb-14'>
                     <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 px-5 py-2 text-[11px] font-bold tracking-[0.22em]'>
                         PLATFORM FOUNDATION
@@ -325,7 +334,6 @@ function DataAnalyticsSection() {
                     </p>
                 </div>
 
-                {/* Three blocks */}
                 <div className='grid md:grid-cols-3 gap-5 lg:gap-6'>
                     {analyticsBlocks.map(({ label, title, accent, icon: Icon, body }) => (
                         <div
@@ -575,7 +583,7 @@ function Home() {
         </div>
     );
 
-    // ─── STACKED STRATEGIES SECTION — each panel has its own Details/Discovery tabs ──
+    // ─── STACKED STRATEGIES SECTION ──────────────────────────────────────────────
     const StackedStrategiesSection = () => {
         return (
             <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-[#0B1320] overflow-hidden'>
@@ -595,7 +603,6 @@ function Home() {
                                     {' '}
                                     Intelligence Hub
                                 </span>
-                                {/* <div className='absolute -bottom-3 left-0 right-0 h-1.5 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full opacity-60 animate-pulse'></div> */}
                             </div>
                         </h2>
                         <p className='text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed font-light mt-6'>
@@ -603,11 +610,11 @@ function Home() {
                         </p>
                     </div>
 
-                    {/* Stacked panels — one per strategy */}
+                    {/* Stacked panels */}
                     <div className='flex flex-col gap-8'>
                         {strategyPanels.map((panel) => {
                             const { HeaderIcon, accent, id } = panel;
-                            const activeTab = panelTabs[id] ?? 'details';
+                            const activeTab = panelTabs[id] ?? 'Details';
 
                             return (
                                 <div
@@ -628,71 +635,109 @@ function Home() {
                                         style={{ background: `radial-gradient(ellipse at 20% 30%, ${accent}0d 0%, transparent 55%)` }}
                                     />
 
-                                    {/* Header Row */}
-                                    <div className='relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 sm:px-12 md:px-16 pt-10 md:pt-14 pb-0'>
-                                        <div className='flex items-center gap-5'>
-                                            <div
-                                                className='flex items-center justify-center rounded-2xl h-14 w-14 md:h-24 md:w-24 flex-shrink-0'
-                                                style={{ backgroundColor: accent }}
-                                            >
-                                                <HeaderIcon className='h-8 w-9 md:h-16 md:w-16' style={{ color: '#0B1320' }} />
+                                    {/* Header + Tabs Row */}
+                                    <div className='relative z-10 flex flex-col gap-6 px-5 sm:px-10 md:px-14 lg:px-16 pt-8 md:pt-10 lg:pt-12 pb-0'>
+                                        <div className='flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between'>
+                                            <div className='flex items-center gap-4 sm:gap-5 min-w-0'>
+                                                <div
+                                                    className='flex items-center justify-center rounded-2xl h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 flex-shrink-0'
+                                                    style={{ backgroundColor: accent }}
+                                                >
+                                                    <HeaderIcon
+                                                        className='h-7 w-7 sm:h-8 sm:w-8 md:h-12 md:w-12 lg:h-16 lg:w-16'
+                                                        style={{ color: '#0B1320' }}
+                                                    />
+                                                </div>
+                                                <div className='min-w-0'>
+                                                    <div className='text-2xl sm:text-4xl md:text-5xl lg:text-6xl lg:mb-2 font-bold text-white leading-tight'>
+                                                        {panel.label}
+                                                    </div>
+                                                    <div
+                                                        className='text-sm sm:text-lg md:text-xl lg:text-2xl font-medium leading-snug'
+                                                        style={{ color: accent }}
+                                                    >
+                                                        {panel.headerSubtitle}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div className='text-xl md:text-6xl lg:mb-2 font-bold text-white'>{panel.label}</div>
-                                                <div className='text-lg md:text-2xl font-medium' style={{ color: accent }}>
-                                                    {panel.headerSubtitle}
+
+                                            {/* Reference-style Tabs */}
+                                            <div className='w-full lg:w-auto lg:flex-shrink-0'>
+                                                <div className='relative flex items-end gap-6 sm:gap-8 md:gap-10 overflow-x-auto'>
+                                                    {(
+                                                        [
+                                                            { label: 'Details', value: 'Details' },
+                                                            { label: 'Discovery', value: 'Discovery' },
+                                                        ] as const
+                                                    ).map((tab) => {
+                                                        const isActive = activeTab === tab.value;
+
+                                                        return (
+                                                            <button
+                                                                key={tab.value}
+                                                                onClick={() => setPanelTabs((prev) => ({ ...prev, [id]: tab.value }))}
+                                                                className='relative flex-shrink-0 px-0 py-2 sm:py-3 text-center transition-all duration-200'
+                                                                style={{ background: 'transparent', border: 'none', outline: 'none' }}
+                                                            >
+                                                                <span
+                                                                    className='block text-[13px] sm:text-[15px] md:text-lg font-black uppercase tracking-[0.08em] sm:tracking-[0.12em] transition-all duration-200'
+                                                                    style={{
+                                                                        color: isActive ? accent : 'rgba(187, 204, 230, 0.72)',
+                                                                        textShadow: isActive ? `0 0 12px ${accent}55` : 'none',
+                                                                    }}
+                                                                >
+                                                                    {tab.label}
+                                                                </span>
+
+                                                                <span
+                                                                    className='absolute bottom-0 left-0 right-0 h-[2.5px] rounded-full transition-all duration-300'
+                                                                    style={{
+                                                                        background: isActive ? accent : 'transparent',
+                                                                        boxShadow: isActive ? `0 0 10px ${accent}` : 'none',
+                                                                        opacity: isActive ? 1 : 0,
+                                                                        transform: isActive ? 'scaleX(1)' : 'scaleX(0.55)',
+                                                                    }}
+                                                                />
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Details / Discovery Tab Bar */}
-                                    <div className='relative z-10 flex items-end border-b border-white/8 px-6 sm:px-12 md:px-16 mt-8 md:mt-10'>
-                                        {(['Details', 'Discovery'] as const).map((tab) => (
-                                            <button
-                                                key={tab}
-                                                onClick={() => setPanelTabs((prev) => ({ ...prev, [id]: tab }))}
-                                                className='relative flex-shrink-0 px-4 sm:px-6 md:px-8 py-3 md:py-4 text-sm sm:text-base md:text-lg font-semibold transition-all duration-200 whitespace-nowrap uppercase tracking-widest'
-                                                style={{ color: activeTab === tab ? '#ffffff' : 'rgba(255,255,255,0.30)' }}
-                                            >
-                                                {tab}
-                                                <span
-                                                    className='absolute bottom-0 left-0 right-0 h-[2px] rounded-full transition-all duration-300'
-                                                    style={{
-                                                        backgroundColor: activeTab === tab ? accent : 'transparent',
-                                                        opacity: activeTab === tab ? 1 : 0,
-                                                    }}
-                                                />
-                                            </button>
-                                        ))}
-                                    </div>
+                                    {/* Thin separator line below header/tabs */}
+                                    <div
+                                        className='relative z-10 mx-5 sm:mx-10 md:mx-14 lg:mx-16 mt-5 md:mt-6 h-px'
+                                        style={{ background: 'rgba(255,255,255,0.07)' }}
+                                    />
 
                                     {/* Tab Content */}
                                     <div
                                         key={`${id}-${activeTab}`}
-                                        className='relative z-10 flex-1 flex flex-col px-6 sm:px-12 md:px-16 py-10 md:py-14 lg:py-20 animate-slide-in-left'
+                                        className='relative z-10 flex-1 flex flex-col px-5 sm:px-10 md:px-14 lg:px-16 py-8 md:py-12 lg:py-16 animate-slide-in-left'
                                     >
                                         {activeTab === 'Details' ? (
-                                            /* ── DETAILS TAB (original content) ── */
+                                            /* ── DETAILS TAB ── */
                                             <>
                                                 <div>
-                                                    <h3 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight mb-6 md:mb-8'>
+                                                    <h3 className='text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight mb-6 md:mb-8'>
                                                         {panel.title}
                                                     </h3>
                                                     <div className='space-y-2 md:space-y-3'>
                                                         {panel.description.split('\n').map((line, i) => (
-                                                            <p key={i} className='text-lg sm:text-xl md:text-2xl text-white/45 leading-relaxed'>
+                                                            <p key={i} className='text-base sm:text-xl md:text-2xl text-white/45 leading-relaxed'>
                                                                 {line}
                                                             </p>
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className='flex flex-col sm:flex-row sm:items-end justify-between gap-8 md:gap-12 mt-8 md:mt-12 lg:mt-16'>
+                                                <div className='flex flex-col xl:flex-row xl:items-end justify-between gap-8 md:gap-12 mt-8 md:mt-12 lg:mt-16'>
                                                     <BSBullets accent={accent} items={panel.bullets} large />
                                                     <div className='flex-shrink-0'>
                                                         <button
                                                             type='button'
-                                                            className='h-14 md:h-16 px-10 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
+                                                            className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                             style={{
                                                                 background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
                                                                 border: `2px solid ${accent}`,
@@ -710,13 +755,13 @@ function Home() {
                                         ) : (
                                             /* ── DISCOVERY TAB ── */
                                             <div className='flex flex-col gap-8 md:gap-12'>
-                                                <p className='text-xl sm:text-2xl md:text-3xl text-white/70 leading-relaxed font-light '>
+                                                <p className='text-lg sm:text-2xl md:text-3xl text-white/70 leading-relaxed font-light'>
                                                     {panel.discoveryContent}
                                                 </p>
                                                 <div className='flex-shrink-0'>
                                                     <button
                                                         type='button'
-                                                        className='h-14 md:h-16 px-10 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
+                                                        className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                         style={{
                                                             background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
                                                             border: `2px solid ${accent}`,
@@ -811,7 +856,7 @@ function Home() {
             {/* ─── MOBILE & DESKTOP COMPATIBLE ─── */}
             <MobileDesktopSection />
 
-            {/* ─── EXPLORE DATA-DRIVEN MARKET INTELLIGENCE HUB — Stacked panels with Details/Discovery tabs ─── */}
+            {/* ─── EXPLORE DATA-DRIVEN MARKET INTELLIGENCE HUB ─── */}
             <StackedStrategiesSection />
 
             {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
