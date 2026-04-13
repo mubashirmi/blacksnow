@@ -5,7 +5,7 @@ import ShareBanner from '@/components/ShareBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, Megaphone, Rocket, Target, Users } from 'lucide-react';
+import { BarChart3, Megaphone, Rocket, Target, Users } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -163,7 +163,7 @@ function Affiliate() {
                                 >
                                     {/* <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Now
-                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
 
                                 {showDashboardButton && (
@@ -404,7 +404,7 @@ function Affiliate() {
                                     >
                                         {/* <Users className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Lightning Silver
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
 

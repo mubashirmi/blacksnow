@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, Rocket, Target } from 'lucide-react';
 import { parseCookies } from 'nookies';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -163,9 +162,9 @@ function LightningGold() {
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <Rocket className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    {/* <Rocket className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Gold
-                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
                             </div>
                         </div>
@@ -286,9 +285,9 @@ function LightningGold() {
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                    {/* <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Gold
-                                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
                             </div>
                         </div>
