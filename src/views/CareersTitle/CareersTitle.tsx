@@ -75,7 +75,7 @@ function CareersTitle() {
                                     >
                                         {/* <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Career Opportunities
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                             </div>
@@ -124,7 +124,7 @@ function CareersTitle() {
                                     >
                                         {/* <Search className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Career Opportunities
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                             </div>
@@ -181,7 +181,7 @@ function CareersTitle() {
                                     >
                                         {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Opportunities
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                                 <Link href={'/consultation'}>
@@ -191,7 +191,7 @@ function CareersTitle() {
                                     >
                                         {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Consultation
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                             </div>
@@ -239,7 +239,7 @@ function CareersTitle() {
                                     >
                                         {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         See Opportunities
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                                 <Link href={'/consultation'}>
@@ -249,7 +249,7 @@ function CareersTitle() {
                                     >
                                         {/* <Calendar className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Consultation
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                             </div>
@@ -280,7 +280,7 @@ function CareersTitle() {
                                     <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
                                         {/* <Search className='w-6 h-6 mr-3' /> */}
                                         Browse Jobs
-                                        <ArrowRight className='w-5 h-5 ml-3' />
+                                        {/* <ArrowRight className='w-5 h-5 ml-3' /> */}
                                     </Button>
                                 </Link>
                                 <Link href={'/recruitmentagency'}>

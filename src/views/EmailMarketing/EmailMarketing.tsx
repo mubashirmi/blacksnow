@@ -182,7 +182,7 @@ function EmailMarketing() {
                                             >
                                                 {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                                 Learn more
-                                                <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                                {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                             </Button>
                                         </Link>
                                     ) : (
@@ -193,7 +193,7 @@ function EmailMarketing() {
                                             >
                                                 {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                                 Learn more
-                                                <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                                {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                             </Button>
                                         </Link>
                                     )}
@@ -353,7 +353,7 @@ function EmailMarketing() {
                                     >
                                         {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Learn More
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                     </Button>
                                 </Link>
                                 <Button

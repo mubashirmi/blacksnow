@@ -140,7 +140,7 @@ function MobileDesktopSection() {
                             className='w-full h-14 sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
                         >
                             Open Account
-                            <span className='ml-3 text-lg sm:text-2xl'>→</span>
+                            {/* <span className='ml-3 text-lg sm:text-2xl'>→</span> */}
                         </Button>
                     </div>
                 </div>
@@ -592,7 +592,7 @@ function Home() {
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     {/* Section Heading */}
                     <div className='text-center mb-12'>
-                        <h2 className='text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6 leading-tight'>
+                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                 Explore Data-Driven
                             </span>
@@ -745,9 +745,9 @@ function Home() {
                                                             }}
                                                         >
                                                             {panel.cta}
-                                                            <span aria-hidden className='leading-none text-xl'>
+                                                            {/* <span aria-hidden className='leading-none text-xl'>
                                                                 →
-                                                            </span>
+                                                            </span> */}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -769,9 +769,9 @@ function Home() {
                                                         }}
                                                     >
                                                         {panel.discoveryCta}
-                                                        <span aria-hidden className='leading-none text-xl'>
+                                                        {/* <span aria-hidden className='leading-none text-xl'>
                                                             →
-                                                        </span>
+                                                        </span> */}
                                                     </button>
                                                 </div>
                                             </div>

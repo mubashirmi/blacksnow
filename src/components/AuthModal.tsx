@@ -3,12 +3,257 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
-import { ArrowRight, Eye, EyeOff, Lock, Mail, User, X } from 'lucide-react';
+import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, Shield, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+// ─── Shared Constants ─────────────────────────────────────────────────────────
+const UNIFIED_CARD_HEIGHT = 580;
+
+// ─── Terms Slides ─────────────────────────────────────────────────────────────
+type TermsSlide = {
+    id: string;
+    accent: string;
+    Icon: any;
+    badge: string;
+    titleGrad: string;
+    titlePlain: string;
+    gradAtEnd?: boolean;
+    summary: string;
+    link: string;
+    bullets: string[];
+};
+
+const TERMS_SLIDES: TermsSlide[] = [
+    {
+        id: 'terms',
+        accent: '#2c7bbe',
+        Icon: FileText,
+        badge: 'Terms & Conditions',
+        titleGrad: 'Terms',
+        titlePlain: ' & Conditions',
+        summary:
+            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+        link: '/terms',
+        bullets: ['Governs platform and tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    },
+    {
+        id: 'privacy',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Privacy Policy',
+        titleGrad: 'Privacy',
+        titlePlain: ' Policy',
+        summary:
+            'We collect only the data necessary to operate the platform and process payments. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
+        link: '/privacy',
+        bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    },
+];
+
+// ─── Terms Slide Modal ────────────────────────────────────────────────────────
+function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; onOpenChange: (v: boolean) => void; onComplete: () => void }) {
+    const [current, setCurrent] = useState(0);
+    const [dir, setDir] = useState<'next' | 'prev'>('next');
+    const [animating, setAnimating] = useState(false);
+
+    useEffect(() => {
+        if (open) {
+            setCurrent(0);
+            setDir('next');
+            setAnimating(false);
+        }
+    }, [open]);
+
+    const goTo = (next: number, direction: 'next' | 'prev') => {
+        if (animating) return;
+        setDir(direction);
+        setAnimating(true);
+        setTimeout(() => {
+            setCurrent(next);
+            setAnimating(false);
+        }, 220);
+    };
+
+    const handleNext = () => {
+        if (animating) return;
+        if (current < TERMS_SLIDES.length - 1) {
+            goTo(current + 1, 'next');
+            return;
+        }
+        onComplete();
+        onOpenChange(false);
+    };
+
+    const handlePrev = () => {
+        if (animating || current === 0) return;
+        goTo(current - 1, 'prev');
+    };
+
+    const slide = TERMS_SLIDES[current];
+    const { accent, Icon, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
+    const isLast = current === TERMS_SLIDES.length - 1;
+
+    const slideAnim: React.CSSProperties = {
+        transition: 'opacity 0.22s ease, transform 0.22s ease',
+        opacity: animating ? 0 : 1,
+        transform: animating ? `translateX(${dir === 'next' ? '-18px' : '18px'})` : 'translateX(0)',
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+                <DialogTitle className='sr-only'>{badge}</DialogTitle>
+
+                <div
+                    className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#07090d]'
+                    style={{
+                        minHeight: UNIFIED_CARD_HEIGHT,
+                        height: UNIFIED_CARD_HEIGHT,
+                        borderColor: `${accent}35`,
+                        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
+                    }}
+                >
+                    <div
+                        className='absolute inset-0 pointer-events-none'
+                        style={{ background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)` }}
+                    />
+                    <div
+                        className='absolute top-0 left-0 right-0 h-[2px]'
+                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                    />
+
+                    <button
+                        type='button'
+                        onClick={() => onOpenChange(false)}
+                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
+                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                        <X className='w-4 h-4 text-white/60' />
+                    </button>
+
+                    <div className='relative z-10 flex flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
+                        <div
+                            className='inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
+                            style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
+                        >
+                            <Icon className='w-3.5 h-3.5' />
+                            {badge}
+                        </div>
+
+                        <h2 className='text-[28px] font-black text-white leading-tight mb-3'>
+                            {gradAtEnd ? (
+                                <>
+                                    {titlePlain}
+                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                        {titleGrad}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                        {titleGrad}
+                                    </span>
+                                    {titlePlain}
+                                </>
+                            )}
+                        </h2>
+
+                        <div className='h-px rounded-full mb-5 w-full bg-white/10' />
+
+                        <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
+                            <p className='text-[11px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: accent }}>
+                                Summary
+                            </p>
+                            <p className='text-white/65 text-sm leading-relaxed'>{summary}</p>
+                            <a
+                                href={link}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='inline-flex items-center gap-1 mt-3 text-xs font-semibold hover:underline'
+                                style={{ color: accent }}
+                            >
+                                Read full document →
+                            </a>
+                        </div>
+
+                        <div className='flex-1'>
+                            <ul className='space-y-3'>
+                                {bullets.map((b, i) => (
+                                    <li key={i} className='flex items-start gap-2.5'>
+                                        <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
+                                        <span className='text-white/72 text-sm leading-snug'>{b}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className='pt-6 flex items-center justify-between'>
+                            <div className='flex items-center gap-1.5'>
+                                {TERMS_SLIDES.map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className='rounded-full transition-all duration-300'
+                                        style={{
+                                            width: i === current ? 20 : 6,
+                                            height: 6,
+                                            backgroundColor: i === current ? accent : i < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
+                                        }}
+                                    />
+                                ))}
+                                <span className='text-xs text-white/30 ml-2'>
+                                    {current + 1}/{TERMS_SLIDES.length}
+                                </span>
+                            </div>
+
+                            <div className='flex items-center gap-2'>
+                                <button
+                                    type='button'
+                                    onClick={handlePrev}
+                                    disabled={current === 0}
+                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                >
+                                    <ChevronLeft className='w-4 h-4 text-white' />
+                                </button>
+                                <button
+                                    type='button'
+                                    onClick={handleNext}
+                                    className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
+                                    style={{
+                                        background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                        border: `1px solid ${accent}60`,
+                                        boxShadow: `0 2px 12px ${accent}30`,
+                                    }}
+                                >
+                                    {isLast ? 'I Understand ✓' : 'Next'}
+                                    {!isLast && <ChevronRight className='w-3.5 h-3.5' />}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// ─── Product Context Type ─────────────────────────────────────────────────────
+export type ProductContext = {
+    name: string;
+    description?: string;
+    monthlyPrice?: number;
+    yearlyPrice?: number;
+    price?: number;
+    period?: string;
+    hasSubscription?: boolean;
+    color?: string; // Tailwind gradient string e.g. 'from-[#4cc7e8] to-[#2c7bbe]'
+    icon?: React.ElementType;
+};
+
+// ─── Auth Modal Props ─────────────────────────────────────────────────────────
 export type AuthModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -16,18 +261,19 @@ export type AuthModalProps = {
     redirectAfterLogin?: string;
     redirectAfterSignup?: string;
     sourceRoute?: string;
+    /** Pass product info to render a dynamic product header inside the modal */
+    productContext?: ProductContext;
     onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; userId?: string }) => boolean | void;
 };
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function setCookie(name: string, value: string, days = 7) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 }
 
 function splitFullName(fullName: string) {
-    const cleaned = String(fullName || '')
-        .trim()
-        .replace(/\s+/g, ' ');
+    const cleaned = String(fullName || '').trim().replace(/\s+/g, ' ');
     if (!cleaned) return { firstName: '', lastName: '' };
     const parts = cleaned.split(' ');
     const firstName = parts[0] || '';
@@ -44,8 +290,101 @@ function validatePassword(value: string) {
     return value.length >= 6 || 'Password must be at least 6 characters long';
 }
 
-const UNIFIED_CARD_HEIGHT = 580;
+// ─── Product Header Sub-component ────────────────────────────────────────────
+function ProductHeader({ product, billingPeriod, onBillingChange }: { product: ProductContext; billingPeriod: 'monthly' | 'yearly'; onBillingChange: (v: 'monthly' | 'yearly') => void }) {
+    const ProductIcon = product.icon;
 
+    const displayPrice = () => {
+        if (product.hasSubscription) {
+            return billingPeriod === 'monthly' ? `$${product.monthlyPrice}` : `$${product.yearlyPrice}`;
+        }
+        return product.price != null ? `$${product.price}` : null;
+    };
+
+    const displayPeriod = () => {
+        if (product.hasSubscription) return billingPeriod === 'monthly' ? 'Month' : 'Year';
+        return product.period || null;
+    };
+
+    const savings = () => {
+        if (!product.hasSubscription || !product.monthlyPrice || !product.yearlyPrice) return 0;
+        return Math.round(((product.monthlyPrice * 12 - product.yearlyPrice) / (product.monthlyPrice * 12)) * 100);
+    };
+
+    const price = displayPrice();
+    const period = displayPeriod();
+    const savingsPct = savings();
+
+    return (
+        <div className='relative px-8 pt-7 pb-0'>
+            {/* Top accent line */}
+            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${product.color ?? 'from-[#2c7bbe] to-[#4cc7e8]'}`} />
+
+            {/* Product name row */}
+            <div className='grid grid-cols-[48px_minmax(0,1fr)_48px] items-center gap-3 mb-4'>
+                <div className='h-12 w-12 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center shadow-md'>
+                    {ProductIcon ? (
+                        <ProductIcon className='w-6 h-6 text-white/80' />
+                    ) : (
+                        <Image src='/logowhite.png' alt='Logo' width={32} height={32} className='object-contain' />
+                    )}
+                </div>
+
+                <div className='flex flex-col items-center justify-center text-center'>
+                    <h3 className='text-[22px] font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
+                    {product.description && (
+                        <p className='text-xs text-white/45 mt-0.5 leading-snug line-clamp-1'>{product.description}</p>
+                    )}
+                </div>
+
+                <div aria-hidden='true' className='h-12 w-12' />
+            </div>
+
+            {/* Billing toggle */}
+            {product.hasSubscription && (
+                <div className='flex justify-center mb-4'>
+                    <div className='flex w-full max-w-[220px] rounded-full border border-white/12 bg-white/5 p-1 shadow-inner'>
+                        <button
+                            type='button'
+                            onClick={() => onBillingChange('monthly')}
+                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${billingPeriod === 'monthly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                                }`}
+                        >
+                            Monthly
+                        </button>
+                        <button
+                            type='button'
+                            onClick={() => onBillingChange('yearly')}
+                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${billingPeriod === 'yearly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                                }`}
+                        >
+                            Annual
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Price display */}
+            {price && (
+                <div className='flex flex-col items-center text-center mb-4'>
+                    <div className='flex items-end gap-1'>
+                        <span className='text-[42px] leading-none font-black tracking-tight text-white'>{price}</span>
+                        {period && <span className='text-sm font-bold text-white/60 mb-1.5'>/{period}</span>}
+                    </div>
+                    {billingPeriod === 'yearly' && product.hasSubscription && savingsPct > 0 && (
+                        <div className='mt-2 inline-flex items-center rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-300'>
+                            Save {savingsPct}% with yearly billing
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div className='h-px w-full bg-white/10 mb-1' />
+        </div>
+    );
+}
+
+// ─── Auth Modal ───────────────────────────────────────────────────────────────
 export default function AuthModal({
     open,
     onOpenChange,
@@ -53,17 +392,18 @@ export default function AuthModal({
     redirectAfterLogin = '/',
     redirectAfterSignup = '/pricing',
     sourceRoute,
+    productContext,
     onSuccess,
 }: AuthModalProps) {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [isSignUp, setIsSignUp] = useState(defaultView === 'signup');
     const [isLoading, setIsLoading] = useState(false);
+    const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
     const [termsAccepted, setTermsAccepted] = useState(false);
-    const [alert, setAlert] = useState<{ type: 'success' | 'error' | ''; message: string }>({
-        type: '',
-        message: '',
-    });
+    const [termsCompleted, setTermsCompleted] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [alert, setAlert] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
 
     const {
         register,
@@ -83,10 +423,7 @@ export default function AuthModal({
         if (!router.isReady) return;
         const q = router.query;
         const hasSignupKey = Object.prototype.hasOwnProperty.call(q, 'signup');
-        const first = (k: string) => {
-            const v = (q as any)[k];
-            return Array.isArray(v) ? v[0] : v;
-        };
+        const first = (k: string) => { const v = (q as any)[k]; return Array.isArray(v) ? v[0] : v; };
         const raw = first('signup') ?? first('view') ?? first('mode') ?? '';
         const val = typeof raw === 'string' ? raw.toLowerCase() : '';
         const shouldSignUp = hasSignupKey || ['signup', 'true', '1', 'yes'].includes(val);
@@ -109,25 +446,15 @@ export default function AuthModal({
                 const response = await axios.post('/api/v2/signup', signupData);
                 const userId = response.data.user.id as string | undefined;
                 const userRoles = response.data.user.roles as string[] | undefined;
-                if (userId) {
-                    localStorage.setItem('userId', userId);
-                    setCookie('id', userId);
-                }
+                if (userId) { localStorage.setItem('userId', userId); setCookie('id', userId); }
                 if (userRoles) localStorage.setItem('roles', JSON.stringify(userRoles));
                 setAlert({ type: 'success', message: 'Account created successfully! Please sign in.' });
                 setIsSignUp(false);
                 reset();
                 const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId }) === false;
                 if (prevent) return;
-
-                // close modal after successful signup
                 onOpenChange(false);
-
-                if (currentRoute === '/lightningSilver') {
-                    router.push('/affiliate/dashboard/kpi');
-                    return;
-                }
-                // if you want pricing to "refresh", do this instead of reload:
+                if (currentRoute === '/lightningSilver') { router.push('/affiliate/dashboard/kpi'); return; }
                 router.push(redirectAfterSignup || '/pricing');
             } else {
                 const loginData = { email: data.email, password: data.password };
@@ -138,252 +465,302 @@ export default function AuthModal({
                     setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
                     const prevent = onSuccess?.({ kind: 'login', role: 'admin' });
-                    if (!prevent) {
-                        onOpenChange(false);
-                        router.push('/admin/dashboard/sales');
-                    }
+                    if (!prevent) { onOpenChange(false); router.push('/admin/dashboard/sales'); }
                 } else if (response.data.paymentRequired) {
-                    setAlert({
-                        type: 'error',
-                        message: 'Access denied. Please complete your payment to access the system.',
-                    });
+                    setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
                 } else {
                     setCookie('token', response.data.token);
                     setCookie('id', response.data.user.id);
                     setAlert({ type: 'success', message: 'Login successful!' });
                     reset();
                     const prevent = onSuccess?.({ kind: 'login', role: response.data.role });
-                    if (!prevent) {
-                        onOpenChange(false);
-                        router.push(redirectAfterLogin);
-                    }
+                    if (!prevent) { onOpenChange(false); router.push(redirectAfterLogin); }
                 }
             }
         } catch (error: any) {
-            setAlert({
-                type: 'error',
-                message: error?.response?.data?.message || 'Something went wrong. Please try again.',
-            });
+            setAlert({ type: 'error', message: error?.response?.data?.message || 'Something went wrong. Please try again.' });
         } finally {
             setIsLoading(false);
         }
     }
 
+    const hasProduct = !!productContext;
+
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(v) => {
-                if (!isLoading) onOpenChange(v);
-            }}
-        >
-            <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
-                {/* ── Glassmorphic card matching PricingComponent aesthetic ── */}
-                <div
-                    className='relative rounded-[32px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl overflow-hidden flex flex-col'
-                    style={{ minHeight: UNIFIED_CARD_HEIGHT }}
-                >
-                    {/* Top accent line */}
-                    <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
+        <>
+            <Dialog open={open} onOpenChange={(v) => { if (!isLoading) onOpenChange(v); }}>
+                <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
+                    <div
+                        className='relative rounded-[32px] border border-white/10 overflow-hidden flex flex-col'
+                        style={{
+                            minHeight: UNIFIED_CARD_HEIGHT,
+                            height: UNIFIED_CARD_HEIGHT,
+                            background: 'linear-gradient(180deg, rgba(7,9,13,0.98) 0%, rgba(10,12,18,0.98) 45%, rgba(6,8,12,1) 100%)',
+                            boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+                        }}
+                    >
+                        {/* Radial glow */}
+                        <div
+                            className='absolute inset-0 pointer-events-none'
+                            style={{ background: 'radial-gradient(circle at top, rgba(76,199,232,0.14) 0%, transparent 30%)' }}
+                        />
 
-                    {/* Close button */}
-                    <DialogClose asChild>
-                        <button className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all duration-300 z-10'>
-                            <X className='w-5 h-5 text-white/70' />
-                        </button>
-                    </DialogClose>
+                        {/* ── Dynamic Product Header OR Default Header ── */}
+                        {hasProduct ? (
+                            <ProductHeader
+                                product={productContext!}
+                                billingPeriod={billingPeriod}
+                                onBillingChange={setBillingPeriod}
+                            />
+                        ) : (
+                            <>
+                                {/* Default top accent line */}
+                                <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
+                            </>
+                        )}
 
-                    {/* Header */}
-                    <DialogHeader className='px-8 pt-8 pb-0 text-center'>
-                        <div className='flex flex-col items-center mb-6'>
-                            <div className='h-16 w-16 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center mb-5 shadow-xl'>
-                                <Image width={120} height={120} src='/logocolored.png' alt='Logo' className='object-contain' />
-                            </div>
-                            <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
-                                {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
-                            </DialogTitle>
-                            <DialogDescription className='text-white/55 text-sm mt-2 font-medium'>
-                                {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
-                            </DialogDescription>
-                        </div>
-                    </DialogHeader>
+                        {/* Close button */}
+                        <DialogClose asChild>
+                            <button className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all duration-300 z-10'>
+                                <X className='w-5 h-5 text-white/70' />
+                            </button>
+                        </DialogClose>
 
-                    {/* Body */}
-                    <div className='px-8 pb-8 overflow-y-auto max-h-[calc(90vh-160px)] flex-1'>
-                        {/* Alert */}
-                        {alert.message && (
-                            <div
-                                className={`mb-5 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
-                                    alert.type === 'success'
-                                        ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
-                                        : 'border-red-400/30 bg-red-500/10 text-red-300'
-                                }`}
-                            >
-                                <div className='mt-0.5 shrink-0'>
-                                    {alert.type === 'success' ? (
-                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                                        </svg>
-                                    ) : (
-                                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                    )}
+                        {/* ── Header (shown only when no productContext) ── */}
+                        {!hasProduct && (
+                            <DialogHeader className='relative z-10 px-8 pt-8 pb-0 text-center'>
+                                <div className='flex flex-col items-center mb-5'>
+                                    <div className='h-16 w-16 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center mb-5 shadow-xl'>
+                                        <Image width={120} height={120} src='/logocolored.png' alt='Logo' className='object-contain' />
+                                    </div>
+                                    <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
+                                        {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                                    </DialogTitle>
+                                    <DialogDescription className='text-white/55 text-sm mt-2 font-medium'>
+                                        {isSignUp
+                                            ? 'Fill in the details to get started'
+                                            : 'Enter your credentials to access the trading platform'}
+                                    </DialogDescription>
                                 </div>
-                                <span>{alert.message}</span>
+                            </DialogHeader>
+                        )}
+
+                        {/* ── Auth sub-title when product header is present ── */}
+                        {hasProduct && (
+                            <div className='relative z-10 px-8 pt-4 pb-0 text-center'>
+                                <p className='text-[15px] font-bold text-white/90'>
+                                    {isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}
+                                </p>
+                                <p className='text-xs text-white/40 mt-0.5'>
+                                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                                    <button
+                                        type='button'
+                                        onClick={() => { setIsSignUp(v => !v); setAlert({ type: '', message: '' }); reset(); }}
+                                        className='text-[#4cc7e8] font-semibold hover:text-white transition-colors duration-300 cursor-pointer'
+                                    >
+                                        {isSignUp ? 'Sign In' : 'Sign Up'}
+                                    </button>
+                                </p>
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-                            {/* Full Name (sign-up only) */}
-                            {isSignUp && (
-                                <div className='space-y-1'>
-                                    <div className='relative'>
-                                        <Input
-                                            id='fullName'
-                                            type='text'
-                                            placeholder='Full name'
-                                            {...register('fullName', {
-                                                required: 'Full name is required',
-                                                validate: (v: string) => {
-                                                    const cleaned = String(v || '')
-                                                        .trim()
-                                                        .replace(/\s+/g, ' ');
-                                                    return cleaned.length >= 2 || 'Please enter your name';
-                                                },
-                                            })}
-                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
-                                        />
-                                        <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                        {/* ── Body ── */}
+                        <div className='relative z-10 px-8 pb-6 pt-4 overflow-y-auto flex-1 flex flex-col'>
+                            {/* Alert */}
+                            {alert.message && (
+                                <div
+                                    className={`mb-4 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${alert.type === 'success'
+                                            ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                                            : 'border-red-400/30 bg-red-500/10 text-red-300'
+                                        }`}
+                                >
+                                    <div className='mt-0.5 shrink-0'>
+                                        {alert.type === 'success' ? (
+                                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                                            </svg>
+                                        ) : (
+                                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                            </svg>
+                                        )}
                                     </div>
-                                    {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
+                                    <span>{alert.message}</span>
                                 </div>
                             )}
 
-                            {/* Email */}
-                            <div className='space-y-1'>
-                                <div className='relative'>
-                                    <Input
-                                        id='email'
-                                        type='email'
-                                        placeholder='Email address'
-                                        {...register('email', {
-                                            required: 'Email is required',
-                                            validate: validateEmail as any,
-                                        })}
-                                        className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
-                                    />
-                                    <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
-                                </div>
-                                {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
-                            </div>
+                            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3 flex-1'>
+                                {/* Full Name (sign-up only) */}
+                                {isSignUp && (
+                                    <div className='space-y-1'>
+                                        <div className='relative'>
+                                            <Input
+                                                id='fullName'
+                                                type='text'
+                                                placeholder='Full name'
+                                                {...register('fullName', {
+                                                    required: 'Full name is required',
+                                                    validate: (v: string) => {
+                                                        const cleaned = String(v || '').trim().replace(/\s+/g, ' ');
+                                                        return cleaned.length >= 2 || 'Please enter your name';
+                                                    },
+                                                })}
+                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                            />
+                                            <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                        </div>
+                                        {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
+                                    </div>
+                                )}
 
-                            {/* Password */}
-                            <div className='space-y-1'>
-                                <div className='relative'>
-                                    <Input
-                                        id='password'
-                                        type={showPassword ? 'text' : 'password'}
-                                        placeholder='Password'
-                                        {...register('password', {
-                                            required: 'Password is required',
-                                            validate: validatePassword as any,
-                                        })}
-                                        className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
-                                    />
-                                    <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                {/* Email */}
+                                <div className='space-y-1'>
+                                    <div className='relative'>
+                                        <Input
+                                            id='email'
+                                            type='email'
+                                            placeholder='Email address'
+                                            {...register('email', { required: 'Email is required', validate: validateEmail as any })}
+                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                        />
+                                        <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                    </div>
+                                    {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
+                                </div>
+
+                                {/* Password */}
+                                <div className='space-y-1'>
+                                    <div className='relative'>
+                                        <Input
+                                            id='password'
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder='Password'
+                                            {...register('password', { required: 'Password is required', validate: validatePassword as any })}
+                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                        />
+                                        <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                        <button
+                                            type='button'
+                                            onClick={() => setShowPassword(p => !p)}
+                                            className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
+                                        >
+                                            {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                                        </button>
+                                    </div>
+                                    {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
+                                </div>
+
+                                {/* ── Terms checkbox — opens shared TermsSlideModal ── */}
+                                <div className='flex items-start gap-3 pt-1'>
                                     <button
                                         type='button'
-                                        onClick={() => setShowPassword((p) => !p)}
-                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
+                                        disabled={!termsCompleted}
+                                        onClick={() => termsCompleted && setTermsAccepted(v => !v)}
+                                        className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
+                                        style={{
+                                            backgroundColor: termsAccepted ? '#4cc7e8' : 'transparent',
+                                            borderColor: termsAccepted ? '#4cc7e8' : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                                            opacity: termsCompleted ? 1 : 0.5,
+                                        }}
                                     >
-                                        {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                                        {termsAccepted && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
                                     </button>
-                                </div>
-                                {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
-                            </div>
 
-                            {/* Terms line */}
-                            <button type='button' onClick={() => setTermsAccepted((v) => !v)} className='flex items-start gap-3 pt-1 w-full text-left group'>
-                                <div
-                                    className={`mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 ${
-                                        termsAccepted ? 'border-[#4cc7e8]/60 bg-[#4cc7e8]/20' : 'border-white/20 bg-black/30 group-hover:border-white/40'
-                                    }`}
+                                    <p className='leading-relaxed text-xs text-white/50'>
+                                        I agree to our{' '}
+                                        <button
+                                            type='button'
+                                            onClick={() => setShowTermsModal(true)}
+                                            className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
+                                            style={{ color: '#93c5fd' }}
+                                        >
+                                            Terms & Conditions
+                                        </button>{' '}
+                                        and{' '}
+                                        <button
+                                            type='button'
+                                            onClick={() => setShowTermsModal(true)}
+                                            className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
+                                            style={{ color: '#93c5fd' }}
+                                        >
+                                            Privacy Policy
+                                        </button>
+                                        {!termsCompleted && (
+                                            <span className='ml-1.5 text-[11px] text-white/30 italic'>(click to review)</span>
+                                        )}
+                                    </p>
+                                </div>
+
+                                {/* Submit */}
+                                <Button
+                                    type='submit'
+                                    disabled={isLoading || !termsAccepted}
+                                    className='w-full rounded-2xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:opacity-90 text-white py-6 font-bold text-base shadow-xl transition-all duration-300 group disabled:opacity-40 disabled:cursor-not-allowed mt-auto'
                                 >
-                                    {termsAccepted && (
-                                        <svg className='w-3 h-3 text-[#4cc7e8]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M5 13l4 4L19 7' />
-                                        </svg>
+                                    {isLoading ? (
+                                        <div className='flex items-center justify-center gap-2'>
+                                            <svg className='animate-spin h-5 w-5 text-white' viewBox='0 0 24 24'>
+                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                            </svg>
+                                            Processing...
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {isSignUp ? 'Create Account' : 'Sign In'}
+                                            <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
+                                        </>
                                     )}
-                                </div>
-                                <p className={`leading-relaxed text-xs transition-colors duration-200 ${termsAccepted ? 'text-white/60' : 'text-white/40'}`}>
-                                    By continuing, you agree to our <span className='text-[#4cc7e8] hover:underline'>Terms of Service</span> and{' '}
-                                    <span className='text-[#4cc7e8] hover:underline'>Privacy Policy</span>.
-                                </p>
-                            </button>
-                            {!termsAccepted && <p className='text-white/30 text-xs px-1 -mt-1'>You must accept the terms to continue.</p>}
+                                </Button>
 
-                            {/* Submit button */}
-                            <Button
-                                type='submit'
-                                disabled={isLoading || !termsAccepted}
-                                className='w-full rounded-2xl border border-white/10 bg-white/10 hover:bg-white/15 text-white py-6 font-bold text-base shadow-xl transition-all duration-300 group disabled:opacity-50 cursor-pointer mt-2'
-                            >
-                                {isLoading ? (
-                                    <div className='flex items-center justify-center gap-2'>
-                                        <svg className='animate-spin h-5 w-5 text-white' viewBox='0 0 24 24'>
-                                            <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
-                                        </svg>
-                                        Processing...
+                                {/* Toggle sign-in / sign-up (only shown when no productContext, since it's already in the sub-title) */}
+                                {!hasProduct && (
+                                    <div className='text-center pt-1'>
+                                        <button
+                                            type='button'
+                                            onClick={() => { setIsSignUp(v => !v); setAlert({ type: '', message: '' }); reset(); }}
+                                            className='text-white/50 text-sm'
+                                        >
+                                            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                                            <span className='text-[#4cc7e8] hover:text-white transition-colors duration-300 cursor-pointer font-semibold'>
+                                                {isSignUp ? 'Sign In' : 'Sign Up'}
+                                            </span>
+                                        </button>
                                     </div>
-                                ) : (
-                                    <>
-                                        {isSignUp ? 'Create Account' : 'Sign In'}
-                                        <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
-                                    </>
                                 )}
-                            </Button>
+                            </form>
 
-                            {/* Toggle sign-in / sign-up */}
-                            <div className='text-center pt-1'>
-                                <button
-                                    type='button'
-                                    onClick={() => {
-                                        setIsSignUp((v) => !v);
-                                        setAlert({ type: '', message: '' });
-                                        reset();
-                                    }}
-                                    className='text-white/50 text-sm'
-                                >
-                                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                                    <span className='text-[#4cc7e8] hover:text-white transition-colors duration-300 cursor-pointer font-semibold'>
-                                        {isSignUp ? 'Sign In' : 'Sign Up'}
-                                    </span>
-                                </button>
+                            {/* Footer */}
+                            <div className='mt-4 flex items-center justify-center gap-2 text-xs text-white/30'>
+                                <Lock className='h-3.5 w-3.5' />
+                                Secure &amp; encrypted connection
                             </div>
-                        </form>
-
-                        {/* Footer */}
-                        <div className='mt-5 flex items-center justify-center gap-2 text-xs text-white/30'>
-                            <Lock className='h-3.5 w-3.5' />
-                            Secure &amp; encrypted connection
                         </div>
                     </div>
-                </div>
-            </DialogContent>
-        </Dialog>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Shared Terms Slide Modal ── */}
+            <TermsSlideModal
+                open={showTermsModal}
+                onOpenChange={setShowTermsModal}
+                onComplete={() => {
+                    setTermsCompleted(true);
+                    setTermsAccepted(true);
+                }}
+            />
+        </>
     );
 }
 
-/**
- * Convenience wrapper with its own trigger button.
- */
+// ─── AuthModalTrigger ─────────────────────────────────────────────────────────
 export function AuthModalTrigger({
     buttonText = 'Sign In',
     defaultView = 'signin',
     redirectAfterLogin,
     redirectAfterSignup,
     sourceRoute,
+    productContext,
     onSuccess,
     className,
     children,
@@ -393,6 +770,7 @@ export function AuthModalTrigger({
     redirectAfterLogin?: string;
     redirectAfterSignup?: string;
     sourceRoute?: string;
+    productContext?: ProductContext;
     onSuccess?: AuthModalProps['onSuccess'];
     className?: string;
     children?: React.ReactNode;
@@ -414,6 +792,7 @@ export function AuthModalTrigger({
                 redirectAfterLogin={redirectAfterLogin}
                 redirectAfterSignup={redirectAfterSignup}
                 sourceRoute={sourceRoute}
+                productContext={productContext}
                 onSuccess={onSuccess}
             />
         </>

@@ -1,7 +1,7 @@
 'use client';
 
 import AuthModal from '@/components/AuthModal';
-import { PricingComponent } from '@/components/PricingComponent'; // ✅ adjust path if yours differs
+import { PricingComponent } from '@/components/PricingComponent';
 import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -86,18 +86,6 @@ function LightningGold() {
         ],
         []
     );
-
-    // const perks = useMemo(
-    //     () => [
-    //         { label: '$250/month Membership', icon: Rocket },
-    //         { label: '75% lifetime commissions', icon: Target },
-    //         { label: 'Subscriber referral bonuses', icon: CheckCircle2 },
-    //         { label: 'Email & SMS CRM included to promote offers', icon: Megaphone },
-    //         { label: 'KPI performance dashboard', icon: BarChart3 },
-    //         { label: 'Automated payouts with no income cap', icon: CheckCircle2 },
-    //     ],
-    //     []
-    // );
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
@@ -204,19 +192,22 @@ function LightningGold() {
                     </div>
 
                     {/* Table card */}
-                    <Card className='bg-[#fabd3c] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
+                    <Card className='bg-[#ffd500] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
-                                <div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>Commission Table</div>
-                                    <div className='text-gray-800 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                <div className='flex flex-row justify-between w-full'>
+                                    <div>
+                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>Lightning Gold (75%)</div>
+                                        <div className='text-gray-800 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                    </div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>250$ per month</div>
                                 </div>
                                 <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge>
                             </div>
 
                             <div className='overflow-x-auto rounded-xl border border-gray-800/40'>
                                 <table className='w-full text-left'>
-                                    <thead className='bg-[#e9a427]/50'>
+                                    <thead className='bg-[#fad72a]'>
                                         <tr>
                                             <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Product</th>
                                             <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Monthly</th>
@@ -240,24 +231,6 @@ function LightningGold() {
                             </p>
                         </CardContent>
                     </Card>
-
-                    {/* Perks grid */}
-                    {/* <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6'>
-                        {perks.map(({ label, icon: Icon }) => (
-                            <div key={label} className='group'>
-                                <Card className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105 h-full'>
-                                    <CardContent className='p-6 sm:p-8 flex gap-4 items-start'>
-                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform duration-300'>
-                                            <Icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
-                                        </div>
-                                        <div className='text-gray-200 font-semibold text-sm sm:text-base leading-snug group-hover:text-[#4cc7e8] transition-colors duration-300 pt-1'>
-                                            {label}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        ))}
-                    </div> */}
                 </div>
             </section>
 
@@ -285,9 +258,7 @@ function LightningGold() {
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    {/* <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Gold
-                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
                             </div>
                         </div>

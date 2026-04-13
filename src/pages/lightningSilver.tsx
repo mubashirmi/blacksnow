@@ -132,9 +132,7 @@ function LightningSilver() {
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    {/* <Rocket className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Silver
-                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
                             </div>
                         </div>
@@ -167,17 +165,20 @@ function LightningSilver() {
                         </p>
                     </div>
 
-                    <Card className='bg-[#195eab] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
+                    <Card className='bg-[#8d96c2] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
-                                <div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-white'>Commission Table</div>
-                                    <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                <div className='flex flex-row justify-between w-full'>
+                                    <div>
+                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>Lightning Silver (25%)</div>
+                                        <div className='text-gray-800 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                    </div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>5$ per month</div>
                                 </div>
                                 <Badge className='bg-[#2c6bb2] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$5 / mo</Badge>
                             </div>
 
-                            <div className='overflow-x-auto rounded-xl border border-blue-400'>
+                            <div className='overflow-x-auto rounded-xl border border-black/50'>
                                 <table className='w-full text-left'>
                                     <thead className='bg-white/5'>
                                         <tr>
@@ -188,7 +189,7 @@ function LightningSilver() {
                                     </thead>
                                     <tbody>
                                         {commissionRows.map((row) => (
-                                            <tr key={row.product} className='border-t border-blue-400 hover:bg-white/[0.02] transition-colors'>
+                                            <tr key={row.product} className='border-t border-black/50 hover:bg-white/[0.02] transition-colors'>
                                                 <td className='p-4 sm:p-5 text-gray-200 font-medium text-sm sm:text-base'>{row.product}</td>
                                                 <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.monthly}</td>
                                                 <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.annual}</td>
@@ -224,9 +225,7 @@ function LightningSilver() {
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    {/* <Target className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Join Silver
-                                    {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                 </Button>
                             </div>
                         </div>

@@ -541,7 +541,7 @@ function Pricing() {
                                                             disabled={isLoadingUnsubscribe}
                                                         >
                                                             {isLoadingUnsubscribe ? 'Unsubscribing...' : 'Unsubscribe'}
-                                                            <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                                            {/* <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                                         </Button>
                                                     ) : (
                                                         <Button
@@ -552,9 +552,9 @@ function Pricing() {
                                                             }}
                                                             disabled={isLoadingEmail}
                                                         >
-                                                            <DollarSign className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
+                                                            {/* <DollarSign className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                                             {isLoadingEmail ? 'Loading...' : 'Learn More'}
-                                                            <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
+                                                            {/* <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
                                                         </Button>
                                                     )
                                                 ) : (

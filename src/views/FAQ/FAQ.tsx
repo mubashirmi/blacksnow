@@ -146,7 +146,6 @@ function FAQ() {
                         className='inline-flex items-center bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'
                     >
                         Contact Support
-                        <ArrowRight className='w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                     </button>
                 </div>
             </section>
