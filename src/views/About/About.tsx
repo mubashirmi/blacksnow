@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 // import lottie from 'lottie-web';
-import { ArrowRight, Brain, Target, Users } from 'lucide-react';
+import { Brain, Target, Users } from 'lucide-react';
 import Image from 'next/image';
 // import { useEffect, useRef } from 'react';
 

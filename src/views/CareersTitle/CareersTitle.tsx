@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import lottie from 'lottie-web';
-import { ArrowRight, Award, CheckCircle, Globe, Star, Target, UserCheck, Users, Zap } from 'lucide-react';
+import { Award, CheckCircle, Globe, Star, Target, UserCheck, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 

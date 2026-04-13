@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, Calendar, Clock, Edit3, Globe, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
+import { BarChart3, Calendar, Clock, Edit3, Globe, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';

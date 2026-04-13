@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import lottie from 'lottie-web';
-import { ArrowRight, BarChart3, CheckCircle, Clock, Eye, Globe, Loader2, Megaphone, Monitor, Rocket, Star, Target, X, Zap } from 'lucide-react';
+import { BarChart3, CheckCircle, Clock, Eye, Globe, Loader2, Megaphone, Monitor, Rocket, Star, Target, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';

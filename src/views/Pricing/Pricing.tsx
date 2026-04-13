@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
 import lottie from 'lottie-web';
-import { ArrowRight, Calendar, CheckCircle, Clock, DollarSign, FilePen, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, FilePen, MessageSquare, Monitor, Newspaper, Target, Users, X, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';

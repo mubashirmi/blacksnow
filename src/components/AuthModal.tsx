@@ -273,7 +273,9 @@ function setCookie(name: string, value: string, days = 7) {
 }
 
 function splitFullName(fullName: string) {
-    const cleaned = String(fullName || '').trim().replace(/\s+/g, ' ');
+    const cleaned = String(fullName || '')
+        .trim()
+        .replace(/\s+/g, ' ');
     if (!cleaned) return { firstName: '', lastName: '' };
     const parts = cleaned.split(' ');
     const firstName = parts[0] || '';
@@ -291,7 +293,15 @@ function validatePassword(value: string) {
 }
 
 // ─── Product Header Sub-component ────────────────────────────────────────────
-function ProductHeader({ product, billingPeriod, onBillingChange }: { product: ProductContext; billingPeriod: 'monthly' | 'yearly'; onBillingChange: (v: 'monthly' | 'yearly') => void }) {
+function ProductHeader({
+    product,
+    billingPeriod,
+    onBillingChange,
+}: {
+    product: ProductContext;
+    billingPeriod: 'monthly' | 'yearly';
+    onBillingChange: (v: 'monthly' | 'yearly') => void;
+}) {
     const ProductIcon = product.icon;
 
     const displayPrice = () => {
@@ -332,9 +342,7 @@ function ProductHeader({ product, billingPeriod, onBillingChange }: { product: P
 
                 <div className='flex flex-col items-center justify-center text-center'>
                     <h3 className='text-[22px] font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
-                    {product.description && (
-                        <p className='text-xs text-white/45 mt-0.5 leading-snug line-clamp-1'>{product.description}</p>
-                    )}
+                    {product.description && <p className='text-xs text-white/45 mt-0.5 leading-snug line-clamp-1'>{product.description}</p>}
                 </div>
 
                 <div aria-hidden='true' className='h-12 w-12' />
@@ -347,16 +355,18 @@ function ProductHeader({ product, billingPeriod, onBillingChange }: { product: P
                         <button
                             type='button'
                             onClick={() => onBillingChange('monthly')}
-                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${billingPeriod === 'monthly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
-                                }`}
+                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                                billingPeriod === 'monthly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                            }`}
                         >
                             Monthly
                         </button>
                         <button
                             type='button'
                             onClick={() => onBillingChange('yearly')}
-                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${billingPeriod === 'yearly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
-                                }`}
+                            className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                                billingPeriod === 'yearly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                            }`}
                         >
                             Annual
                         </button>
@@ -423,7 +433,10 @@ export default function AuthModal({
         if (!router.isReady) return;
         const q = router.query;
         const hasSignupKey = Object.prototype.hasOwnProperty.call(q, 'signup');
-        const first = (k: string) => { const v = (q as any)[k]; return Array.isArray(v) ? v[0] : v; };
+        const first = (k: string) => {
+            const v = (q as any)[k];
+            return Array.isArray(v) ? v[0] : v;
+        };
         const raw = first('signup') ?? first('view') ?? first('mode') ?? '';
         const val = typeof raw === 'string' ? raw.toLowerCase() : '';
         const shouldSignUp = hasSignupKey || ['signup', 'true', '1', 'yes'].includes(val);
@@ -446,7 +459,10 @@ export default function AuthModal({
                 const response = await axios.post('/api/v2/signup', signupData);
                 const userId = response.data.user.id as string | undefined;
                 const userRoles = response.data.user.roles as string[] | undefined;
-                if (userId) { localStorage.setItem('userId', userId); setCookie('id', userId); }
+                if (userId) {
+                    localStorage.setItem('userId', userId);
+                    setCookie('id', userId);
+                }
                 if (userRoles) localStorage.setItem('roles', JSON.stringify(userRoles));
                 setAlert({ type: 'success', message: 'Account created successfully! Please sign in.' });
                 setIsSignUp(false);
@@ -454,7 +470,10 @@ export default function AuthModal({
                 const prevent = onSuccess?.({ kind: 'signup', role: signupData.role, userId }) === false;
                 if (prevent) return;
                 onOpenChange(false);
-                if (currentRoute === '/lightningSilver') { router.push('/affiliate/dashboard/kpi'); return; }
+                if (currentRoute === '/lightningSilver') {
+                    router.push('/affiliate/dashboard/kpi');
+                    return;
+                }
                 router.push(redirectAfterSignup || '/pricing');
             } else {
                 const loginData = { email: data.email, password: data.password };
@@ -465,7 +484,10 @@ export default function AuthModal({
                     setAlert({ type: 'success', message: 'Admin login successful!' });
                     reset();
                     const prevent = onSuccess?.({ kind: 'login', role: 'admin' });
-                    if (!prevent) { onOpenChange(false); router.push('/admin/dashboard/sales'); }
+                    if (!prevent) {
+                        onOpenChange(false);
+                        router.push('/admin/dashboard/sales');
+                    }
                 } else if (response.data.paymentRequired) {
                     setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
                 } else {
@@ -474,7 +496,10 @@ export default function AuthModal({
                     setAlert({ type: 'success', message: 'Login successful!' });
                     reset();
                     const prevent = onSuccess?.({ kind: 'login', role: response.data.role });
-                    if (!prevent) { onOpenChange(false); router.push(redirectAfterLogin); }
+                    if (!prevent) {
+                        onOpenChange(false);
+                        router.push(redirectAfterLogin);
+                    }
                 }
             }
         } catch (error: any) {
@@ -488,7 +513,12 @@ export default function AuthModal({
 
     return (
         <>
-            <Dialog open={open} onOpenChange={(v) => { if (!isLoading) onOpenChange(v); }}>
+            <Dialog
+                open={open}
+                onOpenChange={(v) => {
+                    if (!isLoading) onOpenChange(v);
+                }}
+            >
                 <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
                     <div
                         className='relative rounded-[32px] border border-white/10 overflow-hidden flex flex-col'
@@ -507,11 +537,7 @@ export default function AuthModal({
 
                         {/* ── Dynamic Product Header OR Default Header ── */}
                         {hasProduct ? (
-                            <ProductHeader
-                                product={productContext!}
-                                billingPeriod={billingPeriod}
-                                onBillingChange={setBillingPeriod}
-                            />
+                            <ProductHeader product={productContext!} billingPeriod={billingPeriod} onBillingChange={setBillingPeriod} />
                         ) : (
                             <>
                                 {/* Default top accent line */}
@@ -537,9 +563,7 @@ export default function AuthModal({
                                         {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
                                     </DialogTitle>
                                     <DialogDescription className='text-white/55 text-sm mt-2 font-medium'>
-                                        {isSignUp
-                                            ? 'Fill in the details to get started'
-                                            : 'Enter your credentials to access the trading platform'}
+                                        {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
                                     </DialogDescription>
                                 </div>
                             </DialogHeader>
@@ -548,14 +572,16 @@ export default function AuthModal({
                         {/* ── Auth sub-title when product header is present ── */}
                         {hasProduct && (
                             <div className='relative z-10 px-8 pt-4 pb-0 text-center'>
-                                <p className='text-[15px] font-bold text-white/90'>
-                                    {isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}
-                                </p>
+                                <p className='text-[15px] font-bold text-white/90'>{isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}</p>
                                 <p className='text-xs text-white/40 mt-0.5'>
                                     {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
                                     <button
                                         type='button'
-                                        onClick={() => { setIsSignUp(v => !v); setAlert({ type: '', message: '' }); reset(); }}
+                                        onClick={() => {
+                                            setIsSignUp((v) => !v);
+                                            setAlert({ type: '', message: '' });
+                                            reset();
+                                        }}
                                         className='text-[#4cc7e8] font-semibold hover:text-white transition-colors duration-300 cursor-pointer'
                                     >
                                         {isSignUp ? 'Sign In' : 'Sign Up'}
@@ -569,10 +595,11 @@ export default function AuthModal({
                             {/* Alert */}
                             {alert.message && (
                                 <div
-                                    className={`mb-4 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${alert.type === 'success'
+                                    className={`mb-4 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
+                                        alert.type === 'success'
                                             ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
                                             : 'border-red-400/30 bg-red-500/10 text-red-300'
-                                        }`}
+                                    }`}
                                 >
                                     <div className='mt-0.5 shrink-0'>
                                         {alert.type === 'success' ? (
@@ -601,7 +628,9 @@ export default function AuthModal({
                                                 {...register('fullName', {
                                                     required: 'Full name is required',
                                                     validate: (v: string) => {
-                                                        const cleaned = String(v || '').trim().replace(/\s+/g, ' ');
+                                                        const cleaned = String(v || '')
+                                                            .trim()
+                                                            .replace(/\s+/g, ' ');
                                                         return cleaned.length >= 2 || 'Please enter your name';
                                                     },
                                                 })}
@@ -641,7 +670,7 @@ export default function AuthModal({
                                         <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                         <button
                                             type='button'
-                                            onClick={() => setShowPassword(p => !p)}
+                                            onClick={() => setShowPassword((p) => !p)}
                                             className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
                                         >
                                             {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
@@ -655,7 +684,7 @@ export default function AuthModal({
                                     <button
                                         type='button'
                                         disabled={!termsCompleted}
-                                        onClick={() => termsCompleted && setTermsAccepted(v => !v)}
+                                        onClick={() => termsCompleted && setTermsAccepted((v) => !v)}
                                         className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
                                         style={{
                                             backgroundColor: termsAccepted ? '#4cc7e8' : 'transparent',
@@ -685,9 +714,7 @@ export default function AuthModal({
                                         >
                                             Privacy Policy
                                         </button>
-                                        {!termsCompleted && (
-                                            <span className='ml-1.5 text-[11px] text-white/30 italic'>(click to review)</span>
-                                        )}
+                                        {!termsCompleted && <span className='ml-1.5 text-[11px] text-white/30 italic'>(click to review)</span>}
                                     </p>
                                 </div>
 
@@ -718,7 +745,11 @@ export default function AuthModal({
                                     <div className='text-center pt-1'>
                                         <button
                                             type='button'
-                                            onClick={() => { setIsSignUp(v => !v); setAlert({ type: '', message: '' }); reset(); }}
+                                            onClick={() => {
+                                                setIsSignUp((v) => !v);
+                                                setAlert({ type: '', message: '' });
+                                                reset();
+                                            }}
                                             className='text-white/50 text-sm'
                                         >
                                             {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
