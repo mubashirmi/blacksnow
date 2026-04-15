@@ -20,17 +20,14 @@ type Slide = {
     gradAtEnd?: boolean;
     desc: string;
     bullets?: string[];
-    // legal-specific
     legalTitle?: string;
     legalSummary?: string;
     legalLink?: string;
-    // acknowledge slide
     isLast?: boolean;
 };
 
 // ── All slides ────────────────────────────────────────────────
 const SLIDES: Slide[] = [
-    // ── INSTRUCTION SLIDES ──
     {
         id: 'welcome',
         variant: 'intro',
@@ -133,173 +130,42 @@ const SLIDES: Slide[] = [
             'Step 3 — Copy your link and start promoting',
         ],
     },
-
-    // ── LEGAL SLIDES ──
-    // {
-    //     id: 'legal-affiliate',
-    //     variant: 'legal',
-    //     accent: '#4cc7e8',
-    //     Icon: FileText,
-    //     badge: 'Legal — Affiliate Agreement',
-    //     title: 'Affiliate Agreement',
-    //     titleGrad: 'Affiliate',
-    //     titlePlain: ' Agreement',
-    //     desc: 'By joining our affiliate program, you agree to our Affiliate Agreement which governs your participation, commission structure, and conduct.',
-    //     legalTitle: 'Key Terms',
-    //     legalSummary:
-    //         'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
-    //     legalLink: '/affiliateagreement',
-    //     bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
-    // },
-    // {
-    //     id: 'legal-contractor',
-    //     variant: 'legal',
-    //     accent: '#F5A623',
-    //     Icon: UserCheck,
-    //     badge: 'Legal — Independent Contractor',
-    //     title: 'Independent Contractor',
-    //     titleGrad: 'Independent',
-    //     titlePlain: ' Contractor',
-    //     desc: 'As an affiliate you operate as an independent contractor — not an employee of Black Snow Holdings. This agreement defines that relationship.',
-    //     legalTitle: 'What This Means',
-    //     legalSummary:
-    //         'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
-    //     legalLink: '/independentcontract',
-    //     bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
-    // },
-    // {
-    //     id: 'legal-earnings',
-    //     variant: 'legal',
-    //     accent: '#E74C3C',
-    //     Icon: AlertTriangle,
-    //     badge: 'Legal — Earnings Disclosure',
-    //     title: 'Earnings Disclosure',
-    //     titleGrad: 'Earnings',
-    //     titlePlain: ' Disclosure',
-    //     desc: 'Income from our affiliate program varies significantly. Results depend on your effort, audience, and promotional strategy — not all affiliates earn the same.',
-    //     legalTitle: 'Important Disclosure',
-    //     legalSummary:
-    //         'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
-    //     legalLink: '/earningsdisclosure',
-    //     bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
-    // },
-    // {
-    //     id: 'legal-gdpr',
-    //     variant: 'legal',
-    //     accent: '#2c7bbe',
-    //     Icon: Globe,
-    //     badge: 'Legal — GDPR',
-    //     title: 'GDPR & Privacy',
-    //     titleGrad: 'GDPR',
-    //     titlePlain: ' & Privacy',
-    //     desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
-    //     legalTitle: 'Your Obligations',
-    //     legalSummary:
-    //         'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
-    //     legalLink: '/gdpr',
-    //     bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
-    // },
-    // {
-    //     id: 'legal-terms',
-    //     variant: 'legal',
-    //     accent: '#9B59B6',
-    //     Icon: FileText,
-    //     badge: 'Legal — Terms & Conditions',
-    //     title: 'Terms & Conditions',
-    //     titleGrad: 'Terms',
-    //     titlePlain: ' & Conditions',
-    //     desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
-    //     legalTitle: 'Key Terms',
-    //     legalSummary:
-    //         'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
-    //     legalLink: '/terms',
-    //     bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
-    // },
-    // {
-    //     id: 'legal-privacy',
-    //     variant: 'legal',
-    //     accent: '#1ABC9C',
-    //     Icon: Shield,
-    //     badge: 'Legal — Privacy Policy',
-    //     title: 'Privacy Policy',
-    //     titleGrad: 'Privacy',
-    //     titlePlain: ' Policy',
-    //     desc: 'Our Privacy Policy explains how Black Snow Holdings collects, uses, and protects your personal information as an affiliate partner.',
-    //     legalTitle: 'What We Cover',
-    //     legalSummary:
-    //         'We collect only the data necessary to operate the affiliate program and pay commissions. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
-    //     legalLink: '/privacy',
-    //     bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
-    // },
-    // {
-    //     id: 'acknowledge',
-    //     variant: 'acknowledge',
-    //     accent: '#5EDC7A',
-    //     Icon: Shield,
-    //     badge: 'Legal Acknowledgement',
-    //     title: "You're Almost In",
-    //     titleGrad: 'Almost',
-    //     titlePlain: "You're ",
-    //     gradAtEnd: true,
-    //     desc: 'By proceeding you confirm you have read and agree to all the legal documents listed below. You understand that earnings are not guaranteed and you operate as an independent contractor.',
-    //     isLast: true,
-    //     bullets: [
-    //         'Affiliate Agreement',
-    //         'Independent Contractor Agreement',
-    //         'Earnings Disclosure',
-    //         'GDPR & Privacy Policy',
-    //         'Terms & Conditions',
-    //         'Privacy Policy',
-    //     ],
-    // },
 ];
 
-// ── Sub-components ────────────────────────────────────────────
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (i: number) => void }) {
-    const groups = [
-        { label: 'Instructions', range: [0, 5] },
-        { label: 'Legal', range: [6, 11] },
-        { label: 'Confirm', range: [12, 12] },
-    ];
-
     return (
-        <div className='flex items-center gap-3'>
-            {groups.map((g, gi) => (
-                <div key={gi} className='flex items-center gap-1'>
-                    {Array.from({ length: g.range[1] - g.range[0] + 1 }).map((_, i) => {
-                        const idx = g.range[0] + i;
-                        return (
-                            <button
-                                key={idx}
-                                onClick={() => onDot(idx)}
-                                className='rounded-full transition-all duration-400'
-                                style={{
-                                    width: idx === current ? 20 : 6,
-                                    height: 6,
-                                    backgroundColor: idx === current ? accent : idx < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
-                                }}
-                            />
-                        );
-                    })}
-                    {gi < groups.length - 1 && <div className='w-3 h-px bg-white/10 mx-1' />}
-                </div>
+        <div className='flex items-center gap-1.5'>
+            {Array.from({ length: total }).map((_, idx) => (
+                <button
+                    key={idx}
+                    onClick={() => onDot(idx)}
+                    className='rounded-full transition-all duration-300'
+                    style={{
+                        width: idx === current ? 20 : 6,
+                        height: 6,
+                        backgroundColor: idx === current ? accent : idx < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
+                    }}
+                />
             ))}
         </div>
     );
 }
 
-function SectionLabel({ current }: { current: number }) {
-    const label = current <= 5 ? 'Instructions' : current <= 11 ? 'Legal Review' : 'Confirm';
-    const colors: Record<string, string> = { Instructions: '#4cc7e8', 'Legal Review': '#F5A623', Confirm: '#5EDC7A' };
+function SectionLabel() {
     return (
-        <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: colors[label], backgroundColor: `${colors[label]}18` }}>
-            {label}
+        <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: '#4cc7e8', backgroundColor: '#4cc7e818' }}>
+            Instructions
         </span>
     );
 }
 
-export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => void }) {
-    const [open, setOpen] = useState(false);
+type AffiliateOnboardingPopupProps = {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onComplete?: () => void;
+};
+
+export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: AffiliateOnboardingPopupProps) {
     const [mounted, setMounted] = useState(false);
     const [current, setCurrent] = useState(0);
     const [dir, setDir] = useState<'next' | 'prev'>('next');
@@ -309,24 +175,35 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
 
     useEffect(() => {
         setMounted(true);
-        const seen = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-        if (seen) return;
-        const t = setTimeout(() => {
-            setOpen(true);
-            setTimeout(() => setInView(true), 30);
-        }, 3000);
-        return () => clearTimeout(t);
     }, []);
+
+    useEffect(() => {
+        if (!open) {
+            setInView(false);
+            return;
+        }
+
+        setCurrent(0);
+        setAgreed(false);
+
+        const t = setTimeout(() => {
+            setInView(true);
+        }, 30);
+
+        return () => clearTimeout(t);
+    }, [open]);
 
     if (!mounted || !open) return null;
 
     const close = (completed = false) => {
         setInView(false);
         setTimeout(() => {
-            setOpen(false);
+            onOpenChange(false);
+
             try {
                 if (completed) localStorage.setItem(STORAGE_KEY, '1');
             } catch {}
+
             if (completed && onComplete) onComplete();
         }, 350);
     };
@@ -348,10 +225,12 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
         }
         goTo(current + 1, 'next');
     };
+
     const handlePrev = () => {
         if (current === 0) return;
         goTo(current - 1, 'prev');
     };
+
     const handleDot = (i: number) => {
         if (i === current || animating) return;
         goTo(i, i > current ? 'next' : 'prev');
@@ -394,12 +273,10 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
             </>
         );
 
-    // Nav button label
-    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Continue' : 'Please agree to continue') : current === 5 ? 'Review Legal →' : 'Next';
+    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Continue' : 'Agree & Continue') : 'Next';
 
     return (
         <>
-            {/* Backdrop */}
             <div
                 onClick={() => close(false)}
                 className='fixed inset-0 z-[9990] bg-black/78 backdrop-blur-sm'
@@ -407,25 +284,19 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
             />
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
-                {/* ══════════════════════════════════════════
-                    DESKTOP (lg+)
-                ══════════════════════════════════════════ */}
                 <div
                     className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
                     style={{ ...modalEnter, minHeight: 480 }}
                 >
-                    {/* Shimmer top bar */}
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
                     />
-                    {/* Glow */}
                     <div
                         className='absolute top-0 left-0 right-0 h-60 pointer-events-none'
                         style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}14 0%, transparent 65%)` }}
                     />
 
-                    {/* Close */}
                     <button
                         onClick={() => close(false)}
                         className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
@@ -434,12 +305,9 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    {/* Body */}
                     <div className='flex flex-1 min-h-0'>
-                        {/* LEFT */}
                         <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0'>
                             <div style={slideAnim}>
-                                {/* Badge row */}
                                 <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
@@ -448,19 +316,16 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                         <Icon className='w-3.5 h-3.5' />
                                         {badge}
                                     </div>
-                                    <SectionLabel current={current} />
+                                    <SectionLabel />
                                 </div>
 
-                                {/* Title */}
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
                                     <GradTitle />
                                 </h2>
                                 <div className='h-0.5 rounded-full mb-4 w-14' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
 
-                                {/* Desc */}
                                 <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-sm'>{desc}</p>
 
-                                {/* Legal summary box */}
                                 {variant === 'legal' && legalSummary && (
                                     <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
                                         <p className='text-xs font-bold uppercase mb-2' style={{ color: accent }}>
@@ -481,42 +346,17 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                     </div>
                                 )}
 
-                                {/* Bullets */}
                                 {bullets && (
                                     <ul className='space-y-2.5'>
                                         {bullets.map((b, i) => (
                                             <li key={i} className='flex items-start gap-2.5'>
                                                 <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                                <span className='text-white/70 text-sm leading-snug'>
-                                                    {isLastSlide ? (
-                                                        <a
-                                                            href={
-                                                                [
-                                                                    '/affiliateagreement',
-                                                                    '/independentContract',
-                                                                    '/earningsdisclosure',
-                                                                    '/gdpr',
-                                                                    '/terms',
-                                                                    '/privacy',
-                                                                ][i]
-                                                            }
-                                                            target='_blank'
-                                                            rel='noopener noreferrer'
-                                                            className='hover:underline'
-                                                            style={{ color: accent }}
-                                                        >
-                                                            {b}
-                                                        </a>
-                                                    ) : (
-                                                        b
-                                                    )}
-                                                </span>
+                                                <span className='text-white/70 text-sm leading-snug'>{b}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 )}
 
-                                {/* Acknowledge checkbox */}
                                 {isLastSlide && (
                                     <label className='flex items-start gap-3 mt-6 cursor-pointer group'>
                                         <div
@@ -530,15 +370,12 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                             {agreed && <CheckCircle className='w-3 h-3 text-[#080b12]' strokeWidth={3} />}
                                         </div>
                                         <span className='text-white/60 text-xs leading-relaxed group-hover:text-white/80 transition-colors'>
-                                            I have read and agree to the Affiliate Agreement, Independent Contractor Agreement, Earnings Disclosure, GDPR
-                                            Policy, Terms & Conditions, and Privacy Policy. I understand that earnings are not guaranteed and I act as an
-                                            independent contractor.
+                                            I have read and agree to the affiliate terms.
                                         </span>
                                     </label>
                                 )}
                             </div>
 
-                            {/* Nav row */}
                             <div className='flex items-center gap-3 mt-8'>
                                 <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
                                 <div className='flex items-center gap-2 ml-auto'>
@@ -570,44 +407,37 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                             </div>
                         </div>
 
-                        {/* Divider */}
                         <div
                             className='w-[1px] self-stretch my-8'
                             style={{ background: `linear-gradient(to bottom, transparent, ${accent}30, transparent)` }}
                         />
 
-                        {/* RIGHT — icon panel */}
                         <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6' style={slideAnim}>
-                            {/* Large icon */}
                             <div
                                 className='w-24 h-24 rounded-2xl flex items-center justify-center'
                                 style={{ backgroundColor: `${accent}18`, border: `2px solid ${accent}30`, boxShadow: `0 0 40px ${accent}20` }}
                             >
                                 <Icon className='w-12 h-12' style={{ color: accent }} />
                             </div>
-                            {/* Section progress */}
+
                             <div className='text-center'>
                                 <p className='text-xs font-semibold mb-1' style={{ color: accent }}>
-                                    {current <= 5 ? 'Instructions' : current <= 11 ? 'Legal Review' : 'Final Step'}
+                                    Instructions
                                 </p>
                                 <p className='text-white/30 text-xs'>
                                     Step {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
-                            {/* Mini section markers */}
+
                             <div className='flex flex-col gap-2 w-full mt-2'>
-                                {[
-                                    { label: '6 instruction slides', done: current >= 6, active: current <= 5 },
-                                    { label: '6 legal documents', done: current >= 12, active: current >= 6 && current <= 11 },
-                                    { label: 'Confirmation', done: false, active: current === 12 },
-                                ].map((s, i) => (
-                                    <div key={i} className='flex items-center gap-2'>
+                                {SLIDES.map((s, i) => (
+                                    <div key={s.id} className='flex items-center gap-2'>
                                         <div
                                             className='w-1.5 h-1.5 rounded-full flex-shrink-0'
-                                            style={{ backgroundColor: s.done ? accent : s.active ? accent : 'rgba(255,255,255,0.15)' }}
+                                            style={{ backgroundColor: i <= current ? accent : 'rgba(255,255,255,0.15)' }}
                                         />
-                                        <span className='text-xs' style={{ color: s.done || s.active ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)' }}>
-                                            {s.label}
+                                        <span className='text-xs' style={{ color: i <= current ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)' }}>
+                                            {s.badge}
                                         </span>
                                     </div>
                                 ))}
@@ -616,9 +446,6 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                     </div>
                 </div>
 
-                {/* ══════════════════════════════════════════
-                    MOBILE (< lg)
-                ══════════════════════════════════════════ */}
                 <div
                     className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
                     style={{ ...modalEnter }}
@@ -641,7 +468,6 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                     </button>
 
                     <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        {/* Badge + section */}
                         <div className='flex items-center gap-2 flex-wrap mb-4'>
                             <div
                                 className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
@@ -650,7 +476,7 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                 <Icon className='w-3 h-3' />
                                 {badge}
                             </div>
-                            <SectionLabel current={current} />
+                            <SectionLabel />
                         </div>
 
                         <h2 className='text-2xl font-black text-white leading-tight mb-2'>
@@ -659,7 +485,6 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                         <div className='h-0.5 rounded-full mb-3 w-10' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
                         <p className='text-gray-400 text-xs leading-relaxed mb-3'>{desc}</p>
 
-                        {/* Legal summary */}
                         {variant === 'legal' && legalSummary && (
                             <div className='rounded-xl p-3 mb-3 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
                                 <p className='text-xs font-bold uppercase mb-1' style={{ color: accent }}>
@@ -680,35 +505,17 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                             </div>
                         )}
 
-                        {/* Bullets */}
                         {bullets && (
                             <ul className='space-y-1.5'>
                                 {bullets.map((b, i) => (
                                     <li key={i} className='flex items-start gap-2'>
                                         <CheckCircle className='w-3.5 h-3.5 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                        <span className='text-white/65 text-xs leading-snug'>
-                                            {isLastSlide ? (
-                                                <a
-                                                    href={
-                                                        ['/affiliateagreement', '/independentcontract', '/earningsdisclosure', '/gdpr', '/terms', '/privacy'][i]
-                                                    }
-                                                    target='_blank'
-                                                    rel='noopener noreferrer'
-                                                    className='hover:underline'
-                                                    style={{ color: accent }}
-                                                >
-                                                    {b}
-                                                </a>
-                                            ) : (
-                                                b
-                                            )}
-                                        </span>
+                                        <span className='text-white/65 text-xs leading-snug'>{b}</span>
                                     </li>
                                 ))}
                             </ul>
                         )}
 
-                        {/* Acknowledge */}
                         {isLastSlide && (
                             <label className='flex items-start gap-2.5 mt-4 cursor-pointer'>
                                 <div
@@ -721,15 +528,11 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                 >
                                     {agreed && <CheckCircle className='w-3 h-3 text-[#080b12]' strokeWidth={3} />}
                                 </div>
-                                <span className='text-white/55 text-xs leading-relaxed'>
-                                    I have read and agree to all the legal documents. I understand earnings are not guaranteed and I act as an independent
-                                    contractor.
-                                </span>
+                                <span className='text-white/55 text-xs leading-relaxed'>I have read and agree to all the legal documents.</span>
                             </label>
                         )}
                     </div>
 
-                    {/* Nav */}
                     <div className='relative z-10 px-6 pb-5'>
                         <div className='flex items-center gap-2'>
                             <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />

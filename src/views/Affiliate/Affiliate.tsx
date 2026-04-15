@@ -19,7 +19,8 @@ type LottieAnimationProps = {
 
 function Affiliate() {
     const [showDashboardButton, setShowDashboardButton] = useState(false);
-    // Ref for the "Earn Big Commissions" section
+    const [isAffiliatePopupOpen, setIsAffiliatePopupOpen] = useState(false);
+
     const earnBigRef = useRef<HTMLElement | null>(null);
 
     const handleScrollToEarnBig = () => {
@@ -45,49 +46,6 @@ function Affiliate() {
 
         return <div ref={containerRef} className={className} style={style} />;
     };
-
-    // const plans = [
-    //     {
-    //         title: 'Lightning Silver',
-    //         kicker: 'Start Free. Build Recurring Income',
-    //         priceMonthly: '$5 / month',
-    //         commission: '25% lifetime commissions',
-    //         description:
-    //             'Earn 25% lifetime commissions on both monthly and annual subscriptions for every active customer you refer. Build predictable long-term payouts while tracking performance and growing at your own pace.',
-    //         highlights: [
-    //             'Free membership',
-    //             '25% lifetime commissions',
-    //             'Referral bonuses: earn $100/month for every 10 products sold',
-    //             'Email & SMS CRM included to promote offers',
-    //             'KPI dashboard for sales, traffic, and performance tracking',
-    //             'Automated payouts with no income cap',
-    //         ],
-    //         icon: Rocket,
-    //         color: 'from-[#4cc7e8] to-[#2c7bbe]',
-    //         // Silver plan redirects to /lightningSilver
-    //         cta: { joinText: 'Join Silver', joinRedirect: '/lightningSilver', learnHref: '/lightningSilver' },
-    //     },
-    //     {
-    //         title: 'Lightning Gold',
-    //         kicker: 'Scale Faster. Maximize Every Sale',
-    //         priceMonthly: '$250 / month',
-    //         commission: '75% lifetime commissions',
-    //         description:
-    //             'Earn 75% lifetime commissions on both monthly and annual subscriptions for every active customer you refer with a $250/month membership. Convert the same traffic into higher recurring payouts and scale more efficiently.',
-    //         highlights: [
-    //             'Max commission rate: 75% lifetime commissions',
-    //             '$250/month membership',
-    //             'Referral bonuses: earn $100/month for every 10 products sold',
-    //             'Email & SMS CRM included to promote offers',
-    //             'KPI dashboard for sales, traffic, and performance tracking',
-    //             'Automated payouts with no income cap',
-    //         ],
-    //         icon: Target,
-    //         color: 'from-[#2c7bbe] to-[#4cc7e8]',
-    //         // Gold plan redirects to /lightningGold
-    //         cta: { joinText: 'Join Gold', joinRedirect: '/lightningGold', learnHref: '/lightningGold' },
-    //     },
-    // ];
 
     const whyJoin = [
         {
@@ -123,13 +81,11 @@ function Affiliate() {
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             <ShareBanner />
-            <AffiliateOnboardingPopup />
+            <AffiliateOnboardingPopup open={isAffiliatePopupOpen} onOpenChange={setIsAffiliatePopupOpen} />
 
-            {/* Hero Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        {/* Left Content */}
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
@@ -148,9 +104,15 @@ function Affiliate() {
                                 </p>
                             </div>
 
-                            {/* CTA Buttons */}
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
-                                {/* Join Now scrolls smoothly to Earn Big Commissions section */}
+                                <Button
+                                    onClick={() => setIsAffiliatePopupOpen(true)}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    Learn More
+                                </Button>
+
                                 <Button
                                     onClick={handleScrollToEarnBig}
                                     size='lg'
@@ -173,7 +135,6 @@ function Affiliate() {
                             </div>
                         </div>
 
-                        {/* Right */}
                         <div className='relative animate-slide-in-right'>
                             <div className='relative overflow-hidden'>
                                 <div className='relative flex items-center justify-center w-full h-full'>
@@ -192,7 +153,6 @@ function Affiliate() {
                 </div>
             </section>
 
-            {/* Earn Big Commissions — ref attached here for smooth scroll target */}
             <section ref={earnBigRef} className='relative pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-14 sm:mb-16'>
@@ -208,7 +168,6 @@ function Affiliate() {
                 </div>
             </section>
 
-            {/* Referral Program */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-10 sm:mb-14'>
@@ -262,7 +221,6 @@ function Affiliate() {
                 </div>
             </section>
 
-            {/* Why Join Our Program */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
@@ -296,7 +254,6 @@ function Affiliate() {
                 </div>
             </section>
 
-            {/* Final CTA with Lottie */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
