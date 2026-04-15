@@ -155,7 +155,7 @@ function LightningGold() {
                                 <Button
                                     onClick={handleJoinGold}
                                     size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
                                     Join Gold
                                 </Button>
@@ -263,7 +263,7 @@ function LightningGold() {
                                 <Button
                                     onClick={handleJoinGold}
                                     size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
                                     Join Gold
                                 </Button>

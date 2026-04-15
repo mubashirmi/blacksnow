@@ -289,6 +289,7 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com',
         productComission: '100',
         hasSubscription: true,
+        monthlyOnly: false,
     },
     {
         id: 'InvoiceTool',
@@ -305,6 +306,7 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/InvoiceContract',
         productComission: '10',
         hasSubscription: true,
+        monthlyOnly: false,
     },
     {
         id: 'DigitalBillboard',
@@ -328,6 +330,7 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/advertising',
         productComission: '150',
         hasSubscription: true,
+        monthlyOnly: false,
     },
     {
         id: 'Sales',
@@ -351,6 +354,7 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/emailMarketing',
         productComission: '100',
         hasSubscription: true,
+        monthlyOnly: false,
     },
     {
         id: 'LightningSilver',
@@ -375,6 +379,8 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/lightningSilver',
         productComission: '100',
         hasSubscription: true,
+        // ── Monthly only — no yearly billing ──
+        monthlyOnly: true,
     },
     {
         id: 'SuperAffiliate',
@@ -399,6 +405,8 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/lightningGold',
         productComission: '100',
         hasSubscription: true,
+        // ── Monthly only — no yearly billing ──
+        monthlyOnly: true,
     },
 ];
 
@@ -439,6 +447,14 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         return PRODUCTS.find((p) => p.apiName === name || p.id === name) || null;
     }, [name]);
 
+    // ── Per-product accent color ──
+    const productAccent = useMemo(() => {
+        if (!product) return null;
+        if (product.id === 'SuperAffiliate') return '#ffd500';
+        if (product.id === 'LightningSilver') return '#8d96c2';
+        return null;
+    }, [product]);
+
     useEffect(() => {
         setIsClient(true);
 
@@ -457,10 +473,14 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
             });
     }, []);
 
+    // ── Force monthly billing for monthlyOnly products ──
+    const effectiveBillingPeriod: BillingPeriod = product?.monthlyOnly ? 'monthly' : billingPeriod;
+
     const getProductPrice = useCallback(
         (p: any) => {
             if (!p?.hasSubscription) return `$${p?.price}`;
-            return billingPeriod === 'monthly' ? `$${p?.monthlyPrice}` : `$${p?.yearlyPrice}`;
+            const period = p.monthlyOnly ? 'monthly' : billingPeriod;
+            return period === 'monthly' ? `$${p?.monthlyPrice}` : `$${p?.yearlyPrice}`;
         },
         [billingPeriod]
     );
@@ -468,7 +488,8 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const getProductPeriod = useCallback(
         (p: any) => {
             if (!p?.hasSubscription) return `/ ${p?.period}`;
-            return billingPeriod === 'monthly' ? '/Month' : '/Year';
+            const period = p.monthlyOnly ? 'monthly' : billingPeriod;
+            return period === 'monthly' ? '/Month' : '/Year';
         },
         [billingPeriod]
     );
@@ -550,7 +571,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     productType,
                 };
 
-                if (p.hasSubscription) requestBody.period = billingPeriod;
+                if (p.hasSubscription) requestBody.period = effectiveBillingPeriod;
 
                 const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
                 window.location.href = stripeResponse?.data?.data;
@@ -558,7 +579,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 console.error('Error in handlePurchase:', error);
             }
         },
-        [billingPeriod, fetchUserEmail, isClient, isLoadingEmail]
+        [effectiveBillingPeriod, fetchUserEmail, isClient, isLoadingEmail]
     );
 
     const handleUnsubscribe = useCallback((p: any) => {
@@ -600,24 +621,48 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const savings = getSavingsPercentage(product);
     const displayPeriod = getProductPeriod(product).replace('/', '').trim();
 
+    // ── Resolve button / border accent (falls back to default blue) ──
+    const btnFrom = productAccent ?? '#2c7bbe';
+    const btnTo = productAccent ?? '#4cc7e8';
+    // For Lightning Gold use dark text (yellow bg), otherwise white
+    const btnTextClass = product.id === 'SuperAffiliate' ? 'text-black' : 'text-white';
+
     const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
-                className={`relative rounded-[32px] border overflow-hidden flex flex-col ${isPurchased ? 'border-emerald-400/25' : 'border-white/10'} ${
-                    product.available ? '' : 'opacity-70'
-                } ${inModal ? 'w-full' : ''}`}
+                className={`relative rounded-[32px] border overflow-hidden flex flex-col ${
+                    isPurchased ? 'border-emerald-400/25' : productAccent ? '' : 'border-white/10'
+                } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
                 style={{
                     minHeight: UNIFIED_CARD_HEIGHT,
                     height: UNIFIED_CARD_HEIGHT,
                     background: 'linear-gradient(180deg, rgba(7,9,13,0.98) 0%, rgba(10,12,18,0.98) 45%, rgba(6,8,12,1) 100%)',
-                    boxShadow: isPurchased ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12)' : '0 24px 60px rgba(0,0,0,0.7)',
+                    boxShadow: isPurchased
+                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12)'
+                        : productAccent
+                        ? `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${productAccent}22`
+                        : '0 24px 60px rgba(0,0,0,0.7)',
+                    // Apply accent border color for Lightning products
+                    borderColor: productAccent && !isPurchased ? `${productAccent}50` : undefined,
                 }}
             >
-                <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${isPurchased ? 'from-emerald-400 to-green-500' : product.color}`} />
+                {/* Top accent line */}
+                <div
+                    className={`absolute top-0 left-0 w-full h-[2px] ${!productAccent && !isPurchased ? `bg-gradient-to-r ${product.color}` : ''}`}
+                    style={
+                        isPurchased
+                            ? { background: 'linear-gradient(to right, #34d399, #10b981)' }
+                            : productAccent
+                            ? { background: `linear-gradient(90deg, transparent, ${productAccent}, transparent)` }
+                            : undefined
+                    }
+                />
                 <div
                     className='absolute inset-0 pointer-events-none'
                     style={{
-                        background: 'radial-gradient(circle at top, rgba(76,199,232,0.14) 0%, transparent 30%)',
+                        background: productAccent
+                            ? `radial-gradient(circle at top, ${productAccent}14 0%, transparent 30%)`
+                            : 'radial-gradient(circle at top, rgba(76,199,232,0.14) 0%, transparent 30%)',
                     }}
                 />
 
@@ -642,7 +687,8 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         <div aria-hidden='true' className='h-14 w-14' />
                     </div>
 
-                    {product.hasSubscription && (
+                    {/* Billing toggle — hidden for monthlyOnly products */}
+                    {product.hasSubscription && !product.monthlyOnly && (
                         <div className='mt-5 flex justify-center'>
                             <div className='flex w-full max-w-[220px] rounded-full border border-white/12 bg-white/5 p-1 shadow-inner'>
                                 <button
@@ -671,7 +717,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         <div className='text-[46px] sm:text-[52px] leading-none font-black tracking-tight text-white'>{getProductPrice(product)}</div>
                         <div className='mt-2 text-sm font-bold tracking-wide text-white/75'>{displayPeriod}</div>
 
-                        {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
+                        {billingPeriod === 'yearly' && product.hasSubscription && !product.monthlyOnly && savings > 0 && (
                             <div className='mt-3 inline-flex items-center rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-300'>
                                 Save {savings}% with yearly billing
                             </div>
@@ -690,8 +736,12 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 onClick={() => termsCompleted && setTermsChecked(!termsChecked)}
                                 className='mt-0.5 h-5 w-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
                                 style={{
-                                    backgroundColor: termsChecked ? '#4cc7e8' : 'transparent',
-                                    borderColor: termsChecked ? '#4cc7e8' : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                                    backgroundColor: termsChecked ? productAccent ?? '#4cc7e8' : 'transparent',
+                                    borderColor: termsChecked
+                                        ? productAccent ?? '#4cc7e8'
+                                        : termsCompleted
+                                        ? 'rgba(255,255,255,0.35)'
+                                        : 'rgba(255,255,255,0.15)',
                                     opacity: termsCompleted ? 1 : 0.5,
                                 }}
                             >
@@ -704,7 +754,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     type='button'
                                     onClick={() => setShowTermsModal(true)}
                                     className='text-sm font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                    style={{ color: '#93c5fd' }}
+                                    style={{ color: productAccent ?? '#93c5fd' }}
                                 >
                                     Terms and Conditions
                                 </button>
@@ -727,7 +777,11 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 ) : (
                                     <Button
                                         size='lg'
-                                        className='w-full cursor-pointer rounded-xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:opacity-90 text-white py-6 font-bold shadow-xl transition disabled:opacity-40 disabled:cursor-not-allowed'
+                                        className={`w-full cursor-pointer rounded-xl hover:opacity-90 py-6 font-bold shadow-xl transition disabled:opacity-40 disabled:cursor-not-allowed ${btnTextClass}`}
+                                        style={{
+                                            background: `linear-gradient(135deg, ${btnFrom}, ${btnTo})`,
+                                            boxShadow: `0 8px 24px ${btnFrom}40`,
+                                        }}
                                         onClick={() => handlePurchase(product)}
                                         disabled={isLoadingEmail || !termsChecked}
                                         title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
