@@ -510,7 +510,7 @@ export function AffiliateOnboardingPopup({ onComplete }: { onComplete?: () => vo
                                                             href={
                                                                 [
                                                                     '/affiliateagreement',
-                                                                    '/independentcontract',
+                                                                    '/independentContract',
                                                                     '/earningsdisclosure',
                                                                     '/gdpr',
                                                                     '/terms',

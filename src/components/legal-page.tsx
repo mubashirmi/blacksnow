@@ -17,7 +17,7 @@ export default function LegalPage() {
                 key: 'agreement.affiliateAgreement',
                 title: 'Affiliate Agreement',
             },
-            '/terms': { url: '/api/v2/terms', key: 'terms.terms', title: 'Terms & Policy' },
+            '/terms': { url: '/api/v2/terms', key: 'terms.terms', title: 'Terms & Conditions' },
             '/riskdisclosure': {
                 url: '/api/v2/risk-disclosure',
                 key: 'disclosure.riskDisclosure',

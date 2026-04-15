@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import lottie from 'lottie-web';
-import { ArrowRight, DollarSign, Mail, MapPin, Settings, Users } from 'lucide-react';
+import { DollarSign, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
@@ -374,7 +374,6 @@ function Page() {
                                                 onClick={() => handleApplyClick(job.id)}
                                             >
                                                 Apply Now
-                                                <ArrowRight className='w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300' />
                                             </Button>
                                         </CardContent>
 
@@ -410,9 +409,7 @@ function Page() {
                                         size='lg'
                                         className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
                                     >
-                                        <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         Join Now
-                                        <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' />
                                     </Button>
                                 </Link>
                                 <Link href={'/pricing'}>
@@ -421,7 +418,6 @@ function Page() {
                                         variant='outline'
                                         className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                     >
-                                        <Settings className='w-5 h-5 sm:w-6 sm:h-6 mr-3' />
                                         Learn More
                                     </Button>
                                 </Link>

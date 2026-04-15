@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -53,14 +52,8 @@ function FAQ() {
             {/* Hero Section */}
             <section className='relative pt-16 sm:pt-20 md:pt-24 pb-4 sm:pb-8 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-7xl text-center'>
-                    <div>
-                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                            SUPPORT CENTER
-                        </Badge>
-                    </div>
-                    {/* underline = exact heading width */}
                     <div className='inline-block'>
-                        <h1 className='text-5xl sm:text-6xl md:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                        <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Frequently</span>
                             <br />
                             <span className='text-white'>Asked Questions</span>

@@ -1,9 +1,9 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
-import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, Shield, User, X } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, Shield, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -326,13 +326,13 @@ function ProductHeader({
     const savingsPct = savings();
 
     return (
-        <div className='relative px-8 pt-7 pb-0'>
+        <div className='relative px-7 pt-6 pb-0'>
             {/* Top accent line */}
             <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${product.color ?? 'from-[#2c7bbe] to-[#4cc7e8]'}`} />
 
             {/* Product name row */}
-            <div className='grid grid-cols-[48px_minmax(0,1fr)_48px] items-center gap-3 mb-4'>
-                <div className='h-12 w-12 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center shadow-md'>
+            <div className='grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-3 mb-3'>
+                <div className='h-11 w-11 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center shadow-md'>
                     {ProductIcon ? (
                         <ProductIcon className='w-6 h-6 text-white/80' />
                     ) : (
@@ -341,16 +341,16 @@ function ProductHeader({
                 </div>
 
                 <div className='flex flex-col items-center justify-center text-center'>
-                    <h3 className='text-[22px] font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
+                    <h3 className='text-[21px] font-extrabold text-white leading-tight tracking-tight'>{product.name}</h3>
                     {product.description && <p className='text-xs text-white/45 mt-0.5 leading-snug line-clamp-1'>{product.description}</p>}
                 </div>
 
-                <div aria-hidden='true' className='h-12 w-12' />
+                <div aria-hidden='true' className='h-11 w-11' />
             </div>
 
             {/* Billing toggle */}
             {product.hasSubscription && (
-                <div className='flex justify-center mb-4'>
+                <div className='flex justify-center mb-3'>
                     <div className='flex w-full max-w-[220px] rounded-full border border-white/12 bg-white/5 p-1 shadow-inner'>
                         <button
                             type='button'
@@ -376,9 +376,9 @@ function ProductHeader({
 
             {/* Price display */}
             {price && (
-                <div className='flex flex-col items-center text-center mb-4'>
+                <div className='flex flex-col items-center text-center mb-3'>
                     <div className='flex items-end gap-1'>
-                        <span className='text-[42px] leading-none font-black tracking-tight text-white'>{price}</span>
+                        <span className='text-[38px] leading-none font-black tracking-tight text-white'>{price}</span>
                         {period && <span className='text-sm font-bold text-white/60 mb-1.5'>/{period}</span>}
                     </div>
                     {billingPeriod === 'yearly' && product.hasSubscription && savingsPct > 0 && (
@@ -389,7 +389,7 @@ function ProductHeader({
                 </div>
             )}
 
-            <div className='h-px w-full bg-white/10 mb-1' />
+            <div className='h-px w-full bg-white/10' />
         </div>
     );
 }
@@ -519,7 +519,7 @@ export default function AuthModal({
                     if (!isLoading) onOpenChange(v);
                 }}
             >
-                <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none'>
+                <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
                     <div
                         className='relative rounded-[32px] border border-white/10 overflow-hidden flex flex-col'
                         style={{
@@ -546,17 +546,21 @@ export default function AuthModal({
                         )}
 
                         {/* Close button */}
-                        <DialogClose asChild>
-                            <button className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all duration-300 z-10'>
-                                <X className='w-5 h-5 text-white/70' />
-                            </button>
-                        </DialogClose>
+                        <button
+                            type='button'
+                            onClick={() => {
+                                if (!isLoading) onOpenChange(false);
+                            }}
+                            className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all duration-300 z-20'
+                        >
+                            <X className='w-5 h-5 text-white/70' />
+                        </button>
 
                         {/* ── Header (shown only when no productContext) ── */}
                         {!hasProduct && (
-                            <DialogHeader className='relative z-10 px-8 pt-8 pb-0 text-center'>
+                            <DialogHeader className='relative z-10 px-7 pt-7 pb-0 text-center'>
                                 <div className='flex flex-col items-center mb-5'>
-                                    <div className='h-16 w-16 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center mb-5 shadow-xl'>
+                                    <div className='h-14 w-14 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center mb-4 shadow-xl'>
                                         <Image width={120} height={120} src='/logocolored.png' alt='Logo' className='object-contain' />
                                     </div>
                                     <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
@@ -571,7 +575,7 @@ export default function AuthModal({
 
                         {/* ── Auth sub-title when product header is present ── */}
                         {hasProduct && (
-                            <div className='relative z-10 px-8 pt-4 pb-0 text-center'>
+                            <div className='relative z-10 px-7 pt-3 pb-0 text-center'>
                                 <p className='text-[15px] font-bold text-white/90'>{isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}</p>
                                 <p className='text-xs text-white/40 mt-0.5'>
                                     {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
@@ -591,11 +595,11 @@ export default function AuthModal({
                         )}
 
                         {/* ── Body ── */}
-                        <div className='relative z-10 px-8 pb-6 pt-4 overflow-y-auto flex-1 flex flex-col'>
+                        <div className='relative z-10 px-7 pb-5 pt-3 overflow-hidden flex-1 flex flex-col'>
                             {/* Alert */}
                             {alert.message && (
                                 <div
-                                    className={`mb-4 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
+                                    className={`mb-3 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
                                         alert.type === 'success'
                                             ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
                                             : 'border-red-400/30 bg-red-500/10 text-red-300'
@@ -616,7 +620,7 @@ export default function AuthModal({
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3 flex-1'>
+                            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2.5 flex-1'>
                                 {/* Full Name (sign-up only) */}
                                 {isSignUp && (
                                     <div className='space-y-1'>
@@ -634,7 +638,7 @@ export default function AuthModal({
                                                         return cleaned.length >= 2 || 'Please enter your name';
                                                     },
                                                 })}
-                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
                                             <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                         </div>
@@ -650,7 +654,7 @@ export default function AuthModal({
                                             type='email'
                                             placeholder='Email address'
                                             {...register('email', { required: 'Email is required', validate: validateEmail as any })}
-                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                         />
                                         <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                     </div>
@@ -665,7 +669,7 @@ export default function AuthModal({
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder='Password'
                                             {...register('password', { required: 'Password is required', validate: validatePassword as any })}
-                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-6 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
+                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:border-[#4cc7e8]/50 focus:bg-black/35 transition-all duration-300 outline-none'
                                         />
                                         <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                         <button
@@ -680,7 +684,7 @@ export default function AuthModal({
                                 </div>
 
                                 {/* ── Terms checkbox — opens shared TermsSlideModal ── */}
-                                <div className='flex items-start gap-3 pt-1'>
+                                <div className='flex items-start gap-3 pt-0.5'>
                                     <button
                                         type='button'
                                         disabled={!termsCompleted}
@@ -705,16 +709,6 @@ export default function AuthModal({
                                         >
                                             Terms & Conditions
                                         </button>{' '}
-                                        and{' '}
-                                        <button
-                                            type='button'
-                                            onClick={() => setShowTermsModal(true)}
-                                            className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                            style={{ color: '#93c5fd' }}
-                                        >
-                                            Privacy Policy
-                                        </button>
-                                        {!termsCompleted && <span className='ml-1.5 text-[11px] text-white/30 italic'>(click to review)</span>}
                                     </p>
                                 </div>
 
@@ -722,21 +716,18 @@ export default function AuthModal({
                                 <Button
                                     type='submit'
                                     disabled={isLoading || !termsAccepted}
-                                    className='w-full rounded-2xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:opacity-90 text-white py-6 font-bold text-base shadow-xl transition-all duration-300 group disabled:opacity-40 disabled:cursor-not-allowed mt-auto'
+                                    className='w-full rounded-2xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:opacity-90 text-white py-5 font-bold text-base shadow-xl transition-all duration-300 group disabled:opacity-40 disabled:cursor-not-allowed mt-auto'
                                 >
                                     {isLoading ? (
                                         <div className='flex items-center justify-center gap-2'>
-                                            <svg className='animate-spin h-5 w-5 text-white' viewBox='0 0 24 24'>
+                                            {/* <svg className='animate-spin h-5 w-5 text-white' viewBox='0 0 24 24'>
                                                 <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
                                                 <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
-                                            </svg>
+                                            </svg> */}
                                             Processing...
                                         </div>
                                     ) : (
-                                        <>
-                                            {isSignUp ? 'Create Account' : 'Sign In'}
-                                            <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
-                                        </>
+                                        <>{isSignUp ? 'Create Account' : 'Sign In'}</>
                                     )}
                                 </Button>
 
@@ -762,7 +753,7 @@ export default function AuthModal({
                             </form>
 
                             {/* Footer */}
-                            <div className='mt-4 flex items-center justify-center gap-2 text-xs text-white/30'>
+                            <div className='mt-3 flex items-center justify-center gap-2 text-xs text-white/30'>
                                 <Lock className='h-3.5 w-3.5' />
                                 Secure &amp; encrypted connection
                             </div>

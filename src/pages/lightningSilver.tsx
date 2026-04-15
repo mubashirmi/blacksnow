@@ -1,6 +1,7 @@
 'use client';
 
 import AuthModal from '@/components/AuthModal';
+import LightningSilverSlideshow from '@/components/LightningSilverSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
 import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ function LightningSilver() {
     const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
     const [authDefaultView, setAuthDefaultView] = useState<'signin' | 'signup'>('signup');
+    const [activeSlideshow, setActiveSlideshow] = useState<'silver' | 'gold' | null>(null);
     // eslint-disable-next-line
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -112,10 +114,7 @@ function LightningSilver() {
                             <div>
                                 <div style={{ display: 'table' }}>
                                     <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-3 sm:mb-4 leading-tight'>
-                                        Lightning Silver{' '}
-                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
-                                            Earn 25% Commission
-                                        </span>
+                                        Lightning Silver <span className='text-[#8d96c2]'>Earn 25% Commission</span>
                                     </h1>
                                 </div>
 
@@ -128,9 +127,16 @@ function LightningSilver() {
 
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
+                                    onClick={() => setActiveSlideshow('silver')}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#8d96c2]/60 cursor-pointer hover:bg-[#8d96c2]/10 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-sm shadow-[#8d96c2]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    Learn More
+                                </Button>
+                                <Button
                                     onClick={handleJoinSilver}
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#8d96c2]/60 cursor-pointer bg-[#8d96c2] hover:bg-[#8d96c2]/70 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#8d96c2]/60 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
                                     Join Silver
                                 </Button>
@@ -141,7 +147,7 @@ function LightningSilver() {
                             <div className='relative flex items-center justify-center w-full h-full'>
                                 <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
-                                        src='/animations/coinsdollarjump.json'
+                                        src='/animations/lightningSilverherosection.json'
                                         className='w-[90%] lg:w-[85%] max-w-[255px] sm:max-w-[295px] md:max-w-[340px] lg:max-w-[360px] h-[315px] sm:h-[355px] md:h-[395px] lg:h-[415px]'
                                         loop
                                         autoplay
@@ -157,7 +163,7 @@ function LightningSilver() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Build Earnings From <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Subscribers</span>
+                            Build Earnings From <span className='text-[#8d96c2]'>Subscribers</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Every active subscriber you refer generates a lifetime commission—paid monthly or annually for as long as they stay subscribed. No
@@ -165,22 +171,22 @@ function LightningSilver() {
                         </p>
                     </div>
 
-                    <Card className='bg-[#8d96c2] rounded-2xl overflow-hidden mb-8 sm:mb-10'>
+                    <Card className='bg-black/70 rounded-2xl overflow-hidden mb-8 sm:mb-10 border-[1px] border-[#8d96c2]/60'>
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
                                 <div className='flex flex-row justify-between w-full'>
                                     <div>
-                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>Lightning Silver (25%)</div>
-                                        <div className='text-gray-800 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2]'>Lightning Silver (25%)</div>
+                                        <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
                                     </div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-black'>5$ per month</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2]'>5$ per month</div>
                                 </div>
                                 <Badge className='bg-[#2c6bb2] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$5 / mo</Badge>
                             </div>
 
-                            <div className='overflow-x-auto rounded-xl border border-black/50'>
+                            <div className='overflow-x-auto rounded-xl border border-[#8d96c2]/60'>
                                 <table className='w-full text-left'>
-                                    <thead className='bg-white/5'>
+                                    <thead className='bg-[#8d96c2]/80'>
                                         <tr>
                                             <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Product</th>
                                             <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Monthly</th>
@@ -189,10 +195,10 @@ function LightningSilver() {
                                     </thead>
                                     <tbody>
                                         {commissionRows.map((row) => (
-                                            <tr key={row.product} className='border-t border-black/50 hover:bg-white/[0.02] transition-colors'>
+                                            <tr key={row.product} className='border-t border-[#8d96c2]/60 hover:bg-white/[0.02] transition-colors'>
                                                 <td className='p-4 sm:p-5 text-gray-200 font-medium text-sm sm:text-base'>{row.product}</td>
-                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.monthly}</td>
-                                                <td className='p-4 sm:p-5 text-[#4cc7e8] font-bold text-sm sm:text-base'>{row.annual}</td>
+                                                <td className='p-4 sm:p-5 text-gray-200 font-bold text-sm sm:text-base'>{row.monthly}</td>
+                                                <td className='p-4 sm:p-5 text-gray-200 font-bold text-sm sm:text-base'>{row.annual}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -212,7 +218,7 @@ function LightningSilver() {
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
                             <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Get <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>25% Lifetime</span> Commissions
+                                Get <span className='text-[#8d96c2]'>25% Lifetime</span> Commissions
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
                                 Get 25% lifetime commissions on every referral, for both monthly and annual plans. Use the built-in Email &amp; SMS CRM and KPI
@@ -221,9 +227,16 @@ function LightningSilver() {
 
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
+                                    onClick={() => setActiveSlideshow('silver')}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#8d96c2]/60 cursor-pointer hover:bg-[#8d96c2]/10 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-sm shadow-[#8d96c2]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    Learn More
+                                </Button>
+                                <Button
                                     onClick={handleJoinSilver}
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#8d96c2]/60 cursor-pointer bg-[#8d96c2] hover:bg-[#8d96c2]/70 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#8d96c2]/60 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
                                     Join Silver
                                 </Button>
@@ -232,12 +245,14 @@ function LightningSilver() {
 
                         <div className='flex items-center justify-center'>
                             <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
-                                <LottieAnimation src='/animations/dividendicon.json' loop autoplay className='w-full h-full' />
+                                <LottieAnimation src='/animations/lightningSilverctasection.json' loop autoplay className='w-full h-full' />
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
+            <LightningSilverSlideshow open={activeSlideshow === 'silver'} onOpenChange={(open) => setActiveSlideshow(open ? 'silver' : null)} />
         </div>
     );
 }

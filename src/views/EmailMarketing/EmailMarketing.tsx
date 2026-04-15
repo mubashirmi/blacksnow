@@ -1,18 +1,18 @@
 'use client';
 
+import EmailCRMSlideshow from '@/components/EmailCRMSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import lottie from 'lottie-web';
 import { BarChart3, Calendar, Clock, Edit3, Globe, Megaphone, Send, Target, Users, Zap } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 
 function EmailMarketing() {
+    // eslint-disable-next-line
     const [userId, setUserId] = useState<string | null>(null);
-    // const pricingRef = useRef<HTMLDivElement | null>(null);
+    const [slideshowOpen, setSlideshowOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
 
     const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
@@ -146,19 +146,11 @@ function EmailMarketing() {
                         {/* Left Content */}
                         <div className='space-y-10 animate-slide-in-left'>
                             <div>
-                                <div>
-                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                        POWERFUL EMAIL MARKETING
-                                    </Badge>
-                                </div>
-
                                 <div className='inline-block'>
                                     <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                         Email/SMS{' '}
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
                                     </h1>
-
-                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div> */}
                                 </div>
 
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
@@ -172,56 +164,22 @@ function EmailMarketing() {
                             {/* Quick Stats */}
 
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
-                                <>
-                                    {' '}
-                                    {userId ? (
-                                        <Link href={'/pricing'}>
-                                            <Button
-                                                size='lg'
-                                                className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
-                                            >
-                                                {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
-                                                Learn more
-                                                {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
-                                            </Button>
-                                        </Link>
-                                    ) : (
-                                        <Link href={'/login'}>
-                                            <Button
-                                                size='lg'
-                                                className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
-                                            >
-                                                {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
-                                                Learn more
-                                                {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
-                                            </Button>
-                                        </Link>
-                                    )}
-                                </>
+                                <Button
+                                    onClick={() => setSlideshowOpen(true)}
+                                    size='lg'
+                                    className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
+                                >
+                                    Learn more
+                                </Button>
                                 <Button
                                     size='lg'
                                     onClick={() => setPricingOpen(true)}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
-                            {/* <div className='grid grid-cols-3 gap-4 sm:gap-5'>
-                                <div className='text-center p-6 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
-                                    <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>99.9%</div>
-                                    <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Delivery Rate</div>
-                                </div>
-                                <div className='text-center p-6 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2a8dcc]/10 rounded-2xl border border-[#4cc7e8]/20'>
-                                    <div className='text-2xl sm:text-4xl font-black text-[#2c7bbe] mb-2'>50K+</div>
-                                    <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Emails/Hour</div>
-                                </div>
-                                <div className='text-center p-6 bg-gradient-to-r from-[#2a8dcc]/10 to-[#2c7bbe]/10 rounded-2xl border border-[#2a8dcc]/20'>
-                                    <div className='text-2xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>24/7</div>
-                                    <div className='text-gray-400 font-semibold text-xs sm:text-sm'>Support</div>
-                                </div>
-                            </div> */}
                         </div>
 
                         {/* RIGHT */}
@@ -247,10 +205,7 @@ function EmailMarketing() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                            CORE FEATURES
-                        </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Powerful <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email Marketing</span>
                             <br />
                             Capabilities
@@ -264,7 +219,6 @@ function EmailMarketing() {
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
                                 <Card className='relative overflow-hidden bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#2c7bbe]/20'>
-                                    {/* <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${feature.color}`}></div> */}
                                     <div className={`absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r ${feature.color} opacity-60`} />
 
                                     <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10' />
@@ -297,10 +251,7 @@ function EmailMarketing() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                            ADVANCED CAPABILITIES
-                        </Badge>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Why Choose Our Digital{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email/SMS CRM </span>
                         </h2>
@@ -334,10 +285,7 @@ function EmailMarketing() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
-                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                START YOUR CAMPAIGN TODAY
-                            </Badge>
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Start <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Automating</span>
                                 <br />
                                 Today
@@ -346,23 +294,19 @@ function EmailMarketing() {
                                 Get your email and SMS campaigns running in minutes with a fast, powerful CRM built for growth..
                             </p>
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4'>
-                                <Link href={'/login'}>
-                                    <Button
-                                        size='lg'
-                                        className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
-                                    >
-                                        {/* <Mail className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
-                                        Learn More
-                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
-                                    </Button>
-                                </Link>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setSlideshowOpen(true)}
+                                    className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
+                                >
+                                    Learn More
+                                </Button>
                                 <Button
                                     size='lg'
                                     onClick={() => setPricingOpen(true)}
                                     variant='outline'
                                     className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                 >
-                                    {/* <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
@@ -380,6 +324,7 @@ function EmailMarketing() {
                 </div>
             </section>
 
+            <EmailCRMSlideshow open={slideshowOpen} onOpenChange={setSlideshowOpen} />
             <PricingComponent name='EmailMarketing' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
         </div>
     );

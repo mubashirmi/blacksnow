@@ -1,6 +1,6 @@
+import DigitalBillboardSlideshow from '@/components/DigitalBillboardSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
 import ShareBanner from '@/components/ShareBanner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -36,6 +36,7 @@ function Advertising() {
         return <div ref={containerRef} style={style} />;
     };
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [slideshowOpen, setSlideshowOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
     const [showFormModal, setShowFormModal] = useState(false);
@@ -224,11 +225,6 @@ function Advertising() {
                         {/* Left Content */}
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
-                                <div>
-                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                                        PREMIUM ADVERTISING
-                                    </Badge>
-                                </div>
                                 <div className='inline-block'>
                                     <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
@@ -236,8 +232,6 @@ function Advertising() {
                                         </span>
                                         &nbsp;Billboards
                                     </h1>
-
-                                    {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5'></div> */}
                                 </div>
 
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
@@ -257,11 +251,7 @@ function Advertising() {
                                         router.push('/billboards');
                                     }}
                                 >
-                                    <>
-                                        {/* <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
-                                        Billboards
-                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
-                                    </>
+                                    Billboards
                                 </Button>
                                 <Button
                                     size='lg'
@@ -269,7 +259,6 @@ function Advertising() {
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
-                                    {/* <BarChart3 className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
@@ -291,8 +280,6 @@ function Advertising() {
                             </div>
                         </div>
                     </div>
-                    {/* Feature List */}
-                    {/* Feature List */}
                 </div>
             </section>
 
@@ -377,14 +364,11 @@ function Advertising() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <Badge className='uppercase bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-6 py-2 text-sm font-bold'>
-                            ADVERTISING EXCELLENCE
-                        </Badge>
-                        <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Why Choose Our{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Billboard?</span>
                         </h2>
-                        <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
+                        <p className='text-base sm:text-lg text-gray-300 max-w-3xl mx-auto'>
                             Experience the power of premium digital advertising with our cutting-edge platform designed for maximum impact and ROI.
                         </p>
                     </div>
@@ -445,10 +429,7 @@ function Advertising() {
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
-                            <Badge className='uppercase bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white mb-4 sm:mb-5 px-8 py-3 text-sm font-bold'>
-                                START ADVERTISING TODAY
-                            </Badge>
-                            <h2 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                                 Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
                                 <br />
                                 Your Future?
@@ -461,15 +442,9 @@ function Advertising() {
                                 <Button
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    onClick={() => {
-                                        router.push('/billboards');
-                                    }}
+                                    onClick={() => setSlideshowOpen(true)}
                                 >
-                                    <>
-                                        {/* <Megaphone className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
-                                        Billboards
-                                        {/* <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-3 group-hover:translate-x-1 transition-transform' /> */}
-                                    </>
+                                    Learn More
                                 </Button>
                                 <Button
                                     size='lg'
@@ -477,7 +452,6 @@ function Advertising() {
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
-                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
                                 </Button>
                             </div>
@@ -492,6 +466,8 @@ function Advertising() {
                     </div>
                 </div>
             </section>
+
+            <DigitalBillboardSlideshow open={slideshowOpen} onOpenChange={setSlideshowOpen} />
 
             {/* Login Modal */}
             <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>

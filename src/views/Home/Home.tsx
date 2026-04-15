@@ -2,7 +2,6 @@ import { AuthModalTrigger } from '@/components/AuthModal';
 import { HomeTourPopup } from '@/components/HomeTourPopup';
 import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription as DialogDesc, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -102,10 +101,7 @@ function MobileDesktopSection() {
         <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
             <div className='container mx-auto max-w-6xl'>
                 <div className='text-center mb-8 sm:mb-10'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 px-4 sm:px-5 py-2 text-[11px] sm:text-xs font-bold tracking-[0.22em]'>
-                        TRADE FROM ANYWHERE
-                    </Badge>
-                    <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3'>
+                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-white mb-3'>
                         Mobile & Desktop <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Compatible</span>
                     </h2>
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
@@ -322,10 +318,7 @@ function DataAnalyticsSection() {
 
             <div className='container mx-auto max-w-7xl relative z-10'>
                 <div className='text-center mb-12 sm:mb-14'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 px-5 py-2 text-[11px] font-bold tracking-[0.22em]'>
-                        PLATFORM FOUNDATION
-                    </Badge>
-                    <h2 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 leading-tight'>
+                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight'>
                         Built for Modern{' '}
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Trading Workflows</span>
                     </h2>
@@ -535,7 +528,7 @@ function Home() {
             <div className='absolute inset-0 rounded-2xl pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(76,199,232,0.12),transparent_55%)]' />
             <div className='relative'>
                 <div className='space-y-2'>
-                    <h3 className='text-xl sm:text-2xl font-extrabold text-white'>Weekly Market Intelligence</h3>
+                    <h3 className='text-lg sm:text-xl font-bold text-white'>Weekly Market Intelligence</h3>
                     <p className='text-sm sm:text-base text-gray-400'>Subscribe for weekly trading insights and market data.</p>
                 </div>
                 <div className='mt-4 flex flex-col sm:flex-row gap-3 sm:gap-4'>
@@ -592,7 +585,7 @@ function Home() {
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     {/* Section Heading */}
                     <div className='text-center mb-12'>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight'>
+                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-tight'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                 Explore Data-Driven
                             </span>
@@ -806,14 +799,14 @@ function Home() {
                         {/* ── LEFT ── */}
                         <div className='flex flex-col gap-5 sm:gap-8 md:gap-10'>
                             <div className='space-y-3 animate-slide-in-left delay-200'>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tight'>
+                                <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight'>
                                     <span className='text-[#f4f4f4]'>Global Multi-Asset</span>
                                     <br />
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black'>
                                         Intelligence Engine
                                     </span>
                                 </h1>
-                                <p className='text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light'>
+                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light'>
                                     Data-driven global paper trading, stock screening, watchlists, and economic KPI&apos;s
                                 </p>
                             </div>
@@ -866,7 +859,7 @@ function Home() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
-                        <h2 className='text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
                             Subscribe to our Monthly{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter</span>
                         </h2>
