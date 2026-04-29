@@ -1,7 +1,7 @@
 'use client';
 
 import { LottieAnimation } from '@/components/lottie-animation';
-import { CheckCircle, ChevronLeft, ChevronRight, FileText, Mail, Monitor, Rocket, X, Zap } from 'lucide-react';
+import { CheckCircle, ChevronLeft, FileText, Mail, Monitor, Rocket, X, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bs_tour_seen_v1';
@@ -116,7 +116,7 @@ function NavRow({
                     }}
                 >
                     {current === total - 1 ? 'Done' : 'Next'}
-                    {current < total - 1 && <ChevronRight className='w-3.5 h-3.5' />}
+                    {/* {current < total - 1 && <ChevronRight className='w-3.5 h-3.5' />} */}
                 </button>
                 <span className='text-xs text-white/25'>
                     {current + 1}/{total}

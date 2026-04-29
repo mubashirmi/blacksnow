@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
 import {
+    AlertTriangle,
     ArrowRight,
     Calendar,
     CheckCircle,
@@ -15,19 +16,22 @@ import {
     DollarSign,
     FilePen,
     FileText,
+    Globe,
+    Loader2,
     Lock,
     MessageSquare,
     Monitor,
     Newspaper,
     Shield,
     Star,
+    UserCheck,
     X,
     Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // ─── Terms Slides ─────────────────────────────────────────────────────────────
 type TermsSlide = {
@@ -45,7 +49,19 @@ type TermsSlide = {
 
 const UNIFIED_CARD_HEIGHT = 580;
 
-const TERMS_SLIDES: TermsSlide[] = [
+const BASE_TERMS_SLIDES: TermsSlide[] = [
+    {
+        id: 'gdpr',
+        accent: '#4cc7e8',
+        Icon: Globe,
+        badge: 'Legal — GDPR',
+        titleGrad: 'GDPR',
+        titlePlain: ' & Privacy',
+        summary:
+            'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
+        link: '/gdpr',
+        bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
+    },
     {
         id: 'terms',
         accent: '#2c7bbe',
@@ -72,8 +88,59 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
 ];
 
+const LIGHTNING_ADDITIONAL_TERMS_SLIDES: TermsSlide[] = [
+    {
+        id: 'legal-affiliate',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Legal — Affiliate Agreement',
+        titleGrad: 'Affiliate',
+        titlePlain: ' Agreement',
+        summary:
+            'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
+        link: '/affiliateagreement',
+        bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
+    },
+    {
+        id: 'legal-contractor',
+        accent: '#4cc7e8',
+        Icon: UserCheck,
+        badge: 'Legal — Independent Contractor',
+        titleGrad: 'Independent',
+        titlePlain: ' Contractor',
+        summary:
+            'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
+        link: '/independentcontract',
+        bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
+    },
+    {
+        id: 'legal-earnings',
+        accent: '#4cc7e8',
+        Icon: AlertTriangle,
+        badge: 'Legal — Earnings Disclosure',
+        titleGrad: 'Earnings',
+        titlePlain: ' Disclosure',
+        summary:
+            'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
+        link: '/earningsdisclosure',
+        bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
+    },
+];
+
+const LIGHTNING_TERMS_SLIDES: TermsSlide[] = [...BASE_TERMS_SLIDES, ...LIGHTNING_ADDITIONAL_TERMS_SLIDES];
+
 // ─── Terms Slide Modal ────────────────────────────────────────────────────────
-function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; onOpenChange: (v: boolean) => void; onComplete: () => void }) {
+function TermsSlideModal({
+    open,
+    onOpenChange,
+    onComplete,
+    slides,
+}: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+    onComplete: () => void;
+    slides: TermsSlide[];
+}) {
     const [current, setCurrent] = useState(0);
     const [dir, setDir] = useState<'next' | 'prev'>('next');
     const [animating, setAnimating] = useState(false);
@@ -99,7 +166,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
     const handleNext = () => {
         if (animating) return;
 
-        if (current < TERMS_SLIDES.length - 1) {
+        if (current < slides.length - 1) {
             goTo(current + 1, 'next');
             return;
         }
@@ -113,9 +180,9 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
         goTo(current - 1, 'prev');
     };
 
-    const slide = TERMS_SLIDES[current];
+    const slide = slides[current];
     const { accent, Icon, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
-    const isLast = current === TERMS_SLIDES.length - 1;
+    const isLast = current === slides.length - 1;
 
     const slideAnim: React.CSSProperties = {
         transition: 'opacity 0.22s ease, transform 0.22s ease',
@@ -216,7 +283,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
 
                         <div className='pt-6 flex items-center justify-between'>
                             <div className='flex items-center gap-1.5'>
-                                {TERMS_SLIDES.map((_, i) => (
+                                {slides.map((_, i) => (
                                     <div
                                         key={i}
                                         className='rounded-full transition-all duration-300'
@@ -228,7 +295,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                                     />
                                 ))}
                                 <span className='text-xs text-white/30 ml-2'>
-                                    {current + 1}/{TERMS_SLIDES.length}
+                                    {current + 1}/{slides.length}
                                 </span>
                             </div>
 
@@ -379,12 +446,11 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/lightningSilver',
         productComission: '100',
         hasSubscription: true,
-        // ── Monthly only — no yearly billing ──
         monthlyOnly: true,
     },
     {
-        id: 'SuperAffiliate',
-        apiName: 'SuperAffiliate',
+        id: 'LightningGold',
+        apiName: 'LightningGold',
         name: 'Lightning Gold',
         monthlyPrice: 250,
         yearlyPrice: 3000,
@@ -405,7 +471,6 @@ const PRODUCTS = [
         productLink: 'https://blacksnowholdings.com/lightningGold',
         productComission: '100',
         hasSubscription: true,
-        // ── Monthly only — no yearly billing ──
         monthlyOnly: true,
     },
 ];
@@ -431,8 +496,11 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
     const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+    const [isPurchasing, setIsPurchasing] = useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>(defaultBillingPeriod);
+
+    const isPurchaseInFlightRef = useRef(false);
 
     // ── Terms state ──
     const [showTermsModal, setShowTermsModal] = useState(false);
@@ -454,6 +522,20 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         if (product.id === 'LightningSilver') return '#8d96c2';
         return null;
     }, [product]);
+
+    const selectedTermsSlides = useMemo(() => {
+        if (product?.id === 'LightningSilver' || product?.id === 'LightningGold') {
+            return LIGHTNING_TERMS_SLIDES;
+        }
+
+        return BASE_TERMS_SLIDES;
+    }, [product]);
+
+    useEffect(() => {
+        setShowTermsModal(false);
+        setTermsCompleted(false);
+        setTermsChecked(false);
+    }, [product?.id]);
 
     useEffect(() => {
         setIsClient(true);
@@ -524,7 +606,10 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 return;
             }
 
-            if (isLoadingEmail) return;
+            if (isPurchaseInFlightRef.current || isLoadingEmail) return;
+
+            isPurchaseInFlightRef.current = true;
+            setIsPurchasing(true);
 
             let role;
             switch (p.id) {
@@ -537,8 +622,8 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 case 'DigitalBillboard':
                     role = 'DigitalBillboard';
                     break;
-                case 'SuperAffiliate':
-                    role = 'SuperAffiliate';
+                case 'LightningGold':
+                    role = 'LightningGold';
                     break;
                 case 'LightningSilver':
                     role = 'LightningSilver';
@@ -560,7 +645,11 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 localStorage.setItem('comission', p.productComission);
 
                 const email = await fetchUserEmail(userId);
-                if (!email) return;
+                if (!email) {
+                    isPurchaseInFlightRef.current = false;
+                    setIsPurchasing(false);
+                    return;
+                }
 
                 let productType = p.id;
                 if (p.id === 'Sales') productType = 'EmailMarketing';
@@ -574,9 +663,17 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 if (p.hasSubscription) requestBody.period = effectiveBillingPeriod;
 
                 const stripeResponse = await axios.post('/api/v1/stripe', requestBody);
-                window.location.href = stripeResponse?.data?.data;
+                const checkoutUrl = stripeResponse?.data?.data;
+
+                if (!checkoutUrl) {
+                    throw new Error('Stripe checkout URL not found');
+                }
+
+                window.location.href = checkoutUrl;
             } catch (error) {
                 console.error('Error in handlePurchase:', error);
+                isPurchaseInFlightRef.current = false;
+                setIsPurchasing(false);
             }
         },
         [effectiveBillingPeriod, fetchUserEmail, isClient, isLoadingEmail]
@@ -621,34 +718,34 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const savings = getSavingsPercentage(product);
     const displayPeriod = getProductPeriod(product).replace('/', '').trim();
 
-    // ── Resolve button / border accent (falls back to default blue) ──
+    // ── Resolve button accent for subtle glass glow ──
     const btnFrom = productAccent ?? '#2c7bbe';
     const btnTo = productAccent ?? '#4cc7e8';
-    // For Lightning Gold use dark text (yellow bg), otherwise white
-    const btnTextClass = product.id === 'SuperAffiliate' ? 'text-black' : 'text-white';
+    const isPurchaseButtonLoading = isPurchasing || isLoadingEmail;
 
     const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
-                className={`relative rounded-[32px] border overflow-hidden flex flex-col ${
+                className={`relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-[7px] ${
                     isPurchased ? 'border-emerald-400/25' : productAccent ? '' : 'border-white/10'
                 } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
                 style={{
                     minHeight: UNIFIED_CARD_HEIGHT,
                     height: UNIFIED_CARD_HEIGHT,
-                    background: 'linear-gradient(180deg, rgba(7,9,13,0.98) 0%, rgba(10,12,18,0.98) 45%, rgba(6,8,12,1) 100%)',
+                    background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+                    WebkitBackdropFilter: 'blur(8px) saturate(145%)',
+                    backdropFilter: 'blur(8px) saturate(145%)',
                     boxShadow: isPurchased
-                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12)'
+                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)'
                         : productAccent
-                        ? `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${productAccent}22`
-                        : '0 24px 60px rgba(0,0,0,0.7)',
-                    // Apply accent border color for Lightning products
-                    borderColor: productAccent && !isPurchased ? `${productAccent}50` : undefined,
+                        ? `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${productAccent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`
+                        : '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                    borderColor: isPurchased ? 'rgba(16,185,129,0.25)' : productAccent ? `${productAccent}30` : 'rgba(255,255,255,0.10)',
                 }}
             >
                 {/* Top accent line */}
                 <div
-                    className={`absolute top-0 left-0 w-full h-[2px] ${!productAccent && !isPurchased ? `bg-gradient-to-r ${product.color}` : ''}`}
+                    className={`absolute top-0 left-0 w-full h-[3px] ${!productAccent && !isPurchased ? `bg-gradient-to-r ${product.color}` : ''}`}
                     style={
                         isPurchased
                             ? { background: 'linear-gradient(to right, #34d399, #10b981)' }
@@ -656,14 +753,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                             ? { background: `linear-gradient(90deg, transparent, ${productAccent}, transparent)` }
                             : undefined
                     }
-                />
-                <div
-                    className='absolute inset-0 pointer-events-none'
-                    style={{
-                        background: productAccent
-                            ? `radial-gradient(circle at top, ${productAccent}14 0%, transparent 30%)`
-                            : 'radial-gradient(circle at top, rgba(76,199,232,0.14) 0%, transparent 30%)',
-                    }}
                 />
 
                 <div className='relative flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7'>
@@ -677,7 +766,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         )}
 
                         <div className='h-14 w-14 rounded-2xl flex items-center justify-center justify-self-start'>
-                            <Image src='/logowhite.png' alt='Logo' width={42} height={42} className='object-contain w-full h-full' />
+                            <Image src='/logocolored.png' alt='Logo' width={42} height={42} className='object-contain w-full h-full' />
                         </div>
 
                         <div className='min-w-0 flex flex-col items-center justify-center text-center pt-1'>
@@ -754,7 +843,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     type='button'
                                     onClick={() => setShowTermsModal(true)}
                                     className='text-sm font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                    style={{ color: productAccent ?? '#93c5fd' }}
+                                    style={{ color: '#93c5fd' }}
                                 >
                                     Terms and Conditions
                                 </button>
@@ -777,17 +866,29 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 ) : (
                                     <Button
                                         size='lg'
-                                        className={`w-full cursor-pointer rounded-xl hover:opacity-90 py-6 font-bold shadow-xl transition disabled:opacity-40 disabled:cursor-not-allowed ${btnTextClass}`}
+                                        className='w-full cursor-pointer rounded-xl border py-6 font-bold transition disabled:opacity-40 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                         style={{
-                                            background: `linear-gradient(135deg, ${btnFrom}, ${btnTo})`,
-                                            boxShadow: `0 8px 24px ${btnFrom}40`,
+                                            background: `linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, ${btnFrom}22 0%, transparent 45%), radial-gradient(circle at bottom right, ${btnTo}18 0%, transparent 42%)`,
+                                            borderColor: 'rgba(255,255,255,0.10)',
+                                            WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                            backdropFilter: 'blur(7px) saturate(145%)',
+                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
                                         }}
                                         onClick={() => handlePurchase(product)}
-                                        disabled={isLoadingEmail || !termsChecked}
+                                        disabled={isPurchaseButtonLoading || !termsChecked}
                                         title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
                                     >
-                                        <DollarSign className='h-5 w-5 mr-2 opacity-90' />
-                                        {isLoadingEmail ? 'Loading...' : 'Purchase'}
+                                        {isPurchaseButtonLoading ? (
+                                            <>
+                                                <Loader2 className='h-5 w-5 mr-2 opacity-80 animate-spin' />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <DollarSign className='h-5 w-5 mr-2 opacity-70' />
+                                                Purchase
+                                            </>
+                                        )}
                                     </Button>
                                 )
                             ) : (
@@ -837,6 +938,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     onComplete={() => {
                         setTermsCompleted(true);
                     }}
+                    slides={selectedTermsSlides}
                 />
 
                 {/* Signup Modal */}
@@ -986,6 +1088,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 onComplete={() => {
                     setTermsCompleted(true);
                 }}
+                slides={selectedTermsSlides}
             />
         </div>
     );

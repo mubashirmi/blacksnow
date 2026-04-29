@@ -186,7 +186,7 @@ function EmailMarketing() {
                         <div className='relative animate-slide-in-right '>
                             <div className='relative overflow-hidden '>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                         <LottieAnimation
                                             src='/animations/emailmarketing-herosection-page.json'
                                             className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
@@ -314,7 +314,7 @@ function EmailMarketing() {
 
                         <div className='flex justify-center'>
                             <div className='relative'>
-                                <div className='absolute inset-0 w-96 h-96 bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-full blur-2xl'></div>
+                                <div className='absolute inset-0 w-96 h-96 rounded-full blur-2xl'></div>
                                 <div className='relative w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center shadow-2xl backdrop-blur-xl p-8'>
                                     <LottieAnimation src='/animations/emailmarketingicon.json' loop={true} autoplay={true} />
                                 </div>

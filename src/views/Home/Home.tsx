@@ -17,9 +17,22 @@ const textOptions = ['Market Data', 'Swing Trades', 'Stock Options', 'Day Trades
 // ─── Strategy Panels Data ───────────────────────────────────────────────────
 const strategyPanels = [
     {
+        id: 'market-at-glance',
+        label: 'Major Indexes',
+        accent: '#5EDC7A',
+        HeaderIcon: TrendingUp,
+        headerSubtitle: 'Market at a Glance',
+        title: 'Market Movers',
+        description: `Track indices, currencies, metals, and crypto ahead.\nIdentify capital flow and position before market moves.`,
+        bullets: ['Track major indices performance', 'Monitor sector capital rotation', 'Identify gainers losers sentiment'],
+        cta: 'View Market Overview',
+        discoveryContent: `Get a real-time snapshot of the broader market across major indices, currencies, metals, and crypto. Market at a Glance helps you quickly understand where capital is flowing, which assets are gaining momentum, and how sentiment is shifting across global markets. Instead of piecing together scattered information, you can monitor the full landscape in one place and identify opportunities before they fully develop.`,
+        discoveryCta: 'Open Market Overview',
+    },
+    {
         id: 'paper-trading',
         label: 'Paper Trading',
-        accent: '#5EDC7A',
+        accent: '#F5A623',
         HeaderIcon: DollarSign,
         headerSubtitle: 'Stock Market Simulator',
         title: 'Generate Consistent Profits',
@@ -32,7 +45,7 @@ const strategyPanels = [
     {
         id: 'stock-screener',
         label: 'Stock Screener',
-        accent: '#F5A623',
+        accent: '#c45002',
         HeaderIcon: BarChart2,
         headerSubtitle: 'Market Analysis Tool',
         title: 'Find Your Next Trade',
@@ -67,6 +80,19 @@ const strategyPanels = [
         cta: 'Explore KPIs',
         discoveryContent: `Gain a macro-level edge by monitoring the economic forces that drive market cycles and sector rotation. Our global KPI dashboard aggregates real-time data on GDP growth, inflation rates, central bank policy, and employment trends across major economies. Understanding these indicators helps you anticipate broader market movements, position ahead of macro shifts, and make more informed long-term investment decisions grounded in economic reality.`,
         discoveryCta: 'Explore Global KPIs',
+    },
+    {
+        id: 'economic-simulator',
+        label: 'Economic Simulator',
+        accent: '#5F32C8',
+        HeaderIcon: BarChart2,
+        headerSubtitle: 'Supply and Demand',
+        title: 'Interactive Charts',
+        description: `Explore advanced economic models with dynamic visuals and rigorous theory.\nUsers can manipulate charts using toggle switches for insights, equilibrium analysis, and growth.`,
+        bullets: ['Interactive toggles for chart control', 'Access advanced economic models', 'Build core market understanding'],
+        cta: 'Explore Simulator',
+        discoveryContent: `Interact with economic models through dynamic charts designed to make complex theory easier to understand. Adjust variables, use toggle controls, and explore how changes in supply, demand, equilibrium, and growth affect outcomes in real time. The simulator turns static concepts into hands-on learning, helping users build stronger intuition around market mechanics, price behavior, and economic relationships through clear visual feedback.`,
+        discoveryCta: 'Open Economic Simulator',
     },
 ];
 
@@ -281,14 +307,14 @@ function DataAnalyticsSection() {
     const analyticsBlocks = [
         {
             label: 'Analytics',
-            title: 'Performance Analytics',
+            title: 'Data Driven Analytics',
             accent: '#4cc7e8',
             icon: BarChart2,
             body: `Turn raw market data into clear, actionable insight. Our analytics engine breaks down performance, patterns, and trading behavior so you can see exactly what's working — and what isn't. Review win rates, risk exposure, and strategy effectiveness with precision. Every trade becomes feedback, helping you continuously optimize your approach using measurable results.`,
         },
         {
             label: 'Infrastructure',
-            title: 'Trading Infrastructure',
+            title: 'Smart Technology Infrastructure',
             accent: '#5EDC7A',
             icon: Zap,
             body: `Built on modern, scalable technology, the platform delivers fast execution, real time updates, and automated workflows designed for serious traders. From performance tracking to intelligent alerts, every component works together seamlessly. The infrastructure is engineered for reliability, speed, and growth — allowing you to move faster, trade smarter, and stay focused on strategy instead of software.`,
@@ -299,6 +325,27 @@ function DataAnalyticsSection() {
             accent: '#F5A623',
             icon: Shield,
             body: `Black Snow is built to make trading more accessible, clear, and practical for everyone. Whether you're learning the basics or refining advanced strategies, the platform is designed to support confident decision-making across stocks, options, and crypto. We focus on simple, powerful tools that remove complexity without removing control. Our goal is to provide an open trading environment where anyone can learn, practice, and grow at their own pace.`,
+        },
+        {
+            label: 'Execution',
+            title: 'Trade Execution Engine',
+            accent: '#F5A623',
+            icon: DollarSign,
+            body: `Execute trades with speed, precision, and full control. Manage entries, exits, and position sizing with accuracy while minimizing slippage in fast markets. Every action is calculated and intentional, giving you the ability to operate with discipline, consistency, and confidence across any market condition or level of volatility.`,
+        },
+        {
+            label: 'Optimization',
+            title: 'Strategy Optimization',
+            accent: '#5F32C8',
+            icon: TrendingUp,
+            body: `Continuously refine your approach using real performance data. Analyze outcomes, identify strengths and weaknesses, and adapt strategies based on measurable results. Turn every trade into feedback, improving decision-making over time while optimizing for consistency, efficiency, and long-term performance across changing market environments.`,
+        },
+        {
+            label: 'Technology',
+            title: 'Data-Driven Technology',
+            accent: '#E74C3C',
+            icon: LayoutGrid,
+            body: `Leverage real-time data to drive every decision with precision. Our system processes vast datasets to uncover patterns, detect shifts, and deliver actionable intelligence. Eliminate guesswork and operate with clarity, speed, and confidence as every move is backed by measurable data, continuous analysis, and proven performance insights.`,
         },
     ];
 
@@ -706,17 +753,23 @@ function Home() {
                                     />
 
                                     {/* Tab Content */}
-                                    <div
-                                        key={`${id}-${activeTab}`}
-                                        className='relative z-10 flex-1 flex flex-col px-5 sm:px-10 md:px-14 lg:px-16 py-8 md:py-12 lg:py-16 animate-slide-in-left'
-                                    >
-                                        {activeTab === 'Details' ? (
-                                            /* ── DETAILS TAB ── */
-                                            <>
+                                    {/* Tab Content */}
+                                    <div className='relative z-10 px-5 sm:px-10 md:px-14 lg:px-16 py-8 md:py-12 lg:py-16'>
+                                        <div className='grid'>
+                                            {/* ── DETAILS TAB ── */}
+                                            <div
+                                                aria-hidden={activeTab !== 'Details'}
+                                                className={`col-start-1 row-start-1 flex flex-col transition-all duration-300 ${
+                                                    activeTab === 'Details'
+                                                        ? 'visible opacity-100 translate-x-0'
+                                                        : 'invisible opacity-0 translate-x-4 pointer-events-none'
+                                                }`}
+                                            >
                                                 <div>
                                                     <h3 className='text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight mb-6 md:mb-8'>
                                                         {panel.title}
                                                     </h3>
+
                                                     <div className='space-y-2 md:space-y-3'>
                                                         {panel.description.split('\n').map((line, i) => (
                                                             <p key={i} className='text-base sm:text-xl md:text-2xl text-white/45 leading-relaxed'>
@@ -725,8 +778,10 @@ function Home() {
                                                         ))}
                                                     </div>
                                                 </div>
+
                                                 <div className='flex flex-col xl:flex-row xl:items-end justify-between gap-8 md:gap-12 mt-8 md:mt-12 lg:mt-16'>
                                                     <BSBullets accent={accent} items={panel.bullets} large />
+
                                                     <div className='flex-shrink-0'>
                                                         <button
                                                             type='button'
@@ -738,19 +793,22 @@ function Home() {
                                                             }}
                                                         >
                                                             {panel.cta}
-                                                            {/* <span aria-hidden className='leading-none text-xl'>
-                                                                →
-                                                            </span> */}
                                                         </button>
                                                     </div>
                                                 </div>
-                                            </>
-                                        ) : (
-                                            /* ── DISCOVERY TAB ── */
-                                            <div className='flex flex-col gap-8 md:gap-12'>
-                                                <p className='text-lg sm:text-2xl md:text-3xl text-white/70 leading-relaxed font-light'>
-                                                    {panel.discoveryContent}
-                                                </p>
+                                            </div>
+
+                                            {/* ── DISCOVERY TAB ── */}
+                                            <div
+                                                aria-hidden={activeTab !== 'Discovery'}
+                                                className={`col-start-1 row-start-1 flex flex-col gap-8 md:gap-12 transition-all duration-300 ${
+                                                    activeTab === 'Discovery'
+                                                        ? 'visible opacity-100 translate-x-0'
+                                                        : 'invisible opacity-0 translate-x-4 pointer-events-none'
+                                                }`}
+                                            >
+                                                <p className='text-base sm:text-xl md:text-2xl text-white/70 leading-relaxed'>{panel.discoveryContent}</p>
+
                                                 <div className='flex-shrink-0'>
                                                     <button
                                                         type='button'
@@ -762,13 +820,10 @@ function Home() {
                                                         }}
                                                     >
                                                         {panel.discoveryCta}
-                                                        {/* <span aria-hidden className='leading-none text-xl'>
-                                                            →
-                                                        </span> */}
                                                     </button>
                                                 </div>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -812,7 +867,7 @@ function Home() {
                             </div>
 
                             <div className='block lg:hidden w-full animate-slide-in-left delay-300'>
-                                <div className='flex items-center justify-center w-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full rounded-2xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
                                         src='/animations/growthChartIcon.json'
                                         className='w-full h-[220px] xs:h-[250px]'
@@ -856,11 +911,11 @@ function Home() {
             <DataAnalyticsSection />
 
             {/* ─── NEWSLETTER SECTION ─── */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16'>
                         <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Subscribe to our Monthly{' '}
+                            Subscribe to our Monthly
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter</span>
                         </h2>
                         <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
@@ -870,7 +925,6 @@ function Home() {
                     </div>
 
                     <div className='grid lg:grid-cols-2 gap-12 items-center'>
-                        {/* LEFT - Benefits List */}
                         <div className='space-y-6'>
                             {[
                                 'Get your weekly stock picks for day trades, swing trades, options and dividends',
@@ -888,8 +942,6 @@ function Home() {
                                 </div>
                             ))}
                         </div>
-
-                        {/* RIGHT - Lottie + subscribe bar */}
                         <div className='space-y-8'>
                             <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
                                 <LottieAnimation
@@ -903,7 +955,7 @@ function Home() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* ─── BLACK SNOW MATHEMATICS BANNER ─── */}
             <BSMBanner />

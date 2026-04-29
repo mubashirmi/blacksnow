@@ -1,16 +1,26 @@
 'use client';
 
-import { CheckCircle2, ChevronLeft, ChevronRight, FileCheck, FileText, Mail, Reply, Target, Upload, X, Zap } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, FileCheck, FileText, Globe, Mail, Reply, Shield, Target, Upload, X, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+
+type SlideVariant = 'standard' | 'legal';
 
 type Slide = {
     id: string;
+    variant?: SlideVariant;
     accent: string;
     badge: string;
     title: string;
-    description: string;
+    titleGrad?: string;
+    titlePlain?: string;
+    gradAtEnd?: boolean;
+    description?: string;
+    desc?: string;
     bullets: string[];
     Icon: any;
+    legalTitle?: string;
+    legalSummary?: string;
+    legalLink?: string;
 };
 
 type EmailCRMSlideshowProps = {
@@ -21,6 +31,7 @@ type EmailCRMSlideshowProps = {
 const SLIDES: Slide[] = [
     {
         id: 'email-crm',
+        variant: 'standard',
         accent: '#4cc7e8',
         badge: 'Email CRM',
         title: 'Manage Email Marketing With Consistency',
@@ -30,7 +41,8 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'upload-email-contacts',
-        accent: '#5EDC7A',
+        variant: 'standard',
+        accent: '#4cc7e8',
         badge: 'Step 1 — Upload Email Contacts',
         title: 'Import Contacts and Start Fast',
         description: 'Import your contacts quickly, organize them in one system, and launch campaigns using your existing list.',
@@ -44,7 +56,8 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'automation-sequencing',
-        accent: '#F5A623',
+        variant: 'standard',
+        accent: '#4cc7e8',
         badge: 'Step 2 — Automation & Sequencing',
         title: 'Automate the Journey 24/7',
         description: 'Build automated email flows that guide leads through a structured journey and remove manual follow-up.',
@@ -58,7 +71,8 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'email-templates',
-        accent: '#E86FA3',
+        variant: 'standard',
+        accent: '#4cc7e8',
         badge: 'Step 3 — Email Templates',
         title: 'Use Templates That Save Time',
         description: 'Keep your messaging consistent with ready-made templates that can still be customized for your brand voice.',
@@ -72,7 +86,8 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'follow-up',
-        accent: '#9B59B6',
+        variant: 'standard',
+        accent: '#4cc7e8',
         badge: 'Step 4 — Follow Up',
         title: 'Stay Top-of-Mind Automatically',
         description: 'Stay connected with leads using automated and consistent follow-ups that increase conversions without extra work.',
@@ -86,7 +101,8 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'targeted-campaigns',
-        accent: '#2c7bbe',
+        variant: 'standard',
+        accent: '#4cc7e8',
         badge: 'Step 5 — Targeted Campaigns',
         title: 'Educate Leads and Build Trust',
         description: 'Send valuable, targeted emails that build trust over time and turn cold leads into warm buyers.',
@@ -97,6 +113,54 @@ const SLIDES: Slide[] = [
             'Turn cold leads into warm buyers',
         ],
         Icon: Target,
+    },
+    {
+        id: 'legal-gdpr',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: Globe,
+        badge: 'Legal — GDPR',
+        title: 'GDPR & Privacy',
+        titleGrad: 'GDPR',
+        titlePlain: ' & Privacy',
+        desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
+        legalTitle: 'Your Obligations',
+        legalSummary:
+            'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
+        legalLink: '/gdpr',
+        bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
+    },
+    {
+        id: 'legal-terms',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Legal — Terms & Conditions',
+        title: 'Terms & Conditions',
+        titleGrad: 'Terms',
+        titlePlain: ' & Conditions',
+        desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
+        legalTitle: 'Key Terms',
+        legalSummary:
+            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+        legalLink: '/terms',
+        bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    },
+    {
+        id: 'legal-privacy',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Legal — Privacy Policy',
+        title: 'Privacy Policy',
+        titleGrad: 'Privacy',
+        titlePlain: ' Policy',
+        desc: 'How we collect, use, and protect your affiliate data.',
+        legalTitle: 'What We Cover',
+        legalSummary:
+            'We use only the data needed to operate the affiliate program, process payouts, and protect your account. Your data is never sold, and you can request access, correction, or deletion at any time.',
+        legalLink: '/privacy',
+        bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
     },
 ];
 
@@ -145,7 +209,7 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (!open) return;
-            if (event.key === 'Escape') onOpenChange(false);
+            if (event.key === 'Escape') close();
             if (event.key === 'ArrowRight' && current < SLIDES.length - 1) handleNext();
             if (event.key === 'ArrowLeft' && current > 0) handlePrev();
         };
@@ -157,8 +221,9 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
     if (!mounted || !open) return null;
 
     const slide = SLIDES[current];
-    const { Icon, accent, badge, title, description, bullets } = slide;
+    const { Icon, accent, title, description, desc, bullets, variant, legalTitle, legalSummary, legalLink, titleGrad, titlePlain, gradAtEnd } = slide;
     const isLastSlide = current === SLIDES.length - 1;
+    const slideDescription = description ?? desc ?? '';
 
     const close = () => {
         setInView(false);
@@ -198,12 +263,53 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#080b12',
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
         borderColor: `${accent}45`,
-        boxShadow: `0 0 70px ${accent}22, 0 30px 80px rgba(0,0,0,0.75)`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
     };
 
-    const rightRailSteps = ['Upload Contacts', 'Automation', 'Templates', 'Follow Up', 'Nurture'];
+    const glassShine: React.CSSProperties = {
+        background:
+            'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+    };
+
+    const bottomGlass: React.CSSProperties = {
+        background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)',
+    };
+
+    const rightRailSteps = SLIDES.map((item) => (item.variant === 'legal' ? item.title : item.bullets[0]));
+
+    const renderTitle = () => {
+        if (titleGrad && titlePlain) {
+            if (gradAtEnd) {
+                return (
+                    <>
+                        {titlePlain}
+                        <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
+                            {titleGrad}
+                        </span>
+                    </>
+                );
+            }
+
+            return (
+                <>
+                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
+                        {titleGrad}
+                    </span>
+                    {titlePlain}
+                </>
+            );
+        }
+
+        return (
+            <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
+                {title}
+            </span>
+        );
+    };
 
     return (
         <>
@@ -215,9 +321,12 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, minHeight: 480 }}
+                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(575px, calc(100vh - 3rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -236,10 +345,10 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='flex flex-1 min-h-0'>
-                        <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0'>
-                            <div style={slideAnim}>
-                                <div className='flex items-center gap-3 mb-5'>
+                    <div className='relative z-10 flex flex-1 min-h-0'>
+                        <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0 min-h-0'>
+                            <div className='min-h-0 flex-1 overflow-y-auto pr-2' style={slideAnim}>
+                                {/* <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
                                         style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -250,24 +359,36 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                                     <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
                                         Slide {current + 1} of {SLIDES.length}
                                     </span>
-                                </div>
+                                </div> */}
 
-                                <h2 className='text-3xl font-black text-white leading-tight mb-3'>
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
-                                        {title}
-                                    </span>
-                                </h2>
+                                <h2 className='text-3xl font-black text-white leading-tight mb-3'>{renderTitle()}</h2>
                                 <div className='h-0.5 rounded-full mb-4 w-14' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
 
-                                <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-sm'>{description}</p>
+                                <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-sm'>{slideDescription}</p>
 
                                 <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-                                    <div className='flex items-center gap-2 mb-3'>
-                                        <FileCheck className='w-4 h-4' style={{ color: accent }} />
-                                        <p className='text-xs font-bold uppercase tracking-wide' style={{ color: accent }}>
-                                            Key Highlights
-                                        </p>
+                                    <div className='flex items-center justify-between gap-3 mb-3'>
+                                        <div className='flex items-center gap-2'>
+                                            <FileCheck className='w-4 h-4' style={{ color: accent }} />
+                                            <p className='text-xs font-bold uppercase tracking-wide' style={{ color: accent }}>
+                                                {variant === 'legal' ? legalTitle ?? 'Summary' : 'Key Highlights'}
+                                            </p>
+                                        </div>
+
+                                        {variant === 'legal' && legalLink && (
+                                            <a
+                                                href={legalLink}
+                                                target='_blank'
+                                                rel='noopener noreferrer'
+                                                className='text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-all hover:scale-[1.02]'
+                                                style={{ color: accent, borderColor: `${accent}35`, backgroundColor: `${accent}12` }}
+                                            >
+                                                Review
+                                            </a>
+                                        )}
                                     </div>
+
+                                    {variant === 'legal' && legalSummary && <p className='text-white/60 text-xs leading-relaxed mb-3'>{legalSummary}</p>}
 
                                     <ul className='space-y-2.5'>
                                         {bullets.map((bullet, index) => (
@@ -301,11 +422,10 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                                         }}
                                     >
                                         {isLastSlide ? 'Done' : 'Next'}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
                                     </button>
-                                    <span className='text-xs text-white/25'>
+                                    {/* <span className='text-xs text-white/25'>
                                         {current + 1}/{SLIDES.length}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
@@ -315,7 +435,7 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                             style={{ background: `linear-gradient(to bottom, transparent, ${accent}30, transparent)` }}
                         />
 
-                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6' style={slideAnim}>
+                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6 min-h-0' style={slideAnim}>
                             <div
                                 className='w-24 h-24 rounded-2xl flex items-center justify-center'
                                 style={{ backgroundColor: `${accent}18`, border: `2px solid ${accent}30`, boxShadow: `0 0 40px ${accent}20` }}
@@ -328,15 +448,15 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                                     Email CRM Flow
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
 
-                            <div className='flex flex-col gap-2 w-full mt-2'>
+                            <div className='flex flex-col gap-2 w-full mt-2 overflow-y-auto pr-1'>
                                 {rightRailSteps.map((step, index) => {
-                                    const active = current === 0 ? index === 0 : current - 1 >= index;
+                                    const active = index <= current;
                                     return (
-                                        <div key={step} className='flex items-center gap-2'>
+                                        <div key={`${step}-${index}`} className='flex items-center gap-2'>
                                             <div
                                                 className='w-1.5 h-1.5 rounded-full flex-shrink-0'
                                                 style={{ backgroundColor: active ? accent : 'rgba(255,255,255,0.15)' }}
@@ -353,9 +473,12 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                 </div>
 
                 <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter }}
+                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(475px, calc(100vh - 2rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -374,8 +497,8 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        <div className='flex items-center gap-2 flex-wrap mb-4'>
+                    <div className='relative z-10 px-6 pt-8 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
+                        {/* <div className='flex items-center gap-2 flex-wrap mb-4'>
                             <div
                                 className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
                                 style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -386,23 +509,35 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                             <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
                                 {current + 1}/{SLIDES.length}
                             </span>
-                        </div>
+                        </div> */}
 
-                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>
-                            <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
-                                {title}
-                            </span>
-                        </h2>
+                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>{renderTitle()}</h2>
                         <div className='h-0.5 rounded-full mb-3 w-10' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
-                        <p className='text-gray-400 text-xs leading-relaxed mb-3'>{description}</p>
+                        <p className='text-gray-400 text-xs leading-relaxed mb-3'>{slideDescription}</p>
 
                         <div className='rounded-xl p-3 mb-3 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-                            <div className='flex items-center gap-2 mb-2'>
-                                <FileCheck className='w-3.5 h-3.5' style={{ color: accent }} />
-                                <p className='text-xs font-bold uppercase' style={{ color: accent }}>
-                                    Key Highlights
-                                </p>
+                            <div className='flex items-center justify-between gap-2 mb-2'>
+                                <div className='flex items-center gap-2'>
+                                    <FileCheck className='w-3.5 h-3.5' style={{ color: accent }} />
+                                    <p className='text-xs font-bold uppercase' style={{ color: accent }}>
+                                        {variant === 'legal' ? legalTitle ?? 'Summary' : 'Key Highlights'}
+                                    </p>
+                                </div>
+
+                                {variant === 'legal' && legalLink && (
+                                    <a
+                                        href={legalLink}
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        className='text-[10px] font-semibold px-2 py-1 rounded-full border'
+                                        style={{ color: accent, borderColor: `${accent}35`, backgroundColor: `${accent}12` }}
+                                    >
+                                        Review
+                                    </a>
+                                )}
                             </div>
+
+                            {variant === 'legal' && legalSummary && <p className='text-white/60 text-[11px] leading-relaxed mb-2.5'>{legalSummary}</p>}
 
                             <ul className='space-y-1.5'>
                                 {bullets.map((bullet, index) => (
@@ -416,6 +551,11 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                     </div>
 
                     <div className='relative z-10 px-6 pb-5'>
+                        <div className='flex justify-end w-full mb-2'>
+                            <span className='text-sm font-semibold px-2 py-0.5 mr-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
+                                Slide {current + 1}/{SLIDES.length}
+                            </span>
+                        </div>
                         <div className='flex items-center gap-2'>
                             <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={(i) => goTo(i, i > current ? 'next' : 'prev')} />
                             <div className='flex items-center gap-1.5 ml-auto'>
@@ -433,7 +573,6 @@ export function EmailCRMSlideshow({ open, onOpenChange }: EmailCRMSlideshowProps
                                     style={{ background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`, border: `1px solid ${accent}60` }}
                                 >
                                     {isLastSlide ? 'Done' : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
                                 </button>
                             </div>
                         </div>

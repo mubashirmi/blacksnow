@@ -247,11 +247,9 @@ function Advertising() {
                                 <Button
                                     size='lg'
                                     className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    onClick={() => {
-                                        router.push('/billboards');
-                                    }}
+                                    onClick={() => setSlideshowOpen(true)}
                                 >
-                                    Billboards
+                                    Learn More
                                 </Button>
                                 <Button
                                     size='lg'
@@ -268,7 +266,7 @@ function Advertising() {
                         <div className='relative animate-slide-in-right '>
                             <div className='relative overflow-hidden '>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                         <LottieAnimation
                                             src='/animations/billboardherosection.json'
                                             className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
@@ -459,7 +457,7 @@ function Advertising() {
 
                         {/* Right Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/advretisingicon.json' loop={true} autoplay={true} />
                             </div>
                         </div>

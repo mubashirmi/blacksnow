@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, CheckCircle, ChevronLeft, ChevronRight, Layers, LayoutDashboard, Monitor, Share2, Sparkles, Users, X, Zap } from 'lucide-react';
+import { BarChart3, CheckCircle, ChevronLeft, Layers, LayoutDashboard, Monitor, Share2, Sparkles, Users, X, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bs_digital_billboard_tour_v1';
@@ -254,9 +254,11 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#0a080f',
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
         borderColor: `${accent}45`,
-        boxShadow: `0 0 80px ${accent}22, 0 0 30px #7c3aed12, 0 30px 80px rgba(0,0,0,0.82)`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
     };
 
     const GradTitle = () =>
@@ -302,19 +304,6 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                         style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}14 0%, #7c3aed08 50%, transparent 70%)` }}
                     />
 
-                    {/* Product badge top-left */}
-                    <div
-                        className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
-                        style={{
-                            background: `linear-gradient(135deg, ${accent}20, #7c3aed10)`,
-                            border: `1px solid ${accent}40`,
-                            color: accent,
-                        }}
-                    >
-                        <Monitor className='w-3 h-3' />
-                        Digital Billboard
-                    </div>
-
                     {/* Close */}
                     <button
                         onClick={() => close(false)}
@@ -328,7 +317,7 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                         {/* LEFT */}
                         <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
                             <div style={slideAnim}>
-                                {/* Badge row */}
+                                {/* Badge row
                                 <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
@@ -340,7 +329,7 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                                     <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
                                         Platform Tour
                                     </span>
-                                </div>
+                                </div> */}
 
                                 {/* Title */}
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
@@ -388,12 +377,12 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                                             boxShadow: `0 2px 14px ${accent}30`,
                                         }}
                                     >
-                                        {isLastSlide ? 'Go to Dashboard →' : 'Next'}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                        {isLastSlide ? 'Go to Dashboard' : 'Next'}
+                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                     </button>
-                                    <span className='text-xs text-white/25'>
+                                    {/* <span className='text-xs text-white/25'>
                                         {current + 1}/{SLIDES.length}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
@@ -435,7 +424,7 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                                     Platform Tour
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
 
@@ -551,8 +540,8 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                                         border: `1px solid ${accent}60`,
                                     }}
                                 >
-                                    {isLastSlide ? 'Go ✓' : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                    {isLastSlide ? 'Go' : 'Next'}
+                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                 </button>
                             </div>
                         </div>

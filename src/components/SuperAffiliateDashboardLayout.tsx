@@ -57,7 +57,7 @@ export default function SuperAffiliateLayout({ children }: { children: React.Rea
             });
 
             // Redirect if user doesn't have Affiliate role
-            if (roles.length > 0 && !roles.includes('SuperAffiliate')) {
+            if (roles.length > 0 && !roles.includes('LightningGold')) {
                 router.push('/lightningGold');
                 return;
             }
@@ -219,7 +219,7 @@ export default function SuperAffiliateLayout({ children }: { children: React.Rea
     }
 
     // Only render if user has Affiliate role
-    if (!userRoles.includes('SuperAffiliate') || !userData) {
+    if (!userRoles.includes('LightningGold') || !userData) {
         return null; // This will be handled by the redirect in useEffect
     }
 

@@ -4,7 +4,6 @@ import {
     AlertTriangle,
     CheckCircle2,
     ChevronLeft,
-    ChevronRight,
     CreditCard,
     DollarSign,
     FileCheck,
@@ -263,28 +262,6 @@ const SLIDES: Slide[] = [
         railLabel: 'Privacy',
         Icon: Shield,
     },
-    {
-        id: 'acknowledge',
-        variant: 'acknowledge',
-        accent: GOLD_ACCENT,
-        badge: 'Legal Acknowledgement',
-        title: "You're Almost In",
-        description:
-            'By proceeding you confirm you have read and agree to all the legal documents listed below. You understand that earnings are not guaranteed and you operate as an independent contractor.',
-        panelTitle: 'Confirmation Checklist',
-        panelSummary:
-            'Please review the documents below before moving forward. Your acknowledgement confirms acceptance of the legal framework for participating in the affiliate program.',
-        bullets: [
-            'Affiliate Agreement',
-            'Independent Contractor Agreement',
-            'Earnings Disclosure',
-            'GDPR & Privacy Policy',
-            'Terms & Conditions',
-            'Privacy Policy',
-        ],
-        railLabel: 'Acknowledge',
-        Icon: Shield,
-    },
 ];
 
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (index: number) => void }) {
@@ -405,6 +382,7 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
+        // eslint-disable-next-line
     }, [open, current, animating, isLastSlide]);
 
     const slide = SLIDES[current];
@@ -421,9 +399,20 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#080b12',
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
         borderColor: `${accent}45`,
-        boxShadow: `0 0 70px ${accent}22, 0 30px 80px rgba(0,0,0,0.75)`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
+    };
+
+    const glassShine: React.CSSProperties = {
+        background:
+            'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+    };
+
+    const bottomGlass: React.CSSProperties = {
+        background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)',
     };
 
     const rightRailSteps = useMemo(() => SLIDES.map((item) => item.railLabel), []);
@@ -440,9 +429,12 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, height: 'min(560px, calc(100vh - 3rem))' }}
+                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(575px, calc(100vh - 3rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -461,22 +453,9 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='flex flex-1 min-h-0'>
+                    <div className='relative z-10 flex flex-1 min-h-0'>
                         <div className='flex-1 flex flex-col px-9 pt-9 pb-7 min-w-0 min-h-0'>
                             <div className='min-h-0 flex-1 overflow-y-auto pr-2' style={slideAnim}>
-                                <div className='flex items-center gap-3 mb-5 flex-wrap'>
-                                    <div
-                                        className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
-                                        style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                                    >
-                                        <Icon className='w-3.5 h-3.5' />
-                                        {slide.badge}
-                                    </div>
-                                    <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                        Slide {current + 1} of {SLIDES.length}
-                                    </span>
-                                </div>
-
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
                                     <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #fff1c4)` }}>
                                         {slide.title}
@@ -510,11 +489,7 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                                         }}
                                     >
                                         {isLastSlide ? 'Done' : 'Next'}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
                                     </button>
-                                    <span className='text-xs text-white/25'>
-                                        {current + 1}/{SLIDES.length}
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -537,7 +512,7 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                                     Lightning Gold Flow
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
 
@@ -562,9 +537,12 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                 </div>
 
                 <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, height: 'min(620px, calc(100vh - 2rem))' }}
+                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(475px, calc(100vh - 2rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -584,19 +562,6 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                     </button>
 
                     <div className='relative z-10 px-6 pt-8 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
-                        <div className='flex items-center gap-2 flex-wrap mb-4'>
-                            <div
-                                className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
-                                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                            >
-                                <Icon className='w-3 h-3' />
-                                {slide.badge}
-                            </div>
-                            <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                {current + 1}/{SLIDES.length}
-                            </span>
-                        </div>
-
                         <h2 className='text-2xl font-black text-white leading-tight mb-2'>
                             <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #fff1c4)` }}>
                                 {slide.title}
@@ -637,7 +602,12 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                         </div>
                     </div>
 
-                    <div className='relative z-10 px-6 pb-5 pt-1 border-t border-white/10'>
+                    <div className='relative z-10 px-6 pb-5'>
+                        <div className='flex justify-end w-full mb-2'>
+                            <span className='text-sm font-semibold px-2 py-0.5 mr-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
+                                {current + 1}/{SLIDES.length}
+                            </span>
+                        </div>
                         <div className='flex items-center gap-2'>
                             <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={(i) => goTo(i, i > current ? 'next' : 'prev')} />
                             <div className='flex items-center gap-1.5 ml-auto'>
@@ -655,7 +625,6 @@ export function LightningGoldSlideshow({ open, onOpenChange }: LightningGoldSlid
                                     style={{ background: `linear-gradient(135deg, ${accent}dd, ${accent}88)`, border: `1px solid ${accent}60` }}
                                 >
                                     {isLastSlide ? 'Done' : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
                                 </button>
                             </div>
                         </div>

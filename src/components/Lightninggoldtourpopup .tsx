@@ -5,7 +5,6 @@ import {
     BarChart3,
     CheckCircle,
     ChevronLeft,
-    ChevronRight,
     CreditCard,
     FileText,
     Gift,
@@ -482,21 +481,21 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
             </>
         );
 
-    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Enter Dashboard' : 'Please agree to continue') : current === 7 ? 'Review Legal →' : 'Next';
+    const nextLabel = isLastSlide ? (agreed ? 'Enter Dashboard' : 'Agree & continue') : current === 7 ? 'Review Legal' : 'Next';
 
-    const GoldBadge = () => (
-        <div
-            className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
-            style={{
-                background: 'linear-gradient(135deg, #F5A62322, #FFD70012)',
-                border: '1px solid #F5A62345',
-                color: '#F5A623',
-            }}
-        >
-            <Rocket className='w-3 h-3' />
-            Lightning Gold
-        </div>
-    );
+    // const GoldBadge = () => (
+    //     <div
+    //         className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
+    //         style={{
+    //             background: 'linear-gradient(135deg, #F5A62322, #FFD70012)',
+    //             border: '1px solid #F5A62345',
+    //             color: '#F5A623',
+    //         }}
+    //     >
+    //         <Rocket className='w-3 h-3' />
+    //         Lightning Gold
+    //     </div>
+    // );
 
     return (
         <>
@@ -524,7 +523,7 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                         style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}16 0%, transparent 65%)` }}
                     />
 
-                    <GoldBadge />
+                    {/* <GoldBadge /> */}
 
                     {/* Close */}
                     <button
@@ -540,7 +539,7 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                         <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
                             <div style={slideAnim}>
                                 {/* Badge row */}
-                                <div className='flex items-center gap-3 mb-5'>
+                                {/* <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
                                         style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -549,7 +548,7 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                                         {badge}
                                     </div>
                                     <SectionLabel current={current} />
-                                </div>
+                                </div> */}
 
                                 {/* Title */}
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
@@ -668,11 +667,11 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                                         }}
                                     >
                                         {nextLabel}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                     </button>
-                                    <span className='text-xs text-white/25'>
+                                    {/* <span className='text-xs text-white/25'>
                                         {current + 1}/{SLIDES.length}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
@@ -700,7 +699,7 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                                     {current <= 7 ? 'Dashboard Tour' : current <= 13 ? 'Legal Review' : 'Final Step'}
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
                             <div className='flex flex-col gap-2 w-full mt-2'>
@@ -860,8 +859,8 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
                                         color: '#1a1200',
                                     }}
                                 >
-                                    {isLastSlide ? (agreed ? 'Agree ✓' : '—') : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                    {isLastSlide ? (agreed ? 'Agree' : '—') : 'Next'}
+                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                 </button>
                             </div>
                         </div>

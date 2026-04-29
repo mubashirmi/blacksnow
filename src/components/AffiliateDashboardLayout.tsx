@@ -57,7 +57,7 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
             });
 
             // Redirect if user doesn't have Affiliate role
-            if (roles.length > 0 && !roles.includes('Affiliate')) {
+            if (roles.length > 0 && !roles.includes('LightningSilver')) {
                 router.push('/affiliate');
                 return;
             }
@@ -219,7 +219,7 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
     }
 
     // Only render if user has Affiliate role
-    if (!userRoles.includes('Affiliate') || !userData) {
+    if (!userRoles.includes('LightningSilver') || !userData) {
         return null; // This will be handled by the redirect in useEffect
     }
 

@@ -1,11 +1,33 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Page() {
+    const router = useRouter();
+    const [productLink, setProductLink] = useState<string | null>(null);
+
+    useEffect(() => {
+        const storedProductLink = localStorage.getItem('productLink');
+        setProductLink(storedProductLink);
+    }, []);
+
+    const handleNavigate = () => {
+        if (productLink === 'https://blacksnowholdings.com/lightningGold') {
+            router.push('/superAffiliate/dashboard/kpi');
+        } else if (productLink === 'https://blacksnowholdings.com/lightningSilver') {
+            router.push('/affiliate/dashboard/kpi');
+        } else {
+            router.push('/affiliate/dashboard/links');
+        }
+    };
+
     return (
-        <div className=' bg-[#050608] relative overflow-hidden flex items-center justify-center '>
+        <div className='bg-[#050608] relative overflow-hidden flex items-center justify-center'>
             {/* Confirmation Card */}
             <div className='relative z-10 w-full max-w-2xl px-6 py-20'>
                 {/* Success Badge */}
@@ -42,13 +64,11 @@ export default function Page() {
                         {/* Action Buttons */}
                         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                             <Button
-                                asChild
-                                className='bg-gradient-to-r from-[#012e07] via-[#023108] to-[#033101]  text-white font-bold py-6 px-8 text-lg shadow-2xl shadow-[#012e07]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group'
+                                onClick={handleNavigate}
+                                className='bg-gradient-to-r from-[#012e07] via-[#023108] to-[#033101] text-white font-bold py-6 px-8 text-lg shadow-2xl shadow-[#012e07]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group'
                             >
-                                <Link href='/affiliate/dashboard/links'>
-                                    Access Dashboard
-                                    <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
-                                </Link>
+                                Access Dashboard
+                                <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
                             </Button>
 
                             <Button

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -31,16 +32,16 @@ const menuItems = [
 ];
 
 const roleDashboardMap: Record<
-    'Affiliate' | 'Sales' | 'InvoiceTool' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing' | 'SuperAffiliate',
+    'LightningSilver' | 'Sales' | 'InvoiceTool' | 'Admin' | 'DigitalBillboard' | 'EmailMarketing' | 'LightningGold',
     { label: string; path: string }
 > = {
-    Affiliate: {
-        label: 'Affiliate Dashboard',
-        path: '/affiliate/dashboard/links',
+    LightningSilver: {
+        label: 'Lightning Silver Dashboard',
+        path: '/affiliate/dashboard/kpi',
     },
-    SuperAffiliate: {
+    LightningGold: {
         label: 'Lightning Gold Dashboard',
-        path: '/superAffiliate/dashboard/links',
+        path: '/superAffiliate/dashboard/kpi',
     },
     Sales: {
         label: 'Sales Dashboard',
@@ -64,13 +65,16 @@ const roleDashboardMap: Record<
     },
 };
 
-const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Affiliate', 'DigitalBillboard', 'SuperAffiliate', 'EmailMarketing'];
+const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'LightningSilver', 'DigitalBillboard', 'LightningGold', 'EmailMarketing'];
 
 // Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [userid, setUserid] = useState<string | null>(userId ?? null);
     const [adminId, setAdminId] = useState<string | null>(null);
+    const [firstName, setFirstName] = useState<string | null>(null);
+    const [lastName, setLastName] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
     const [showDashboardMenu, setShowDashboardMenu] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -80,6 +84,22 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     // Prevent body scroll when menu is open + load userId / roles / adminId
     useEffect(() => {
         const iid = localStorage.getItem('userId') || userId || null;
+        const getCookie = (name: string): string | null => {
+            if (typeof document === 'undefined') return null;
+
+            const value = document.cookie
+                .split('; ')
+                .find((row) => row.startsWith(`${name}=`))
+                ?.split('=')[1];
+
+            return value ? decodeURIComponent(value) : null;
+        };
+        const firstNamee = getCookie('firstName') || userId || null;
+        const lastNamee = getCookie('lastName') || userId || null;
+        const eemail = getCookie('email') || userId || null;
+        setFirstName(firstNamee);
+        setLastName(lastNamee);
+        setEmail(eemail);
         setUserid(iid);
 
         const aid = localStorage.getItem('adminId') || null;
@@ -150,6 +170,9 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         destroyCookie(null, 'id');
         destroyCookie(null, 'token');
         destroyCookie(null, 'admin_token');
+        destroyCookie(null, 'firstName');
+        destroyCookie(null, 'lastName');
+        destroyCookie(null, 'email');
         destroyCookie(null, 'adminId');
         localStorage.removeItem('userId');
         localStorage.removeItem('adminId');
@@ -237,7 +260,11 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                             } gap-x-1`}
                         >
-                            <span>Menu</span>
+                            <span>
+                                {firstName ? `${firstName} ` : 'Menu'} {lastName ? `${lastName}` : ''}
+                            </span>
+                            <br />
+                            <span className='text-lg font-medium text-[#2c7bbe]'>{firstName && `${email}`}</span>
                         </h2>
                     </div>
 
@@ -302,9 +329,20 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                         <div className='space-y-2'>
                                             <Button
                                                 onClick={handleDashboardClick}
-                                                className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                                aria-expanded={dashboards.length > 1 ? showDashboardMenu : undefined}
+                                                aria-haspopup={dashboards.length > 1 ? 'menu' : undefined}
+                                                className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2'
                                             >
-                                                Dashboard
+                                                <span>Dashboard</span>
+
+                                                {dashboards.length > 1 && (
+                                                    <ChevronDown
+                                                        size={18}
+                                                        strokeWidth={2.5}
+                                                        className={`transition-transform duration-300 ${showDashboardMenu ? 'rotate-180' : 'rotate-0'}`}
+                                                        aria-hidden='true'
+                                                    />
+                                                )}
                                             </Button>
 
                                             {/* If multiple dashboards, show a small selector under the same button */}

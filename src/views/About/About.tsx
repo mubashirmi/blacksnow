@@ -48,7 +48,7 @@ function About() {
                         </div>
 
                         <div className='relative w-full'>
-                            <div className='relative w-full sm:w-96 h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center mx-auto'>
+                            <div className='relative w-full sm:w-96 h-96 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center mx-auto'>
                                 <Image width={100} height={100} src='/logocolored.png' alt='Black Snow Logo' className='w-[90%]' />
                             </div>
                         </div>

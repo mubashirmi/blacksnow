@@ -1,7 +1,18 @@
 import prisma from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'InvoiceTool', 'DigitalBillboard', 'EmailMarketing', 'SuperAffiliate']);
+const AllowedRoles = new Set([
+    'Affiliate',
+    'Sales',
+    'Admin',
+    'NewsLetter',
+    'InvoiceTool',
+    'DigitalBillboard',
+    'EmailMarketing',
+    'SuperAffiliate',
+    'LightningSilver',
+    'LightningGold',
+]);
 
 function normalizeRoles(input: unknown): string[] {
     if (Array.isArray(input))

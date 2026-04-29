@@ -3,8 +3,8 @@
 import AuthModal from '@/components/AuthModal';
 import LightningSilverSlideshow from '@/components/LightningSilverSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
+import { RevenuePayoutsSection } from '@/components/RevenuePayoutsSection';
 import ShareBanner from '@/components/ShareBanner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
@@ -113,8 +113,8 @@ function LightningSilver() {
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
                                 <div style={{ display: 'table' }}>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-3 sm:mb-4 leading-tight'>
-                                        Lightning Silver <span className='text-[#8d96c2]'>Earn 25% Commission</span>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#8d96c2] mb-3 sm:mb-4 leading-tight'>
+                                        Lightning Silver <br /> 25% Commission
                                     </h1>
                                 </div>
 
@@ -145,7 +145,7 @@ function LightningSilver() {
 
                         <div className='relative animate-slide-in-right'>
                             <div className='relative flex items-center justify-center w-full h-full'>
-                                <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
                                         src='/animations/lightningSilverherosection.json'
                                         className='w-[90%] lg:w-[85%] max-w-[255px] sm:max-w-[295px] md:max-w-[340px] lg:max-w-[360px] h-[315px] sm:h-[355px] md:h-[395px] lg:h-[415px]'
@@ -175,22 +175,26 @@ function LightningSilver() {
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
                                 <div className='flex flex-row justify-between w-full'>
-                                    <div>
-                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2]'>Lightning Silver (25%)</div>
-                                        <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                    <div className='w-full sm:w-fit'>
+                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2] text-center sm:text-left'>
+                                            Lightning Silver (25%)
+                                        </div>
+                                        <div className='text-gray-300 text-sm sm:text-base mt-1 hidden sm:block'>
+                                            Monthly and annual commissions in one clear view.
+                                        </div>
                                     </div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2]'>5$ per month</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#8d96c2] hidden sm:block'>5$ per month</div>
                                 </div>
-                                <Badge className='bg-[#2c6bb2] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$5 / mo</Badge>
+                                {/* <Badge className='bg-[#2c6bb2] text-white px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$5 / mo</Badge> */}
                             </div>
 
                             <div className='overflow-x-auto rounded-xl border border-[#8d96c2]/60'>
                                 <table className='w-full text-left'>
-                                    <thead className='bg-[#8d96c2]/80'>
+                                    <thead>
                                         <tr>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Product</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Monthly</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-white'>Annual</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-200'>Product</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-200'>Monthly</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-200'>Annual</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -212,6 +216,8 @@ function LightningSilver() {
                     </Card>
                 </div>
             </section>
+
+            <RevenuePayoutsSection />
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>

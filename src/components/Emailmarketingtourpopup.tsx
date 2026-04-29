@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Bot, Calendar, CheckCircle, ChevronLeft, ChevronRight, Layers, Mail, MessageSquare, Sparkles, Upload, X } from 'lucide-react';
+import { BarChart3, Bot, Calendar, CheckCircle, ChevronLeft, Layers, Mail, MessageSquare, Sparkles, Upload, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bs_email_marketing_tour_v1';
@@ -201,14 +201,14 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
     );
 }
 
-function StepIndicator({ current, total, accent }: { current: number; total: number; accent: string }) {
-    // const sections = [{ label: 'Platform Tour', count: total, range: [0, total - 1] }];
-    return (
-        <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-            Platform Tour
-        </span>
-    );
-}
+// function StepIndicator({ current, total, accent }: { current: number; total: number; accent: string }) {
+//     // const sections = [{ label: 'Platform Tour', count: total, range: [0, total - 1] }];
+//     return (
+//         <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
+//             Platform Tour
+//         </span>
+//     );
+// }
 
 // ── Main Component ────────────────────────────────────────────
 export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => void }) {
@@ -283,9 +283,11 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#080c10',
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
         borderColor: `${accent}45`,
-        boxShadow: `0 0 80px ${accent}20, 0 0 30px #2c7bbe12, 0 30px 80px rgba(0,0,0,0.80)`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
     };
 
     const GradTitle = () =>
@@ -342,20 +344,6 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                         className='absolute top-0 left-0 right-0 h-64 pointer-events-none'
                         style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}12 0%, #2c7bbe08 50%, transparent 70%)` }}
                     />
-
-                    {/* Product badge top-left */}
-                    <div
-                        className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
-                        style={{
-                            background: `linear-gradient(135deg, ${accent}20, #2c7bbe10)`,
-                            border: `1px solid ${accent}40`,
-                            color: accent,
-                        }}
-                    >
-                        <Mail className='w-3 h-3' />
-                        Email/SMS CRM
-                    </div>
-
                     {/* Close */}
                     <button
                         onClick={() => close(false)}
@@ -370,7 +358,7 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                         <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
                             <div style={slideAnim}>
                                 {/* Badge row */}
-                                <div className='flex items-center gap-3 mb-5'>
+                                {/* <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
                                         style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -379,7 +367,7 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                                         {badge}
                                     </div>
                                     <StepIndicator current={current} total={SLIDES.length} accent={accent} />
-                                </div>
+                                </div> */}
 
                                 {/* Title */}
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
@@ -428,11 +416,11 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                                         }}
                                     >
                                         {nextLabel}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                     </button>
-                                    <span className='text-xs text-white/25'>
+                                    {/* <span className='text-xs text-white/25'>
                                         {current + 1}/{SLIDES.length}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
@@ -463,7 +451,7 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                                     Platform Tour
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
 
@@ -579,8 +567,8 @@ export function EmailMarketingTourPopup({ onComplete }: { onComplete?: () => voi
                                         border: `1px solid ${accent}60`,
                                     }}
                                 >
-                                    {isLastSlide ? 'Go ✓' : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                    {isLastSlide ? 'Go' : 'Next'}
+                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                 </button>
                             </div>
                         </div>

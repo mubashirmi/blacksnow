@@ -12,7 +12,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 // ── Snowflake config ──────────────────────────────────────────
-const SNOWFLAKE_COUNT = 38;
+const SNOWFLAKE_COUNT = 45;
 
 type Flake = {
     id: number;
@@ -271,6 +271,9 @@ function SignIn() {
                     response = await axios.post('/api/v2/signup', { email: data.email, firstName, lastName, password: data.password, role: '' });
                 }
                 localStorage.setItem('userId', response.data.user.id);
+                setCookie('firstName', response.data.user.firstName);
+                setCookie('lastName', response.data.user.lastName);
+                setCookie('email', response.data.user.email);
                 setCookie('id', response.data.user.id);
                 setAlert({ type: 'success', message: 'Account created successfully! Please sign in.' });
                 setIsSignUp(false);
@@ -293,6 +296,8 @@ function SignIn() {
                 } else if (roles.includes('sales')) {
                     setCookie('token', token);
                     setCookie('id', user.id);
+                    setCookie('firstName', user.firstName);
+                    setCookie('lastName', user.lastName);
                     localStorage.setItem('userId', String(user.id));
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setAlert({ type: 'success', message: 'Login successful!' });
@@ -303,6 +308,9 @@ function SignIn() {
                 } else {
                     setCookie('token', token);
                     setCookie('id', user.id);
+                    setCookie('firstName', user.firstName);
+                    setCookie('lastName', user.lastName);
+                    setCookie('email', user.email);
                     localStorage.setItem('userId', String(user.id));
                     localStorage.setItem('roles', JSON.stringify(user.roles || []));
                     setAlert({ type: 'success', message: 'Login successful!' });
@@ -331,20 +339,45 @@ function SignIn() {
             </div>
 
             <div className='relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6'>
-                <div className='relative flex rounded-3xl overflow-hidden border-2 border-[#2c7bbe]/30 bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <div
+                    className='relative flex rounded-3xl overflow-hidden border border-white/10 shadow-2xl backdrop-blur-[7px]'
+                    style={{
+                        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+                        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                        backdropFilter: 'blur(7px) saturate(145%)',
+                        boxShadow:
+                            '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(44,123,190,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                    }}
+                >
+                    {/* Glass shine */}
+                    <div
+                        className='absolute inset-0 pointer-events-none'
+                        style={{
+                            background:
+                                'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+                        }}
+                    />
+
+                    <div
+                        className='absolute inset-x-0 bottom-0 h-40 pointer-events-none'
+                        style={{
+                            background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)',
+                        }}
+                    />
+
                     {/* Top gradient bar */}
                     <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] z-20' />
 
                     {/* LEFT — Carousel (hidden on mobile) */}
-                    <div className='hidden lg:flex lg:w-[50%] flex-shrink-0'>
+                    <div className='relative z-10 hidden lg:flex lg:w-[50%] flex-shrink-0'>
                         <ProductCarousel />
                     </div>
 
                     {/* Center divider */}
-                    <div className='hidden lg:block w-[1px] flex-shrink-0 self-stretch bg-gradient-to-b from-transparent via-white/10 to-transparent my-8' />
+                    <div className='relative z-10 hidden lg:block w-[1px] flex-shrink-0 self-stretch bg-gradient-to-b from-transparent via-white/10 to-transparent my-8' />
 
                     {/* RIGHT — Form: min-height locks the card to SignUp height at all times */}
-                    <div className='flex-1 flex flex-col justify-center px-8 sm:px-10 py-10' style={{ minHeight: UNIFIED_CARD_HEIGHT }}>
+                    <div className='relative z-10 flex-1 flex flex-col justify-center px-8 sm:px-10 py-10' style={{ minHeight: UNIFIED_CARD_HEIGHT }}>
                         <div className='text-center mb-8'>
                             <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5'>
                                 <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
@@ -429,7 +462,15 @@ function SignIn() {
                             <Button
                                 type='submit'
                                 disabled={isLoading}
-                                className='w-full bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] hover:from-[#4cc7e8] hover:via-[#2a8dcc] hover:to-[#2c7bbe] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group disabled:opacity-50 cursor-pointer'
+                                className='w-full cursor-pointer rounded-2xl border py-6 text-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] group'
+                                style={{
+                                    background:
+                                        'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
+                                    borderColor: 'rgba(255,255,255,0.10)',
+                                    WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                    backdropFilter: 'blur(7px) saturate(145%)',
+                                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
+                                }}
                             >
                                 {isLoading ? (
                                     <div className='flex items-center justify-center'>
@@ -442,7 +483,7 @@ function SignIn() {
                                 ) : (
                                     <>
                                         {isSignUp ? 'Create Account' : 'Dashboard'}
-                                        <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
+                                        <ArrowRight className='w-5 h-5 ml-2 opacity-70 group-hover:translate-x-1 transition-transform duration-300' />
                                     </>
                                 )}
                             </Button>

@@ -1,3 +1,4 @@
+import { FeedbackUnsubscribeButtons } from '@/components/unsubscribe-flow';
 import { AuthProvider } from '@/lib/auth';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
@@ -24,6 +25,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     priority
                                 />
                             </div>
+
                             {/* Text - perfectly centered on mobile */}
                             <div className='h-8 md:h-9 flex items-center absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0'>
                                 <span className='text-[28px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#4cc7e8] fontArchivoBlack whitespace-nowrap leading-none'>
@@ -40,14 +42,14 @@ function CoreLayout({ children }: { children: ReactNode }) {
                 </div>
             </header>
 
-            {/* Page  Content */}
+            {/* Page Content */}
             <main className='pt-16 sm:pt-20'>{children}</main>
 
             {/* Footer */}
-            <footer className='relative bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-t border-[#2c7bbe]/20 pt-12 pb-7 px-4 sm:px-6 md:px-8'>
+            <footer className='relative bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-t border-[#2c7bbe]/20 pt-12 pb-7 px-4 sm:px-6 md:px-8 overflow-hidden'>
                 <div className='container mx-auto max-w-7xl relative z-10'>
-                    <div className='grid lg:grid-cols-5 gap-8 sm:gap-12'>
-                        <div className='space-y-8 col-span-2'>
+                    <div className='grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-12'>
+                        <div className='space-y-8 lg:col-span-2'>
                             <div className='flex items-center space-x-4'>
                                 <div className='relative group'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
@@ -60,6 +62,11 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                         />
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Desktop buttons - show under logo */}
+                            <div className='hidden lg:block'>
+                                <FeedbackUnsubscribeButtons size='footer' />
                             </div>
 
                             <div className='flex space-x-4'>
@@ -80,13 +87,14 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             </div>
                         </div>
 
-                        <div className='space-y-5'>
+                        <div className='space-y-5 min-w-0'>
                             <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Company</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Market Intelligence Platform', href: '/about' },
                                     { name: 'Careers', href: '/careers' },
                                     { name: 'Blogs', href: '/blogdirectory' },
+                                    { name: 'Digital Billboard', href: '/advertising' },
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
@@ -95,24 +103,23 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={link.href}
-                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
                                     >
-                                        <span className='flex items-center'>
-                                            {link.name}
-                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        <span className='flex min-w-0 items-center'>
+                                            <span className='min-w-0 break-words'>{link.name}</span>
+                                            <ArrowRight className='w-4 h-4 ml-2 shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
                                         </span>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        <div className='space-y-5'>
+                        <div className='space-y-5 min-w-0'>
                             <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Resources</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
                                     { name: 'Business Invoice', href: '/InvoiceContract' },
-                                    { name: 'Digital Billboard', href: '/advertising' },
                                     { name: 'Email CRM', href: '/emailMarketing' },
                                     { name: 'Lightning Silver', href: '/lightningSilver' },
                                     { name: 'Lightning Gold', href: '/lightningGold' },
@@ -120,46 +127,56 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={link.href}
-                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
                                     >
-                                        <span className='flex items-center'>
-                                            {link.name}
-                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        <span className='flex min-w-0 items-center'>
+                                            <span className='min-w-0 break-words'>{link.name}</span>
+                                            <ArrowRight className='w-4 h-4 ml-2 shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
                                         </span>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        <div className='space-y-5'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Legal</h4>
-                            <div className='space-y-3'>
-                                {[
-                                    { name: 'Affiliate Agreement', href: '/affiliateagreement' },
-                                    { name: 'Market Data Disclosure', href: '/riskdisclosure' },
-                                    { name: 'Terms & Conditions', href: '/terms' },
-                                    { name: 'Privacy Policy', href: '/privacy' },
-                                    { name: 'GDPR', href: '/gdpr' },
-                                    { name: 'Independent Contract', href: '/independentContract' },
-                                    { name: 'No Financial Advice', href: '/nofinancialadvice' },
-                                    { name: 'Subscription Policy', href: '/subscriptionpolicy' },
-                                    { name: 'Earnings Disclosure', href: '/earningsdisclosure' },
-                                    { name: 'Cookie Policy', href: '/cookies' },
-                                ].map((link, index) => (
-                                    <Link
-                                        key={index}
-                                        href={link.href}
-                                        className='block text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
-                                    >
-                                        <span className='flex items-center'>
-                                            {link.name}
-                                            <ArrowRight className='w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
-                                        </span>
-                                    </Link>
-                                ))}
+                        <div className='min-w-0'>
+                            <div className='grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 lg:block'>
+                                <div className='min-w-0 space-y-5'>
+                                    <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Legal</h4>
+                                    <div className='space-y-3'>
+                                        {[
+                                            { name: 'Affiliate Agreement', href: '/affiliateagreement' },
+                                            { name: 'Market Data Disclosure', href: '/riskdisclosure' },
+                                            { name: 'Terms & Conditions', href: '/terms' },
+                                            { name: 'Privacy Policy', href: '/privacy' },
+                                            { name: 'GDPR', href: '/gdpr' },
+                                            { name: 'Independent Contract', href: '/independentContract' },
+                                            { name: 'No Financial Advice', href: '/nofinancialadvice' },
+                                            { name: 'Subscription Policy', href: '/subscriptionpolicy' },
+                                            { name: 'Earnings Disclosure', href: '/earningsdisclosure' },
+                                            { name: 'Cookie Policy', href: '/cookies' },
+                                        ].map((link, index) => (
+                                            <Link
+                                                key={index}
+                                                href={link.href}
+                                                className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                            >
+                                                <span className='flex min-w-0 items-center'>
+                                                    <span className='min-w-0 break-words'>{link.name}</span>
+                                                    <ArrowRight className='w-4 h-4 ml-2 shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Mobile buttons - right side opposite Legal section */}
+                                <div className='shrink-0 lg:hidden'>
+                                    <FeedbackUnsubscribeButtons size='footer' />
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <p className='text-gray-400 font-semibold text-center mt-12 text-sm sm:text-base'>© 2024 Black Snow. All rights reserved.</p>
                 </div>
             </footer>

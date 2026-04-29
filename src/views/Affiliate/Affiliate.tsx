@@ -138,7 +138,7 @@ function Affiliate() {
                         <div className='relative animate-slide-in-right'>
                             <div className='relative overflow-hidden'>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                         <LottieAnimation
                                             src='/animations/affiliate-coin-dollar-blue.json'
                                             className='w-[90%] h-full sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:min-w-[550px] lg:h-[500px]'

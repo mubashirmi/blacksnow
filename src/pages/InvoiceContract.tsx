@@ -212,7 +212,7 @@ export default function InvoiceContractPage() {
                         {/* RIGHT */}
                         <div className='relative animate-slide-in-right'>
                             <div className='relative flex items-center justify-center w-full'>
-                                <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 px-4 py-4 sm:px-5 sm:py-5'>
+                                <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 px-4 py-4 sm:px-5 sm:py-5'>
                                     <div className='w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px] lg:w-[330px] lg:h-[330px]'>
                                         <LottieAnimation src='/animations/invoivecontracticon.json' className='w-full h-full' loop autoplay={true} />
                                     </div>

@@ -1,26 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { FeedbackUnsubscribeButtons } from '@/components/unsubscribe-flow';
 import lottie from 'lottie-web';
-import { AlertTriangle, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, Shield, Users, X } from 'lucide-react';
-import Image from 'next/image';
+import { AlertTriangle, CheckCircle, Clock, CreditCard, Eye, Headphones, Mail, Shield, Users } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function Page() {
-    const [modalOpened, setModalOpened] = useState(false);
-    const router = useRouter();
-
-    const handleUnsubscribeClick = () => {
-        const id = localStorage.getItem('userId');
-        if (id) {
-            router.push('/pricing');
-        } else {
-            setModalOpened(true);
-        }
-    };
-
     const LottieAnimation = ({ src, loop, autoplay, style }) => {
         const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -33,6 +19,7 @@ export default function Page() {
                     autoplay,
                     path: src,
                 });
+
                 return () => animation.destroy();
             }
         }, [src, loop, autoplay]);
@@ -78,25 +65,15 @@ export default function Page() {
         },
         {
             icon: CheckCircle,
-            title: 'Immediate Action',
-            description: 'Clicking Unsubscribe will immediately stop any future payments tied to your account.',
+            title: 'Immediate Review',
+            description: 'Clicking Unsubscribe lets you securely review the products connected to your account.',
         },
         {
             icon: Shield,
-            title: 'Confirmation',
-            description: 'Once unsubscribed, you will receive a confirmation email so you have peace of mind knowing your payments have been canceled.',
+            title: 'Account Verification',
+            description: 'Before showing subscription details, we verify your login so your product information stays protected.',
         },
     ];
-
-    // const contactMethods = [
-    //     {
-    //         icon: Mail,
-    //         title: 'Email Support',
-    //         value: 'support@support.com',
-    //         description: 'Get detailed help via email',
-    //         action: 'Send Email',
-    //     },
-    // ];
 
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
@@ -105,6 +82,7 @@ export default function Page() {
                 <div className='absolute -top-96 -right-96 w-[800px] h-[800px] bg-gradient-to-br from-[#4cc7e8]/20 via-[#2c7bbe]/10 to-transparent rounded-full blur-3xl opacity-30'></div>
                 <div className='absolute top-1/3 -left-96 w-[600px] h-[600px] bg-gradient-to-tr from-[#2c7bbe]/15 via-[#4cc7e8]/8 to-transparent rounded-full blur-3xl opacity-20'></div>
                 <div className='absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-gradient-to-tl from-[#4cc7e8]/10 via-[#2c7bbe]/5 to-transparent rounded-full blur-3xl opacity-15'></div>
+
                 <div className='absolute inset-0 opacity-5'>
                     <div
                         className='absolute inset-0'
@@ -116,6 +94,32 @@ export default function Page() {
                 </div>
             </div>
 
+            {/* Feedback & Subscription Controls */}
+            <section className='relative pt-10 sm:pt-16 pb-8 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
+                <div className='container mx-auto max-w-8xl'>
+                    <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-red-500/30 shadow-2xl shadow-red-500/20 max-w-5xl mx-auto animate-slide-in-up overflow-hidden'>
+                        <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-800 via-red-600 to-red-800 rounded-t-3xl'></div>
+
+                        <div className='flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6'>
+                            <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500/20 to-red-700/20 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                                <AlertTriangle className='w-7 h-7 sm:w-8 sm:h-8 text-red-500' />
+                            </div>
+
+                            <div className='flex-1'>
+                                <h3 className='text-xl sm:text-2xl font-black text-white mb-4'>Manage Feedback & Subscription Access</h3>
+
+                                <p className='text-sm sm:text-base text-gray-300 mb-6 leading-relaxed'>
+                                    Share feedback with our team or review your current product access. If you need to unsubscribe, we will first verify your
+                                    account and then show the products connected to your profile.
+                                </p>
+
+                                <FeedbackUnsubscribeButtons size='section' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* How We Support You */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
@@ -123,6 +127,7 @@ export default function Page() {
                         <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Elite Customer Care</span>
                         </h2>
+
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             Whether you need help understanding your account, managing your payments, or making changes to your plan, our dedicated support team
                             is here for you.
@@ -137,6 +142,7 @@ export default function Page() {
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
+
                                         <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>{feature.title}</h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed flex-1'>{feature.description}</p>
                                     </CardContent>
@@ -154,6 +160,7 @@ export default function Page() {
                         <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Flexible Plans</span>
                         </h2>
+
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             We offer flexible monthly and annual plans, giving you the freedom to choose what works best for you.
                         </p>
@@ -167,6 +174,7 @@ export default function Page() {
                                         <div className='w-12 h-12 bg-gradient-to-r from-[#4cc7e8]/20 to-[#2c7bbe]/20 rounded-xl flex items-center justify-center mb-4 group-hover:from-[#4cc7e8]/30 group-hover:to-[#2c7bbe]/30 transition-all duration-300'>
                                             <step.icon className='w-6 h-6 text-[#4cc7e8]' />
                                         </div>
+
                                         <h3 className='text-lg font-bold text-white mb-2'>{step.title}</h3>
                                         <p className='text-sm text-gray-300 leading-relaxed'>{step.description}</p>
                                     </CardContent>
@@ -177,23 +185,22 @@ export default function Page() {
 
                     <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl shadow-amber-500/20 max-w-5xl mx-auto animate-slide-in-up delay-600 overflow-hidden'>
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-700 rounded-t-3xl'></div>
+
                         <div className='flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6'>
                             <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-400/20 to-amber-600/20 rounded-2xl flex items-center justify-center flex-shrink-0'>
                                 <AlertTriangle className='w-7 h-7 sm:w-8 sm:h-8 text-amber-500' />
                             </div>
+
                             <div className='flex-1'>
                                 <h3 className='text-xl sm:text-2xl font-black text-white mb-4'>Need to Unsubscribe Your Plan?</h3>
+
                                 <p className='text-sm sm:text-base text-gray-300 mb-6 leading-relaxed'>
-                                    If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance.
+                                    If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance. We will
+                                    securely verify your login before showing your product access.
                                 </p>
+
                                 <div className='flex flex-col sm:flex-row gap-4 mt-[1px]'>
-                                    <Button
-                                        className='bg-red-700 hover:bg-red-800 text-white font-bold px-6 sm:px-8 py-3 text-base shadow-md shadow-red-500/30 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer'
-                                        onClick={handleUnsubscribeClick}
-                                    >
-                                        {/* <CreditCard className='mr-2 h-5 w-5' /> */}
-                                        Unsubscribe
-                                    </Button>
+                                    <FeedbackUnsubscribeButtons size='section' />
                                 </div>
                             </div>
                         </div>
@@ -201,18 +208,22 @@ export default function Page() {
                 </div>
             </section>
 
+            {/* Our Commitment */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
                             <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Our&nbsp;<span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Commitment</span>
+                                Our&nbsp;
+                                <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Commitment</span>
                                 <br />
                             </h2>
+
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
                                 Your trust means everything to us. We promise to deliver exceptional customer service and to handle every request—whether big or
                                 small—with professionalism and care.
                             </p>
+
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4'>
                                 <Link href={'/faq'}>
                                     <Button
@@ -220,7 +231,6 @@ export default function Page() {
                                         variant='outline'
                                         className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
                                     >
-                                        {/* <Eye className='w-5 h-5 sm:w-6 sm:h-6 mr-3' /> */}
                                         Were here to support you
                                     </Button>
                                 </Link>
@@ -235,33 +245,6 @@ export default function Page() {
                     </div>
                 </div>
             </section>
-
-            <Dialog open={modalOpened} onOpenChange={setModalOpened}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-amber-500/50 shadow-2xl shadow-amber-500/20 rounded-3xl backdrop-blur-xl overflow-hidden pb-8 p'>
-                    <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-700 rounded-t-3xl'></div>
-                    <button
-                        onClick={() => setModalOpened(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group'
-                    >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-                    <DialogHeader className='space-y-6 text-center'>
-                        <div className='flex flex-col items-center'>
-                            <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Image src='/logocolored.png' alt='Logo' width={100} height={100} className='object-contain drop-shadow-2xl' priority />
-                            </div>
-                            <DialogTitle className='text-2xl font-black text-white'>Sign In Required</DialogTitle>
-                            <DialogDescription className='text-[#4cc7e8] font-semibold'>You can&apos;t unsubscribe until you sign in.</DialogDescription>
-                        </div>
-                    </DialogHeader>
-                    <Button
-                        onClick={() => router.push('/login')}
-                        className='w-full bg-red-700 hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-md shadow-red-600/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
-                    >
-                        Sign In Now
-                    </Button>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }

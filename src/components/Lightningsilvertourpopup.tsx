@@ -5,7 +5,6 @@ import {
     BarChart3,
     CheckCircle,
     ChevronLeft,
-    ChevronRight,
     CreditCard,
     FileText,
     Gift,
@@ -460,22 +459,22 @@ export function LightningSilverTourPopup({ onComplete }) {
             </>
         );
 
-    const nextLabel = isLastSlide ? (agreed ? 'I Agree & Enter Dashboard' : 'Please agree to continue') : current === 6 ? 'Review Legal →' : 'Next';
+    const nextLabel = isLastSlide ? (agreed ? 'Enter Dashboard' : 'Agree & continue') : current === 6 ? 'Review Legal →' : 'Next';
 
     // ── Silver tier badge (top-right corner decoration) ──────
-    const SilverBadge = () => (
-        <div
-            className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
-            style={{
-                background: 'linear-gradient(135deg, #C0C0C020, #80808010)',
-                border: '1px solid #C0C0C040',
-                color: '#C0C0C0',
-            }}
-        >
-            <Zap className='w-3 h-3' />
-            Lightning Silver
-        </div>
-    );
+    // const SilverBadge = () => (
+    //     <div
+    //         className='absolute top-4 left-6 z-20 hidden lg:flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold'
+    //         style={{
+    //             background: 'linear-gradient(135deg, #C0C0C020, #80808010)',
+    //             border: '1px solid #C0C0C040',
+    //             color: '#C0C0C0',
+    //         }}
+    //     >
+    //         <Zap className='w-3 h-3' />
+    //         Lightning Silver
+    //     </div>
+    // );
 
     return (
         <>
@@ -503,7 +502,7 @@ export function LightningSilverTourPopup({ onComplete }) {
                         style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}12 0%, transparent 65%)` }}
                     />
 
-                    <SilverBadge />
+                    {/* <SilverBadge /> */}
 
                     {/* Close */}
                     <button
@@ -519,7 +518,7 @@ export function LightningSilverTourPopup({ onComplete }) {
                         <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
                             <div style={slideAnim}>
                                 {/* Badge row */}
-                                <div className='flex items-center gap-3 mb-5'>
+                                {/* <div className='flex items-center gap-3 mb-5'>
                                     <div
                                         className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
                                         style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -528,7 +527,7 @@ export function LightningSilverTourPopup({ onComplete }) {
                                         {badge}
                                     </div>
                                     <SectionLabel current={current} />
-                                </div>
+                                </div> */}
 
                                 {/* Title */}
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
@@ -646,11 +645,11 @@ export function LightningSilverTourPopup({ onComplete }) {
                                         }}
                                     >
                                         {nextLabel}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                     </button>
-                                    <span className='text-xs text-white/25'>
+                                    {/* <span className='text-xs text-white/25'>
                                         {current + 1}/{SLIDES.length}
-                                    </span>
+                                    </span> */}
                                 </div>
                             </div>
                         </div>
@@ -678,7 +677,7 @@ export function LightningSilverTourPopup({ onComplete }) {
                                     {current <= 6 ? 'Dashboard Tour' : current <= 12 ? 'Legal Review' : 'Final Step'}
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
                             {/* Section markers */}
@@ -852,8 +851,8 @@ export function LightningSilverTourPopup({ onComplete }) {
                                         border: `1px solid ${accent}60`,
                                     }}
                                 >
-                                    {isLastSlide ? (agreed ? 'Agree ✓' : '—') : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                    {isLastSlide ? (agreed ? 'Agree' : '—') : 'Next'}
+                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                 </button>
                             </div>
                         </div>

@@ -1,9 +1,10 @@
 'use client';
 
-import { CheckCircle, ChevronLeft, ChevronRight, CreditCard, Mail, Rocket, TrendingUp, X, Zap } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ChevronLeft, CreditCard, FileText, Globe, Mail, Rocket, Shield, TrendingUp, UserCheck, X, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'bs_affiliate_tour_seen_v1';
+// const GOLD_ACCENT = '#F5A623';
 
 // ── Types ────────────────────────────────────────────────────
 type SlideVariant = 'intro' | 'howto' | 'legal' | 'acknowledge';
@@ -47,7 +48,7 @@ const SLIDES: Slide[] = [
     {
         id: 'how-silver',
         variant: 'howto',
-        accent: '#5EDC7A',
+        accent: '#4cc7e8',
         Icon: Zap,
         badge: 'Lightning Silver — Basic',
         title: 'How Basic Affiliate Works',
@@ -64,7 +65,7 @@ const SLIDES: Slide[] = [
     {
         id: 'how-gold',
         variant: 'howto',
-        accent: '#F5A623',
+        accent: '#4cc7e8',
         Icon: Rocket,
         badge: 'Lightning Gold — Superior',
         title: 'How Superior Affiliate Works',
@@ -99,7 +100,7 @@ const SLIDES: Slide[] = [
     {
         id: 'how-paid',
         variant: 'howto',
-        accent: '#2c7bbe',
+        accent: '#4cc7e8',
         Icon: CreditCard,
         badge: 'Payouts',
         title: 'Getting Paid',
@@ -116,7 +117,7 @@ const SLIDES: Slide[] = [
     {
         id: 'how-start',
         variant: 'howto',
-        accent: '#5EDC7A',
+        accent: '#4cc7e8',
         Icon: TrendingUp,
         badge: 'Getting Started',
         title: 'Start in 3 Simple Steps',
@@ -129,6 +130,102 @@ const SLIDES: Slide[] = [
             'Step 2 — Choose Silver (free) or Gold ($250/mo)',
             'Step 3 — Copy your link and start promoting',
         ],
+    },
+    {
+        id: 'legal-affiliate',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Legal — Affiliate Agreement',
+        title: 'Affiliate Agreement',
+        titleGrad: 'Affiliate',
+        titlePlain: ' Agreement',
+        desc: 'By joining our affiliate program, you agree to our Affiliate Agreement which governs your participation, commission structure, and conduct.',
+        legalTitle: 'Key Terms',
+        legalSummary:
+            'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
+        legalLink: '/affiliateagreement',
+        bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
+    },
+    {
+        id: 'legal-contractor',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: UserCheck,
+        badge: 'Legal — Independent Contractor',
+        title: 'Independent Contractor',
+        titleGrad: 'Independent',
+        titlePlain: ' Contractor',
+        desc: 'As an affiliate you operate as an independent contractor — not an employee of Black Snow Holdings. This agreement defines that relationship.',
+        legalTitle: 'What This Means',
+        legalSummary:
+            'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
+        legalLink: '/independentcontract',
+        bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
+    },
+    {
+        id: 'legal-earnings',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: AlertTriangle,
+        badge: 'Legal — Earnings Disclosure',
+        title: 'Earnings Disclosure',
+        titleGrad: 'Earnings',
+        titlePlain: ' Disclosure',
+        desc: 'Income from our affiliate program varies significantly. Results depend on your effort, audience, and promotional strategy — not all affiliates earn the same.',
+        legalTitle: 'Important Disclosure',
+        legalSummary:
+            'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
+        legalLink: '/earningsdisclosure',
+        bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
+    },
+    {
+        id: 'legal-gdpr',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: Globe,
+        badge: 'Legal — GDPR',
+        title: 'GDPR & Privacy',
+        titleGrad: 'GDPR',
+        titlePlain: ' & Privacy',
+        desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
+        legalTitle: 'Your Obligations',
+        legalSummary:
+            'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
+        legalLink: '/gdpr',
+        bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
+    },
+    {
+        id: 'legal-terms',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Legal — Terms & Conditions',
+        title: 'Terms & Conditions',
+        titleGrad: 'Terms',
+        titlePlain: ' & Conditions',
+        desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
+        legalTitle: 'Key Terms',
+        legalSummary:
+            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+        legalLink: '/terms',
+        bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    },
+    {
+        id: 'legal-privacy',
+        variant: 'legal',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Legal — Privacy Policy',
+        title: 'Privacy Policy',
+        titleGrad: 'Privacy',
+        titlePlain: ' Policy',
+        desc: 'How we collect, use, and protect your affiliate data.',
+        legalTitle: 'What We Cover',
+        legalSummary:
+            'We use only the data needed to operate the affiliate program, process payouts, and protect your account. Your data is never sold, and you can request access, correction, or deletion at any time.',
+        legalLink: '/privacy',
+        bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
     },
 ];
 
@@ -151,13 +248,13 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
     );
 }
 
-function SectionLabel() {
-    return (
-        <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: '#4cc7e8', backgroundColor: '#4cc7e818' }}>
-            Instructions
-        </span>
-    );
-}
+// function SectionLabel() {
+//     return (
+//         <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: '#4cc7e8', backgroundColor: '#4cc7e818' }}>
+//             Instructions
+//         </span>
+//     );
+// }
 
 type AffiliateOnboardingPopupProps = {
     open: boolean;
@@ -237,7 +334,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
     };
 
     const slide = SLIDES[current];
-    const { Icon, accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets, variant, legalSummary, legalLink } = slide;
+    const { Icon, accent, titleGrad, titlePlain, gradAtEnd, desc, bullets, variant, legalTitle, legalSummary, legalLink } = slide;
     const isLastSlide = current === SLIDES.length - 1;
     const isNextDisabled = isLastSlide && !agreed;
 
@@ -251,9 +348,20 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#080b12',
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
         borderColor: `${accent}45`,
-        boxShadow: `0 0 70px ${accent}22, 0 30px 80px rgba(0,0,0,0.75)`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
+    };
+
+    const glassShine: React.CSSProperties = {
+        background:
+            'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+    };
+
+    const bottomGlass: React.CSSProperties = {
+        background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)',
     };
 
     const GradTitle = () =>
@@ -285,9 +393,12 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, minHeight: 480 }}
+                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(575px, calc(100vh - 3rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -305,20 +416,9 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='flex flex-1 min-h-0'>
-                        <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0'>
-                            <div style={slideAnim}>
-                                <div className='flex items-center gap-3 mb-5'>
-                                    <div
-                                        className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
-                                        style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                                    >
-                                        <Icon className='w-3.5 h-3.5' />
-                                        {badge}
-                                    </div>
-                                    <SectionLabel />
-                                </div>
-
+                    <div className='relative z-10 flex flex-1 min-h-0'>
+                        <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0 min-h-0'>
+                            <div className='min-h-0 flex-1 overflow-y-auto pr-2' style={slideAnim}>
                                 <h2 className='text-3xl font-black text-white leading-tight mb-3'>
                                     <GradTitle />
                                 </h2>
@@ -329,7 +429,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                 {variant === 'legal' && legalSummary && (
                                     <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
                                         <p className='text-xs font-bold uppercase mb-2' style={{ color: accent }}>
-                                            Summary
+                                            {legalTitle ?? 'Summary'}
                                         </p>
                                         <p className='text-white/60 text-xs leading-relaxed'>{legalSummary}</p>
                                         {legalLink && (
@@ -370,7 +470,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                             {agreed && <CheckCircle className='w-3 h-3 text-[#080b12]' strokeWidth={3} />}
                                         </div>
                                         <span className='text-white/60 text-xs leading-relaxed group-hover:text-white/80 transition-colors'>
-                                            I have read and agree to the affiliate terms.
+                                            I have read and agree to all the legal documents.
                                         </span>
                                     </label>
                                 )}
@@ -398,11 +498,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                         }}
                                     >
                                         {nextLabel}
-                                        {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
                                     </button>
-                                    <span className='text-xs text-white/25'>
-                                        {current + 1}/{SLIDES.length}
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -412,7 +508,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                             style={{ background: `linear-gradient(to bottom, transparent, ${accent}30, transparent)` }}
                         />
 
-                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6' style={slideAnim}>
+                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6 min-h-0' style={slideAnim}>
                             <div
                                 className='w-24 h-24 rounded-2xl flex items-center justify-center'
                                 style={{ backgroundColor: `${accent}18`, border: `2px solid ${accent}30`, boxShadow: `0 0 40px ${accent}20` }}
@@ -425,11 +521,11 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                     Instructions
                                 </p>
                                 <p className='text-white/30 text-xs'>
-                                    Step {current + 1} of {SLIDES.length}
+                                    Slide {current + 1} of {SLIDES.length}
                                 </p>
                             </div>
 
-                            <div className='flex flex-col gap-2 w-full mt-2'>
+                            <div className='flex flex-col gap-2 w-full mt-2 overflow-y-auto pr-1'>
                                 {SLIDES.map((s, i) => (
                                     <div key={s.id} className='flex items-center gap-2'>
                                         <div
@@ -447,9 +543,12 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                 </div>
 
                 <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter }}
+                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(475px, calc(100vh - 2rem))' }}
                 >
+                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
+                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
@@ -467,8 +566,8 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        <div className='flex items-center gap-2 flex-wrap mb-4'>
+                    <div className='relative z-10 px-6 pt-8 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
+                        {/* <div className='flex items-center gap-2 flex-wrap mb-4'>
                             <div
                                 className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
                                 style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -477,7 +576,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                 {badge}
                             </div>
                             <SectionLabel />
-                        </div>
+                        </div> */}
 
                         <h2 className='text-2xl font-black text-white leading-tight mb-2'>
                             <GradTitle />
@@ -488,7 +587,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                         {variant === 'legal' && legalSummary && (
                             <div className='rounded-xl p-3 mb-3 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
                                 <p className='text-xs font-bold uppercase mb-1' style={{ color: accent }}>
-                                    Summary
+                                    {legalTitle ?? 'Summary'}
                                 </p>
                                 <p className='text-white/55 text-xs leading-relaxed'>{legalSummary}</p>
                                 {legalLink && (
@@ -499,7 +598,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                         className='inline-flex items-center gap-1 mt-2 text-xs font-semibold hover:underline'
                                         style={{ color: accent }}
                                     >
-                                        Read full →
+                                        Read full
                                     </a>
                                 )}
                             </div>
@@ -534,6 +633,11 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                     </div>
 
                     <div className='relative z-10 px-6 pb-5'>
+                        <div className='flex justify-end w-full mb-2'>
+                            <span className='text-sm font-semibold px-2 py-0.5 mr-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
+                                Slide {current + 1}/{SLIDES.length}
+                            </span>
+                        </div>
                         <div className='flex items-center gap-2'>
                             <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
                             <div className='flex items-center gap-1.5 ml-auto'>
@@ -551,8 +655,7 @@ export function AffiliateOnboardingPopup({ open, onOpenChange, onComplete }: Aff
                                     className='h-9 px-3 rounded-xl flex items-center justify-center gap-1 text-xs font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed'
                                     style={{ background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`, border: `1px solid ${accent}60` }}
                                 >
-                                    {isLastSlide ? (agreed ? 'Agree ✓' : '—') : 'Next'}
-                                    {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />}
+                                    {isLastSlide ? (agreed ? 'Agree' : '—') : 'Next'}
                                 </button>
                             </div>
                         </div>

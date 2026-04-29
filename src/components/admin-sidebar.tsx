@@ -24,11 +24,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export function AdminSidebar() {
     const router = useRouter();
     const pathname = usePathname();
 
+    const [mounted, setMounted] = useState(false);
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -80,11 +82,15 @@ export function AdminSidebar() {
         if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
 
         logoutTimerRef.current = setTimeout(() => {
-            // Auto logout without modal (as requested)
+            // Auto logout without modal
             doLogout();
             // eslint-disable-next-line
         }, AUTO_LOGOUT_MS);
     };
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         resetAutoLogoutTimer();
@@ -162,29 +168,41 @@ export function AdminSidebar() {
     return (
         <div className='h-full flex flex-col'>
             {/* ✅ Logout Confirmation Modal */}
-            {showLogoutModal && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center'>
-                    <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
-                    <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
-                        <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>Confirm Logout</h2>
-                        <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
-                        <div className='flex justify-end space-x-4'>
-                            <button
-                                onClick={cancelLogout}
-                                className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmLogout}
-                                className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
-                            >
-                                Logout
-                            </button>
+            {mounted &&
+                showLogoutModal &&
+                createPortal(
+                    <div className='fixed inset-0 z-[2147483647] flex items-center justify-center'>
+                        <div
+                            className='absolute inset-0 z-[2147483647] bg-black/40 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100'
+                            onClick={cancelLogout}
+                        />
+
+                        <div className='relative z-[2147483647] bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
+                            <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>
+                                Confirm Logout
+                            </h2>
+
+                            <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
+
+                            <div className='flex justify-end space-x-4'>
+                                <button
+                                    onClick={cancelLogout}
+                                    className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    onClick={confirmLogout}
+                                    className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                >
+                                    Logout
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
 
             {/* Sidebar Header */}
             <div className='p-6 border-b border-gray-100'>

@@ -30,7 +30,10 @@ export function SalesSidebar(props: React.HTMLAttributes<HTMLElement>) {
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('roles');
                 localStorage.removeItem('userId');
-                localStorage.removeItem('salesId'); // (safe extra)
+                document.cookie = 'id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                document.cookie = 'firstName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                document.cookie = 'lastName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
             }
         } catch (e) {
             console.error('Logout error:', e);

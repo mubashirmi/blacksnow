@@ -3,8 +3,8 @@
 import AuthModal from '@/components/AuthModal';
 import LightningGoldSlideshow from '@/components/LightningGoldSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
+import { RevenuePayoutsSection } from '@/components/RevenuePayoutsSection';
 import ShareBanner from '@/components/ShareBanner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import lottie from 'lottie-web';
@@ -116,7 +116,7 @@ function LightningGold() {
             />
 
             {/* ✅ Pricing modal (opens if logged in) */}
-            <PricingComponent name='SuperAffiliate' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />
+            <PricingComponent name='LightningGold' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />
 
             {/* ── HERO ─────────────────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
@@ -130,8 +130,8 @@ function LightningGold() {
                                 </Badge> */}
 
                                 <div style={{ display: 'table' }}>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-3 sm:mb-4 leading-tight'>
-                                        Lightning Gold <span className='text-[#ffd500]'>Earn 75% Commission</span>
+                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#ffd500] mb-3 sm:mb-4 leading-tight'>
+                                        Lightning Gold <br /> 75% Commission
                                     </h1>
                                     {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' /> */}
                                 </div>
@@ -165,7 +165,7 @@ function LightningGold() {
                         {/* Right – Lottie */}
                         <div className='relative animate-slide-in-right'>
                             <div className='relative flex items-center justify-center w-full h-full'>
-                                <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
                                         src='/animations/lightningGoldherosection.json'
                                         className='w-[90%] lg:w-[85%] max-w-[255px] sm:max-w-[295px] md:max-w-[340px] lg:max-w-[360px] h-[315px] sm:h-[355px] md:h-[395px] lg:h-[415px]'
@@ -197,22 +197,26 @@ function LightningGold() {
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
                                 <div className='flex flex-row justify-between w-full'>
-                                    <div>
-                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500]'>Lightning Gold (75%)</div>
-                                        <div className='text-gray-300 text-sm sm:text-base mt-1'>Monthly and annual commissions in one clear view.</div>
+                                    <div className='w-full sm:w-max'>
+                                        <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] text-center sm:text-left'>
+                                            Lightning Gold (75%)
+                                        </div>
+                                        <div className='text-gray-300 text-sm sm:text-base mt-1 hidden sm:block'>
+                                            Monthly and annual commissions in one clear view.
+                                        </div>
                                     </div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500]'>250$ per month</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] hidden sm:block'>250$ per month</div>
                                 </div>
-                                <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge>
+                                {/* <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge> */}
                             </div>
 
                             <div className='overflow-x-auto rounded-xl border border-[#ffd500]/40'>
                                 <table className='w-full text-left'>
-                                    <thead className='bg-[#fad72a]'>
+                                    <thead>
                                         <tr>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Product</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Monthly</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-800'>Annual</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Product</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Monthly</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Annual</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -234,6 +238,8 @@ function LightningGold() {
                     </Card>
                 </div>
             </section>
+
+            <RevenuePayoutsSection />
 
             {/* ── FINAL CTA ────────────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>

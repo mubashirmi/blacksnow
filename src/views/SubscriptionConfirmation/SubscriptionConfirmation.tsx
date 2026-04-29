@@ -1,122 +1,169 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Bell, CheckCircle, Mail } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+type ApiStatusType = 'loading' | 'success' | 'error';
+
+type ApiResult = {
+    success: boolean;
+    type: 'payment' | 'commission';
+    error?: string;
+};
 
 function SubscriptionConfirmation() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    const [apiStatus, setApiStatus] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [apiStatus, setApiStatus] = useState('Confirming your payment...');
+    const [statusType, setStatusType] = useState<ApiStatusType>('loading');
     const [productLink, setProductLink] = useState<string | null>(null);
 
+    const hasProcessedRef = useRef(false);
+
     useEffect(() => {
-        // Move localStorage access inside useEffect
         const storedProductLink = localStorage.getItem('productLink');
         setProductLink(storedProductLink);
 
-        const sessionId = searchParams.get('session_id');
+        const sessionId = searchParams.get('session_id') || new URLSearchParams(window.location.search).get('session_id');
 
-        if (sessionId) {
-            const processPayment = async () => {
-                try {
-                    // Array to track all promises
-                    const promises = [];
+        if (!sessionId) {
+            setStatusType('error');
+            setApiStatus('Unable to confirm payment because the session ID is missing.');
+            return;
+        }
 
-                    // Payment confirmation API call
-                    const paymentPromise = fetch(`/api/v1/stripe/success?sessionId=${sessionId}`, {
-                        method: 'POST',
+        // Prevent duplicate API calls in React Strict Mode
+        if (hasProcessedRef.current) return;
+        hasProcessedRef.current = true;
+
+        const processPayment = async () => {
+            setStatusType('loading');
+            setApiStatus('Confirming your payment...');
+
+            try {
+                const promises: Promise<ApiResult>[] = [];
+
+                const paymentPromise: Promise<ApiResult> = fetch(`/api/v1/stripe/success?sessionId=${encodeURIComponent(sessionId)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(async (response) => {
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            console.log('Payment confirmed successfully');
+
+                            return {
+                                success: true,
+                                type: 'payment',
+                            };
+                        }
+
+                        console.error('Payment confirmation failed:', data.message);
+
+                        return {
+                            success: false,
+                            type: 'payment',
+                            error: data.message || 'Payment confirmation failed',
+                        };
+                    })
+                    .catch((error) => {
+                        console.error('Payment API call failed:', error);
+
+                        return {
+                            success: false,
+                            type: 'payment',
+                            error: error.message || 'Payment API call failed',
+                        };
+                    });
+
+                promises.push(paymentPromise);
+
+                const referredby = localStorage.getItem('referredby');
+                const storedProductLink = localStorage.getItem('productLink');
+                const comission = Number(localStorage.getItem('comission'));
+
+                if (referredby && referredby !== 'undefined') {
+                    const commissionPromise: Promise<ApiResult> = fetch(`/api/v2/comission/?id=${referredby}`, {
+                        method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
+                        body: JSON.stringify({
+                            productLink: storedProductLink,
+                            comission,
+                        }),
                     })
                         .then(async (response) => {
                             const data = await response.json();
+
                             if (response.ok) {
-                                console.log('Payment confirmed successfully');
-                                return { success: true, type: 'payment' };
-                            } else {
-                                console.error('Payment confirmation failed:', data.message);
-                                return { success: false, type: 'payment', error: data.message };
+                                console.log('Commission confirmed successfully');
+
+                                return {
+                                    success: true,
+                                    type: 'commission',
+                                };
                             }
+
+                            console.error('Commission confirmation failed:', data.message);
+
+                            return {
+                                success: false,
+                                type: 'commission',
+                                error: data.message || 'Commission confirmation failed',
+                            };
                         })
                         .catch((error) => {
-                            console.error('Payment API call failed:', error);
-                            return { success: false, type: 'payment', error: error.message };
+                            console.error('Commission API call failed:', error);
+
+                            return {
+                                success: false,
+                                type: 'commission',
+                                error: error.message || 'Commission API call failed',
+                            };
                         });
 
-                    promises.push(paymentPromise);
-
-                    // Commission confirmation API call (if referredby exists)
-                    const referredby = localStorage.getItem('referredby');
-                    const productLink = localStorage.getItem('productLink');
-                    const comission = Number(localStorage.getItem('comission'));
-
-                    if (referredby && referredby !== 'undefined') {
-                        const commissionPromise = fetch(`/api/v2/comission/?id=${referredby}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                productLink,
-                                comission,
-                            }),
-                        })
-                            .then(async (response) => {
-                                const data = await response.json();
-                                if (response.ok) {
-                                    console.log('Commission confirmed successfully');
-                                    return { success: true, type: 'commission' };
-                                } else {
-                                    console.error('Commission confirmation failed:', data.message);
-                                    return { success: false, type: 'commission', error: data.message };
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Commission API call failed:', error);
-                                return { success: false, type: 'commission', error: error.message };
-                            });
-
-                        promises.push(commissionPromise);
-                    }
-
-                    // Wait for all promises to complete
-                    const results = await Promise.all(promises);
-
-                    // Check results and set appropriate status
-                    const paymentResult = results.find((r) => r.type === 'payment');
-                    const commissionResult = results.find((r) => r.type === 'commission');
-
-                    if (paymentResult?.success && (!commissionResult || commissionResult?.success)) {
-                        setApiStatus('Payment confirmed successfully!');
-                    } else {
-                        const errors = [];
-                        if (!paymentResult?.success) {
-                            errors.push(`Payment: ${paymentResult?.error || 'Failed'}`);
-                        }
-                        if (commissionResult && !commissionResult.success) {
-                            errors.push(`Commission: ${commissionResult?.error || 'Failed'}`);
-                        }
-                        setApiStatus(`Error: ${errors.join(', ')}`);
-                    }
-                } catch (error) {
-                    setApiStatus('Error: Failed to process requests');
-                    console.error('Payment processing failed:', error);
-                } finally {
-                    // Only set loading to false after all requests are done
-                    setLoading(false);
+                    promises.push(commissionPromise);
                 }
-            };
 
-            processPayment();
-        } else {
-            setApiStatus('Error: Session ID not found in URL');
-            setLoading(false);
-        }
+                const results = await Promise.all(promises);
+
+                const paymentResult = results.find((result) => result.type === 'payment');
+                const commissionResult = results.find((result) => result.type === 'commission');
+
+                if (paymentResult?.success && (!commissionResult || commissionResult.success)) {
+                    setStatusType('success');
+                    setApiStatus('Payment confirmed successfully!');
+                } else {
+                    const errors = [];
+
+                    if (!paymentResult?.success) {
+                        errors.push(`Payment: ${paymentResult?.error || 'Failed'}`);
+                    }
+
+                    if (commissionResult && !commissionResult.success) {
+                        errors.push(`Commission: ${commissionResult.error || 'Failed'}`);
+                    }
+
+                    setStatusType('error');
+                    setApiStatus(`Error: ${errors.join(', ')}`);
+                }
+            } catch (error) {
+                setStatusType('error');
+                setApiStatus('Error: Failed to process payment confirmation');
+                console.error('Payment processing failed:', error);
+            }
+        };
+
+        processPayment();
     }, [searchParams]);
 
     const handleNavigate = () => {
@@ -133,22 +180,14 @@ function SubscriptionConfirmation() {
             router.push('/digitalBillboard/dashboard');
         } else if (productLink === 'https://blacksnowholdings.com/lightningGold') {
             router.push('/superAffiliate/dashboard/kpi');
+        } else if (productLink === 'https://blacksnowholdings.com/lightningSilver') {
+            router.push('/affiliate/dashboard/kpi');
         } else {
             router.push('/');
         }
     };
 
-    return loading ? (
-        <div className='min-h-screen bg-[#050608] flex items-center justify-center'>
-            <div className='dot-spinner scale-150'>
-                <div className='dot-spinner__dot'></div>
-                <div className='dot-spinner__dot'></div>
-                <div className='dot-spinner__dot'></div>
-                <div className='dot-spinner__dot'></div>
-                <div className='dot-spinner__dot'></div>
-            </div>
-        </div>
-    ) : (
+    return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden flex items-center justify-center py-20'>
             {/* Confirmation Card */}
             <div className='relative z-10 w-full max-w-2xl px-6'>
@@ -179,7 +218,28 @@ function SubscriptionConfirmation() {
 
                         <div className='space-y-4 text-center'>
                             <h2 className='text-2xl lg:text-3xl font-bold text-white'>You have been subscribed to our newsletter!</h2>
-                            {apiStatus && <p className={`text-sm ${apiStatus.includes('Error') ? 'text-red-400' : 'text-green-400'}`}>{apiStatus}</p>}
+
+                            <div className='flex justify-center'>
+                                {statusType === 'loading' && (
+                                    <div className='inline-flex items-center gap-3 rounded-full border border-[#4cc7e8]/30 bg-[#4cc7e8]/10 px-5 py-3 text-sm font-semibold text-[#4cc7e8] shadow-lg shadow-[#2c7bbe]/20'>
+                                        <Loader2 className='h-4 w-4 animate-spin' />
+                                        <span>{apiStatus}</span>
+                                    </div>
+                                )}
+
+                                {statusType === 'success' && (
+                                    <p className='inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-400/10 px-5 py-3 text-sm font-semibold text-green-400'>
+                                        <CheckCircle className='h-4 w-4' />
+                                        {apiStatus}
+                                    </p>
+                                )}
+
+                                {statusType === 'error' && (
+                                    <p className='rounded-full border border-red-400/30 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-400'>
+                                        {apiStatus}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </CardHeader>
 
@@ -203,11 +263,13 @@ function SubscriptionConfirmation() {
                         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                             <Button
                                 onClick={handleNavigate}
-                                className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] hover:from-[#4cc7e8] hover:via-[#2a8dcc] hover:to-[#2c7bbe] text-white font-bold py-6 px-8 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group'
+                                disabled={statusType === 'loading'}
+                                className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] hover:from-[#4cc7e8] hover:via-[#2a8dcc] hover:to-[#2c7bbe] text-white font-bold py-6 px-8 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-500 transform hover:scale-105 rounded-2xl group disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100'
                             >
-                                View Dashboard
+                                {statusType === 'loading' ? 'Please wait...' : 'View Dashboard'}
                                 <ArrowRight className='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300' />
                             </Button>
+
                             <Button
                                 asChild
                                 variant='outline'
