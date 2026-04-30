@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, ChevronLeft, CreditCard, FileCheck, FileSignature, FileText, Globe, Receipt, Send, Shield, Upload, Wallet, X } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, CreditCard, FileCheck, FileSignature, Receipt, Send, Upload, Wallet, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 type SlideVariant = 'standard' | 'legal';
@@ -114,54 +114,54 @@ const SLIDES: Slide[] = [
         ],
         Icon: CreditCard,
     },
-    {
-        id: 'legal-gdpr',
-        variant: 'legal',
-        accent: '#4cc7e8',
-        Icon: Globe,
-        badge: 'Legal — GDPR',
-        title: 'GDPR & Privacy',
-        titleGrad: 'GDPR',
-        titlePlain: ' & Privacy',
-        desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
-        legalTitle: 'Your Obligations',
-        legalSummary:
-            'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
-        legalLink: '/gdpr',
-        bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
-    },
-    {
-        id: 'legal-terms',
-        variant: 'legal',
-        accent: '#4cc7e8',
-        Icon: FileText,
-        badge: 'Legal — Terms & Conditions',
-        title: 'Terms & Conditions',
-        titleGrad: 'Terms',
-        titlePlain: ' & Conditions',
-        desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
-        legalTitle: 'Key Terms',
-        legalSummary:
-            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
-        legalLink: '/terms',
-        bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
-    },
-    {
-        id: 'legal-privacy',
-        variant: 'legal',
-        accent: '#4cc7e8',
-        Icon: Shield,
-        badge: 'Legal — Privacy Policy',
-        title: 'Privacy Policy',
-        titleGrad: 'Privacy',
-        titlePlain: ' Policy',
-        desc: 'How we collect, use, and protect your affiliate data.',
-        legalTitle: 'What We Cover',
-        legalSummary:
-            'We use only the data needed to operate the affiliate program, process payouts, and protect your account. Your data is never sold, and you can request access, correction, or deletion at any time.',
-        legalLink: '/privacy',
-        bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
-    },
+    // {
+    //     id: 'legal-gdpr',
+    //     variant: 'legal',
+    //     accent: '#4cc7e8',
+    //     Icon: Globe,
+    //     badge: 'Legal — GDPR',
+    //     title: 'GDPR & Privacy',
+    //     titleGrad: 'GDPR',
+    //     titlePlain: ' & Privacy',
+    //     desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
+    //     legalTitle: 'Your Obligations',
+    //     legalSummary:
+    //         'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
+    //     legalLink: '/gdpr',
+    //     bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
+    // },
+    // {
+    //     id: 'legal-terms',
+    //     variant: 'legal',
+    //     accent: '#4cc7e8',
+    //     Icon: FileText,
+    //     badge: 'Legal — Terms & Conditions',
+    //     title: 'Terms & Conditions',
+    //     titleGrad: 'Terms',
+    //     titlePlain: ' & Conditions',
+    //     desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
+    //     legalTitle: 'Key Terms',
+    //     legalSummary:
+    //         'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+    //     legalLink: '/terms',
+    //     bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    // },
+    // {
+    //     id: 'legal-privacy',
+    //     variant: 'legal',
+    //     accent: '#4cc7e8',
+    //     Icon: Shield,
+    //     badge: 'Legal — Privacy Policy',
+    //     title: 'Privacy Policy',
+    //     titleGrad: 'Privacy',
+    //     titlePlain: ' Policy',
+    //     desc: 'How we collect, use, and protect your affiliate data.',
+    //     legalTitle: 'What We Cover',
+    //     legalSummary:
+    //         'We use only the data needed to operate the affiliate program, process payouts, and protect your account. Your data is never sold, and you can request access, correction, or deletion at any time.',
+    //     legalLink: '/privacy',
+    //     bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    // },
 ];
 
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (index: number) => void }) {

@@ -678,7 +678,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         },
         [effectiveBillingPeriod, fetchUserEmail, isClient, isLoadingEmail]
     );
-
+    // eslint-disable-next-line
     const handleUnsubscribe = useCallback((p: any) => {
         setSelectedProduct(p);
         setShowConfirmModal(true);
@@ -856,12 +856,12 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 isPurchased ? (
                                     <Button
                                         size='lg'
-                                        className='w-full rounded-xl border border-red-400/20 bg-red-500/15 hover:bg-red-500/25 text-red-200 py-6 font-bold transition'
-                                        onClick={() => handleUnsubscribe(product)}
+                                        className='w-full rounded-xl border border-green-400/20 bg-green-500/15 hover:bg-green-500/25 text-green-200 py-6 font-bold transition'
+                                        // onClick={() => handleUnsubscribe(product)}
                                         disabled={isLoadingUnsubscribe}
                                     >
-                                        {isLoadingUnsubscribe ? 'Unsubscribing...' : 'Unsubscribe'}
-                                        <ArrowRight className='h-5 w-5 ml-3 opacity-80' />
+                                        Already Subscribed
+                                        {/* <ArrowRight className='h-5 w-5 ml-3 opacity-80' /> */}
                                     </Button>
                                 ) : (
                                     <Button

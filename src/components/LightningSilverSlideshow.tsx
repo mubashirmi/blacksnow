@@ -1,24 +1,6 @@
 'use client';
 
-import {
-    AlertTriangle,
-    CheckCircle2,
-    ChevronLeft,
-    CreditCard,
-    DollarSign,
-    FileCheck,
-    FileText,
-    Globe,
-    LineChart,
-    Link2,
-    Mail,
-    Repeat,
-    Share2,
-    Shield,
-    UserCheck,
-    Wallet,
-    X,
-} from 'lucide-react';
+import { CheckCircle2, ChevronLeft, CreditCard, DollarSign, FileCheck, LineChart, Link2, Mail, Repeat, Share2, Wallet, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 type SlideVariant = 'standard' | 'legal' | 'acknowledge';
@@ -169,99 +151,99 @@ const SLIDES: Slide[] = [
         railLabel: 'Stripe',
         Icon: Link2,
     },
-    {
-        id: 'legal-affiliate',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: FileText,
-        badge: 'Legal — Affiliate Agreement',
-        title: 'Affiliate Agreement',
-        description:
-            'By joining our affiliate program, you agree to our Affiliate Agreement which governs your participation, commission structure, and conduct.',
-        panelTitle: 'Key Terms',
-        panelSummary:
-            'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
-        legalLink: '/affiliateagreement',
-        bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
-        railLabel: 'Affiliate',
-    },
-    {
-        id: 'legal-contractor',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: UserCheck,
-        badge: 'Legal — Independent Contractor',
-        title: 'Independent Contractor',
-        description:
-            'As an affiliate you operate as an independent contractor — not an employee of Black Snow Holdings. This agreement defines that relationship.',
-        panelTitle: 'What This Means',
-        panelSummary:
-            'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
-        legalLink: '/independentcontract',
-        bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
-        railLabel: 'Contractor',
-    },
-    {
-        id: 'legal-earnings',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: AlertTriangle,
-        badge: 'Legal — Earnings Disclosure',
-        title: 'Earnings Disclosure',
-        description:
-            'Income from our affiliate program varies significantly. Results depend on your effort, audience, and promotional strategy — not all affiliates earn the same.',
-        panelTitle: 'Important Disclosure',
-        panelSummary:
-            'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
-        legalLink: '/earningsdisclosure',
-        bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
-        railLabel: 'Earnings',
-    },
-    {
-        id: 'legal-gdpr',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: Globe,
-        badge: 'Legal — GDPR',
-        title: 'GDPR & Privacy',
-        description: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
-        panelTitle: 'Your Obligations',
-        panelSummary:
-            'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
-        legalLink: '/gdpr',
-        bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
-        railLabel: 'GDPR',
-    },
-    {
-        id: 'legal-terms',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: FileText,
-        badge: 'Legal — Terms & Conditions',
-        title: 'Terms & Conditions',
-        description: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
-        panelTitle: 'Key Terms',
-        panelSummary:
-            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
-        legalLink: '/terms',
-        bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
-        railLabel: 'Terms',
-    },
-    {
-        id: 'legal-privacy',
-        variant: 'legal',
-        accent: GOLD_ACCENT,
-        Icon: Shield,
-        badge: 'Legal — Privacy Policy',
-        title: 'Privacy Policy',
-        description: 'Our Privacy Policy explains how Black Snow Holdings collects, uses, and protects your personal information as an affiliate partner.',
-        panelTitle: 'What We Cover',
-        panelSummary:
-            'We collect only the data necessary to operate the affiliate program and pay commissions. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
-        legalLink: '/privacy',
-        bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
-        railLabel: 'Privacy',
-    },
+    // {
+    //     id: 'legal-affiliate',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: FileText,
+    //     badge: 'Legal — Affiliate Agreement',
+    //     title: 'Affiliate Agreement',
+    //     description:
+    //         'By joining our affiliate program, you agree to our Affiliate Agreement which governs your participation, commission structure, and conduct.',
+    //     panelTitle: 'Key Terms',
+    //     panelSummary:
+    //         'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
+    //     legalLink: '/affiliateagreement',
+    //     bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
+    //     railLabel: 'Affiliate',
+    // },
+    // {
+    //     id: 'legal-contractor',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: UserCheck,
+    //     badge: 'Legal — Independent Contractor',
+    //     title: 'Independent Contractor',
+    //     description:
+    //         'As an affiliate you operate as an independent contractor — not an employee of Black Snow Holdings. This agreement defines that relationship.',
+    //     panelTitle: 'What This Means',
+    //     panelSummary:
+    //         'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
+    //     legalLink: '/independentcontract',
+    //     bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
+    //     railLabel: 'Contractor',
+    // },
+    // {
+    //     id: 'legal-earnings',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: AlertTriangle,
+    //     badge: 'Legal — Earnings Disclosure',
+    //     title: 'Earnings Disclosure',
+    //     description:
+    //         'Income from our affiliate program varies significantly. Results depend on your effort, audience, and promotional strategy — not all affiliates earn the same.',
+    //     panelTitle: 'Important Disclosure',
+    //     panelSummary:
+    //         'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
+    //     legalLink: '/earningsdisclosure',
+    //     bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
+    //     railLabel: 'Earnings',
+    // },
+    // {
+    //     id: 'legal-gdpr',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: Globe,
+    //     badge: 'Legal — GDPR',
+    //     title: 'GDPR & Privacy',
+    //     description: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
+    //     panelTitle: 'Your Obligations',
+    //     panelSummary:
+    //         'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
+    //     legalLink: '/gdpr',
+    //     bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
+    //     railLabel: 'GDPR',
+    // },
+    // {
+    //     id: 'legal-terms',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: FileText,
+    //     badge: 'Legal — Terms & Conditions',
+    //     title: 'Terms & Conditions',
+    //     description: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
+    //     panelTitle: 'Key Terms',
+    //     panelSummary:
+    //         'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
+    //     legalLink: '/terms',
+    //     bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
+    //     railLabel: 'Terms',
+    // },
+    // {
+    //     id: 'legal-privacy',
+    //     variant: 'legal',
+    //     accent: GOLD_ACCENT,
+    //     Icon: Shield,
+    //     badge: 'Legal — Privacy Policy',
+    //     title: 'Privacy Policy',
+    //     description: 'Our Privacy Policy explains how Black Snow Holdings collects, uses, and protects your personal information as an affiliate partner.',
+    //     panelTitle: 'What We Cover',
+    //     panelSummary:
+    //         'We collect only the data necessary to operate the affiliate program and pay commissions. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
+    //     legalLink: '/privacy',
+    //     bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    //     railLabel: 'Privacy',
+    // },
 ];
 
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (index: number) => void }) {
