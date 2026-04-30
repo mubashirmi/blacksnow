@@ -183,7 +183,7 @@ export default function Page() {
                         ))}
                     </div>
 
-                    <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl shadow-amber-500/20 max-w-5xl mx-auto animate-slide-in-up delay-600 overflow-hidden'>
+                    {/* <div className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-amber-500/30 shadow-2xl shadow-amber-500/20 max-w-5xl mx-auto animate-slide-in-up delay-600 overflow-hidden'>
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-600 to-amber-700 rounded-t-3xl'></div>
 
                         <div className='flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6'>
@@ -204,7 +204,7 @@ export default function Page() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 

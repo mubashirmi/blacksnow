@@ -50,7 +50,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     <div className='grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-12'>
                         <div className='space-y-8 lg:col-span-2'>
-                            <div className='flex items-center space-x-4'>
+                            <div className='flex items-center justify-between gap-4 lg:justify-start'>
                                 <div className='relative group'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
                                         <Image
@@ -61,6 +61,11 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                             className='object-contain drop-shadow-2xl'
                                         />
                                     </div>
+                                </div>
+
+                                {/* Mobile buttons - right side opposite logo */}
+                                <div className='shrink-0 lg:hidden'>
+                                    <FeedbackUnsubscribeButtons size='footer' />
                                 </div>
                             </div>
 
@@ -139,7 +144,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='min-w-0'>
-                            <div className='grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 lg:block'>
+                            <div className='lg:block'>
                                 <div className='min-w-0 space-y-5'>
                                     <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Legal</h4>
                                     <div className='space-y-3'>
@@ -167,11 +172,6 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                             </Link>
                                         ))}
                                     </div>
-                                </div>
-
-                                {/* Mobile buttons - right side opposite Legal section */}
-                                <div className='shrink-0 lg:hidden'>
-                                    <FeedbackUnsubscribeButtons size='footer' />
                                 </div>
                             </div>
                         </div>
