@@ -1,7 +1,7 @@
 'use client';
-
+// Lightning Silver Sidebar
 import axios from 'axios';
-import { AlertTriangle, BarChart3, BellOff, CheckCircle, LinkIcon, Loader2, LogOut, StickyNote, X } from 'lucide-react';
+import { AlertTriangle, BarChart3, BellOff, CheckCircle, ChevronDown, LinkIcon, Loader2, LogOut, MessageSquare, Star, StickyNote, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -19,11 +19,50 @@ const UNSUBSCRIBE_PRODUCT = {
     label: 'Lightning Silver',
 };
 
+type ToolRole = 'EmailMarketing' | 'DigitalBillboard' | 'LightningGold' | 'LightningSilver' | 'InvoiceTool';
+
+type FeedbackStatusResponse = {
+    user?: {
+        id?: number | string;
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        roles?: string[];
+    };
+    totalFeedbacks?: number;
+    toolsGivenFeedback?: string[];
+    toolsWithoutFeedback?: string[];
+    feedbacks?: any[];
+};
+
+const DASHBOARD_ROUTES: Record<ToolRole, { label: string; url: string }> = {
+    EmailMarketing: { label: 'Email Marketing', url: '/emailMarketing/dashboard/users' },
+    DigitalBillboard: { label: 'Digital Billboard', url: '/digitalBillboard/dashboard' },
+    LightningGold: { label: 'Lightning Gold', url: '/superAffiliate/dashboard/kpi' },
+    LightningSilver: { label: 'Lightning Silver', url: '/affiliate/dashboard/kpi' },
+    InvoiceTool: { label: 'Invoice Contract', url: '/invoicecontractdashboard/contract' },
+};
+
+const isDashboardRole = (role: string): role is ToolRole => Object.prototype.hasOwnProperty.call(DASHBOARD_ROUTES, role);
+
+const hasToolName = (list: string[] | undefined, toolName: string) =>
+    Array.isArray(list) && list.some((item) => String(item).toLowerCase() === toolName.toLowerCase());
+
 export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
     const pathname = usePathname();
     const router = useRouter();
 
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+    const [feedbackStatus, setFeedbackStatus] = React.useState<FeedbackStatusResponse | null>(null);
+    const [isStatusLoading, setIsStatusLoading] = React.useState(false);
+    const [dashboardDropdownOpen, setDashboardDropdownOpen] = React.useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = React.useState(false);
+    const [feedbackReview, setFeedbackReview] = React.useState('');
+    const [feedbackStars, setFeedbackStars] = React.useState('5');
+    const [feedbackError, setFeedbackError] = React.useState<string | null>(null);
+    const [feedbackSuccess, setFeedbackSuccess] = React.useState<string | null>(null);
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = React.useState(false);
 
     const [showUnsubscribeConfirm, setShowUnsubscribeConfirm] = React.useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = React.useState(false);
@@ -41,6 +80,98 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
     const AUTO_LOGOUT_MS = 10 * 60 * 1000;
     const logoutTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
     const unsubscribeRedirectTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const fetchFeedbackStatus = React.useCallback(async () => {
+        const cookies = parseCookies();
+        const id = cookies.id;
+
+        if (!id) return;
+
+        setIsStatusLoading(true);
+
+        try {
+            const response = await axios.get(`/api/v5/tool-feedback/status?authId=${encodeURIComponent(id)}`);
+            setFeedbackStatus(response.data || null);
+        } catch (error) {
+            console.error('Error fetching feedback status:', error);
+        } finally {
+            setIsStatusLoading(false);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        fetchFeedbackStatus();
+    }, [fetchFeedbackStatus]);
+
+    const dashboardRoles = React.useMemo(() => {
+        const roles = feedbackStatus?.user?.roles;
+        return Array.isArray(roles) ? roles.filter(isDashboardRole) : [];
+    }, [feedbackStatus]);
+
+    const dashboardOptions = React.useMemo(
+        () => dashboardRoles.filter((role) => role !== UNSUBSCRIBE_PRODUCT.id).map((role) => ({ role, ...DASHBOARD_ROUTES[role] })),
+        [dashboardRoles]
+    );
+
+    const showDashboardButton = dashboardRoles.length > 1 && dashboardOptions.length > 0;
+
+    const showFeedbackButton = React.useMemo(() => {
+        if (!feedbackStatus || isStatusLoading) return false;
+
+        const alreadyGiven = hasToolName(feedbackStatus.toolsGivenFeedback, UNSUBSCRIBE_PRODUCT.id);
+        const needsFeedback = hasToolName(feedbackStatus.toolsWithoutFeedback, UNSUBSCRIBE_PRODUCT.id);
+
+        return needsFeedback && !alreadyGiven;
+    }, [feedbackStatus, isStatusLoading]);
+
+    const openFeedbackModal = () => {
+        setFeedbackReview('');
+        setFeedbackStars('5');
+        setFeedbackError(null);
+        setShowFeedbackModal(true);
+    };
+
+    const submitFeedback = React.useCallback(async () => {
+        if (isSubmittingFeedback) return;
+
+        const cookies = parseCookies();
+        const id = cookies.id;
+        const review = feedbackReview.trim();
+
+        if (!id) {
+            setFeedbackError('User session was not found. Please sign in again and try to submit feedback.');
+            return;
+        }
+
+        if (!review) {
+            setFeedbackError('Please write your review before submitting.');
+            return;
+        }
+
+        const confirmed = window.confirm('Are you sure you want to submit this feedback? Please recheck your review and stars before confirming.');
+        if (!confirmed) return;
+
+        setIsSubmittingFeedback(true);
+        setFeedbackError(null);
+
+        try {
+            await axios.post('/api/v5/tool-feedback', {
+                authId: id,
+                review,
+                stars: feedbackStars,
+                toolName: UNSUBSCRIBE_PRODUCT.id,
+            });
+
+            setShowFeedbackModal(false);
+            setFeedbackSuccess('Feedback submitted successfully!');
+            setTimeout(() => setFeedbackSuccess(null), 3000);
+            await fetchFeedbackStatus();
+        } catch (error: any) {
+            setFeedbackError(error?.response?.data?.message || 'Unable to submit feedback. Please try again.');
+        } finally {
+            setIsSubmittingFeedback(false);
+        }
+    }, [feedbackReview, feedbackStars, fetchFeedbackStatus, isSubmittingFeedback]);
 
     const clearSession = React.useCallback(() => {
         destroyCookie(null, 'id');
@@ -243,6 +374,42 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
             {/* Nav */}
             <nav className='p-4 overflow-y-auto flex-1'>
                 <ul className='space-y-1'>
+                    {showDashboardButton && (
+                        <li>
+                            <div className='relative'>
+                                <button
+                                    type='button'
+                                    onClick={() => setDashboardDropdownOpen((prev) => !prev)}
+                                    className='w-full text-left flex items-center border border-gray-300 mb-2 justify-between gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all duration-200 font-medium cursor-pointer'
+                                >
+                                    <span className='flex items-center gap-3'>
+                                        <BarChart3 className='w-4 h-4' />
+                                        <span>Dashboard</span>
+                                    </span>
+                                    <ChevronDown className={`w-4 h-4 transition-transform ${dashboardDropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {dashboardDropdownOpen && (
+                                    <div className='mt-1 rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden'>
+                                        {dashboardOptions.map((item) => (
+                                            <button
+                                                key={item.role}
+                                                type='button'
+                                                onClick={() => {
+                                                    setDashboardDropdownOpen(false);
+                                                    router.push(item.url);
+                                                }}
+                                                className='w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer'
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </li>
+                    )}
+
                     {navigationItems.map((item) => {
                         const isActive = pathname === item.url;
                         const ItemIcon = item.icon;
@@ -276,6 +443,25 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
                     <BellOff className='w-4 h-4' />
                     <span>Unsubscribe</span>
                 </button>
+
+                {feedbackSuccess && (
+                    <div className='mb-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>{feedbackSuccess}</div>
+                )}
+
+                {showFeedbackButton && (
+                    <div className='space-y-2'>
+                        {showFeedbackButton && (
+                            <button
+                                type='button'
+                                onClick={openFeedbackModal}
+                                className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 font-medium cursor-pointer'
+                            >
+                                <MessageSquare className='w-4 h-4' />
+                                <span>Feedback</span>
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 <button
                     className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
@@ -433,6 +619,139 @@ export function AffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
                             >
                                 {unsubscribeResult.type === 'success' ? 'Continue' : 'Close'}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Feedback modal */}
+            {showFeedbackModal && (
+                <div className='fixed inset-0 z-[80] flex items-center justify-center px-4'>
+                    <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isSubmittingFeedback && setShowFeedbackModal(false)} />
+
+                    <div
+                        className='relative rounded-[32px] z-[81] border w-full max-w-[540px] overflow-hidden backdrop-blur-2xl'
+                        style={{
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            background: `
+    linear-gradient(
+      180deg,
+      rgba(14, 17, 21, 0.74) 0%,
+      rgba(8, 11, 15, 0.68) 45%,
+      rgba(16, 19, 23, 0.72) 100%
+    ),
+    radial-gradient(
+      circle at 50% 115%,
+      rgba(255, 255, 255, 0.09) 0%,
+      rgba(255, 255, 255, 0.025) 34%,
+      transparent 62%
+    ),
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(0, 194, 255, 0.08) 0%,
+      transparent 42%
+    )
+  `,
+                            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+                            backdropFilter: 'blur(20px) saturate(160%)',
+                            boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                        }}
+                    >
+                        <button
+                            type='button'
+                            disabled={isSubmittingFeedback}
+                            onClick={() => setShowFeedbackModal(false)}
+                            className='absolute right-4 top-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center bg-black/45 border border-emerald-400/25 hover:border-emerald-400/60 hover:bg-emerald-400/10 transition-all duration-300 disabled:opacity-50'
+                            aria-label='Close feedback modal'
+                        >
+                            <X className='w-5 h-5 text-emerald-200/80' />
+                        </button>
+
+                        <div className='relative z-10 px-7 py-8'>
+                            <div className='mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl border border-emerald-400/35 bg-emerald-400/10 shadow-xl shadow-emerald-500/20'>
+                                <Image src='/logocolored.png' alt='Black Snow Logo' width={58} height={58} className='object-contain drop-shadow-2xl' />
+                            </div>
+
+                            <h2 className='text-center text-3xl font-black text-white mb-2'>Feedback</h2>
+                            <p className='text-center text-sm text-white/50 mb-7'>Share your {UNSUBSCRIBE_PRODUCT.label} experience.</p>
+
+                            {feedbackError && (
+                                <div className='mb-4 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200'>{feedbackError}</div>
+                            )}
+
+                            <div className='space-y-4'>
+                                <div className='rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-[7px]'>
+                                    <div className='mb-4 flex items-center justify-between gap-3'>
+                                        <label className='block text-sm font-black text-white'>Review</label>
+                                        <span className='rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-300'>
+                                            {feedbackStars}/5 Stars
+                                        </span>
+                                    </div>
+
+                                    <div className='flex items-center justify-center gap-2'>
+                                        {Array.from({ length: 5 }, (_, index) => {
+                                            const starValue = index + 1;
+                                            const selected = Number(feedbackStars) >= starValue;
+
+                                            return (
+                                                <button
+                                                    key={starValue}
+                                                    type='button'
+                                                    disabled={isSubmittingFeedback}
+                                                    onClick={() => setFeedbackStars(String(starValue))}
+                                                    className={`rounded-xl p-1.5 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-60 ${
+                                                        selected
+                                                            ? 'text-emerald-300 drop-shadow-[0_0_10px_rgba(16,185,129,0.45)]'
+                                                            : 'text-white/20 hover:text-emerald-200/70'
+                                                    }`}
+                                                    aria-label={`${starValue} star${starValue > 1 ? 's' : ''}`}
+                                                >
+                                                    <Star className='h-9 w-9' fill={selected ? 'currentColor' : 'none'} strokeWidth={2} />
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className='rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-[7px]'>
+                                    <label className='mb-3 block text-sm font-black text-white'>Feedback</label>
+                                    <textarea
+                                        value={feedbackReview}
+                                        onChange={(e) => setFeedbackReview(e.target.value)}
+                                        disabled={isSubmittingFeedback}
+                                        rows={5}
+                                        placeholder='Write your feedback here...'
+                                        className='w-full resize-none rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-white placeholder:text-white/30 outline-none transition-all focus:border-emerald-400/60 focus:ring-4 focus:ring-emerald-400/10 disabled:opacity-60'
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='mt-7 flex flex-col gap-3'>
+                                <button
+                                    type='button'
+                                    disabled={isSubmittingFeedback}
+                                    onClick={submitFeedback}
+                                    className='w-full rounded-2xl border border-emerald-400/40 bg-emerald-500/90 hover:bg-emerald-500 text-white font-black py-5 text-base shadow-md shadow-emerald-500/30 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    {isSubmittingFeedback ? (
+                                        <span className='flex items-center justify-center gap-2'>
+                                            <Loader2 className='h-4 w-4 animate-spin' />
+                                            Submitting...
+                                        </span>
+                                    ) : (
+                                        'Submit Feedback'
+                                    )}
+                                </button>
+
+                                <button
+                                    type='button'
+                                    disabled={isSubmittingFeedback}
+                                    onClick={() => setShowFeedbackModal(false)}
+                                    className='w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -8,8 +8,8 @@ type SlideVariant = 'standard' | 'legal';
 type Slide = {
     id: string;
     variant?: SlideVariant;
+    cover?: boolean;
     accent: string;
-    badge: string;
     title: string;
     titleGrad?: string;
     titlePlain?: string;
@@ -20,7 +20,6 @@ type Slide = {
     legalTitle?: string;
     legalSummary?: string;
     legalLink?: string;
-    railLabel: string;
     Icon: any;
 };
 
@@ -33,158 +32,96 @@ const SLIDES: Slide[] = [
     {
         id: 'digital-billboard',
         variant: 'standard',
+        cover: true,
         accent: '#4cc7e8',
-        badge: 'Digital Billboard',
-        title: 'Put Your Business in Front of Daily Traffic',
-        description: 'Turn visibility into consistent attention and long-term growth with one simple digital billboard system.',
-        bullets: ['Get Seen', 'Get Clicks', 'Build Your Hub', 'Expand Reach', 'Grow Presence'],
-        railLabel: 'Intro',
+        title: 'Digital Billboard',
+        description: '',
+        bullets: [],
         Icon: Eye,
     },
     {
         id: 'website-advertising',
         variant: 'standard',
         accent: '#4cc7e8',
-        badge: 'Step 1 — Website Advertising',
-        title: 'Stay Visible Where People Already Browse',
-        description: 'Position your brand where people are already browsing and engaging so awareness builds continuously.',
+        title: 'WEBSITE ADVERTISING',
+        description: 'Position your brand where people are already browsing and engaging. Build awareness continuously without needing constant effort daily.',
         bullets: [
             'Place your business in front of daily traffic',
             'Increase brand visibility across high-traffic pages',
             'Stay consistently in front of potential customers',
             'Build awareness without ongoing effort',
         ],
-        railLabel: 'Get Seen',
         Icon: Monitor,
     },
     {
         id: 'get-clicks',
         variant: 'standard',
         accent: '#4cc7e8',
-        badge: 'Step 2 — Get Clicks',
-        title: 'Turn Visibility Into Real Engagement',
-        description: 'Convert attention into action from users who are ready to click, explore, and respond right away.',
+        title: 'GET CLICKS',
+        description: 'Convert visibility into real engagement from users ready to act now. Expand your reach instantly using built-in sharing tools.',
         bullets: [
             'Turn visibility into real engagement',
             'Attract targeted users ready to take action',
             'Drive clicks directly to your offer or page',
             'Built-in share buttons expand your reach instantly',
         ],
-        railLabel: 'Get Clicks',
         Icon: MousePointerClick,
     },
     {
         id: 'link-tree',
         variant: 'standard',
         accent: '#4cc7e8',
-        badge: 'Step 3 — Link Tree',
-        title: 'Build One Central Link Hub',
-        description: 'Create one central place for all your links and social platforms so visitors can explore everything you offer.',
+        title: 'LINK TREE',
+        description: 'Create one central place for all your links and social platforms. Make it easy for visitors to explore everything you offer.',
         bullets: [
             'Create your own link hub',
             'Add all your social media in one place',
             'Centralize your offers, links, and content',
             'Give visitors one place to access everything',
         ],
-        railLabel: 'Link Hub',
         Icon: Link2,
     },
     {
         id: 'expand-reach',
         variant: 'standard',
         accent: '#4cc7e8',
-        badge: 'Step 4 — Expand Reach',
-        title: 'Keep Traffic Flowing Automatically',
-        description: 'Drive consistent traffic to your offers, pages, and digital content while keeping your pipeline active.',
+        title: 'EXPAND REACH',
+        description: 'Drive consistent traffic to your offers, pages, and digital content. Keep your pipeline active and support growth automatically.',
         bullets: [
             'Generate consistent daily visitor flow',
             'Support product launches and promotions',
             'Boost exposure for any business or offer',
             'Keep your pipeline full automatically',
         ],
-        railLabel: 'Expand',
         Icon: Rocket,
     },
     {
         id: 'grow-presence',
         variant: 'standard',
         accent: '#4cc7e8',
-        badge: 'Step 5 — Grow Presence',
-        title: 'Build a Presence That Compounds',
-        description: 'Strengthen your online presence across major platforms and turn visitors into long-term followers over time.',
+        title: 'GROW PRESENCE',
+        description: 'Build a strong online presence across all major digital platforms. Turn visitors into followers who engage and return over time.',
         bullets: [
             'Strengthen your online brand across platforms',
             'Turn visitors into long-term followers',
             'Increase engagement across all your links',
             'Build a digital presence that compounds over time',
         ],
-        railLabel: 'Presence',
         Icon: Globe2,
     },
-    // {
-    //     id: 'legal-gdpr',
-    //     variant: 'legal',
-    //     accent: '#4cc7e8',
-    //     Icon: Globe,
-    //     badge: 'Legal — GDPR',
-    //     title: 'GDPR & Privacy',
-    //     titleGrad: 'GDPR',
-    //     titlePlain: ' & Privacy',
-    //     desc: 'When promoting our services you must handle any personal data in compliance with GDPR and applicable privacy laws in your jurisdiction.',
-    //     legalTitle: 'Your Obligations',
-    //     legalSummary:
-    //         'Do not collect or store personal data of referred users without proper consent and a lawful basis. You may not spam or send unsolicited messages. Any data you handle must be processed in accordance with our Privacy Policy and GDPR requirements. Contact us if you have questions about compliance.',
-    //     legalLink: '/gdpr',
-    //     bullets: ['No unsolicited messaging or spam', 'Handle personal data with proper consent', 'Comply with GDPR in your jurisdiction'],
-    //     railLabel: 'GDPR',
-    // },
-    // {
-    //     id: 'legal-terms',
-    //     variant: 'legal',
-    //     accent: '#4cc7e8',
-    //     Icon: FileText,
-    //     badge: 'Legal — Terms & Conditions',
-    //     title: 'Terms & Conditions',
-    //     titleGrad: 'Terms',
-    //     titlePlain: ' & Conditions',
-    //     desc: 'Our Terms & Conditions govern your use of the Black Snow Holdings platform, affiliate tools, and all associated services.',
-    //     legalTitle: 'Key Terms',
-    //     legalSummary:
-    //         'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
-    //     legalLink: '/terms',
-    //     bullets: ['Governs platform and affiliate tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
-    //     railLabel: 'Terms',
-    // },
-    // {
-    //     id: 'legal-privacy',
-    //     variant: 'legal',
-    //     accent: '#4cc7e8',
-    //     Icon: Shield,
-    //     badge: 'Legal — Privacy Policy',
-    //     title: 'Privacy Policy',
-    //     titleGrad: 'Privacy',
-    //     titlePlain: ' Policy',
-    //     desc: 'How we collect, use, and protect your affiliate data.',
-    //     legalTitle: 'What We Cover',
-    //     legalSummary:
-    //         'We use only the data needed to operate the affiliate program, process payouts, and protect your account. Your data is never sold, and you can request access, correction, or deletion at any time.',
-    //     legalLink: '/privacy',
-    //     bullets: ['Data collected only to operate the program', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
-    //     railLabel: 'Privacy',
-    // },
 ];
 
 function ProgressDots({ current, total, accent, onDot }: { current: number; total: number; accent: string; onDot: (index: number) => void }) {
     return (
-        <div className='flex items-center gap-3 flex-wrap'>
+        <div className='flex items-center gap-1.5 sm:gap-2'>
             {Array.from({ length: total }).map((_, index) => (
                 <button
                     key={index}
                     onClick={() => onDot(index)}
                     className='rounded-full transition-all duration-300'
                     style={{
-                        width: index === current ? 20 : 6,
-                        height: 6,
+                        width: index === current ? 18 : 5,
+                        height: 5,
                         backgroundColor: index === current ? accent : index < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
                     }}
                     aria-label={`Go to slide ${index + 1}`}
@@ -196,10 +133,10 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
 
 function InfoPanel({ slide, accent }: { slide: Slide; accent: string }) {
     return (
-        <div className='rounded-2xl p-4 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-            <div className='flex items-center justify-between gap-3 mb-3'>
+        <div className='rounded-xl lg:rounded-2xl p-3 lg:p-4 mb-3 lg:mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
+            <div className='flex items-center justify-between gap-2 lg:gap-3 mb-2 lg:mb-3'>
                 <div className='flex items-center gap-2'>
-                    <FileCheck className='w-4 h-4' style={{ color: accent }} />
+                    <FileCheck className='w-3.5 h-3.5 lg:w-4 lg:h-4' style={{ color: accent }} />
                     <p className='text-xs font-bold uppercase tracking-wide' style={{ color: accent }}>
                         {slide.variant === 'legal' ? slide.legalTitle ?? 'Summary' : 'Key Highlights'}
                     </p>
@@ -210,7 +147,7 @@ function InfoPanel({ slide, accent }: { slide: Slide; accent: string }) {
                         href={slide.legalLink}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-all hover:scale-[1.02]'
+                        className='text-[10px] lg:text-[11px] font-semibold px-2 lg:px-2.5 py-1 rounded-full border transition-all hover:scale-[1.02]'
                         style={{ color: accent, borderColor: `${accent}35`, backgroundColor: `${accent}12` }}
                     >
                         Review
@@ -218,13 +155,15 @@ function InfoPanel({ slide, accent }: { slide: Slide; accent: string }) {
                 ) : null}
             </div>
 
-            {slide.variant === 'legal' && slide.legalSummary ? <p className='text-white/60 text-xs leading-relaxed mb-3'>{slide.legalSummary}</p> : null}
+            {slide.variant === 'legal' && slide.legalSummary ? (
+                <p className='text-white/60 text-[11px] lg:text-xs leading-relaxed mb-2.5 lg:mb-3'>{slide.legalSummary}</p>
+            ) : null}
 
-            <ul className='space-y-2.5'>
+            <ul className='space-y-1.5 lg:space-y-2.5'>
                 {slide.bullets.map((bullet, index) => (
-                    <li key={index} className='flex items-start gap-2.5'>
-                        <CheckCircle2 className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                        <span className='text-white/70 text-sm leading-snug'>{bullet}</span>
+                    <li key={index} className='flex items-start gap-2 lg:gap-2.5'>
+                        <CheckCircle2 className='w-3.5 h-3.5 lg:w-4 lg:h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
+                        <span className='text-white/65 lg:text-white/70 text-xs lg:text-sm leading-snug'>{bullet}</span>
                     </li>
                 ))}
             </ul>
@@ -239,20 +178,10 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
     const [animating, setAnimating] = useState(false);
     const [inView, setInView] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!mounted) return;
-
-        if (open) {
-            setCurrent(0);
-            requestAnimationFrame(() => setInView(true));
-        } else {
-            setInView(false);
-        }
-    }, [open, mounted]);
+    const slide = SLIDES[current];
+    const accent = slide.accent;
+    const isLastSlide = current === SLIDES.length - 1;
+    const description = slide.description ?? slide.desc ?? '';
 
     const close = () => {
         setInView(false);
@@ -270,7 +199,7 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
     };
 
     const handleNext = () => {
-        if (current === SLIDES.length - 1) {
+        if (isLastSlide) {
             close();
             return;
         }
@@ -284,6 +213,21 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
     };
 
     useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+
+        if (open) {
+            setCurrent(0);
+            requestAnimationFrame(() => setInView(true));
+        } else {
+            setInView(false);
+        }
+    }, [open, mounted]);
+
+    useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (!open) return;
             if (event.key === 'Escape') close();
@@ -293,16 +237,10 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-        // eslint-disable-next-line
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, current, animating]);
 
     if (!mounted || !open) return null;
-
-    const slide = SLIDES[current];
-    const accent = slide.accent;
-    const isLastSlide = current === SLIDES.length - 1;
-    const rightRailSteps = SLIDES.map((item) => item.railLabel);
-    const description = slide.description ?? slide.desc ?? '';
 
     const slideAnim: React.CSSProperties = {
         transition: 'opacity 0.26s ease, transform 0.26s ease',
@@ -370,8 +308,8 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
-                    style={{ ...modalEnter, height: 'min(575px, calc(100vh - 3rem))' }}
+                    className='pointer-events-auto flex w-full max-w-sm lg:max-w-2xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(500px, calc(100vh - 2rem))' }}
                 >
                     <div className='absolute inset-0 pointer-events-none' style={glassShine} />
                     <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
@@ -381,8 +319,8 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
                         style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
                     />
                     <div
-                        className='absolute top-0 left-0 right-0 h-60 pointer-events-none'
-                        style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}14 0%, transparent 65%)` }}
+                        className='absolute top-0 left-0 right-0 h-44 lg:h-60 pointer-events-none'
+                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}14 0%, transparent 70%)` }}
                     />
 
                     <button
@@ -394,44 +332,71 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 flex flex-1 min-h-0'>
-                        <div className='flex-1 flex flex-col justify-between px-9 pt-9 pb-7 min-w-0 min-h-0'>
-                            <div className='min-h-0 flex-1 overflow-y-auto pr-2' style={slideAnim}>
-                                {/* <div className='flex items-center gap-3 mb-5'>
-                                    <div
-                                        className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
-                                        style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                                    >
-                                        <slide.Icon className='w-3.5 h-3.5' />
-                                        {slide.badge}
+                    <div className='relative z-10 flex flex-col flex-1 min-h-0'>
+                        <div className='px-6 lg:px-9 pt-8 lg:pt-9 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
+                            {slide.cover ? (
+                                <div className='min-h-full flex items-center justify-center py-16'>
+                                    <div className='relative text-center px-4'>
+                                        <div
+                                            className='absolute -inset-12 rounded-full blur-3xl opacity-40 pointer-events-none'
+                                            style={{ background: `radial-gradient(circle, ${accent}40 0%, transparent 65%)` }}
+                                        />
+                                        <h1 className='relative text-4xl lg:text-6xl font-black leading-tight'>{renderTitle()}</h1>
+                                        <div
+                                            className='relative mx-auto mt-5 h-0.5 w-24 rounded-full'
+                                            style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                                        />
                                     </div>
-                                    <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                        Slide {current + 1} of {SLIDES.length}
-                                    </span>
-                                </div> */}
+                                </div>
+                            ) : (
+                                <>
+                                    <h2 className='text-2xl lg:text-3xl font-black text-white leading-tight mb-2 lg:mb-3'>{renderTitle()}</h2>
+                                    <div
+                                        className='h-0.5 rounded-full mb-3 lg:mb-4 w-10 lg:w-14'
+                                        style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                                    />
 
-                                <h2 className='text-3xl font-black text-white leading-tight mb-3'>{renderTitle()}</h2>
-                                <div className='h-0.5 rounded-full mb-4 w-14' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+                                    {description ? (
+                                        <p className='text-gray-400 text-xs lg:text-sm leading-relaxed mb-3 lg:mb-5 max-w-lg'>{description}</p>
+                                    ) : null}
 
-                                <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-lg'>{description}</p>
+                                    <InfoPanel slide={slide} accent={accent} />
+                                </>
+                            )}
+                        </div>
 
-                                <InfoPanel slide={slide} accent={accent} />
-                            </div>
+                        <div className='relative z-10 px-6 lg:px-9 pb-5 lg:pb-7 pt-2'>
+                            <div className='grid grid-cols-[1fr_auto_1fr] items-center gap-2 lg:gap-3'>
+                                <div className='justify-self-start'>
+                                    <ProgressDots
+                                        current={current}
+                                        total={SLIDES.length}
+                                        accent={accent}
+                                        onDot={(i) => goTo(i, i > current ? 'next' : 'prev')}
+                                    />
+                                </div>
 
-                            <div className='flex items-center gap-3 mt-8 pt-4 border-t border-white/10'>
-                                <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={(i) => goTo(i, i > current ? 'next' : 'prev')} />
-                                <div className='flex items-center gap-2 ml-auto'>
+                                <span
+                                    className='justify-self-center whitespace-nowrap text-xs font-semibold px-2 py-0.5 rounded-md'
+                                    style={{ color: accent, backgroundColor: `${accent}18` }}
+                                >
+                                    Slide {current + 1}/{SLIDES.length}
+                                </span>
+
+                                <div className='flex items-center gap-1.5 lg:gap-2 justify-self-end'>
                                     <button
                                         onClick={handlePrev}
                                         disabled={current === 0}
-                                        className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                                        className='w-8 h-8 lg:w-9 lg:h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
                                         style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        aria-label='Previous slide'
                                     >
                                         <ChevronLeft className='w-4 h-4 text-white' />
                                     </button>
+
                                     <button
                                         onClick={handleNext}
-                                        className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
+                                        className='h-8 lg:h-9 px-3 lg:px-4 rounded-xl flex items-center justify-center gap-1 lg:gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
                                         style={{
                                             background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`,
                                             border: `1px solid ${accent}60`,
@@ -440,160 +405,7 @@ export function DigitalBillboardSlideshow({ open, onOpenChange }: DigitalBillboa
                                     >
                                         {isLastSlide ? 'Done' : 'Next'}
                                     </button>
-                                    {/* <span className='text-xs text-white/25'>
-                                        {current + 1}/{SLIDES.length}
-                                    </span> */}
                                 </div>
-                            </div>
-                        </div>
-
-                        <div
-                            className='w-[1px] self-stretch my-8'
-                            style={{ background: `linear-gradient(to bottom, transparent, ${accent}30, transparent)` }}
-                        />
-
-                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6 min-h-0' style={slideAnim}>
-                            <div
-                                className='w-24 h-24 rounded-2xl flex items-center justify-center'
-                                style={{ backgroundColor: `${accent}18`, border: `2px solid ${accent}30`, boxShadow: `0 0 40px ${accent}20` }}
-                            >
-                                <slide.Icon className='w-12 h-12' style={{ color: accent }} />
-                            </div>
-
-                            <div className='text-center'>
-                                <p className='text-xs font-semibold mb-1' style={{ color: accent }}>
-                                    Digital Billboard Flow
-                                </p>
-                                <p className='text-white/30 text-xs'>
-                                    Slide {current + 1} of {SLIDES.length}
-                                </p>
-                            </div>
-
-                            <div className='flex flex-col gap-2 w-full mt-2 overflow-y-auto pr-1'>
-                                {rightRailSteps.map((step, index) => {
-                                    const active = index <= current;
-
-                                    return (
-                                        <div key={`${step}-${index}`} className='flex items-center gap-2'>
-                                            <div
-                                                className='w-1.5 h-1.5 rounded-full flex-shrink-0'
-                                                style={{ backgroundColor: active ? accent : 'rgba(255,255,255,0.15)' }}
-                                            />
-                                            <span className='text-xs' style={{ color: active ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.24)' }}>
-                                                {step}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
-                    style={{ ...modalEnter, height: 'min(475px, calc(100vh - 2rem))' }}
-                >
-                    <div className='absolute inset-0 pointer-events-none' style={glassShine} />
-                    <div className='absolute inset-x-0 bottom-0 h-40 pointer-events-none' style={bottomGlass} />
-
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[2px] z-10'
-                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                    />
-                    <div
-                        className='absolute top-0 left-0 right-0 h-44 pointer-events-none'
-                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}14 0%, transparent 70%)` }}
-                    />
-
-                    <button
-                        onClick={close}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition-all'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
-                        aria-label='Close slideshow'
-                    >
-                        <X className='w-4 h-4 text-white/60' />
-                    </button>
-
-                    <div className='relative z-10 px-6 pt-8 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
-                        {/* <div className='flex items-center gap-2 flex-wrap mb-4'>
-                            <div
-                                className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
-                                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                            >
-                                <slide.Icon className='w-3 h-3' />
-                                {slide.badge}
-                            </div>
-                            <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                {current + 1}/{SLIDES.length}
-                            </span>
-                        </div> */}
-
-                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>{renderTitle()}</h2>
-                        <div className='h-0.5 rounded-full mb-3 w-10' style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
-                        <p className='text-gray-400 text-xs leading-relaxed mb-4'>{description}</p>
-
-                        <div className='rounded-xl p-3 mb-3 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-                            <div className='flex items-center justify-between gap-2 mb-2'>
-                                <div className='flex items-center gap-2'>
-                                    <FileCheck className='w-3.5 h-3.5' style={{ color: accent }} />
-                                    <p className='text-xs font-bold uppercase' style={{ color: accent }}>
-                                        {slide.variant === 'legal' ? slide.legalTitle ?? 'Summary' : 'Key Highlights'}
-                                    </p>
-                                </div>
-
-                                {slide.variant === 'legal' && slide.legalLink ? (
-                                    <a
-                                        href={slide.legalLink}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        className='text-[10px] font-semibold px-2 py-1 rounded-full border'
-                                        style={{ color: accent, borderColor: `${accent}35`, backgroundColor: `${accent}12` }}
-                                    >
-                                        Review
-                                    </a>
-                                ) : null}
-                            </div>
-
-                            {slide.variant === 'legal' && slide.legalSummary ? (
-                                <p className='text-white/60 text-[11px] leading-relaxed mb-2.5'>{slide.legalSummary}</p>
-                            ) : null}
-
-                            <ul className='space-y-1.5'>
-                                {slide.bullets.map((bullet, index) => (
-                                    <li key={index} className='flex items-start gap-2'>
-                                        <CheckCircle2 className='w-3.5 h-3.5 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                        <span className='text-white/65 text-xs leading-snug'>{bullet}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className='relative z-10 px-6 pb-5'>
-                        <div className='flex justify-end w-full mb-2'>
-                            <span className='text-sm font-semibold px-2 py-0.5 mr-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                Slide {current + 1}/{SLIDES.length}
-                            </span>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                            <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={(i) => goTo(i, i > current ? 'next' : 'prev')} />
-                            <div className='flex items-center gap-1.5 ml-auto'>
-                                <button
-                                    onClick={handlePrev}
-                                    disabled={current === 0}
-                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20'
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                                >
-                                    <ChevronLeft className='w-4 h-4 text-white' />
-                                </button>
-                                <button
-                                    onClick={handleNext}
-                                    className='h-9 px-3 rounded-xl flex items-center justify-center gap-1 text-xs font-bold text-white transition-all'
-                                    style={{ background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`, border: `1px solid ${accent}60` }}
-                                >
-                                    {isLastSlide ? 'Done' : 'Next'}
-                                </button>
                             </div>
                         </div>
                     </div>

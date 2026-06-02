@@ -71,6 +71,7 @@ const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'Lig
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [userid, setUserid] = useState<string | null>(userId ?? null);
+    const [adminid, setAdminid] = useState<string | null>(null);
     const [adminId, setAdminId] = useState<string | null>(null);
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
@@ -84,6 +85,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     // Prevent body scroll when menu is open + load userId / roles / adminId
     useEffect(() => {
         const iid = localStorage.getItem('userId') || userId || null;
+        const adminiid = localStorage.getItem('adminId') || null;
         const getCookie = (name: string): string | null => {
             if (typeof document === 'undefined') return null;
 
@@ -101,6 +103,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         setLastName(lastNamee);
         setEmail(eemail);
         setUserid(iid);
+        setAdminid(adminiid);
 
         const aid = localStorage.getItem('adminId') || null;
         setAdminId(aid);
@@ -177,10 +180,12 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         localStorage.removeItem('userId');
         localStorage.removeItem('adminId');
         localStorage.removeItem('roles');
+        localStorage.removeItem('id');
         localStorage.removeItem('referredby');
         setShowLogoutModal(false);
         setIsOpen(false);
         setUserid(null);
+        setAdminid(null);
         setAdminId(null);
         setDashboards([]);
         setShowDashboardMenu(false);
@@ -382,7 +387,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     transitionDelay: isOpen ? `${500 + menuItems.length * 100}ms` : '0ms',
                                 }}
                             >
-                                {userid ? (
+                                {userid || adminid ? (
                                     <Button
                                         onClick={handleLogout}
                                         className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'

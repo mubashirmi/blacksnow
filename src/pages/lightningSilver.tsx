@@ -20,13 +20,10 @@ type LottieAnimationProps = {
 };
 
 function LightningSilver() {
-    const ROUTES = {
-        afterLogin: '/pricing?plan=silver',
-        afterSignup: '/pricing?plan=silver',
-    };
-
     const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
+    // eslint-disable-next-line
     const [authDefaultView, setAuthDefaultView] = useState<'signin' | 'signup'>('signup');
     const [activeSlideshow, setActiveSlideshow] = useState<'silver' | 'gold' | null>(null);
     // eslint-disable-next-line
@@ -42,6 +39,17 @@ function LightningSilver() {
     useEffect(() => {
         setIsLoggedIn(computeLoggedIn());
     }, [computeLoggedIn]);
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
 
     const handleJoinSilver = useCallback(() => {
         const logged = computeLoggedIn();
@@ -87,25 +95,26 @@ function LightningSilver() {
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
             <ShareBanner />
 
-            <AuthModal
-                open={authOpen}
-                onOpenChange={setAuthOpen}
-                defaultView={authDefaultView}
-                redirectAfterLogin={ROUTES.afterLogin}
-                redirectAfterSignup={ROUTES.afterSignup}
-                sourceRoute='/lightningSilver'
-                onSuccess={(ctx) => {
-                    if (ctx.kind === 'login') {
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/lightningSilver'
+                    onSuccess={() => {
                         setIsLoggedIn(true);
+                        setPricingOpen(false);
+                        setOpenPricingAfterAuth(true);
                         setAuthOpen(false);
-                        setPricingOpen(true);
-                        return true;
-                    }
-                    return true;
-                }}
-            />
+                        return false;
+                    }}
+                />
+            )}
 
-            <PricingComponent name='LightningSilver' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />
+            {!authOpen && <PricingComponent name='LightningSilver' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />}
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>

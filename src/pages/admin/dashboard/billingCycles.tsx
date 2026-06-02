@@ -3,15 +3,17 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-type Checkout = {
+type BillingRecord = {
+    rowKey: string;
     id: number;
     transactionId: string;
-    AuthId: number;
+    AuthId?: number | null;
     amount: number;
     period: string;
     product: string;
     nextBillingDate: string | null;
     startDate: string | null;
+    paymentStatus?: string | null;
     auth: {
         email: string;
         firstName: string;
@@ -19,16 +21,55 @@ type Checkout = {
     };
 };
 
+type CheckoutApiRecord = {
+    id: number;
+    transactionId?: string | null;
+    AuthId?: number | null;
+    amount?: number | null;
+    period?: string | null;
+    product?: string | null;
+    nextBillingDate?: string | null;
+    startDate?: string | null;
+    auth?: {
+        email?: string | null;
+        firstName?: string | null;
+        lastName?: string | null;
+    };
+};
+
+type Consultation = {
+    id: number;
+    createdAt: string;
+    updatedAt?: string;
+    deleted?: boolean;
+    fullName?: string | null;
+    companyName?: string | null;
+    location?: string | null;
+    jobTitle?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    numOfPositions?: number | null;
+    dateTime?: string | null;
+    totalAmount?: number | null;
+    currency?: string | null;
+    stripeCheckoutSessionId?: string | null;
+    stripePaymentIntentId?: string | null;
+    paidAt?: string | null;
+    status?: string | null;
+};
+
 const PRODUCT_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
     NewsLetter: { bg: 'bg-violet-100', text: 'text-violet-700', dot: 'bg-violet-500' },
     DigitalBillboard: { bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500' },
     EmailMarketing: { bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+    Consultation: { bg: 'bg-sky-100', text: 'text-sky-700', dot: 'bg-sky-500' },
 };
 
 const DEFAULT_COLOR = { bg: 'bg-slate-100', text: 'text-slate-700', dot: 'bg-slate-400' };
 
 function formatDate(dateStr: string | null) {
     if (!dateStr) return <span className='text-slate-400 italic'>N/A</span>;
+
     return new Date(dateStr).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -36,20 +77,97 @@ function formatDate(dateStr: string | null) {
     });
 }
 
-function getBillingStatus(nextBillingDate: string | null): {
+function getBillingStatus(
+    nextBillingDate: string | null,
+    paymentStatus?: string | null
+): {
     label: string;
     className: string;
 } {
+    if (paymentStatus) {
+        const status = paymentStatus.toLowerCase();
+
+        if (status === 'paid') {
+            return { label: 'Paid', className: 'bg-green-100 text-green-600' };
+        }
+
+        if (status === 'pending') {
+            return { label: 'Pending', className: 'bg-orange-100 text-orange-600' };
+        }
+
+        if (status === 'failed') {
+            return { label: 'Failed', className: 'bg-red-100 text-red-600' };
+        }
+
+        return {
+            label: paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1),
+            className: 'bg-slate-100 text-slate-600',
+        };
+    }
+
     if (!nextBillingDate) return { label: 'Inactive', className: 'bg-slate-100 text-slate-500' };
+
     const diff = new Date(nextBillingDate).getTime() - Date.now();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
     if (days < 0) return { label: 'Overdue', className: 'bg-red-100 text-red-600' };
     if (days <= 7) return { label: `Due in ${days}d`, className: 'bg-orange-100 text-orange-600' };
+
     return { label: 'Active', className: 'bg-green-100 text-green-600' };
 }
 
+function splitFullName(fullName?: string | null) {
+    const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+    return {
+        firstName: parts[0] || 'Unknown',
+        lastName: parts.slice(1).join(' '),
+    };
+}
+
+function normalizeCheckout(checkout: CheckoutApiRecord): BillingRecord {
+    return {
+        rowKey: `checkout-${checkout.id}`,
+        id: checkout.id,
+        transactionId: checkout.transactionId || 'N/A',
+        AuthId: checkout.AuthId ?? null,
+        amount: Number(checkout.amount ?? 0),
+        period: checkout.period || 'N/A',
+        product: checkout.product || 'N/A',
+        nextBillingDate: checkout.nextBillingDate ?? null,
+        startDate: checkout.startDate ?? null,
+        auth: {
+            email: checkout.auth?.email || 'N/A',
+            firstName: checkout.auth?.firstName || 'Unknown',
+            lastName: checkout.auth?.lastName || '',
+        },
+    };
+}
+
+function normalizeConsultation(consultation: Consultation): BillingRecord {
+    const name = splitFullName(consultation.fullName);
+
+    return {
+        rowKey: `consultation-${consultation.id}`,
+        id: consultation.id,
+        transactionId: consultation.stripePaymentIntentId || consultation.stripeCheckoutSessionId || 'N/A',
+        AuthId: null,
+        amount: Number(consultation.totalAmount ?? 0),
+        period: 'one-time',
+        product: 'Consultation',
+        startDate: consultation.createdAt ?? null,
+        nextBillingDate: null,
+        paymentStatus: consultation.status ?? null,
+        auth: {
+            email: consultation.email || 'N/A',
+            firstName: name.firstName,
+            lastName: name.lastName,
+        },
+    };
+}
+
 export default function BillingPage() {
-    const [checkouts, setCheckouts] = useState<Checkout[]>([]);
+    const [checkouts, setCheckouts] = useState<BillingRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -61,11 +179,36 @@ export default function BillingPage() {
     const fetchData = async () => {
         setIsLoading(true);
         setError(null);
+
         try {
-            const { data } = await axios.get('/api/v3/all-users-checkout-details');
-            setCheckouts(data.checkouts ?? []);
-            setSuccess('Billing data loaded successfully!');
-            setTimeout(() => setSuccess(null), 3000);
+            const [checkoutResult, consultationResult] = await Promise.allSettled([
+                axios.get('/api/v3/all-users-checkout-details'),
+                axios.get('/api/v5/consultation'),
+            ]);
+
+            if (checkoutResult.status === 'rejected' && consultationResult.status === 'rejected') {
+                throw new Error('Failed to fetch billing and consultation data');
+            }
+
+            const checkoutRows: BillingRecord[] =
+                checkoutResult.status === 'fulfilled'
+                    ? (checkoutResult.value.data?.checkouts ?? []).map(normalizeCheckout)
+                    : [];
+
+            const consultationRows: BillingRecord[] =
+                consultationResult.status === 'fulfilled'
+                    ? (consultationResult.value.data?.consultations ?? []).map(normalizeConsultation)
+                    : [];
+
+            setCheckouts([...checkoutRows, ...consultationRows]);
+
+            if (checkoutResult.status === 'rejected' || consultationResult.status === 'rejected') {
+                setError('Some records could not be loaded. Please refresh again.');
+                setTimeout(() => setError(null), 5000);
+            } else {
+                setSuccess('Billing data loaded successfully!');
+                setTimeout(() => setSuccess(null), 3000);
+            }
         } catch {
             setError('Failed to fetch billing data. Please try again later.');
             setTimeout(() => setError(null), 5000);
@@ -82,14 +225,18 @@ export default function BillingPage() {
     const allProducts = ['All', ...Array.from(new Set(checkouts.map((c) => c.product)))];
 
     const filtered = checkouts.filter((c) => {
+        const searchValue = search.toLowerCase();
         const fullName = `${c.auth.firstName} ${c.auth.lastName}`.toLowerCase();
+
         const matchSearch =
             !search ||
-            fullName.includes(search.toLowerCase()) ||
-            c.auth.email.toLowerCase().includes(search.toLowerCase()) ||
-            c.product.toLowerCase().includes(search.toLowerCase()) ||
-            c.transactionId.toLowerCase().includes(search.toLowerCase());
+            fullName.includes(searchValue) ||
+            c.auth.email.toLowerCase().includes(searchValue) ||
+            c.product.toLowerCase().includes(searchValue) ||
+            c.transactionId.toLowerCase().includes(searchValue);
+
         const matchProduct = filterProduct === 'All' || c.product === filterProduct;
+
         return matchSearch && matchProduct;
     });
 
@@ -119,6 +266,7 @@ export default function BillingPage() {
                     <span className='block sm:inline'>{success}</span>
                 </div>
             )}
+
             {error && (
                 <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative' role='alert'>
                     <span className='block sm:inline'>{error}</span>
@@ -135,6 +283,7 @@ export default function BillingPage() {
                             <p className='text-2xl font-bold text-slate-800'>{checkouts.length}</p>
                         </div>
                     </div>
+
                     <div className='bg-white rounded-xl shadow border border-slate-200 p-5 flex items-center gap-4'>
                         <div className='h-11 w-11 rounded-lg bg-green-100 flex items-center justify-center text-green-600 text-xl'>✅</div>
                         <div>
@@ -145,6 +294,7 @@ export default function BillingPage() {
                             </p>
                         </div>
                     </div>
+
                     <div className='bg-white rounded-xl shadow border border-slate-200 p-5 flex items-center gap-4'>
                         <div className='h-11 w-11 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 text-xl'>💰</div>
                         <div>
@@ -160,6 +310,7 @@ export default function BillingPage() {
                 {/* Header */}
                 <div className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
                     <h2 className='text-2xl font-bold text-white'>Billing Cycles</h2>
+
                     <button
                         onClick={fetchData}
                         className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer self-start sm:self-auto'
@@ -177,6 +328,7 @@ export default function BillingPage() {
                         onChange={(e) => setSearch(e.target.value)}
                         className='flex-1 rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                     />
+
                     <select
                         value={filterProduct}
                         onChange={(e) => setFilterProduct(e.target.value)}
@@ -211,10 +363,10 @@ export default function BillingPage() {
                             <tbody>
                                 {filtered.map((checkout, index) => {
                                     const color = PRODUCT_COLORS[checkout.product] ?? DEFAULT_COLOR;
-                                    const status = getBillingStatus(checkout.nextBillingDate);
+                                    const status = getBillingStatus(checkout.nextBillingDate, checkout.paymentStatus);
 
                                     return (
-                                        <tr key={checkout.id} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                                        <tr key={checkout.rowKey} className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
                                             {/* Sr # */}
                                             <td className='py-3 px-4 text-slate-500 text-sm'>{index + 1}</td>
 

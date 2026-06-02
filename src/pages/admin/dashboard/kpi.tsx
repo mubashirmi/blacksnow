@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type User = {
     id: number;
@@ -185,6 +185,70 @@ type LightningBillingCycleResponse = {
     data: BillingCycleEntry[];
 };
 
+// ─── NEW: v5 API types ────────────────────────────────────────────────────────
+
+type EmailSentRecord = {
+    id: string;
+    createdAt: string;
+    sentAt: string;
+    subject: string;
+    status: string;
+    messageId: string;
+    errorMessage: string | null;
+    authId: number;
+    emailUserId: number;
+    newsletterAuthId: number | null;
+    credentialsId: number;
+    jobResultId: string | null;
+};
+
+type EmailSentWeeklyDay = {
+    date: string;
+    day: string;
+    count: number;
+    records: EmailSentRecord[];
+};
+
+type EmailSentMonthlyMonth = {
+    month: number;
+    label: string;
+    count: number;
+    records: EmailSentRecord[];
+};
+
+type EmailSentYearlyYear = {
+    year: number;
+    count: number;
+    records: EmailSentRecord[];
+};
+
+type EmailSentHistoryResponse = {
+    type: string;
+    timezone: string;
+    weekly: {
+        type: string;
+        timezone: string;
+        range: { startDate: string; endDate: string; startUtc: string; endUtcExclusive: string };
+        total: number;
+        data: EmailSentWeeklyDay[];
+    };
+    monthly: {
+        type: string;
+        timezone: string;
+        year: number;
+        range: { startDate: string; endDateExclusive: string; startUtc: string; endUtcExclusive: string };
+        total: number;
+        data: EmailSentMonthlyMonth[];
+    };
+    yearly: {
+        type: string;
+        timezone: string;
+        range: { startYear: number; endYear: number; startDate: string; endDateExclusive: string; startUtc: string; endUtcExclusive: string };
+        total: number;
+        data: EmailSentYearlyYear[];
+    };
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -198,6 +262,7 @@ const METRIC_PRODUCTS = [
 
 type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
 type MetricPeriod = 'Week' | 'Month' | 'Year';
+type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
 
 function safeNumber(n: any, fallback = 0) {
     const x = typeof n === 'number' ? n : Number(n);
@@ -260,35 +325,46 @@ async function fetchJSON<T>(url: string): Promise<T> {
     return (await res.json()) as T;
 }
 
-function buildMetricSeries(metricData: KPIChartMetricResponse | null, metricType: MetricType) {
-    if (!metricData) return [];
-    const weekly =
-        metricType === 'Revenue'
-            ? safeNumber(metricData.weeklyRevenue)
-            : metricType === 'Subscribers'
-            ? safeNumber(metricData.weeklySubscribers)
-            : safeNumber(metricData.weeklyChurnRate);
-    const monthly =
-        metricType === 'Revenue'
-            ? safeNumber(metricData.monthlyRevenue)
-            : metricType === 'Subscribers'
-            ? safeNumber(metricData.monthlySubscribers)
-            : safeNumber(metricData.monthlyChurnRate);
-    const yearly =
-        metricType === 'Revenue'
-            ? safeNumber(metricData.yearlyRevenue)
-            : metricType === 'Subscribers'
-            ? safeNumber(metricData.yearlySubscribers)
-            : safeNumber(metricData.yearlyChurnRate);
-    return [
-        { period: 'Week', value: weekly },
-        { period: 'Month', value: monthly },
-        { period: 'Year', value: yearly },
-    ] as const;
+function getMetricValue(metricData: KPIChartMetricResponse | null, metricType: MetricType, metricPeriod: MetricPeriod) {
+    if (!metricData) return 0;
+
+    if (metricPeriod === 'Week') {
+        if (metricType === 'Revenue') return safeNumber(metricData.weeklyRevenue);
+        if (metricType === 'Subscribers') return safeNumber(metricData.weeklySubscribers);
+        return safeNumber(metricData.weeklyChurnRate);
+    }
+
+    if (metricPeriod === 'Month') {
+        if (metricType === 'Revenue') return safeNumber(metricData.monthlyRevenue);
+        if (metricType === 'Subscribers') return safeNumber(metricData.monthlySubscribers);
+        return safeNumber(metricData.monthlyChurnRate);
+    }
+
+    if (metricType === 'Revenue') return safeNumber(metricData.yearlyRevenue);
+    if (metricType === 'Subscribers') return safeNumber(metricData.yearlySubscribers);
+    return safeNumber(metricData.yearlyChurnRate);
 }
 
-function getSelectedMetricValue(series: { period: string; value: number }[], period: MetricPeriod) {
-    return series.find((d) => d.period === period)?.value ?? 0;
+function getMetricPeriodLabels(metricPeriod: MetricPeriod) {
+    if (metricPeriod === 'Week') return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    if (metricPeriod === 'Month') return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 5 }, (_, index) => String(currentYear - 4 + index));
+}
+
+function buildMetricSeries(metricData: KPIChartMetricResponse | null, metricType: MetricType, metricPeriod: MetricPeriod) {
+    if (!metricData) return [];
+
+    const selectedValue = getMetricValue(metricData, metricType, metricPeriod);
+    const labels = getMetricPeriodLabels(metricPeriod);
+
+    return labels.map((period, index) => ({
+        period,
+        value: selectedValue,
+        active: index === labels.length - 1,
+    }));
 }
 
 function formatMetricValue(metricType: MetricType, value: number) {
@@ -353,10 +429,22 @@ export default function KPIPage() {
     const [lightningFilter, setLightningFilter] = useState<'All' | 'LightningGold' | 'LightningSilver'>('All');
 
     // Chart C: Lightning Billing Cycle
+    // eslint-disable-next-line
     const [billingCycle, setBillingCycle] = useState<LightningBillingCycleResponse | null>(null);
+    // eslint-disable-next-line
     const [billingCycleLoading, setBillingCycleLoading] = useState(false);
+    // eslint-disable-next-line
     const [billingCycleError, setBillingCycleError] = useState<string | null>(null);
+    // eslint-disable-next-line
     const [billingPeriodFilter, setBillingPeriodFilter] = useState<'all' | 'monthly' | 'yearly'>('all');
+
+    // ─── NEW v5 state ─────────────────────────────────────────────────────────
+
+    // Chart D: Emails Sent History
+    const [emailSentHistory, setEmailSentHistory] = useState<EmailSentHistoryResponse | null>(null);
+    const [emailSentLoading, setEmailSentLoading] = useState(false);
+    const [emailSentError, setEmailSentError] = useState<string | null>(null);
+    const [emailSentPeriod, setEmailSentPeriod] = useState<EmailSentPeriod>('Weekly');
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -523,9 +611,36 @@ export default function KPIPage() {
         };
     }, []);
 
+    // ─── NEW v5 fetch ─────────────────────────────────────────────────────────
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setEmailSentLoading(true);
+                setEmailSentError(null);
+                const json = await fetchJSON<EmailSentHistoryResponse>('/api/v5/email-sent-history');
+                if (cancelled) return;
+                setEmailSentHistory(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setEmailSentError(e?.message || 'Failed to load email sent history');
+                setEmailSentHistory(null);
+            } finally {
+                if (!cancelled) setEmailSentLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // ─────────────────────────────────────────────────────────────────────────
+
     // ─── v4 derived data ──────────────────────────────────────────────────────
 
-    /** Product Revenue: build bar chart data from /api/v4/product-revenue-chart */
+    /** Product Revenue: build line chart data from /api/v4/product-revenue-chart */
     const productRevenueChartData = useMemo(() => {
         const entries = Object.values(productRevenue?.revenueData ?? {});
         const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((e) => e.product === selectedRevenueProduct);
@@ -571,33 +686,72 @@ export default function KPIPage() {
     }, [lightningMembership]);
 
     /** Billing Cycle: filter + stats */
-    const filteredBillingData = useMemo(() => {
-        const rows = billingCycle?.data ?? [];
-        return billingPeriodFilter === 'all' ? rows : rows.filter((r) => r.period.toLowerCase() === billingPeriodFilter);
-    }, [billingCycle, billingPeriodFilter]);
+    // const filteredBillingData = useMemo(() => {
+    //     const rows = billingCycle?.data ?? [];
+    //     return billingPeriodFilter === 'all' ? rows : rows.filter((r) => r.period.toLowerCase() === billingPeriodFilter);
+    // }, [billingCycle, billingPeriodFilter]);
 
-    const billingStats = useMemo(() => {
-        const rows = billingCycle?.data ?? [];
-        const totalRevenue = rows.reduce((s, r) => s + safeNumber(r.amount), 0);
-        const monthly = rows.filter((r) => r.period.toLowerCase() === 'monthly');
-        const yearly = rows.filter((r) => r.period.toLowerCase() === 'yearly');
-        const monthlyRevenue = monthly.reduce((s, r) => s + safeNumber(r.amount), 0);
-        const yearlyRevenue = yearly.reduce((s, r) => s + safeNumber(r.amount), 0);
-        return { total: rows.length, totalRevenue, monthlyRevenue, yearlyRevenue, monthlyCount: monthly.length, yearlyCount: yearly.length };
-    }, [billingCycle]);
+    // const billingStats = useMemo(() => {
+    //     const rows = billingCycle?.data ?? [];
+    //     const totalRevenue = rows.reduce((s, r) => s + safeNumber(r.amount), 0);
+    //     const monthly = rows.filter((r) => r.period.toLowerCase() === 'monthly');
+    //     const yearly = rows.filter((r) => r.period.toLowerCase() === 'yearly');
+    //     const monthlyRevenue = monthly.reduce((s, r) => s + safeNumber(r.amount), 0);
+    //     const yearlyRevenue = yearly.reduce((s, r) => s + safeNumber(r.amount), 0);
+    //     return { total: rows.length, totalRevenue, monthlyRevenue, yearlyRevenue, monthlyCount: monthly.length, yearlyCount: yearly.length };
+    // }, [billingCycle]);
 
     /** Billing Cycle bar chart: group by product+period */
-    const billingBarData = useMemo(() => {
-        const rows = billingCycle?.data ?? [];
-        const map: Record<string, { product: string; monthly: number; yearly: number }> = {};
-        rows.forEach((r) => {
-            const key = r.product;
-            if (!map[key]) map[key] = { product: formatProductName(r.product), monthly: 0, yearly: 0 };
-            if (r.period.toLowerCase() === 'monthly') map[key].monthly += safeNumber(r.amount);
-            else map[key].yearly += safeNumber(r.amount);
-        });
-        return Object.values(map);
-    }, [billingCycle]);
+    // const billingBarData = useMemo(() => {
+    //     const rows = billingCycle?.data ?? [];
+    //     const map: Record<string, { product: string; monthly: number; yearly: number }> = {};
+    //     rows.forEach((r) => {
+    //         const key = r.product;
+    //         if (!map[key]) map[key] = { product: formatProductName(r.product), monthly: 0, yearly: 0 };
+    //         if (r.period.toLowerCase() === 'monthly') map[key].monthly += safeNumber(r.amount);
+    //         else map[key].yearly += safeNumber(r.amount);
+    //     });
+    //     return Object.values(map);
+    // }, [billingCycle]);
+
+    // ─── NEW v5 derived data ──────────────────────────────────────────────────
+
+    /** Email Sent: build chart series based on selected period */
+    const emailSentChartData = useMemo(() => {
+        if (!emailSentHistory) return [];
+        if (emailSentPeriod === 'Weekly') {
+            return (emailSentHistory.weekly?.data ?? []).map((d) => ({
+                period: d.day,
+                count: safeNumber(d.count),
+            }));
+        }
+        if (emailSentPeriod === 'Monthly') {
+            return (emailSentHistory.monthly?.data ?? []).map((d) => ({
+                period: d.label,
+                count: safeNumber(d.count),
+            }));
+        }
+        // Yearly
+        return (emailSentHistory.yearly?.data ?? []).map((d) => ({
+            period: String(d.year),
+            count: safeNumber(d.count),
+        }));
+    }, [emailSentHistory, emailSentPeriod]);
+
+    const emailSentTotals = useMemo(() => {
+        if (!emailSentHistory) return { weekly: 0, monthly: 0, yearly: 0 };
+        return {
+            weekly: safeNumber(emailSentHistory.weekly?.total),
+            monthly: safeNumber(emailSentHistory.monthly?.total),
+            yearly: safeNumber(emailSentHistory.yearly?.total),
+        };
+    }, [emailSentHistory]);
+
+    const emailSentActivePeriodTotal = useMemo(() => {
+        if (emailSentPeriod === 'Weekly') return emailSentTotals.weekly;
+        if (emailSentPeriod === 'Monthly') return emailSentTotals.monthly;
+        return emailSentTotals.yearly;
+    }, [emailSentPeriod, emailSentTotals]);
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -715,14 +869,23 @@ export default function KPIPage() {
         setCurrentPage(1);
     };
 
-    const salesSeries = useMemo(() => buildMetricSeries(salesMetricData, salesMetricType), [salesMetricData, salesMetricType]);
-    const salesSelectedValue = useMemo(() => getSelectedMetricValue(salesSeries as any, salesMetricPeriod), [salesSeries, salesMetricPeriod]);
+    const salesSeries = useMemo(
+        () => buildMetricSeries(salesMetricData, salesMetricType, salesMetricPeriod),
+        [salesMetricData, salesMetricType, salesMetricPeriod]
+    );
+    const salesSelectedValue = useMemo(
+        () => getMetricValue(salesMetricData, salesMetricType, salesMetricPeriod),
+        [salesMetricData, salesMetricType, salesMetricPeriod]
+    );
     const salesSelectedLabel = useMemo(() => formatMetricValue(salesMetricType, safeNumber(salesSelectedValue, 0)), [salesMetricType, salesSelectedValue]);
 
-    const affiliateSeries = useMemo(() => buildMetricSeries(affiliateMetricData, affiliateMetricType), [affiliateMetricData, affiliateMetricType]);
+    const affiliateSeries = useMemo(
+        () => buildMetricSeries(affiliateMetricData, affiliateMetricType, affiliateMetricPeriod),
+        [affiliateMetricData, affiliateMetricType, affiliateMetricPeriod]
+    );
     const affiliateSelectedValue = useMemo(
-        () => getSelectedMetricValue(affiliateSeries as any, affiliateMetricPeriod),
-        [affiliateSeries, affiliateMetricPeriod]
+        () => getMetricValue(affiliateMetricData, affiliateMetricType, affiliateMetricPeriod),
+        [affiliateMetricData, affiliateMetricType, affiliateMetricPeriod]
     );
     const affiliateSelectedLabel = useMemo(
         () => formatMetricValue(affiliateMetricType, safeNumber(affiliateSelectedValue, 0)),
@@ -804,7 +967,7 @@ export default function KPIPage() {
                     ) : productRevenueChartData.length > 0 ? (
                         <>
                             <ResponsiveContainer width='100%' height={280}>
-                                <BarChart data={productRevenueChartData} barCategoryGap='30%' barGap={4}>
+                                <LineChart data={productRevenueChartData}>
                                     <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
                                     <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
                                     <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
@@ -814,9 +977,25 @@ export default function KPIPage() {
                                         labelFormatter={(label) => `Product: ${label}`}
                                     />
                                     <Legend />
-                                    <Bar dataKey='MRR' name='MRR (Monthly)' fill='#3b82f6' radius={[4, 4, 0, 0]} />
-                                    <Bar dataKey='ARR' name='ARR (Yearly)' fill='#6366f1' radius={[4, 4, 0, 0]} />
-                                </BarChart>
+                                    <Line
+                                        type='monotone'
+                                        dataKey='MRR'
+                                        name='MRR (Monthly)'
+                                        stroke='#3b82f6'
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: '#3b82f6', stroke: '#3b82f6', strokeWidth: 2 }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                    <Line
+                                        type='monotone'
+                                        dataKey='ARR'
+                                        name='ARR (Yearly)'
+                                        stroke='#6366f1'
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: '#6366f1', stroke: '#6366f1', strokeWidth: 2 }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
                             </ResponsiveContainer>
 
                             {/* Breakdown table */}
@@ -895,15 +1074,31 @@ export default function KPIPage() {
                     ) : lightningChartData.length > 0 ? (
                         <>
                             <ResponsiveContainer width='100%' height={260}>
-                                <BarChart data={lightningChartData} barCategoryGap='40%' barGap={6}>
+                                <LineChart data={lightningChartData}>
                                     <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
                                     <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
                                     <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${v}`} />
                                     <Tooltip cursor={<HorizontalCursor />} formatter={(value: any) => currency(safeNumber(value))} />
                                     <Legend />
-                                    <Bar dataKey='Monthly' fill='#f59e0b' radius={[4, 4, 0, 0]} />
-                                    <Bar dataKey='Yearly' fill='#78716c' radius={[4, 4, 0, 0]} />
-                                </BarChart>
+                                    <Line
+                                        type='monotone'
+                                        dataKey='Monthly'
+                                        name='Monthly'
+                                        stroke='#f59e0b'
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: '#f59e0b', stroke: '#f59e0b', strokeWidth: 2 }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                    <Line
+                                        type='monotone'
+                                        dataKey='Yearly'
+                                        name='Yearly'
+                                        stroke='#78716c'
+                                        strokeWidth={3}
+                                        dot={{ r: 4, fill: '#78716c', stroke: '#78716c', strokeWidth: 2 }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
                             </ResponsiveContainer>
 
                             <div className='mt-4 flex flex-wrap gap-4'>
@@ -937,136 +1132,118 @@ export default function KPIPage() {
                 </div>
 
                 {/* ============================================================ */}
-                {/* ✅ NEW CHART C: Lightning Billing Cycle                       */}
-                {/* GET /api/v4/lightning-billing-cycle                           */}
+                {/* ✅ NEW CHART D: Emails Sent History                           */}
+                {/* GET /api/v5/email-sent-history                               */}
                 {/* ============================================================ */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
                         <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Lightning Billing Cycles</h3>
-                            <p className='text-sm text-gray-500 mt-0.5'>Active subscription billing schedules and revenue per cycle</p>
+                            <h3 className='text-lg font-semibold text-gray-800'>Emails Sent</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Weekly, monthly, and yearly email send volume</p>
                         </div>
                         <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
-                            {/* Period filter toggle */}
+                            {/* Period toggle */}
                             <div className='flex rounded-lg border border-gray-200 overflow-hidden text-sm'>
-                                {(['all', 'monthly', 'yearly'] as const).map((p) => (
+                                {(['Weekly', 'Monthly', 'Yearly'] as const).map((period) => (
                                     <button
-                                        key={p}
-                                        onClick={() => setBillingPeriodFilter(p)}
-                                        className={`px-3 py-2 capitalize transition-colors ${
-                                            billingPeriodFilter === p ? 'bg-slate-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                                        key={period}
+                                        onClick={() => setEmailSentPeriod(period)}
+                                        className={`px-3 py-2 transition-colors ${
+                                            emailSentPeriod === period ? 'bg-slate-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
                                         }`}
                                     >
-                                        {p === 'all' ? 'All' : p}
+                                        {period}
                                     </button>
                                 ))}
                             </div>
-                            <div className='flex gap-2 flex-wrap'>
-                                <StatPill label='Subscriptions' value={String(billingStats.total)} color='border-gray-200 bg-gray-50 text-gray-700' />
-                                <StatPill
-                                    label='Monthly Rev'
-                                    value={currency(billingStats.monthlyRevenue)}
-                                    color='border-emerald-200 bg-emerald-50 text-emerald-800'
-                                />
-                                <StatPill
-                                    label='Yearly Rev'
-                                    value={currency(billingStats.yearlyRevenue)}
-                                    color='border-violet-200 bg-violet-50 text-violet-700'
-                                />
+                            {/* Summary pills */}
+                            <div className='flex gap-2'>
+                                <StatPill label='This Week' value={String(emailSentTotals.weekly)} color='border-cyan-200 bg-cyan-50 text-cyan-800' />
+                                <StatPill label='This Year' value={String(emailSentTotals.yearly)} color='border-teal-200 bg-teal-50 text-teal-800' />
                             </div>
                         </div>
                     </div>
 
-                    {billingCycleError && <div className='mb-4 text-sm text-red-600'>{billingCycleError}</div>}
+                    {emailSentError && <div className='mb-4 text-sm text-red-600'>{emailSentError}</div>}
 
-                    {billingCycleLoading ? (
-                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading billing cycles...</div>
-                    ) : (billingCycle?.data ?? []).length > 0 ? (
-                        <div className='space-y-6'>
-                            {/* Grouped bar chart */}
-                            {billingBarData.length > 0 && (
-                                <ResponsiveContainer width='100%' height={220}>
-                                    <BarChart data={billingBarData} barCategoryGap='40%' barGap={4}>
-                                        <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
-                                        <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
-                                        <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${v}`} />
-                                        <Tooltip cursor={<HorizontalCursor />} formatter={(v: any) => currency(safeNumber(v))} />
-                                        <Legend />
-                                        <Bar dataKey='monthly' name='Monthly' fill='#10b981' radius={[4, 4, 0, 0]} />
-                                        <Bar dataKey='yearly' name='Yearly' fill='#8b5cf6' radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            )}
-
-                            {/* Billing records table */}
-                            <div className='overflow-x-auto'>
-                                <table className='w-full text-sm'>
-                                    <thead className='bg-gray-50'>
-                                        <tr>
-                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>ID</th>
-                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Product</th>
-                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Period</th>
-                                            <th className='px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>Amount</th>
-                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Start Date</th>
-                                            <th className='px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Next Billing</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className='divide-y divide-gray-100'>
-                                        {filteredBillingData.map((row) => {
-                                            const isMonthly = row.period.toLowerCase() === 'monthly';
-                                            const nextDate = row.nextBillingDate ? new Date(row.nextBillingDate) : null;
-                                            const daysUntilNext = nextDate ? Math.ceil((nextDate.getTime() - Date.now()) / 86400000) : null;
-                                            return (
-                                                <tr key={row.id} className='hover:bg-gray-50'>
-                                                    <td className='px-4 py-2.5 text-gray-500 font-mono text-xs'>#{row.id}</td>
-                                                    <td className='px-4 py-2.5 font-medium text-gray-800'>{formatProductName(row.product)}</td>
-                                                    <td className='px-4 py-2.5'>
-                                                        <span
-                                                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                                isMonthly ? 'bg-emerald-100 text-emerald-700' : 'bg-violet-100 text-violet-700'
-                                                            }`}
-                                                        >
-                                                            {row.period}
-                                                        </span>
-                                                    </td>
-                                                    <td className='px-4 py-2.5 text-right font-semibold text-gray-900'>{currency(row.amount)}</td>
-                                                    <td className='px-4 py-2.5 text-gray-500'>
-                                                        {row.startDate ? formatDate(row.startDate) : <span className='text-gray-300'>—</span>}
-                                                    </td>
-                                                    <td className='px-4 py-2.5'>
-                                                        {nextDate ? (
-                                                            <div className='flex items-center gap-2'>
-                                                                <span className='text-gray-500'>{formatDate(row.nextBillingDate!)}</span>
-                                                                {daysUntilNext !== null && (
-                                                                    <span
-                                                                        className={`text-xs px-1.5 py-0.5 rounded font-medium ${
-                                                                            daysUntilNext <= 7
-                                                                                ? 'bg-red-100 text-red-600'
-                                                                                : daysUntilNext <= 30
-                                                                                ? 'bg-amber-100 text-amber-600'
-                                                                                : 'bg-gray-100 text-gray-500'
-                                                                        }`}
-                                                                    >
-                                                                        {daysUntilNext > 0 ? `${daysUntilNext}d` : 'Due'}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        ) : (
-                                                            <span className='text-gray-300'>—</span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                                {filteredBillingData.length === 0 && (
-                                    <div className='py-8 text-center text-gray-400 text-sm'>No records for the selected period</div>
-                                )}
+                    {emailSentLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading email sent history...</div>
+                    ) : emailSentChartData.length > 0 ? (
+                        <>
+                            {/* Active period total badge */}
+                            <div className='mb-4 flex items-center gap-2'>
+                                <span className='text-sm text-gray-500'>
+                                    {emailSentPeriod === 'Weekly'
+                                        ? 'Emails sent this week:'
+                                        : emailSentPeriod === 'Monthly'
+                                        ? 'Emails sent this year (by month):'
+                                        : 'Emails sent across all years:'}
+                                </span>
+                                <span className='px-3 py-0.5 rounded-full bg-cyan-100 text-cyan-800 text-sm font-semibold'>
+                                    {emailSentActivePeriodTotal} emails
+                                </span>
                             </div>
-                        </div>
+
+                            <ResponsiveContainer width='100%' height={260}>
+                                <LineChart data={emailSentChartData}>
+                                    <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                    <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} allowDecimals={false} tickFormatter={(v) => String(v)} />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any) => [`${safeNumber(value)} emails`, 'Emails Sent']}
+                                        labelFormatter={(label) =>
+                                            emailSentPeriod === 'Weekly'
+                                                ? `Day: ${label}`
+                                                : emailSentPeriod === 'Monthly'
+                                                ? `Month: ${label}`
+                                                : `Year: ${label}`
+                                        }
+                                    />
+                                    <Legend />
+                                    <Line
+                                        type='monotone'
+                                        dataKey='count'
+                                        name='Emails Sent'
+                                        stroke='#06b6d4'
+                                        strokeWidth={3}
+                                        dot={(props: any) => {
+                                            const { cx, cy, payload } = props || {};
+                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                            const hasData = safeNumber(payload?.count) > 0;
+                                            return (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={hasData ? 5 : 3}
+                                                    fill={hasData ? '#06b6d4' : 'rgba(6,182,212,0.3)'}
+                                                    stroke='#06b6d4'
+                                                    strokeWidth={hasData ? 2 : 1}
+                                                />
+                                            );
+                                        }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+
+                            {/* Breakdown summary row */}
+                            <div className='mt-4 grid grid-cols-3 gap-3'>
+                                {[
+                                    { label: 'Weekly Total', value: emailSentTotals.weekly, color: 'border-cyan-200 bg-cyan-50 text-cyan-800' },
+                                    { label: 'Monthly Total', value: emailSentTotals.monthly, color: 'border-sky-200 bg-sky-50 text-sky-800' },
+                                    { label: 'Yearly Total', value: emailSentTotals.yearly, color: 'border-teal-200 bg-teal-50 text-teal-800' },
+                                ].map(({ label, value, color }) => (
+                                    <div key={label} className={`rounded-xl p-4 border ${color} text-center`}>
+                                        <div className='text-xs font-medium uppercase tracking-wide opacity-70 mb-1'>{label}</div>
+                                        <div className='text-2xl font-bold'>{value}</div>
+                                        <div className='text-xs mt-0.5 opacity-60'>emails</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     ) : (
-                        <div className='h-64 flex items-center justify-center text-gray-400'>No billing cycle data</div>
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No email sent data</div>
                     )}
                 </div>
 
@@ -1143,7 +1320,7 @@ export default function KPIPage() {
                                     dot={(props: any) => {
                                         const { cx, cy, payload } = props || {};
                                         if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                        const active = payload?.period === salesMetricPeriod;
+                                        const active = Boolean(payload?.active);
                                         return (
                                             <circle
                                                 cx={cx}
@@ -1235,7 +1412,7 @@ export default function KPIPage() {
                                     dot={(props: any) => {
                                         const { cx, cy, payload } = props || {};
                                         if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                        const active = payload?.period === affiliateMetricPeriod;
+                                        const active = Boolean(payload?.active);
                                         return (
                                             <circle
                                                 cx={cx}
@@ -1260,7 +1437,7 @@ export default function KPIPage() {
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex items-center justify-between gap-4 mb-4'>
                         <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Total KPI</h3>
+                            <h3 className='text-lg font-semibold text-gray-800'>Total Subscribers</h3>
                             <p className='text-sm text-gray-500'>Sales + Affiliate + other channels</p>
                         </div>
                     </div>

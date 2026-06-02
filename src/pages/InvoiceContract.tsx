@@ -1,3 +1,4 @@
+import AuthModal from '@/components/AuthModal';
 import BusinessInvoiceSlideshow from '@/components/BusinessInvoiceSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
 import { Button } from '@/components/ui/button';
@@ -22,12 +23,15 @@ import {
     Users,
     Zap,
 } from 'lucide-react';
+import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
 
 export default function InvoiceContractPage() {
     const howItWorksRef = useRef<HTMLDivElement | null>(null);
     const [slideshowOpen, setSlideshowOpen] = useState(false);
+    const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
 
     const LottieAnimation = ({ src, loop, autoplay, style }) => {
         const containerRef = useRef(null);
@@ -48,6 +52,44 @@ export default function InvoiceContractPage() {
 
         return <div ref={containerRef} style={style} />;
     };
+
+    const isUserLoggedIn = () => {
+        const cookies = parseCookies();
+        const cookieId = cookies?.id;
+        const localId = typeof window !== 'undefined' ? localStorage.getItem('userId') || localStorage.getItem('id') : null;
+        return Boolean(cookieId || localId);
+    };
+
+    const handlePurchaseClick = () => {
+        if (isUserLoggedIn()) {
+            setAuthOpen(false);
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+            return;
+        }
+
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(false);
+        setAuthOpen(true);
+    };
+
+    const handleAuthSuccess = () => {
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(true);
+        setAuthOpen(false);
+        return false;
+    };
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
 
     const features = [
         {
@@ -199,7 +241,7 @@ export default function InvoiceContractPage() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
@@ -461,7 +503,7 @@ export default function InvoiceContractPage() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
@@ -480,7 +522,20 @@ export default function InvoiceContractPage() {
                 </div>
             </section>
 
-            <PricingComponent name='InvoiceTool' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/invoiceContract'
+                    onSuccess={handleAuthSuccess}
+                />
+            )}
+
+            {!authOpen && <PricingComponent name='InvoiceTool' asModal open={pricingOpen} onOpenChange={setPricingOpen} />}
         </div>
     );
 }

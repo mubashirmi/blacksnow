@@ -103,7 +103,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
-                                    // { name: 'Consultation', href: '/consultation' },
+                                    { name: 'Black Snow Mathematics', href: '/blacksnowmathematics' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}

@@ -1,4 +1,4 @@
-import { AuthModalTrigger } from '@/components/AuthModal';
+import AuthModal from '@/components/AuthModal';
 import { HomeTourPopup } from '@/components/HomeTourPopup';
 import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/auth';
 import { BarChart2, Calendar, CheckCircle, DollarSign, Globe, LayoutGrid, List, Shield, Smartphone, TrendingUp, X, Zap } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 
 const textOptions = ['Market Data', 'Swing Trades', 'Stock Options', 'Day Trades', 'Long Term Investment', 'Chart Patterns', 'Indicators', 'Stock Lists'];
@@ -172,135 +172,135 @@ function MobileDesktopSection() {
 }
 
 // ─── Black Snow Mathematics Banner ──────────────────────────────────────────
-function BSMBanner() {
-    const router = useRouter();
+// function BSMBanner() {
+//     const router = useRouter();
 
-    return (
-        <section className='relative px-4 sm:px-6 md:px-8 py-6 sm:py-8'>
-            <div className='container mx-auto max-w-7xl'>
-                <button
-                    onClick={() => router.push('/blacksnowmathematics')}
-                    className='group relative block w-full overflow-hidden cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
-                    style={{
-                        background: 'linear-gradient(180deg, #07111e 0%, #0a1324 50%, #07111e 100%)',
-                        border: '1px solid rgba(56,126,189,0.55)',
-                        boxShadow: '0 0 24px rgba(44,123,190,0.20), inset 0 0 28px rgba(0,0,0,0.55)',
-                    }}
-                >
-                    <div
-                        className='absolute inset-0 pointer-events-none'
-                        style={{
-                            background:
-                                'linear-gradient(90deg, transparent 0%, rgba(76,199,232,0.06) 20%, rgba(76,199,232,0.12) 50%, rgba(76,199,232,0.06) 80%, transparent 100%)',
-                        }}
-                    />
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[1px]'
-                        style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.9), transparent)' }}
-                    />
-                    <div
-                        className='absolute bottom-0 left-0 right-0 h-[1px]'
-                        style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.7), transparent)' }}
-                    />
+//     return (
+//         <section className='relative px-4 sm:px-6 md:px-8 py-6 sm:py-8'>
+//             <div className='container mx-auto max-w-7xl'>
+//                 <button
+//                     onClick={() => router.push('/blacksnowmathematics')}
+//                     className='group relative block w-full overflow-hidden cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
+//                     style={{
+//                         background: 'linear-gradient(180deg, #07111e 0%, #0a1324 50%, #07111e 100%)',
+//                         border: '1px solid rgba(56,126,189,0.55)',
+//                         boxShadow: '0 0 24px rgba(44,123,190,0.20), inset 0 0 28px rgba(0,0,0,0.55)',
+//                     }}
+//                 >
+//                     <div
+//                         className='absolute inset-0 pointer-events-none'
+//                         style={{
+//                             background:
+//                                 'linear-gradient(90deg, transparent 0%, rgba(76,199,232,0.06) 20%, rgba(76,199,232,0.12) 50%, rgba(76,199,232,0.06) 80%, transparent 100%)',
+//                         }}
+//                     />
+//                     <div
+//                         className='absolute top-0 left-0 right-0 h-[1px]'
+//                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.9), transparent)' }}
+//                     />
+//                     <div
+//                         className='absolute bottom-0 left-0 right-0 h-[1px]'
+//                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.7), transparent)' }}
+//                     />
 
-                    <div className='relative px-4 sm:px-6 md:px-10 py-4 sm:py-5'>
-                        <div className='flex w-full items-center justify-center gap-2 sm:gap-4 md:gap-6'>
-                            <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0'>
-                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                                    <div
-                                        key={`lA-${i}`}
-                                        style={{
-                                            width: 0,
-                                            height: 0,
-                                            borderTop: '8px solid transparent',
-                                            borderBottom: '8px solid transparent',
-                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-                                        }}
-                                    />
-                                ))}
-                                <span className='mx-1' />
-                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                                    <div
-                                        key={`lB-${i}`}
-                                        style={{
-                                            width: 0,
-                                            height: 0,
-                                            borderTop: '8px solid transparent',
-                                            borderBottom: '8px solid transparent',
-                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-                                        }}
-                                    />
-                                ))}
-                            </div>
+//                     <div className='relative px-4 sm:px-6 md:px-10 py-4 sm:py-5'>
+//                         <div className='flex w-full items-center justify-center gap-2 sm:gap-4 md:gap-6'>
+//                             <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0'>
+//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+//                                     <div
+//                                         key={`lA-${i}`}
+//                                         style={{
+//                                             width: 0,
+//                                             height: 0,
+//                                             borderTop: '8px solid transparent',
+//                                             borderBottom: '8px solid transparent',
+//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+//                                         }}
+//                                     />
+//                                 ))}
+//                                 <span className='mx-1' />
+//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+//                                     <div
+//                                         key={`lB-${i}`}
+//                                         style={{
+//                                             width: 0,
+//                                             height: 0,
+//                                             borderTop: '8px solid transparent',
+//                                             borderBottom: '8px solid transparent',
+//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+//                                         }}
+//                                     />
+//                                 ))}
+//                             </div>
 
-                            <div className='flex min-w-0 flex-1 items-center justify-center gap-2 sm:gap-3 md:gap-4'>
-                                <div
-                                    className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
-                                    style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
-                                />
+//                             <div className='flex min-w-0 flex-1 items-center justify-center gap-2 sm:gap-3 md:gap-4'>
+//                                 <div
+//                                     className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
+//                                     style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
+//                                 />
 
-                                <h2 className='min-w-0 text-center uppercase font-black tracking-[0.05em] sm:tracking-[0.09em] leading-tight text-[13px] xs:text-[15px] sm:text-lg md:text-2xl lg:text-[28px] whitespace-normal break-words'>
-                                    <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
-                                    <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
-                                </h2>
+//                                 <h2 className='min-w-0 text-center uppercase font-black tracking-[0.05em] sm:tracking-[0.09em] leading-tight text-[13px] xs:text-[15px] sm:text-lg md:text-2xl lg:text-[28px] whitespace-normal break-words'>
+//                                     <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
+//                                     <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
+//                                 </h2>
 
-                                <div
-                                    className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
-                                    style={{
-                                        borderColor: 'rgba(76,199,232,0.55)',
-                                        background: 'rgba(76,199,232,0.08)',
-                                        boxShadow: '0 0 10px rgba(76,199,232,0.22)',
-                                    }}
-                                >
-                                    <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
-                                        ›
-                                    </span>
-                                </div>
+//                                 <div
+//                                     className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
+//                                     style={{
+//                                         borderColor: 'rgba(76,199,232,0.55)',
+//                                         background: 'rgba(76,199,232,0.08)',
+//                                         boxShadow: '0 0 10px rgba(76,199,232,0.22)',
+//                                     }}
+//                                 >
+//                                     <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
+//                                         ›
+//                                     </span>
+//                                 </div>
 
-                                <div
-                                    className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
-                                    style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
-                                />
-                            </div>
+//                                 <div
+//                                     className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
+//                                     style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
+//                                 />
+//                             </div>
 
-                            <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0' style={{ transform: 'scaleX(-1)' }}>
-                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                                    <div
-                                        key={`rA-${i}`}
-                                        style={{
-                                            width: 0,
-                                            height: 0,
-                                            borderTop: '8px solid transparent',
-                                            borderBottom: '8px solid transparent',
-                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-                                        }}
-                                    />
-                                ))}
-                                <span className='mx-1' />
-                                {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-                                    <div
-                                        key={`rB-${i}`}
-                                        style={{
-                                            width: 0,
-                                            height: 0,
-                                            borderTop: '8px solid transparent',
-                                            borderBottom: '8px solid transparent',
-                                            borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-                                            filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </button>
-            </div>
-        </section>
-    );
-}
+//                             <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0' style={{ transform: 'scaleX(-1)' }}>
+//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+//                                     <div
+//                                         key={`rA-${i}`}
+//                                         style={{
+//                                             width: 0,
+//                                             height: 0,
+//                                             borderTop: '8px solid transparent',
+//                                             borderBottom: '8px solid transparent',
+//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+//                                         }}
+//                                     />
+//                                 ))}
+//                                 <span className='mx-1' />
+//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
+//                                     <div
+//                                         key={`rB-${i}`}
+//                                         style={{
+//                                             width: 0,
+//                                             height: 0,
+//                                             borderTop: '8px solid transparent',
+//                                             borderBottom: '8px solid transparent',
+//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
+//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
+//                                         }}
+//                                     />
+//                                 ))}
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </button>
+//             </div>
+//         </section>
+//     );
+// }
 
 // ─── Data Driven Analytics Section ──────────────────────────────────────────
 function DataAnalyticsSection() {
@@ -418,6 +418,8 @@ function DataAnalyticsSection() {
 
 function Home() {
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [authOpen, setAuthOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
     const { loading: authLoading } = useAuth();
     // eslint-disable-next-line
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
@@ -437,7 +439,6 @@ function Home() {
     const [panelTabs, setPanelTabs] = useState<Record<string, 'Details' | 'Discovery'>>(Object.fromEntries(strategyPanels.map((p) => [p.id, 'Details'])));
 
     const router = useRouter();
-    const authTriggerRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -484,15 +485,15 @@ function Home() {
 
     const openSubscribeFlow = async () => {
         if (authLoading || checkingAccess) return;
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-            authTriggerRef.current?.click();
-            return;
-        }
+        const userId = localStorage.getItem('userId') || localStorage.getItem('id');
         const cookies = parseCookies();
-        const id = cookies.id;
-        if (!id) {
-            authTriggerRef.current?.click();
+        const id = cookies.id || userId;
+
+        if (!userId || !id) {
+            setIsSubscribeFormOpen(false);
+            setPricingOpen(false);
+            setOpenPricingAfterAuth(false);
+            setAuthOpen(true);
             return;
         }
         try {
@@ -517,6 +518,25 @@ function Home() {
             setIsCheckingOpen(false);
         }
     };
+
+    const handleAuthSuccess = () => {
+        setIsSubscribeFormOpen(false);
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(true);
+        setAuthOpen(false);
+        return false;
+    };
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
 
     const validateForm = () => {
         const errors: typeof formErrors = {};
@@ -837,36 +857,45 @@ function Home() {
     // ---------- JSX ----------
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Hidden AuthModalTrigger */}
-            <AuthModalTrigger buttonText='Join Now' defaultView='signup' sourceRoute='/' redirectAfterLogin='/pricing' redirectAfterSignup='/pricing'>
-                <button ref={authTriggerRef} type='button' className='hidden' />
-            </AuthModalTrigger>
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/'
+                    onSuccess={handleAuthSuccess}
+                />
+            )}
 
             {/* ─── HERO SECTION ─── */}
-            <section className='relative flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 md:px-8 min-h-[calc(100vh-64px)] lg:min-h-0'>
+            <section className='relative flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 md:px-8 lg:px-4 min-h-[calc(100vh-64px)] min-[1100px]:min-h-0'>
                 <div className='absolute inset-0'>
                     <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
                     <div className='absolute inset-0 bg-black/90' />
                 </div>
 
                 <div className='container mx-auto max-w-8xl relative z-10 w-full'>
-                    <div className='grid lg:grid-cols-2 gap-6 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                    <div className='grid min-[1100px]:grid-cols-[minmax(0,1fr)_auto] min-[1100px]:gap-6 min-[1501px]:gap-4 items-center min-[1100px]:items-start'>
                         {/* ── LEFT ── */}
-                        <div className='flex flex-col gap-5 sm:gap-8 md:gap-10'>
+                        <div className='flex flex-col gap-5 sm:gap-8 md:gap-10 min-[1100px]:h-[440px] min-[1200px]:h-[470px] min-[1350px]:h-[500px] min-[1501px]:h-[550px] min-[1100px]:justify-between min-[1100px]:gap-0'>
                             <div className='space-y-3 animate-slide-in-left delay-200'>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight'>
+                                <h1 className='text-4xl sm:text-5xl md:text-6xl min-[1100px]:text-5xl min-[1280px]:text-6xl min-[1501px]:text-7xl font-black leading-tight tracking-tight'>
                                     <span className='text-[#f4f4f4]'>Global Multi-Asset</span>
                                     <br />
                                     <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black'>
                                         Intelligence Engine
                                     </span>
                                 </h1>
+
                                 <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light'>
                                     Data-driven global paper trading, stock screening, watchlists, and economic KPI&apos;s
                                 </p>
                             </div>
 
-                            <div className='block lg:hidden w-full animate-slide-in-left delay-300'>
+                            <div className='block min-[1100px]:hidden w-full animate-slide-in-left delay-300'>
                                 <div className='flex items-center justify-center w-full rounded-2xl border border-[#2c7bbe]/20'>
                                     <LottieAnimation
                                         src='/animations/growthChartIcon.json'
@@ -877,24 +906,15 @@ function Home() {
                                 </div>
                             </div>
 
-                            <div className='animate-slide-in-left delay-400 overflow-hidden'>
+                            <div className='animate-slide-in-left delay-400 overflow-hidden w-full min-[1100px]:w-[90%]'>
                                 <NewsletterSubscribeBar />
                             </div>
                         </div>
 
                         {/* ── RIGHT — desktop only ── */}
-                        <div className='hidden lg:block relative animate-slide-in-right'>
-                            <div className='relative overflow-hidden'>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center w-full bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
-                                        <LottieAnimation
-                                            src='/animations/growthChartIcon.json'
-                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px]'
-                                            loop={true}
-                                            autoplay={true}
-                                        />
-                                    </div>
-                                </div>
+                        <div className='hidden min-[1100px]:block relative animate-slide-in-right'>
+                            <div className='w-[440px] h-[440px] min-[1200px]:w-[470px] min-[1200px]:h-[470px] min-[1350px]:w-[500px] min-[1350px]:h-[500px] min-[1501px]:w-[550px] min-[1501px]:h-[550px] bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 overflow-hidden'>
+                                <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full' loop={true} autoplay={true} />
                             </div>
                         </div>
                     </div>
@@ -910,55 +930,8 @@ function Home() {
             {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
             <DataAnalyticsSection />
 
-            {/* ─── NEWSLETTER SECTION ─── */}
-            {/* <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-8xl'>
-                    <div className='text-center mb-16'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Subscribe to our Monthly
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Newsletter</span>
-                        </h2>
-                        <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
-                            Streamline your search for market insights and get weekly updates, articles and recommended reads every week. Reduce your time by
-                            staying up to date with the latest information available.
-                        </p>
-                    </div>
-
-                    <div className='grid lg:grid-cols-2 gap-12 items-center'>
-                        <div className='space-y-6'>
-                            {[
-                                'Get your weekly stock picks for day trades, swing trades, options and dividends',
-                                'Receive trading Strategy from the best performances in top market sectors including A.I, EV, and Tech',
-                                'Catch blog updates from every week',
-                                'View limited time special offers and sponsorships',
-                                'Read Featured News Articles',
-                            ].map((item, index) => (
-                                <div
-                                    key={index}
-                                    className='flex items-center space-x-3 p-4 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'
-                                >
-                                    <CheckCircle className='w-5 h-5 text-green-400 flex-shrink-0' />
-                                    <span className='text-sm sm:text-base leading-relaxed text-gray-300'>{item}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className='space-y-8'>
-                            <div className='flex items-center justify-center w-full sm:w-fit bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 mx-auto'>
-                                <LottieAnimation
-                                    src='/animations/LearnMore2.json'
-                                    className='w-[90%] h-full sm:w-[400px] sm:h-[380px] md:w-[500px] md:h-[420px] lg:w-[550px] lg:h-[450px]'
-                                    loop={true}
-                                    autoplay={true}
-                                />
-                            </div>
-                            <NewsletterSubscribeBar className='w-full sm:w-[400px] md:w-[500px] lg:w-[550px] mx-auto' />
-                        </div>
-                    </div>
-                </div>
-            </section> */}
-
             {/* ─── BLACK SNOW MATHEMATICS BANNER ─── */}
-            <BSMBanner />
+            {/* <BSMBanner /> */}
 
             {/* --- MODALS --- */}
 
@@ -1087,7 +1060,7 @@ function Home() {
             <HomeTourPopup />
 
             {/* 4) Pricing Modal */}
-            <PricingComponent name='NewsLetter' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
+            {!authOpen && <PricingComponent name='NewsLetter' asModal open={pricingOpen} onOpenChange={setPricingOpen} />}
 
             <CookieConsentBanner />
         </div>

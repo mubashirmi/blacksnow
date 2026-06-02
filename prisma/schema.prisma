@@ -41,6 +41,7 @@ model Auth {
   newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
   contracts            Contract[]
   invoices             Invoice[]
+  toolFeedbacks        ToolFeedback[]
 }
 
 enum Role {
@@ -400,18 +401,24 @@ model Applicants {
 }
 
 model Consultation {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  deleted        Boolean  @default(false)
-  name           String
-  companyName    String
-  location       String
-  title          String
-  email          String
-  phone          String
-  numOfPositions Int
-  dateTime       DateTime
+  id                      Int      @id @default(autoincrement())
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  deleted                 Boolean  @default(false)
+  fullName                String
+  companyName             String
+  location                String
+  jobTitle                String
+  email                   String
+  phone                   String
+  numOfPositions          Int
+  dateTime                DateTime
+  totalAmount             Int
+  currency                String
+  stripeCheckoutSessionId String
+  stripePaymentIntentId   String
+  paidAt                  DateTime
+  status                  String   @default("pending")
 }
 
 model Blogpost {
@@ -571,4 +578,16 @@ model Invoice {
   Contract   Contract? @relation(fields: [contractId], references: [id])
   auth       Auth?     @relation(fields: [authId], references: [id])
   authId     Int?
+}
+
+model ToolFeedback {
+  id        Int      @id @default(autoincrement())
+  authId    Int
+  review    String
+  stars     String
+  toolName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Auth Auth @relation(fields: [authId], references: [id])
 }

@@ -22,6 +22,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, type ReactElement, type ReactNode } from 'react';
 import '../styles/globalStyles.css';
+import InvoiceDashboardLayout from '@/components/invoicecontract/DashboardLayout';
 
 type NextPageWithLayout = AppProps['Component'] & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -65,12 +66,14 @@ export default function App({ Component, pageProps }: AppProps) {
         const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
         const isSuperAffiliateRoute = router.pathname.startsWith('/superAffiliate/dashboard');
         const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
+        const isInvoiceRoute= router.pathname.startsWith('/invoicecontractdashboard');
 
         if (isAdminRoute) return <AdminLayout>{page}</AdminLayout>;
         if (isEmailMarketingRoute) return <EmailMarketingLayout>{page}</EmailMarketingLayout>;
         if (isSalesRoute) return <SalesDashboardLayout>{page}</SalesDashboardLayout>;
         if (isAffiliateRoute) return <AffiliateLayout>{page}</AffiliateLayout>;
         if (isSuperAffiliateRoute) return <SuperAffiliateLayout>{page}</SuperAffiliateLayout>;
+        if (isInvoiceRoute) return <InvoiceDashboardLayout>{page}</InvoiceDashboardLayout>;
         return <CoreLayout>{page}</CoreLayout>;
     };
 

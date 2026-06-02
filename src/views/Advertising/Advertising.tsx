@@ -1,3 +1,4 @@
+import AuthModal from '@/components/AuthModal';
 import DigitalBillboardSlideshow from '@/components/DigitalBillboardSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
 import ShareBanner from '@/components/ShareBanner';
@@ -35,9 +36,10 @@ function Advertising() {
 
         return <div ref={containerRef} style={style} />;
     };
-    const [showLoginModal, setShowLoginModal] = useState(false);
     const [slideshowOpen, setSlideshowOpen] = useState(false);
+    const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
     const [showFormModal, setShowFormModal] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -71,6 +73,51 @@ function Advertising() {
         description: '',
     });
     const [hasBillboard, setHasBillboard] = useState(false);
+
+    const isUserLoggedIn = () => {
+        const cookies = parseCookies();
+        const cookieId = cookies?.id;
+        const localId = typeof window !== 'undefined' ? localStorage.getItem('userId') || localStorage.getItem('id') : null;
+        return Boolean(cookieId || localId);
+    };
+
+    const handlePurchaseClick = () => {
+        if (isUserLoggedIn()) {
+            setAuthOpen(false);
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+            return;
+        }
+
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(false);
+        setAuthOpen(true);
+    };
+
+    const handleAuthSuccess = () => {
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(true);
+        setAuthOpen(false);
+        return false;
+    };
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
+
+    const handlePurchaseRequiredClick = () => {
+        setShowPurchaseModal(false);
+        window.setTimeout(() => {
+            setPricingOpen(true);
+        }, 250);
+    };
 
     useEffect(() => {
         const trackRefIdClick = async () => {
@@ -146,8 +193,12 @@ function Advertising() {
         if (isLoading) return;
         setIsLoading(true);
 
-        if (!id) {
-            setShowLoginModal(true);
+        const currentId = parseCookies().id || (typeof window !== 'undefined' ? localStorage.getItem('userId') || localStorage.getItem('id') : null);
+
+        if (!currentId) {
+            setPricingOpen(false);
+            setOpenPricingAfterAuth(false);
+            setAuthOpen(true);
             setIsLoading(false);
             return;
         }
@@ -167,7 +218,7 @@ function Advertising() {
             }
         } catch (error) {
             console.error('Error fetching billboard status:', error);
-            setShowLoginModal(true); // Fallback if API fails
+            setAuthOpen(true); // Fallback if API fails
         } finally {
             setIsLoading(false);
         }
@@ -253,7 +304,7 @@ function Advertising() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
@@ -446,7 +497,7 @@ function Advertising() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
@@ -467,38 +518,18 @@ function Advertising() {
 
             <DigitalBillboardSlideshow open={slideshowOpen} onOpenChange={setSlideshowOpen} />
 
-            {/* Login Modal */}
-            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
-                    <button
-                        onClick={() => setShowLoginModal(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
-                    >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
-                    </button>
-
-                    <DialogHeader className='space-y-6 pb-6'>
-                        <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
-                                <Megaphone className='w-6 h-6 text-white' />
-                            </div>
-                            <div>
-                                <DialogTitle className='text-2xl font-black text-white'>Login Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>Please login to advertise your billboard.</DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-
-                    <div className='text-center py-4 space-y-4'>
-                        <p className='text-gray-300 leading-relaxed'>You need to be logged in to proceed with advertising.</p>
-                        <Link href='/login'>
-                            <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'>
-                                Login
-                            </Button>
-                        </Link>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/advertising'
+                    onSuccess={handleAuthSuccess}
+                />
+            )}
 
             {/* Purchase Modal */}
             <Dialog open={showPurchaseModal} onOpenChange={setShowPurchaseModal}>
@@ -526,11 +557,12 @@ function Advertising() {
 
                     <div className='text-center py-4 space-y-4'>
                         <p className='text-gray-300 leading-relaxed'>You need to purchase a subscription to proceed with advertising.</p>
-                        <Link href='/pricing'>
-                            <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'>
-                                Purchase Now
-                            </Button>
-                        </Link>
+                        <Button
+                            onClick={handlePurchaseRequiredClick}
+                            className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'
+                        >
+                            Purchase Now
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -730,7 +762,7 @@ function Advertising() {
                 </DialogContent>
             </Dialog>
 
-            <PricingComponent name='DigitalBillboard' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
+            {!authOpen && <PricingComponent name='DigitalBillboard' asModal open={pricingOpen} onOpenChange={setPricingOpen} />}
         </div>
     );
 }

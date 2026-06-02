@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, Shield, User, X } from 'lucide-react';
@@ -124,11 +124,6 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                     <div
                         className='absolute inset-0 pointer-events-none'
                         style={{ background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)` }}
-                    />
-
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[2px]'
-                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
                     />
 
                     <button
@@ -275,7 +270,7 @@ export type AuthModalProps = {
     sourceRoute?: string;
     productContext?: ProductContext;
     visualVariant?: AuthModalVisualVariant;
-    onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; userId?: string }) => boolean | void;
+    onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; roles?: string[]; userId?: string }) => boolean | void;
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -343,8 +338,6 @@ function ProductHeader({
 
     return (
         <div className='relative px-7 pt-6 pb-0'>
-            <div className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r ${product.color ?? 'from-[#2c7bbe] to-[#4cc7e8]'}`} />
-
             <div className='grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-3 mb-3'>
                 <div className='h-11 w-11 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center shadow-md'>
                     {ProductIcon ? (
@@ -423,7 +416,7 @@ export default function AuthModal({
     const router = useRouter();
 
     const [showPassword, setShowPassword] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(defaultView === 'signup');
+    const [isSignUp, setIsSignUp] = useState(defaultView === 'signin');
     const [isLoading, setIsLoading] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
     const [termsAccepted, setTermsAccepted] = useState(false);
@@ -448,10 +441,7 @@ export default function AuthModal({
     const hasProduct = !!productContext;
     const isDangerVariant = visualVariant === 'danger';
 
-    const modalAccent = isDangerVariant ? '#ef233c' : '#4cc7e8';
-    const modalAccentFrom = isDangerVariant ? '#7f1d1d' : '#2c7bbe';
-    const modalAccentVia = isDangerVariant ? '#ef233c' : '#4cc7e8';
-    const modalAccentTo = isDangerVariant ? '#b91c1c' : '#2a8dcc';
+    const modalAccent = '#4cc7e8';
 
     const redLogoFilter = 'brightness(0) saturate(100%) invert(18%) sepia(98%) saturate(4622%) hue-rotate(345deg) brightness(98%) contrast(98%)';
 
@@ -492,8 +482,8 @@ export default function AuthModal({
 
                 const response = await axios.post('/api/v2/signup', signupData);
 
-                const userId = response.data.user.id as string | undefined;
-                const userRoles = response.data.user.roles as string[] | undefined;
+                const userId = response.data.user?.id ? String(response.data.user.id) : undefined;
+                const userRoles = Array.isArray(response.data.user?.roles) ? response.data.user.roles : [];
 
                 if (userId) {
                     localStorage.setItem('userId', userId);
@@ -504,9 +494,7 @@ export default function AuthModal({
                     setCookie('email', response.data.user.email);
                 }
 
-                if (userRoles) {
-                    localStorage.setItem('roles', JSON.stringify(userRoles));
-                }
+                localStorage.setItem('roles', JSON.stringify(userRoles));
 
                 setAlert({ type: 'success', message: 'Account created successfully!' });
                 reset();
@@ -515,10 +503,14 @@ export default function AuthModal({
                     onSuccess?.({
                         kind: 'signup',
                         role: signupData.role,
+                        roles: userRoles,
                         userId,
                     }) === false;
 
-                if (preventDefault) return;
+                if (preventDefault) {
+                    onOpenChange(false);
+                    return;
+                }
 
                 onOpenChange(false);
 
@@ -567,10 +559,14 @@ export default function AuthModal({
                 return;
             }
 
-            const userId = response.data.user?.id as string | undefined;
+            const userId = response.data.user?.id ? String(response.data.user.id) : undefined;
+            const userRoles = Array.isArray(response.data.user?.roles) ? response.data.user.roles : [];
 
-            setCookie('token', response.data.token);
-            setCookie('id', response.data.user.id);
+            if (response.data.token) {
+                setCookie('token', response.data.token);
+            }
+
+            setCookie('id', String(response.data.user.id));
             setCookie('firstName', response.data.user.firstName);
             setCookie('lastName', response.data.user.lastName);
             setCookie('email', response.data.user.email);
@@ -580,6 +576,8 @@ export default function AuthModal({
                 localStorage.setItem('id', userId);
             }
 
+            localStorage.setItem('roles', JSON.stringify(userRoles));
+
             setAlert({ type: 'success', message: 'Login successful!' });
             reset();
 
@@ -587,13 +585,17 @@ export default function AuthModal({
                 onSuccess?.({
                     kind: 'login',
                     role: response.data.role,
+                    roles: userRoles,
                     userId,
                 }) === false;
 
-            if (!preventDefault) {
+            if (preventDefault) {
                 onOpenChange(false);
-                router.push(redirectAfterLogin);
+                return;
             }
+
+            onOpenChange(false);
+            router.push(redirectAfterLogin);
         } catch (error: any) {
             setAlert({
                 type: 'error',
@@ -618,43 +620,15 @@ export default function AuthModal({
                         style={{
                             minHeight: UNIFIED_CARD_HEIGHT,
                             height: UNIFIED_CARD_HEIGHT,
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            background: `
-    linear-gradient(
-      180deg,
-      rgba(30, 34, 38, 0.56) 0%,
-      rgba(22, 25, 29, 0.44) 45%,
-      rgba(34, 38, 42, 0.54) 100%
-    ),
-    radial-gradient(
-      circle at 50% 115%,
-      rgba(255, 255, 255, 0.13) 0%,
-      rgba(255, 255, 255, 0.035) 34%,
-      transparent 62%
-    ),
-    radial-gradient(
-      circle at 50% -10%,
-      rgba(0, 194, 255, 0.10) 0%,
-      transparent 42%
-    )
-  `,
-                            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-                            backdropFilter: 'blur(20px) saturate(160%)',
-                            boxShadow: `0 28px 80px rgba(0,0,0,0.74)${
-                                isDangerVariant ? ', 0 0 42px rgba(239,35,60,0.16)' : ''
-                            }, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
+                            background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+                    WebkitBackdropFilter: 'blur(8px) saturate(145%)',
+                    backdropFilter: 'blur(8px) saturate(145%)',
+                    boxShadow
+                        : '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                    borderColor:'rgba(255,255,255,0.10)',
                         }}
                     >
-                        {hasProduct ? (
-                            <ProductHeader product={productContext!} billingPeriod={billingPeriod} onBillingChange={setBillingPeriod} />
-                        ) : (
-                            <div
-                                className='absolute top-0 left-0 w-full h-[2px]'
-                                style={{
-                                    background: `linear-gradient(90deg, ${modalAccentFrom}, ${modalAccentVia}, ${modalAccentTo})`,
-                                }}
-                            />
-                        )}
+                        {hasProduct && <ProductHeader product={productContext!} billingPeriod={billingPeriod} onBillingChange={setBillingPeriod} />}
 
                         {/* Close button */}
                         <button
@@ -664,13 +638,13 @@ export default function AuthModal({
                             }}
                             className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border hover:bg-white/10 transition-all duration-300 z-20'
                             style={{
-                                borderColor: isDangerVariant ? 'rgba(239,35,60,0.45)' : 'rgba(255,255,255,0.1)',
+                                borderColor: 'rgba(255,255,255,0.1)',
                             }}
                         >
                             <X
                                 className='w-5 h-5'
                                 style={{
-                                    color: isDangerVariant ? '#f87171' : 'rgba(255,255,255,0.7)',
+                                    color: 'rgba(255,255,255,0.7)',
                                 }}
                             />
                         </button>
@@ -682,8 +656,7 @@ export default function AuthModal({
                                     <div
                                         className='h-14 w-14 rounded-2xl border bg-black/30 flex items-center justify-center mb-4 shadow-xl'
                                         style={{
-                                            borderColor: isDangerVariant ? 'rgba(239,35,60,0.4)' : 'rgba(255,255,255,0.1)',
-                                            boxShadow: isDangerVariant ? '0 18px 40px rgba(239,35,60,0.18)' : undefined,
+                                            borderColor: 'rgba(255,255,255,0.1)',
                                         }}
                                     >
                                         <Image
@@ -701,10 +674,6 @@ export default function AuthModal({
                                     <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
                                         {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
                                     </DialogTitle>
-
-                                    <DialogDescription className='text-white/55 text-sm mt-2 font-medium'>
-                                        {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
-                                    </DialogDescription>
                                 </div>
                             </DialogHeader>
                         )}
@@ -829,46 +798,48 @@ export default function AuthModal({
                                     {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
                                 </div>
 
-                                <div className='flex items-start gap-3 pt-0.5'>
-                                    <button
-                                        type='button'
-                                        disabled={!termsCompleted}
-                                        onClick={() => termsCompleted && setTermsAccepted((v) => !v)}
-                                        className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
-                                        style={{
-                                            backgroundColor: termsAccepted ? modalAccent : 'transparent',
-                                            borderColor: termsAccepted ? modalAccent : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
-                                            opacity: termsCompleted ? 1 : 0.5,
-                                        }}
-                                    >
-                                        {termsAccepted && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
-                                    </button>
-
-                                    <p className='leading-relaxed text-xs text-white/50'>
-                                        I agree to our{' '}
+                                {isSignUp && (
+                                    <div className='flex items-start gap-3 pt-0.5'>
                                         <button
                                             type='button'
-                                            onClick={() => setShowTermsModal(true)}
-                                            className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                            style={{ color: isDangerVariant ? '#fca5a5' : '#93c5fd' }}
+                                            disabled={!termsCompleted}
+                                            onClick={() => termsCompleted && setTermsAccepted((v) => !v)}
+                                            className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
+                                            style={{
+                                                backgroundColor: termsAccepted ? modalAccent : 'transparent',
+                                                borderColor: termsAccepted ? modalAccent : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
+                                                opacity: termsCompleted ? 1 : 0.5,
+                                            }}
                                         >
-                                            Terms & Conditions
-                                        </button>{' '}
-                                    </p>
-                                </div>
+                                            {termsAccepted && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
+                                        </button>
+
+                                        <p className='leading-relaxed text-xs text-white/50'>
+                                            I agree to our{' '}
+                                            <button
+                                                type='button'
+                                                onClick={() => setShowTermsModal(true)}
+                                                className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
+                                                style={{ color: '#93c5fd' }}
+                                            >
+                                                Terms & Conditions
+                                            </button>{' '}
+                                        </p>
+                                    </div>
+                                )}
 
                                 <Button
                                     type='submit'
-                                    disabled={isLoading || !termsAccepted}
+                                    disabled={isLoading || (isSignUp && !termsAccepted)}
                                     className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 group disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-3 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
                                     style={{
                                         background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
-                                        borderColor: isDangerVariant ? 'rgba(239,35,60,0.22)' : 'rgba(255,255,255,0.09)',
+                                        borderColor: 'rgba(255,255,255,0.09)',
                                         color: 'rgba(255,255,255,0.66)',
                                         WebkitBackdropFilter: 'blur(18px) saturate(135%)',
                                         backdropFilter: 'blur(18px) saturate(135%)',
                                         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
-                                        opacity: isLoading || !termsAccepted ? 0.58 : 1,
+                                        opacity: isLoading || (isSignUp && !termsAccepted) ? 0.58 : 1,
                                     }}
                                 >
                                     {isLoading ? (
@@ -897,7 +868,7 @@ export default function AuthModal({
                                             <span
                                                 className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
                                                 style={{
-                                                    color: isDangerVariant ? '#fca5a5' : '#4cc7e8',
+                                                    color: '#4cc7e8',
                                                 }}
                                             >
                                                 {isSignUp ? ' Sign In' : ' Sign Up'}

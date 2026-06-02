@@ -20,14 +20,11 @@ type LottieAnimationProps = {
 };
 
 function LightningGold() {
-    const ROUTES = {
-        afterLogin: '/pricing?plan=gold',
-        afterSignup: '/pricing?plan=gold',
-    };
-
     // ✅ Modal states
     const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
+    // eslint-disable-next-line
     const [authDefaultView, setAuthDefaultView] = useState<'signin' | 'signup'>('signup');
     const [activeSlideshow, setActiveSlideshow] = useState<'silver' | 'gold' | null>(null);
 
@@ -45,6 +42,17 @@ function LightningGold() {
     useEffect(() => {
         setIsLoggedIn(computeLoggedIn());
     }, [computeLoggedIn]);
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
 
     const handleJoinGold = useCallback(() => {
         const logged = computeLoggedIn();
@@ -95,28 +103,27 @@ function LightningGold() {
             <ShareBanner />
 
             {/* ✅ Auth modal (opens if not logged in) */}
-            <AuthModal
-                open={authOpen}
-                onOpenChange={setAuthOpen}
-                defaultView={authDefaultView}
-                redirectAfterLogin={ROUTES.afterLogin}
-                redirectAfterSignup={ROUTES.afterSignup}
-                sourceRoute='/lightningGold'
-                onSuccess={(ctx) => {
-                    // ✅ Only open pricing after LOGIN (signup flow in your modal does not log user in)
-                    if (ctx.kind === 'login') {
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/lightningGold'
+                    onSuccess={() => {
                         setIsLoggedIn(true);
+                        setPricingOpen(false);
+                        setOpenPricingAfterAuth(true);
                         setAuthOpen(false);
-                        setPricingOpen(true);
-                        return true; // prevent AuthModal from routing away
-                    }
-                    // ✅ For signup: prevent routing away; user will be switched to Sign In inside the modal
-                    return true;
-                }}
-            />
+                        return false;
+                    }}
+                />
+            )}
 
-            {/* ✅ Pricing modal (opens if logged in) */}
-            <PricingComponent name='LightningGold' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />
+            {/* ✅ Pricing modal (opens only after auth modal closes) */}
+            {!authOpen && <PricingComponent name='LightningGold' asModal open={pricingOpen} onOpenChange={setPricingOpen} className='' />}
 
             {/* ── HERO ─────────────────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>

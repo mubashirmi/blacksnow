@@ -1,5 +1,6 @@
 'use client';
 
+import AuthModal from '@/components/AuthModal';
 import EmailCRMSlideshow from '@/components/EmailCRMSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,9 @@ function EmailMarketing() {
     // eslint-disable-next-line
     const [userId, setUserId] = useState<string | null>(null);
     const [slideshowOpen, setSlideshowOpen] = useState(false);
+    const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
+    const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
 
     const LottieAnimation = ({ src, loop = true, autoplay = true, style }) => {
         const containerRef = useRef<HTMLDivElement>(null);
@@ -58,6 +61,39 @@ function EmailMarketing() {
 
         return <div ref={containerRef} style={style} />;
     };
+
+    const handlePurchaseClick = () => {
+        const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') || localStorage.getItem('id') : null;
+
+        if (storedUserId) {
+            setAuthOpen(false);
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+            return;
+        }
+
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(false);
+        setAuthOpen(true);
+    };
+
+    const handleAuthSuccess = () => {
+        setPricingOpen(false);
+        setOpenPricingAfterAuth(true);
+        setAuthOpen(false);
+        return false;
+    };
+
+    useEffect(() => {
+        if (authOpen || !openPricingAfterAuth) return;
+
+        const timer = window.setTimeout(() => {
+            setOpenPricingAfterAuth(false);
+            setPricingOpen(true);
+        }, 250);
+
+        return () => window.clearTimeout(timer);
+    }, [authOpen, openPricingAfterAuth]);
 
     const features = [
         {
@@ -173,7 +209,7 @@ function EmailMarketing() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
@@ -303,7 +339,7 @@ function EmailMarketing() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    onClick={() => setPricingOpen(true)}
+                                    onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                 >
@@ -325,7 +361,21 @@ function EmailMarketing() {
             </section>
 
             <EmailCRMSlideshow open={slideshowOpen} onOpenChange={setSlideshowOpen} />
-            <PricingComponent name='EmailMarketing' asModal open={pricingOpen} onOpenChange={setPricingOpen} />
+
+            {authOpen && (
+                <AuthModal
+                    open={authOpen}
+                    onOpenChange={(open) => {
+                        setAuthOpen(open);
+                        if (open) setPricingOpen(false);
+                    }}
+                    defaultView='signin'
+                    sourceRoute='/emailMarketing'
+                    onSuccess={handleAuthSuccess}
+                />
+            )}
+
+            {!authOpen && <PricingComponent name='EmailMarketing' asModal open={pricingOpen} onOpenChange={setPricingOpen} />}
         </div>
     );
 }

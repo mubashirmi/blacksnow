@@ -744,16 +744,16 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 }}
             >
                 {/* Top accent line */}
-                <div
+                {/* <div
                     className={`absolute top-0 left-0 w-full h-[3px] ${!productAccent && !isPurchased ? `bg-gradient-to-r ${product.color}` : ''}`}
                     style={
                         isPurchased
                             ? { background: 'linear-gradient(to right, #34d399, #10b981)' }
                             : productAccent
-                            ? { background: `linear-gradient(90deg, transparent, ${productAccent}, transparent)` }
-                            : undefined
+                                ? { background: `linear-gradient(90deg, transparent, ${productAccent}, transparent)` }
+                                : undefined
                     }
-                />
+                /> */}
 
                 <div className='relative flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7'>
                     <div className='relative grid grid-cols-[56px_minmax(0,1fr)_56px] items-start gap-3'>
@@ -973,10 +973,13 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         <div className='py-4'>
                             <AuthModalTrigger
                                 buttonText='Signup Now'
-                                defaultView='signup'
-                                sourceRoute='/pricing'
-                                redirectAfterLogin='/pricing'
-                                redirectAfterSignup='/pricing'
+                                defaultView='signin'
+                                sourceRoute={router.asPath?.split('?')[0] || router.pathname}
+                                onSuccess={() => {
+                                    setShowSignupModal(false);
+                                    setModalOpen(true);
+                                    return false;
+                                }}
                             >
                                 <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'>
                                     Signup Now
