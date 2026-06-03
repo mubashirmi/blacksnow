@@ -181,7 +181,7 @@ function TermsSlideModal({
     };
 
     const slide = slides[current];
-    const { accent, Icon, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
+    const { accent, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
     const isLast = current === slides.length - 1;
 
     const slideAnim: React.CSSProperties = {
@@ -225,13 +225,13 @@ function TermsSlideModal({
                     </button>
 
                     <div className='relative z-10 flex flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
-                        <div
+                        {/* <div
                             className='inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
                             style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
                         >
                             <Icon className='w-3.5 h-3.5' />
                             {badge}
-                        </div>
+                        </div> */}
 
                         <h2 className='text-[28px] font-black text-white leading-tight mb-3'>
                             {gradAtEnd ? (
@@ -281,8 +281,8 @@ function TermsSlideModal({
                             </ul>
                         </div>
 
-                        <div className='pt-6 flex items-center justify-between'>
-                            <div className='flex items-center gap-1.5'>
+                        <div className='pt-6 flex items-center justify-between gap-2'>
+                            <div className='flex items-center justify-between gap-1.5'>
                                 {slides.map((_, i) => (
                                     <div
                                         key={i}
@@ -294,8 +294,13 @@ function TermsSlideModal({
                                         }}
                                     />
                                 ))}
-                                <span className='text-xs text-white/30 ml-2'>
-                                    {current + 1}/{slides.length}
+                            </div>
+                            <div>
+                                <span
+                                    className='rounded-xl px-3 py-1 text-xs font-bold text-white/70'
+                                    style={{ backgroundColor: `${accent}14`, border: `1px solid ${accent}35` }}
+                                >
+                                    Slide {current + 1}/{slides.length}
                                 </span>
                             </div>
 

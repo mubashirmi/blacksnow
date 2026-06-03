@@ -21,7 +21,7 @@ type Slide = {
 const SLIDES: Slide[] = [
     {
         id: 'welcome',
-        accent: '#a855f7',
+        accent: '#4cc7e8',
         Icon: Monitor,
         badge: 'Digital Billboard',
         title: 'Your Billboard Is Live',
@@ -38,7 +38,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'placement',
-        accent: '#a855f7',
+        accent: '#4cc7e8',
         Icon: LayoutDashboard,
         badge: 'Ad Placement',
         title: 'High-Visibility Placement',
@@ -54,7 +54,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'analytics',
-        accent: '#7c3aed',
+        accent: '#4cc7e8',
         Icon: BarChart3,
         badge: 'Live Analytics',
         title: 'Real-Time Analytics Dashboard',
@@ -70,7 +70,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'setup',
-        accent: '#06b6d4',
+        accent: '#4cc7e8',
         Icon: Zap,
         badge: 'Zero Maintenance',
         title: 'Simple Setup, Zero Maintenance',
@@ -86,7 +86,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'multi-billboard',
-        accent: '#a855f7',
+        accent: '#4cc7e8',
         Icon: Layers,
         badge: 'Up to 4 Campaigns',
         title: 'Run Up to 4 Billboards',
@@ -102,7 +102,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'share-buttons',
-        accent: '#0ea5e9',
+        accent: '#4cc7e8',
         Icon: Share2,
         badge: 'Email & SMS Share',
         title: 'Built-In Share Buttons',
@@ -118,7 +118,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'team-access',
-        accent: '#7c3aed',
+        accent: '#4cc7e8',
         Icon: Users,
         badge: 'Team Access',
         title: 'Add Multiple Users',
@@ -134,7 +134,7 @@ const SLIDES: Slide[] = [
     },
     {
         id: 'getting-started',
-        accent: '#a855f7',
+        accent: '#4cc7e8',
         Icon: Sparkles,
         badge: 'Getting Started',
         title: "You're Ready to Run",
@@ -170,16 +170,6 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
         </div>
     );
 }
-
-// ── Feature icon grid for right panel ────────────────────────
-const FEATURE_ICONS = [
-    { Icon: LayoutDashboard, label: 'Placement' },
-    { Icon: BarChart3, label: 'Analytics' },
-    { Icon: Zap, label: 'Setup' },
-    { Icon: Layers, label: '4 Campaigns' },
-    { Icon: Share2, label: 'Share' },
-    { Icon: Users, label: 'Team' },
-];
 
 // ── Main Component ────────────────────────────────────────────
 export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => void }) {
@@ -241,7 +231,7 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
     };
 
     const slide = SLIDES[current];
-    const { Icon, accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets } = slide;
+    const { accent, titleGrad, titlePlain, gradAtEnd, desc, bullets } = slide;
     const isLastSlide = current === SLIDES.length - 1;
 
     const slideAnim: React.CSSProperties = {
@@ -265,13 +255,13 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
         gradAtEnd ? (
             <>
                 {titlePlain}
-                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #7c3aed)` }}>
+                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
                     {titleGrad}
                 </span>
             </>
         ) : (
             <>
-                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #7c3aed)` }}>
+                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
                     {titleGrad}
                 </span>
                 {titlePlain}
@@ -280,269 +270,123 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
 
     return (
         <>
-            {/* Backdrop */}
             <div
                 onClick={() => close(false)}
-                className='fixed inset-0 z-[9990] bg-black/83 backdrop-blur-sm'
+                className='fixed inset-0 z-[9990] bg-black/78 backdrop-blur-sm'
                 style={{ transition: 'opacity 0.35s ease', opacity: inView ? 1 : 0 }}
             />
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
-                {/* ══ DESKTOP ══ */}
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, minHeight: 500 }}
-                >
-                    {/* Purple shimmer top bar */}
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[2px] z-10'
-                        style={{ background: `linear-gradient(90deg, transparent, #7c3aed, ${accent}, transparent)` }}
-                    />
-                    {/* Ambient glow */}
-                    <div
-                        className='absolute top-0 left-0 right-0 h-64 pointer-events-none'
-                        style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}14 0%, #7c3aed08 50%, transparent 70%)` }}
-                    />
-
-                    {/* Close */}
-                    <button
-                        onClick={() => close(false)}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
-                    >
-                        <X className='w-4 h-4 text-white/60' />
-                    </button>
-
-                    <div className='flex flex-1 min-h-0'>
-                        {/* LEFT */}
-                        <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
-                            <div style={slideAnim}>
-                                {/* Badge row
-                                <div className='flex items-center gap-3 mb-5'>
-                                    <div
-                                        className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
-                                        style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                                    >
-                                        <Icon className='w-3.5 h-3.5' />
-                                        {badge}
-                                    </div>
-                                    <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                        Platform Tour
-                                    </span>
-                                </div> */}
-
-                                {/* Title */}
-                                <h2 className='text-3xl font-black text-white leading-tight mb-3'>
-                                    <GradTitle />
-                                </h2>
-                                <div
-                                    className='h-0.5 rounded-full mb-4 w-14'
-                                    style={{ background: `linear-gradient(90deg, ${accent}, #7c3aed, transparent)` }}
-                                />
-
-                                {/* Desc */}
-                                <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-sm'>{desc}</p>
-
-                                {/* Bullets */}
-                                {bullets && (
-                                    <ul className='space-y-2.5'>
-                                        {bullets.map((b, i) => (
-                                            <li key={i} className='flex items-start gap-2.5'>
-                                                <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                                <span className='text-white/70 text-sm leading-snug'>{b}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-
-                            {/* Nav row */}
-                            <div className='flex items-center gap-3 mt-8'>
-                                <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
-                                <div className='flex items-center gap-2 ml-auto'>
-                                    <button
-                                        onClick={handlePrev}
-                                        disabled={current === 0}
-                                        className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                                        style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                                    >
-                                        <ChevronLeft className='w-4 h-4 text-white' />
-                                    </button>
-                                    <button
-                                        onClick={handleNext}
-                                        className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
-                                        style={{
-                                            background: `linear-gradient(135deg, ${accent}cc, #7c3aed99)`,
-                                            border: `1px solid ${accent}60`,
-                                            boxShadow: `0 2px 14px ${accent}30`,
-                                        }}
-                                    >
-                                        {isLastSlide ? 'Go to Dashboard' : 'Next'}
-                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
-                                    </button>
-                                    {/* <span className='text-xs text-white/25'>
-                                        {current + 1}/{SLIDES.length}
-                                    </span> */}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div
-                            className='w-[1px] self-stretch my-8'
-                            style={{ background: `linear-gradient(to bottom, transparent, ${accent}30, #7c3aed20, transparent)` }}
-                        />
-
-                        {/* RIGHT panel */}
-                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-5 p-6' style={slideAnim}>
-                            {/* Main icon with pulse ring */}
-                            <div className='relative'>
-                                {/* Outer pulse ring */}
-                                <div
-                                    className='absolute inset-0 rounded-2xl'
-                                    style={{
-                                        border: `1px solid ${accent}20`,
-                                        transform: 'scale(1.15)',
-                                        animation: 'none',
-                                    }}
-                                />
-                                <div
-                                    className='w-24 h-24 rounded-2xl flex items-center justify-center'
-                                    style={{
-                                        backgroundColor: `${accent}15`,
-                                        border: `2px solid ${accent}35`,
-                                        boxShadow: `0 0 50px ${accent}25, 0 0 20px #7c3aed12`,
-                                    }}
-                                >
-                                    <Icon className='w-12 h-12' style={{ color: accent }} />
-                                </div>
-                            </div>
-
-                            {/* Step counter */}
-                            <div className='text-center'>
-                                <p className='text-xs font-semibold mb-1' style={{ color: accent }}>
-                                    Platform Tour
-                                </p>
-                                <p className='text-white/30 text-xs'>
-                                    Slide {current + 1} of {SLIDES.length}
-                                </p>
-                            </div>
-
-                            {/* Feature icon grid — slides 1-6 map to features */}
-                            <div className='grid grid-cols-3 gap-2 w-full mt-1'>
-                                {FEATURE_ICONS.map(({ Icon: FIcon, label }, i) => {
-                                    const slideIdx = i + 1;
-                                    const isActive = current === slideIdx;
-                                    const isDone = current > slideIdx;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className='flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300'
-                                            style={{
-                                                backgroundColor: isActive ? `${accent}20` : isDone ? `${accent}08` : 'rgba(255,255,255,0.03)',
-                                                border: `1px solid ${isActive ? `${accent}50` : isDone ? `${accent}20` : 'rgba(255,255,255,0.06)'}`,
-                                            }}
-                                        >
-                                            <FIcon
-                                                className='w-4 h-4'
-                                                style={{
-                                                    color: isActive ? accent : isDone ? `${accent}80` : 'rgba(255,255,255,0.2)',
-                                                }}
-                                            />
-                                            <span
-                                                className='text-[9px] font-medium text-center leading-tight'
-                                                style={{
-                                                    color: isActive ? 'rgba(255,255,255,0.8)' : isDone ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.18)',
-                                                }}
-                                            >
-                                                {label}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ══ MOBILE ══ */}
-                <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter }}
+                    className='pointer-events-auto flex w-full max-w-sm lg:max-w-2xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(500px, calc(100vh - 2rem))' }}
                 >
                     <div
-                        className='absolute top-0 left-0 right-0 h-[2px] z-10'
-                        style={{ background: `linear-gradient(90deg, transparent, #7c3aed, ${accent}, transparent)` }}
+                        className='absolute inset-0 pointer-events-none'
+                        style={{
+                            background:
+                                'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+                        }}
                     />
                     <div
-                        className='absolute top-0 left-0 right-0 h-44 pointer-events-none'
+                        className='absolute inset-x-0 bottom-0 h-40 pointer-events-none'
+                        style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)' }}
+                    />
+
+                    <div
+                        className='absolute top-0 left-0 right-0 h-[2px] z-10'
+                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                    />
+                    <div
+                        className='absolute top-0 left-0 right-0 h-44 lg:h-60 pointer-events-none'
                         style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}14 0%, transparent 70%)` }}
                     />
 
                     <button
                         onClick={() => close(false)}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition-all'
+                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
                         style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        aria-label='Close slideshow'
                     >
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        <div className='flex items-center gap-2 flex-wrap mb-4'>
+                    <div className='relative z-10 flex flex-col flex-1 min-h-0'>
+                        <div className='px-6 lg:px-9 pt-8 lg:pt-9 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
+                            <h2 className='text-2xl lg:text-3xl font-black text-white leading-tight mb-2 lg:mb-3'>
+                                <GradTitle />
+                            </h2>
                             <div
-                                className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
-                                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                            >
-                                <Icon className='w-3 h-3' />
-                                {badge}
-                            </div>
-                            <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: accent, backgroundColor: `${accent}18` }}>
-                                Platform Tour
-                            </span>
+                                className='h-0.5 rounded-full mb-3 lg:mb-4 w-10 lg:w-14'
+                                style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                            />
+
+                            <p className='text-gray-400 text-xs lg:text-sm leading-relaxed mb-3 lg:mb-5 max-w-lg'>{desc}</p>
+
+                            {bullets && bullets.length > 0 && (
+                                <div
+                                    className='rounded-xl lg:rounded-2xl p-3 lg:p-4 mb-3 lg:mb-5 border'
+                                    style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}
+                                >
+                                    <div className='flex items-center gap-2 mb-2 lg:mb-3'>
+                                        <CheckCircle className='w-3.5 h-3.5 lg:w-4 lg:h-4' style={{ color: accent }} />
+                                        <p className='text-xs font-bold uppercase tracking-wide' style={{ color: accent }}>
+                                            Key Highlights
+                                        </p>
+                                    </div>
+
+                                    <ul className='space-y-1.5 lg:space-y-2.5'>
+                                        {bullets.map((bullet, index) => (
+                                            <li key={index} className='flex items-start gap-2 lg:gap-2.5'>
+                                                <CheckCircle
+                                                    className='w-3.5 h-3.5 lg:w-4 lg:h-4 mt-0.5 flex-shrink-0'
+                                                    style={{ color: accent }}
+                                                    strokeWidth={2.5}
+                                                />
+                                                <span className='text-white/65 lg:text-white/70 text-xs lg:text-sm leading-snug'>{bullet}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
 
-                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>
-                            <GradTitle />
-                        </h2>
-                        <div className='h-0.5 rounded-full mb-3 w-10' style={{ background: `linear-gradient(90deg, ${accent}, #7c3aed, transparent)` }} />
-                        <p className='text-gray-400 text-xs leading-relaxed mb-3'>{desc}</p>
+                        <div className='relative z-10 px-6 lg:px-9 pb-5 lg:pb-7 pt-2'>
+                            <div className='grid grid-cols-[1fr_auto_1fr] items-center gap-2 lg:gap-3'>
+                                <div className='justify-self-start'>
+                                    <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
+                                </div>
 
-                        {bullets && (
-                            <ul className='space-y-1.5'>
-                                {bullets.map((b, i) => (
-                                    <li key={i} className='flex items-start gap-2'>
-                                        <CheckCircle className='w-3.5 h-3.5 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                        <span className='text-white/65 text-xs leading-snug'>{b}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                                <span
+                                    className='justify-self-center whitespace-nowrap text-xs font-semibold px-2 py-0.5 rounded-md'
+                                    style={{ color: accent, backgroundColor: `${accent}18` }}
+                                >
+                                    Slide {current + 1}/{SLIDES.length}
+                                </span>
 
-                    {/* Mobile nav */}
-                    <div className='relative z-10 px-6 pb-5'>
-                        <div className='flex items-center gap-2'>
-                            <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
-                            <div className='flex items-center gap-1.5 ml-auto'>
-                                <button
-                                    onClick={handlePrev}
-                                    disabled={current === 0}
-                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20'
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                                >
-                                    <ChevronLeft className='w-4 h-4 text-white' />
-                                </button>
-                                <button
-                                    onClick={handleNext}
-                                    className='h-9 px-3 rounded-xl flex items-center justify-center gap-1 text-xs font-bold text-white transition-all'
-                                    style={{
-                                        background: `linear-gradient(135deg, ${accent}cc, #7c3aed99)`,
-                                        border: `1px solid ${accent}60`,
-                                    }}
-                                >
-                                    {isLastSlide ? 'Go' : 'Next'}
-                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
-                                </button>
+                                <div className='flex items-center gap-1.5 lg:gap-2 justify-self-end'>
+                                    <button
+                                        onClick={handlePrev}
+                                        disabled={current === 0}
+                                        className='w-8 h-8 lg:w-9 lg:h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        aria-label='Previous slide'
+                                    >
+                                        <ChevronLeft className='w-4 h-4 text-white' />
+                                    </button>
+
+                                    <button
+                                        onClick={handleNext}
+                                        className='h-8 lg:h-9 px-3 lg:px-4 rounded-xl flex items-center justify-center gap-1 lg:gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
+                                        style={{
+                                            background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`,
+                                            border: `1px solid ${accent}60`,
+                                            boxShadow: `0 2px 12px ${accent}30`,
+                                        }}
+                                    >
+                                        {isLastSlide ? 'Done' : 'Next'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

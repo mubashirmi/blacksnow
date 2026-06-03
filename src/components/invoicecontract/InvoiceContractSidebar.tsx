@@ -586,10 +586,11 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
 
                         <div className='px-7 py-10 text-center'>
                             <div
-                                className={`mx-auto h-20 w-20 rounded-3xl border flex items-center justify-center mb-6 shadow-xl ${unsubscribeResult.type === 'success'
+                                className={`mx-auto h-20 w-20 rounded-3xl border flex items-center justify-center mb-6 shadow-xl ${
+                                    unsubscribeResult.type === 'success'
                                         ? 'border-emerald-400/35 bg-emerald-400/10 shadow-emerald-500/20'
                                         : 'border-red-500/35 bg-red-500/10 shadow-red-500/20'
-                                    }`}
+                                }`}
                             >
                                 {unsubscribeResult.type === 'success' ? (
                                     <CheckCircle className='h-10 w-10 text-emerald-300' />
@@ -607,10 +608,11 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
                             <button
                                 type='button'
                                 onClick={closeResultModal}
-                                className={`mt-8 w-full rounded-2xl text-white font-black py-5 text-base shadow-md transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] ${unsubscribeResult.type === 'success'
+                                className={`mt-8 w-full rounded-2xl text-white font-black py-5 text-base shadow-md transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] ${
+                                    unsubscribeResult.type === 'success'
                                         ? 'bg-emerald-700 hover:bg-emerald-800 shadow-emerald-600/30'
                                         : 'bg-red-700 hover:bg-red-800 shadow-red-600/40'
-                                    }`}
+                                }`}
                             >
                                 {unsubscribeResult.type === 'success' ? 'Continue' : 'Close'}
                             </button>
@@ -694,10 +696,11 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
                                                     type='button'
                                                     disabled={isSubmittingFeedback}
                                                     onClick={() => setFeedbackStars(String(starValue))}
-                                                    className={`rounded-xl p-1.5 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-60 ${selected
+                                                    className={`rounded-xl p-1.5 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-60 ${
+                                                        selected
                                                             ? 'text-emerald-300 drop-shadow-[0_0_10px_rgba(16,185,129,0.45)]'
                                                             : 'text-white/20 hover:text-emerald-200/70'
-                                                        }`}
+                                                    }`}
                                                     aria-label={`${starValue} star${starValue > 1 ? 's' : ''}`}
                                                 >
                                                     <Star className='h-9 w-9' fill={selected ? 'currentColor' : 'none'} strokeWidth={2} />

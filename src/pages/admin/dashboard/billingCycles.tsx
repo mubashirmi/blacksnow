@@ -191,14 +191,10 @@ export default function BillingPage() {
             }
 
             const checkoutRows: BillingRecord[] =
-                checkoutResult.status === 'fulfilled'
-                    ? (checkoutResult.value.data?.checkouts ?? []).map(normalizeCheckout)
-                    : [];
+                checkoutResult.status === 'fulfilled' ? (checkoutResult.value.data?.checkouts ?? []).map(normalizeCheckout) : [];
 
             const consultationRows: BillingRecord[] =
-                consultationResult.status === 'fulfilled'
-                    ? (consultationResult.value.data?.consultations ?? []).map(normalizeConsultation)
-                    : [];
+                consultationResult.status === 'fulfilled' ? (consultationResult.value.data?.consultations ?? []).map(normalizeConsultation) : [];
 
             setCheckouts([...checkoutRows, ...consultationRows]);
 

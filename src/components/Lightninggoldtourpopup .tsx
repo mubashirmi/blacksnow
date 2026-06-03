@@ -49,7 +49,7 @@ const SLIDES: Slide[] = [
     {
         id: 'welcome',
         variant: 'intro',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: Rocket,
         badge: 'Lightning Gold',
         title: 'Welcome to Gold',
@@ -67,7 +67,7 @@ const SLIDES: Slide[] = [
     {
         id: 'commissions',
         variant: 'feature',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: CreditCard,
         badge: 'Commissions',
         title: '75% Lifetime Commissions',
@@ -84,7 +84,7 @@ const SLIDES: Slide[] = [
     {
         id: 'commission-table',
         variant: 'table',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: TrendingUp,
         badge: 'Commission Breakdown',
         title: 'Your Gold Earning Rates',
@@ -103,7 +103,7 @@ const SLIDES: Slide[] = [
     {
         id: 'vs-silver',
         variant: 'feature',
-        accent: '#FFD700',
+        accent: '#8d96c2',
         Icon: Zap,
         badge: 'Gold vs Silver',
         title: 'Why Gold Pays More',
@@ -121,7 +121,7 @@ const SLIDES: Slide[] = [
     {
         id: 'referral-bonus',
         variant: 'feature',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: Gift,
         badge: 'Referral Bonus',
         title: '$100/Month Referral Bonus',
@@ -138,7 +138,7 @@ const SLIDES: Slide[] = [
     {
         id: 'crm',
         variant: 'feature',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: Mail,
         badge: 'Built-In CRM',
         title: 'Email & SMS CRM Included',
@@ -155,7 +155,7 @@ const SLIDES: Slide[] = [
     {
         id: 'kpi',
         variant: 'feature',
-        accent: '#FFD700',
+        accent: '#8d96c2',
         Icon: BarChart3,
         badge: 'KPI Dashboard',
         title: 'Real-Time Analytics',
@@ -172,7 +172,7 @@ const SLIDES: Slide[] = [
     {
         id: 'getting-started',
         variant: 'feature',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: Sparkles,
         badge: 'Getting Started',
         title: "You're Set Up to Scale",
@@ -192,7 +192,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-affiliate',
         variant: 'legal',
-        accent: '#4cc7e8',
+        accent: '#8d96c2',
         Icon: FileText,
         badge: 'Legal — Affiliate Agreement',
         title: 'Affiliate Agreement',
@@ -208,7 +208,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-contractor',
         variant: 'legal',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: UserCheck,
         badge: 'Legal — Independent Contractor',
         title: 'Independent Contractor',
@@ -224,7 +224,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-earnings',
         variant: 'legal',
-        accent: '#E74C3C',
+        accent: '#8d96c2',
         Icon: AlertTriangle,
         badge: 'Legal — Earnings Disclosure',
         title: 'Earnings Disclosure',
@@ -240,7 +240,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-gdpr',
         variant: 'legal',
-        accent: '#2c7bbe',
+        accent: '#8d96c2',
         Icon: Globe,
         badge: 'Legal — GDPR',
         title: 'GDPR & Privacy',
@@ -256,7 +256,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-terms',
         variant: 'legal',
-        accent: '#9B59B6',
+        accent: '#8d96c2',
         Icon: FileText,
         badge: 'Legal — Terms & Conditions',
         title: 'Terms & Conditions',
@@ -272,7 +272,7 @@ const SLIDES: Slide[] = [
     {
         id: 'legal-privacy',
         variant: 'legal',
-        accent: '#1ABC9C',
+        accent: '#8d96c2',
         Icon: Shield,
         badge: 'Legal — Privacy Policy',
         title: 'Privacy Policy',
@@ -290,7 +290,7 @@ const SLIDES: Slide[] = [
     {
         id: 'acknowledge',
         variant: 'acknowledge',
-        accent: '#F5A623',
+        accent: '#8d96c2',
         Icon: Shield,
         badge: 'Legal Acknowledgement',
         title: "You're Almost In",
@@ -341,20 +341,6 @@ function ProgressDots({ current, total, accent, onDot }: { current: number; tota
                 </div>
             ))}
         </div>
-    );
-}
-
-function SectionLabel({ current }: { current: number }) {
-    const label = current <= 7 ? 'Dashboard Tour' : current <= 13 ? 'Legal Review' : 'Confirm';
-    const colors: Record<string, string> = {
-        'Dashboard Tour': '#F5A623',
-        'Legal Review': '#FFD700',
-        Confirm: '#F5A623',
-    };
-    return (
-        <span className='text-xs font-semibold px-2 py-0.5 rounded-md' style={{ color: colors[label], backgroundColor: `${colors[label]}18` }}>
-            {label}
-        </span>
     );
 }
 
@@ -445,7 +431,7 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
     };
 
     const slide = SLIDES[current];
-    const { Icon, accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets, variant, legalSummary, legalLink, tableData } = slide;
+    const { accent, titleGrad, titlePlain, gradAtEnd, desc, bullets, variant, legalTitle, legalSummary, legalLink, tableData } = slide;
     const isLastSlide = current === SLIDES.length - 1;
     const isNextDisabled = isLastSlide && !agreed;
 
@@ -459,22 +445,24 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
         transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(20px)',
-        backgroundColor: '#09080a',
-        borderColor: `${accent}50`,
-        boxShadow: `0 0 80px ${accent}28, 0 0 30px ${accent}10, 0 30px 80px rgba(0,0,0,0.80)`,
+        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+        WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+        backdropFilter: 'blur(7px) saturate(145%)',
+        borderColor: `${accent}45`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`,
     };
 
     const GradTitle = () =>
         gradAtEnd ? (
             <>
                 {titlePlain}
-                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #c47d0e)` }}>
+                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
                     {titleGrad}
                 </span>
             </>
         ) : (
             <>
-                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #c47d0e)` }}>
+                <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #2c7bbe)` }}>
                     {titleGrad}
                 </span>
                 {titlePlain}
@@ -499,369 +487,172 @@ export function LightningGoldTourPopup({ onComplete }: { onComplete?: () => void
 
     return (
         <>
-            {/* Backdrop */}
             <div
                 onClick={() => close(false)}
-                className='fixed inset-0 z-[9990] bg-black/82 backdrop-blur-sm'
+                className='fixed inset-0 z-[9990] bg-black/78 backdrop-blur-sm'
                 style={{ transition: 'opacity 0.35s ease', opacity: inView ? 1 : 0 }}
             />
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
-                {/* ══ DESKTOP ══ */}
                 <div
-                    className='pointer-events-auto hidden lg:flex w-full max-w-3xl relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter, minHeight: 500 }}
+                    className='pointer-events-auto flex w-full max-w-sm lg:max-w-2xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(500px, calc(100vh - 2rem))' }}
                 >
-                    {/* Gold shimmer top bar */}
+                    <div
+                        className='absolute inset-0 pointer-events-none'
+                        style={{
+                            background:
+                                'radial-gradient(circle at top, rgba(255,255,255,0.07) 0%, transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 38%, rgba(255,255,255,0.025) 100%)',
+                        }}
+                    />
+                    <div
+                        className='absolute inset-x-0 bottom-0 h-40 pointer-events-none'
+                        style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)' }}
+                    />
+
                     <div
                         className='absolute top-0 left-0 right-0 h-[2px] z-10'
-                        style={{ background: `linear-gradient(90deg, transparent, #FFD700, ${accent}, transparent)` }}
+                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
                     />
-                    {/* Ambient glow */}
                     <div
-                        className='absolute top-0 left-0 right-0 h-64 pointer-events-none'
-                        style={{ background: `radial-gradient(ellipse at 40% 0%, ${accent}16 0%, transparent 65%)` }}
+                        className='absolute top-0 left-0 right-0 h-44 lg:h-60 pointer-events-none'
+                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}14 0%, transparent 70%)` }}
                     />
 
-                    {/* <GoldBadge /> */}
-
-                    {/* Close */}
                     <button
                         onClick={() => close(false)}
                         className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
                         style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        aria-label='Close slideshow'
                     >
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='flex flex-1 min-h-0'>
-                        {/* LEFT */}
-                        <div className='flex-1 flex flex-col justify-between px-9 pt-10 pb-7 min-w-0'>
-                            <div style={slideAnim}>
-                                {/* Badge row */}
-                                {/* <div className='flex items-center gap-3 mb-5'>
-                                    <div
-                                        className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase'
-                                        style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                                    >
-                                        <Icon className='w-3.5 h-3.5' />
-                                        {badge}
-                                    </div>
-                                    <SectionLabel current={current} />
-                                </div> */}
+                    <div className='relative z-10 flex flex-col flex-1 min-h-0'>
+                        <div className='px-6 lg:px-9 pt-8 lg:pt-9 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
+                            <h2 className='text-2xl lg:text-3xl font-black text-white leading-tight mb-2 lg:mb-3'>
+                                <GradTitle />
+                            </h2>
+                            <div
+                                className='h-0.5 rounded-full mb-3 lg:mb-4 w-10 lg:w-14'
+                                style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                            />
 
-                                {/* Title */}
-                                <h2 className='text-3xl font-black text-white leading-tight mb-3'>
-                                    <GradTitle />
-                                </h2>
+                            <p className='text-gray-400 text-xs lg:text-sm leading-relaxed mb-3 lg:mb-5 max-w-lg'>{desc}</p>
+
+                            {variant === 'table' && tableData && (
+                                <div className='mb-3 lg:mb-5'>
+                                    <CommissionTable tableData={tableData} accent={accent} />
+                                </div>
+                            )}
+
+                            {(bullets?.length || (variant === 'legal' && legalSummary)) && (
                                 <div
-                                    className='h-0.5 rounded-full mb-4 w-14'
-                                    style={{ background: `linear-gradient(90deg, #FFD700, ${accent}, transparent)` }}
-                                />
+                                    className='rounded-xl lg:rounded-2xl p-3 lg:p-4 mb-3 lg:mb-5 border'
+                                    style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}
+                                >
+                                    <div className='flex items-center justify-between gap-2 lg:gap-3 mb-2 lg:mb-3'>
+                                        <div className='flex items-center gap-2'>
+                                            <CheckCircle className='w-3.5 h-3.5 lg:w-4 lg:h-4' style={{ color: accent }} />
+                                            <p className='text-xs font-bold uppercase tracking-wide' style={{ color: accent }}>
+                                                {variant === 'legal'
+                                                    ? legalTitle ?? 'Summary'
+                                                    : variant === 'acknowledge'
+                                                    ? 'Legal Documents'
+                                                    : 'Key Highlights'}
+                                            </p>
+                                        </div>
 
-                                {/* Desc */}
-                                <p className='text-gray-400 text-sm leading-relaxed mb-5 max-w-sm'>{desc}</p>
-
-                                {/* Commission table */}
-                                {variant === 'table' && tableData && <CommissionTable tableData={tableData} accent={accent} />}
-
-                                {/* Legal summary box */}
-                                {variant === 'legal' && legalSummary && (
-                                    <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-                                        <p className='text-xs font-bold uppercase mb-2' style={{ color: accent }}>
-                                            Summary
-                                        </p>
-                                        <p className='text-white/60 text-xs leading-relaxed'>{legalSummary}</p>
-                                        {legalLink && (
+                                        {variant === 'legal' && legalLink && (
                                             <a
                                                 href={legalLink}
                                                 target='_blank'
                                                 rel='noopener noreferrer'
-                                                className='inline-flex items-center gap-1 mt-3 text-xs font-semibold hover:underline'
-                                                style={{ color: accent }}
+                                                className='text-[10px] lg:text-[11px] font-semibold px-2 lg:px-2.5 py-1 rounded-full border transition-all hover:scale-[1.02]'
+                                                style={{ color: accent, borderColor: `${accent}35`, backgroundColor: `${accent}12` }}
                                             >
-                                                Read full document →
+                                                Review
                                             </a>
                                         )}
                                     </div>
-                                )}
 
-                                {/* Bullets */}
-                                {bullets && (
-                                    <ul className={`space-y-2.5 ${variant === 'table' ? 'mt-3' : ''}`}>
-                                        {bullets.map((b, i) => (
-                                            <li key={i} className='flex items-start gap-2.5'>
-                                                <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                                <span className='text-white/70 text-sm leading-snug'>
-                                                    {isLastSlide ? (
-                                                        <a
-                                                            href={
-                                                                [
-                                                                    '/affiliateagreement',
-                                                                    '/independentcontract',
-                                                                    '/earningsdisclosure',
-                                                                    '/gdpr',
-                                                                    '/terms',
-                                                                    '/privacy',
-                                                                ][i]
-                                                            }
-                                                            target='_blank'
-                                                            rel='noopener noreferrer'
-                                                            className='hover:underline'
-                                                            style={{ color: accent }}
-                                                        >
-                                                            {b}
-                                                        </a>
-                                                    ) : (
-                                                        b
-                                                    )}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
+                                    {variant === 'legal' && legalSummary && (
+                                        <p className='text-white/60 text-[11px] lg:text-xs leading-relaxed mb-2.5 lg:mb-3'>{legalSummary}</p>
+                                    )}
 
-                                {/* Acknowledge checkbox */}
-                                {isLastSlide && (
-                                    <label className='flex items-start gap-3 mt-6 cursor-pointer group'>
-                                        <div
-                                            onClick={() => setAgreed(!agreed)}
-                                            className='w-5 h-5 rounded-md flex-shrink-0 mt-0.5 flex items-center justify-center transition-all duration-200 cursor-pointer'
-                                            style={{
-                                                backgroundColor: agreed ? accent : 'transparent',
-                                                border: `2px solid ${agreed ? accent : 'rgba(255,255,255,0.25)'}`,
-                                            }}
-                                        >
-                                            {agreed && <CheckCircle className='w-3 h-3 text-[#09080a]' strokeWidth={3} />}
-                                        </div>
-                                        <span className='text-white/60 text-xs leading-relaxed group-hover:text-white/80 transition-colors'>
-                                            I have read and agree to the Affiliate Agreement, Independent Contractor Agreement, Earnings Disclosure, GDPR
-                                            Policy, Terms & Conditions, and Privacy Policy. I understand that earnings are not guaranteed and I act as an
-                                            independent contractor.
-                                        </span>
-                                    </label>
-                                )}
-                            </div>
+                                    {bullets && bullets.length > 0 && (
+                                        <ul className='space-y-1.5 lg:space-y-2.5'>
+                                            {bullets.map((bullet, index) => (
+                                                <li key={index} className='flex items-start gap-2 lg:gap-2.5'>
+                                                    <CheckCircle
+                                                        className='w-3.5 h-3.5 lg:w-4 lg:h-4 mt-0.5 flex-shrink-0'
+                                                        style={{ color: accent }}
+                                                        strokeWidth={2.5}
+                                                    />
+                                                    <span className='text-white/65 lg:text-white/70 text-xs lg:text-sm leading-snug'>{bullet}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
 
-                            {/* Nav row */}
-                            <div className='flex items-center gap-3 mt-8'>
-                                <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
-                                <div className='flex items-center gap-2 ml-auto'>
+                            {isLastSlide && (
+                                <label className='flex items-start gap-2.5 lg:gap-3 mt-3 cursor-pointer group'>
+                                    <div
+                                        onClick={() => setAgreed(!agreed)}
+                                        className='w-5 h-5 rounded-md flex-shrink-0 mt-0.5 flex items-center justify-center transition-all duration-200 cursor-pointer'
+                                        style={{
+                                            backgroundColor: agreed ? accent : 'transparent',
+                                            border: `2px solid ${agreed ? accent : 'rgba(255,255,255,0.25)'}`,
+                                        }}
+                                    >
+                                        {agreed && <CheckCircle className='w-3 h-3 text-[#080b12]' strokeWidth={3} />}
+                                    </div>
+                                    <span className='text-white/60 text-xs leading-relaxed group-hover:text-white/80 transition-colors'>
+                                        I have read and agree to all the legal documents.
+                                    </span>
+                                </label>
+                            )}
+                        </div>
+
+                        <div className='relative z-10 px-6 lg:px-9 pb-5 lg:pb-7 pt-2'>
+                            <div className='grid grid-cols-[1fr_auto_1fr] items-center gap-2 lg:gap-3'>
+                                <div className='justify-self-start'>
+                                    <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
+                                </div>
+
+                                <span
+                                    className='justify-self-center whitespace-nowrap text-xs font-semibold px-2 py-0.5 rounded-md'
+                                    style={{ color: accent, backgroundColor: `${accent}18` }}
+                                >
+                                    Slide {current + 1}/{SLIDES.length}
+                                </span>
+
+                                <div className='flex items-center gap-1.5 lg:gap-2 justify-self-end'>
                                     <button
                                         onClick={handlePrev}
                                         disabled={current === 0}
-                                        className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                                        className='w-8 h-8 lg:w-9 lg:h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
                                         style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        aria-label='Previous slide'
                                     >
                                         <ChevronLeft className='w-4 h-4 text-white' />
                                     </button>
+
                                     <button
                                         onClick={handleNext}
                                         disabled={isNextDisabled}
-                                        className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100'
+                                        className='h-8 lg:h-9 px-3 lg:px-4 rounded-xl flex items-center justify-center gap-1 lg:gap-1.5 text-xs font-bold text-white transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100'
                                         style={{
-                                            background: `linear-gradient(135deg, #FFD700cc, ${accent}99)`,
-                                            border: `1px solid ${accent}70`,
-                                            boxShadow: `0 2px 14px ${accent}35`,
-                                            color: '#1a1200',
+                                            background: `linear-gradient(135deg, ${accent}cc, ${accent}66)`,
+                                            border: `1px solid ${accent}60`,
+                                            boxShadow: `0 2px 12px ${accent}30`,
                                         }}
                                     >
                                         {nextLabel}
-                                        {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
                                     </button>
-                                    {/* <span className='text-xs text-white/25'>
-                                        {current + 1}/{SLIDES.length}
-                                    </span> */}
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div
-                            className='w-[1px] self-stretch my-8'
-                            style={{ background: `linear-gradient(to bottom, transparent, ${accent}40, transparent)` }}
-                        />
-
-                        {/* RIGHT — icon panel */}
-                        <div className='w-[220px] flex-shrink-0 flex flex-col items-center justify-center gap-4 p-6' style={slideAnim}>
-                            <div
-                                className='w-24 h-24 rounded-2xl flex items-center justify-center relative'
-                                style={{
-                                    backgroundColor: `${accent}15`,
-                                    border: `2px solid ${accent}35`,
-                                    boxShadow: `0 0 50px ${accent}25, 0 0 20px #FFD70015`,
-                                }}
-                            >
-                                <Icon className='w-12 h-12' style={{ color: accent }} />
-                            </div>
-                            <div className='text-center'>
-                                <p className='text-xs font-semibold mb-1' style={{ color: accent }}>
-                                    {current <= 7 ? 'Dashboard Tour' : current <= 13 ? 'Legal Review' : 'Final Step'}
-                                </p>
-                                <p className='text-white/30 text-xs'>
-                                    Slide {current + 1} of {SLIDES.length}
-                                </p>
-                            </div>
-                            <div className='flex flex-col gap-2 w-full mt-2'>
-                                {[
-                                    { label: '8 feature slides', done: current >= 8, active: current <= 7 },
-                                    { label: '6 legal documents', done: current >= 14, active: current >= 8 && current <= 13 },
-                                    { label: 'Confirmation', done: false, active: current === 14 },
-                                ].map((s, i) => (
-                                    <div key={i} className='flex items-center gap-2'>
-                                        <div
-                                            className='w-1.5 h-1.5 rounded-full flex-shrink-0'
-                                            style={{ backgroundColor: s.done ? accent : s.active ? accent : 'rgba(255,255,255,0.15)' }}
-                                        />
-                                        <span className='text-xs' style={{ color: s.done || s.active ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)' }}>
-                                            {s.label}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ══ MOBILE ══ */}
-                <div
-                    className='pointer-events-auto flex lg:hidden w-full max-w-sm relative rounded-3xl border-2 overflow-hidden flex-col'
-                    style={{ ...modalEnter }}
-                >
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[2px] z-10'
-                        style={{ background: `linear-gradient(90deg, transparent, #FFD700, ${accent}, transparent)` }}
-                    />
-                    <div
-                        className='absolute top-0 left-0 right-0 h-44 pointer-events-none'
-                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}16 0%, transparent 70%)` }}
-                    />
-
-                    <button
-                        onClick={() => close(false)}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition-all'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
-                    >
-                        <X className='w-4 h-4 text-white/60' />
-                    </button>
-
-                    <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        <div className='flex items-center gap-2 flex-wrap mb-4'>
-                            <div
-                                className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase'
-                                style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                            >
-                                <Icon className='w-3 h-3' />
-                                {badge}
-                            </div>
-                            <SectionLabel current={current} />
-                        </div>
-
-                        <h2 className='text-2xl font-black text-white leading-tight mb-2'>
-                            <GradTitle />
-                        </h2>
-                        <div className='h-0.5 rounded-full mb-3 w-10' style={{ background: `linear-gradient(90deg, #FFD700, ${accent}, transparent)` }} />
-                        <p className='text-gray-400 text-xs leading-relaxed mb-3'>{desc}</p>
-
-                        {variant === 'table' && tableData && (
-                            <div className='mb-3'>
-                                <CommissionTable tableData={tableData} accent={accent} />
-                            </div>
-                        )}
-
-                        {variant === 'legal' && legalSummary && (
-                            <div className='rounded-xl p-3 mb-3 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
-                                <p className='text-xs font-bold uppercase mb-1' style={{ color: accent }}>
-                                    Summary
-                                </p>
-                                <p className='text-white/55 text-xs leading-relaxed'>{legalSummary}</p>
-                                {legalLink && (
-                                    <a
-                                        href={legalLink}
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        className='inline-flex items-center gap-1 mt-2 text-xs font-semibold hover:underline'
-                                        style={{ color: accent }}
-                                    >
-                                        Read full →
-                                    </a>
-                                )}
-                            </div>
-                        )}
-
-                        {bullets && (
-                            <ul className='space-y-1.5'>
-                                {bullets.map((b, i) => (
-                                    <li key={i} className='flex items-start gap-2'>
-                                        <CheckCircle className='w-3.5 h-3.5 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                        <span className='text-white/65 text-xs leading-snug'>
-                                            {isLastSlide ? (
-                                                <a
-                                                    href={
-                                                        ['/affiliateagreement', '/independentcontract', '/earningsdisclosure', '/gdpr', '/terms', '/privacy'][i]
-                                                    }
-                                                    target='_blank'
-                                                    rel='noopener noreferrer'
-                                                    className='hover:underline'
-                                                    style={{ color: accent }}
-                                                >
-                                                    {b}
-                                                </a>
-                                            ) : (
-                                                b
-                                            )}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-
-                        {isLastSlide && (
-                            <label className='flex items-start gap-2.5 mt-4 cursor-pointer'>
-                                <div
-                                    onClick={() => setAgreed(!agreed)}
-                                    className='w-5 h-5 rounded-md flex-shrink-0 mt-0.5 flex items-center justify-center transition-all cursor-pointer'
-                                    style={{
-                                        backgroundColor: agreed ? accent : 'transparent',
-                                        border: `2px solid ${agreed ? accent : 'rgba(255,255,255,0.25)'}`,
-                                    }}
-                                >
-                                    {agreed && <CheckCircle className='w-3 h-3 text-[#09080a]' strokeWidth={3} />}
-                                </div>
-                                <span className='text-white/55 text-xs leading-relaxed'>
-                                    I have read and agree to all the legal documents. I understand earnings are not guaranteed and I act as an independent
-                                    contractor.
-                                </span>
-                            </label>
-                        )}
-                    </div>
-
-                    {/* Mobile nav */}
-                    <div className='relative z-10 px-6 pb-5'>
-                        <div className='flex items-center gap-2'>
-                            <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />
-                            <div className='flex items-center gap-1.5 ml-auto'>
-                                <button
-                                    onClick={handlePrev}
-                                    disabled={current === 0}
-                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20'
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                                >
-                                    <ChevronLeft className='w-4 h-4 text-white' />
-                                </button>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={isNextDisabled}
-                                    className='h-9 px-3 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed'
-                                    style={{
-                                        background: `linear-gradient(135deg, #FFD700cc, ${accent}99)`,
-                                        border: `1px solid ${accent}60`,
-                                        color: '#1a1200',
-                                    }}
-                                >
-                                    {isLastSlide ? (agreed ? 'Agree' : '—') : 'Next'}
-                                    {/* {!isLastSlide && <ChevronRight className='w-3.5 h-3.5' />} */}
-                                </button>
                             </div>
                         </div>
                     </div>

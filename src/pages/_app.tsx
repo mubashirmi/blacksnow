@@ -5,6 +5,7 @@ import AffiliateLayout from '@/components/AffiliateDashboardLayout';
 import EmailMarketingLayout from '@/components/EmailMarketingLayout';
 import SalesDashboardLayout from '@/components/SalesDashboardLayout';
 import SuperAffiliateLayout from '@/components/SuperAffiliateDashboardLayout';
+import InvoiceDashboardLayout from '@/components/invoicecontract/DashboardLayout';
 import { mantineTheme } from '@/constants/mantineTheme';
 import { useGlobalState } from '@/store';
 import '@aws-amplify/ui-react/styles.css';
@@ -22,7 +23,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, type ReactElement, type ReactNode } from 'react';
 import '../styles/globalStyles.css';
-import InvoiceDashboardLayout from '@/components/invoicecontract/DashboardLayout';
 
 type NextPageWithLayout = AppProps['Component'] & {
     getLayout?: (page: ReactElement) => ReactNode;
@@ -66,7 +66,7 @@ export default function App({ Component, pageProps }: AppProps) {
         const isAffiliateRoute = router.pathname.startsWith('/affiliate/dashboard');
         const isSuperAffiliateRoute = router.pathname.startsWith('/superAffiliate/dashboard');
         const isSalesRoute = router.pathname.startsWith('/sales/dashboard');
-        const isInvoiceRoute= router.pathname.startsWith('/invoicecontractdashboard');
+        const isInvoiceRoute = router.pathname.startsWith('/invoicecontractdashboard');
 
         if (isAdminRoute) return <AdminLayout>{page}</AdminLayout>;
         if (isEmailMarketingRoute) return <EmailMarketingLayout>{page}</EmailMarketingLayout>;
