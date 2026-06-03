@@ -272,7 +272,7 @@ export function HomeTourPopup() {
                     <div className='flex-1 flex flex-col justify-between px-10 xl:px-14 pt-10 pb-8 min-w-0'>
                         <div style={slideAnim}>
                             {/* Badge */}
-                            <div
+                            {/* <div
                                 className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-6'
                                 style={{
                                     backgroundColor: `${accent}18`,
@@ -282,7 +282,7 @@ export function HomeTourPopup() {
                             >
                                 <Icon className='w-3.5 h-3.5' />
                                 {badge}
-                            </div>
+                            </div> */}
 
                             {/* Title */}
                             <h2 className='text-4xl xl:text-5xl font-black text-white leading-tight mb-4'>
@@ -385,7 +385,7 @@ export function HomeTourPopup() {
 
                     {/* Content */}
                     <div className='relative z-10 px-6 pt-8 pb-4' style={slideAnim}>
-                        <div
+                        {/* <div
                             className='inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-4'
                             style={{
                                 backgroundColor: `${accent}18`,
@@ -395,7 +395,7 @@ export function HomeTourPopup() {
                         >
                             <Icon className='w-3.5 h-3.5' />
                             {badge}
-                        </div>
+                        </div> */}
                         <h2 className='text-3xl font-black text-white leading-tight mb-2'>
                             <Title />
                         </h2>

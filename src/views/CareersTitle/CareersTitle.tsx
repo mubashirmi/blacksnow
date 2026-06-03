@@ -90,9 +90,9 @@ const talentServiceContent: Record<
             'Flexible hiring',
             'Background checks included',
         ],
-        pricingTitle: 'Contract Pricing:',
-        pricing: ['$2,000/Month', '10% Candidate Placement Fee'],
-        buttonLabel: 'Start Hiring',
+        pricingTitle: 'Consultation Fee:',
+        pricing: ['$250/Month'],
+        buttonLabel: 'Schedule Consultation',
     },
     global: {
         eyebrow: 'Global Workforce (BPO)',
@@ -108,8 +108,8 @@ const talentServiceContent: Record<
             },
         ],
         keyPoints: ['Workforce outsourcing', 'International candidate sourcing', 'Payroll & compliance handled', 'Flexible team structures', 'Fast onboarding'],
-        pricingTitle: 'Global Support Includes:',
-        pricing: ['Payroll & contracts', 'Compliance support'],
+        pricingTitle: 'Consultation Fee:',
+        pricing: ['$250/Month'],
         buttonLabel: 'Schedule Consultation',
     },
 };
@@ -882,7 +882,7 @@ function CareersTitle() {
 
                                 <div className='relative z-10 grid gap-8 lg:grid-cols-[0.75fr_1.55fr] lg:gap-10 lg:items-center'>
                                     <div className='text-center lg:text-left'>
-                                        <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>U.S. Talent Acquisition</p>
+                                        <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>{activeTalentService.eyebrow}</p>
                                         <h2 className='text-4xl sm:text-5xl font-black leading-tight text-white'>
                                             Schedule
                                             <br />
