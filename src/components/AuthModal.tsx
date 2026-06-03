@@ -306,7 +306,7 @@ function validatePassword(value: string) {
     return value.length >= 6 || 'Password must be at least 6 characters long';
 }
 
-// ─── Product Header Sub-component ────────────────────────────────────────────
+// ─── Product Header Sub-component ─────────────────────────────────────────
 function ProductHeader({
     product,
     billingPeriod,
