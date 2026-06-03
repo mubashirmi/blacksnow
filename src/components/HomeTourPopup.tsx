@@ -183,7 +183,7 @@ export function HomeTourPopup() {
         goTo(i, i > current ? 'next' : 'prev');
     };
 
-    const { Icon, accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets, lottie } = SLIDES[current];
+    const { accent, badge, titleGrad, titlePlain, gradAtEnd, desc, bullets, lottie } = SLIDES[current];
 
     const slideAnim: React.CSSProperties = {
         transition: 'opacity 0.26s ease, transform 0.27s ease',
