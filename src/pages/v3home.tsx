@@ -40,7 +40,7 @@ function Page() {
     const closeModal = () => setIsModalOpen(false);
     return (
         <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
-            {/* Simplified Background System - Removed floating icons */}
+            {/* Simplified Background System - Removed floating icon */}
             <div className='fixed inset-0 overflow-hidden pointer-events-none'>
                 {/* Geometric Grid */}
                 <div className='absolute inset-0 opacity-5'>
