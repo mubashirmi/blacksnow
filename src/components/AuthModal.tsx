@@ -420,7 +420,7 @@ export default function AuthModal({
     const router = useRouter();
 
     const [showPassword, setShowPassword] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(defaultView === 'signin');
+    const [isSignUp, setIsSignUp] = useState(defaultView === 'signup');
     const [isLoading, setIsLoading] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
     const [termsAccepted, setTermsAccepted] = useState(false);
