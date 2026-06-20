@@ -292,8 +292,9 @@ function Pricing() {
                                     aria-label={`Switch to ${billingPeriod === 'monthly' ? 'yearly' : 'monthly'} billing`}
                                 >
                                     <span
-                                        className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
-                                            }`}
+                                        className={`text-base font-semibold transition-colors duration-300 ${
+                                            billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                        }`}
                                     >
                                         Monthly
                                     </span>
@@ -301,14 +302,16 @@ function Pricing() {
                                     <span className='relative h-10 w-[76px] rounded-full border border-[#2c7bbe]/40 bg-[#0a0b0f] p-1'>
                                         <span className='absolute inset-0 rounded-full bg-gradient-to-r from-[#0e2747] to-[#1e4f85] opacity-90'></span>
                                         <span
-                                            className={`relative block h-8 w-8 rounded-full bg-white shadow-[0_0_20px_rgba(76,199,232,0.42)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${billingPeriod === 'yearly' ? 'translate-x-9' : 'translate-x-0'
-                                                }`}
+                                            className={`relative block h-8 w-8 rounded-full bg-white shadow-[0_0_20px_rgba(76,199,232,0.42)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                                                billingPeriod === 'yearly' ? 'translate-x-9' : 'translate-x-0'
+                                            }`}
                                         ></span>
                                     </span>
 
                                     <span
-                                        className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
-                                            }`}
+                                        className={`text-base font-semibold transition-colors duration-300 ${
+                                            billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                        }`}
                                     >
                                         Yearly
                                     </span>
@@ -441,7 +444,9 @@ function Pricing() {
                                                         {product.name}
                                                     </h2>
 
-                                                    <p className='mx-auto mt-3 max-w-2xl break-words text-sm leading-7 text-gray-300 sm:text-base md:mx-0'>{product.description}</p>
+                                                    <p className='mx-auto mt-3 max-w-2xl break-words text-sm leading-7 text-gray-300 sm:text-base md:mx-0'>
+                                                        {product.description}
+                                                    </p>
 
                                                     <div className='mt-6 grid min-w-0 gap-3 md:grid-cols-2'>
                                                         {product.features.map((feature, i) => (
@@ -452,7 +457,9 @@ function Pricing() {
                                                                 <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#4cc7e8]/50 bg-transparent'>
                                                                     <CheckCircle className='h-4 w-4 text-[#4cc7e8]' />
                                                                 </span>
-                                                                <span className='min-w-0 break-words text-left text-sm leading-6 text-gray-100 sm:text-base'>{feature}</span>
+                                                                <span className='min-w-0 break-words text-left text-sm leading-6 text-gray-100 sm:text-base'>
+                                                                    {feature}
+                                                                </span>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -461,7 +468,9 @@ function Pricing() {
 
                                             <div className='flex w-full min-w-0 flex-col justify-center rounded-[24px] border border-[#2c7bbe]/24 bg-[#050608]/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
                                                 <div className='flex min-w-0 flex-wrap items-end gap-1 sm:gap-2'>
-                                                    <span className={`${michroma.className} text-[2.7rem] leading-none tracking-[-0.06em] text-white sm:text-5xl xl:text-6xl`}>
+                                                    <span
+                                                        className={`${michroma.className} text-[2.7rem] leading-none tracking-[-0.06em] text-white sm:text-5xl xl:text-6xl`}
+                                                    >
                                                         {getProductPrice(product)}
                                                     </span>
                                                     <span className='pb-1 text-base text-gray-300 sm:pb-2 sm:text-xl'>{getProductPeriod(product)}</span>
@@ -518,8 +527,9 @@ function Pricing() {
                                         key={item.id}
                                         type='button'
                                         onClick={() => setActiveProductIndex(index)}
-                                        className={`h-2 rounded-full transition-all duration-300 ${activeProductIndex === index ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/45 hover:bg-[#4cc7e8]/70'
-                                            }`}
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            activeProductIndex === index ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/45 hover:bg-[#4cc7e8]/70'
+                                        }`}
                                         aria-label={`Show ${item.name}`}
                                     ></button>
                                 ))}

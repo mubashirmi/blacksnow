@@ -25,10 +25,7 @@ const isDashboardRoute = (url: string) => {
     );
 };
 
-export default function PageChangeLoader({
-    logoSrc = '/logocolored.png',
-    duration = 2700,
-}: PageChangeLoaderProps) {
+export default function PageChangeLoader({ logoSrc = '/logocolored.png', duration = 2700 }: PageChangeLoaderProps) {
     const router = useRouter();
 
     const [visible, setVisible] = useState(false);
@@ -67,8 +64,7 @@ export default function PageChangeLoader({
         const handleRouteChangeStart = (nextUrl: string) => {
             const currentUrl = router.asPath;
 
-            const shouldSkipLoader =
-                isDashboardRoute(currentUrl) || isDashboardRoute(nextUrl);
+            const shouldSkipLoader = isDashboardRoute(currentUrl) || isDashboardRoute(nextUrl);
 
             if (shouldSkipLoader) {
                 hideLoader();
