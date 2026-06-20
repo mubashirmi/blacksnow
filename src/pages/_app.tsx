@@ -90,7 +90,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Head>
 
             <MantineProvider theme={theme}>
-                <PageChangeLoader logoSrc='/logocolored.png' duration={2500} />
+                <PageChangeLoader logoSrc='/logocolored.png' duration={3000} />
 
                 <Notifications position='top-right' />
 

@@ -136,7 +136,7 @@ function LogoBox({ mode = 'unsubscribe' }: { mode?: ProductDialogMode }) {
             <Image
                 width={120}
                 height={120}
-                src={isFeedback ? '/logocolored.png' : '/redLogo.png'}
+                src={isFeedback ? '/logo.png' : '/redLogo.png'}
                 alt='Logo'
                 className='object-contain'
                 style={

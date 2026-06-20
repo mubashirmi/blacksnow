@@ -292,9 +292,8 @@ function Pricing() {
                                     aria-label={`Switch to ${billingPeriod === 'monthly' ? 'yearly' : 'monthly'} billing`}
                                 >
                                     <span
-                                        className={`text-base font-semibold transition-colors duration-300 ${
-                                            billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
-                                        }`}
+                                        className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                            }`}
                                     >
                                         Monthly
                                     </span>
@@ -302,16 +301,14 @@ function Pricing() {
                                     <span className='relative h-10 w-[76px] rounded-full border border-[#2c7bbe]/40 bg-[#0a0b0f] p-1'>
                                         <span className='absolute inset-0 rounded-full bg-gradient-to-r from-[#0e2747] to-[#1e4f85] opacity-90'></span>
                                         <span
-                                            className={`relative block h-8 w-8 rounded-full bg-white shadow-[0_0_20px_rgba(76,199,232,0.42)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                                                billingPeriod === 'yearly' ? 'translate-x-9' : 'translate-x-0'
-                                            }`}
+                                            className={`relative block h-8 w-8 rounded-full bg-white shadow-[0_0_20px_rgba(76,199,232,0.42)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${billingPeriod === 'yearly' ? 'translate-x-9' : 'translate-x-0'
+                                                }`}
                                         ></span>
                                     </span>
 
                                     <span
-                                        className={`text-base font-semibold transition-colors duration-300 ${
-                                            billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
-                                        }`}
+                                        className={`text-base font-semibold transition-colors duration-300 ${billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                            }`}
                                     >
                                         Yearly
                                     </span>
@@ -325,17 +322,17 @@ function Pricing() {
                             </div>
                         </div>
 
-                        <div className='relative min-h-[340px] animate-slide-in-right sm:min-h-[420px] lg:min-h-[470px]'>
+                        <div className='relative min-h-[300px] overflow-visible animate-slide-in-right sm:min-h-[420px] lg:min-h-[470px]'>
                             <div className='absolute inset-0 rounded-full border border-[#2c7bbe]/20 bg-[#07101c]/20 blur-sm'></div>
 
-                            <div className='pricing-hero-card absolute left-[75%] top-10 h-[255px] w-[350px] -translate-x-1/2 rounded-[28px] border border-[#4cc7e8]/35 bg-[#050608]/75 shadow-[0_0_70px_rgba(44,123,190,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:h-[310px] sm:w-[470px] lg:top-7 lg:h-[335px] lg:w-[530px]'>
+                            <div className='pricing-hero-card relative top-0 mx-auto h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/35 bg-[#050608]/75 shadow-[0_0_70px_rgba(44,123,190,0.32),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:h-[310px] sm:max-w-[470px] lg:absolute lg:left-1/2 lg:top-7 lg:h-[335px] lg:w-[530px] lg:max-w-none'>
                                 <div className='absolute inset-0 rounded-[28px] bg-[linear-gradient(135deg,rgba(76,199,232,0.09),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]'></div>
 
                                 <div className='absolute left-6 top-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#4cc7e8]/35 bg-transparent shadow-[0_0_28px_rgba(76,199,232,0.13)] sm:left-8 sm:top-8 sm:h-20 sm:w-20'>
                                     <ActiveHeroIcon className='h-8 w-8 text-[#4cc7e8] sm:h-10 sm:w-10' />
                                 </div>
 
-                                <div className='absolute right-5 top-5 rounded-xl border border-[#4cc7e8]/35 bg-[#050608]/85 px-4 py-3 shadow-[0_0_35px_rgba(76,199,232,0.18)] sm:right-[-30px] sm:top-8'>
+                                <div className='absolute right-4 top-4 rounded-xl border border-[#4cc7e8]/35 bg-[#050608]/85 px-3 py-2 shadow-[0_0_35px_rgba(76,199,232,0.18)] sm:right-[-18px] sm:top-8 sm:px-4 sm:py-3 lg:right-[-30px]'>
                                     <div className={`${michroma.className} text-sm text-[#4cc7e8] sm:text-base`}>+{activeSavings || 28}.6%</div>
                                     <div className='mt-1 text-xs text-gray-300'>YTD Value</div>
                                 </div>
@@ -401,14 +398,14 @@ function Pricing() {
             </section>
 
             {/* ── Animated Product Slider ───────────────────────────────── */}
-            <section className='relative px-4 pb-10 sm:px-6 md:px-8'>
+            <section className='relative overflow-hidden px-4 pb-10 sm:px-6 md:px-8'>
                 <div className='mx-auto max-w-[1380px]'>
-                    <div className='relative overflow-hidden rounded-[28px] border border-[#2c7bbe]/35 bg-gradient-to-br from-[#050608]/92 via-[#0a0b0f]/96 to-[#050608]/98 shadow-[0_0_80px_rgba(44,123,190,0.16),inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-2xl'>
+                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#2c7bbe]/35 bg-gradient-to-br from-[#050608]/92 via-[#0a0b0f]/96 to-[#050608]/98 shadow-[0_0_80px_rgba(44,123,190,0.16),inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-2xl'>
                         <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(76,199,232,0.13),transparent_28%),radial-gradient(circle_at_86%_50%,rgba(44,123,190,0.12),transparent_32%)]'></div>
                         <div className='pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#4cc7e8]/55 to-transparent'></div>
 
                         <div
-                            className='pricing-slider-track relative z-10 flex'
+                            className='pricing-slider-track relative z-10 flex w-full min-w-0'
                             style={{
                                 transform: `translateX(-${activeProductIndex * 100}%)`,
                             }}
@@ -418,14 +415,14 @@ function Pricing() {
                                 const savings = getSavingsPercentage(product);
 
                                 return (
-                                    <div key={product.id} className='min-w-full shrink-0'>
-                                        <div className='grid gap-7 px-5 pb-20 pt-6 sm:px-7 sm:pb-20 sm:pt-8 lg:grid-cols-[1.6fr_0.6fr] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:px-12'>
-                                            <div className='grid gap-6 md:grid-cols-[104px_1fr]'>
-                                                <div className='flex h-24 w-24 items-center justify-center rounded-3xl border border-[#4cc7e8]/35 bg-transparent shadow-[0_0_32px_rgba(76,199,232,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-[#4cc7e8]/60 hover:shadow-[0_0_42px_rgba(76,199,232,0.2)]'>
-                                                    <ProductIcon className='h-11 w-11 text-[#4cc7e8]' strokeWidth={1.8} />
+                                    <div key={product.id} className='w-full min-w-full shrink-0 overflow-hidden'>
+                                        <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[1.6fr_0.6fr] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:px-12'>
+                                            <div className='grid min-w-0 gap-5 md:grid-cols-[104px_1fr] md:gap-6'>
+                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#4cc7e8]/35 bg-transparent shadow-[0_0_32px_rgba(76,199,232,0.12),inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 hover:border-[#4cc7e8]/60 hover:shadow-[0_0_42px_rgba(76,199,232,0.2)] sm:h-24 sm:w-24 md:mx-0'>
+                                                    <ProductIcon className='h-9 w-9 text-[#4cc7e8] sm:h-11 sm:w-11' strokeWidth={1.8} />
                                                 </div>
 
-                                                <div>
+                                                <div className='min-w-0 text-center md:text-left'>
                                                     {/* <div className='mb-3 flex flex-wrap items-center gap-3'>
                                                         <span className={`${michroma.className} text-[11px] uppercase tracking-[0.42em] text-[#4cc7e8]`}>
                                                             {product.name}
@@ -439,35 +436,35 @@ function Pricing() {
                                                     </div> */}
 
                                                     <h2
-                                                        className={`${michroma.className} text-2xl leading-tight tracking-[-0.02em] text-white sm:text-3xl lg:text-4xl`}
+                                                        className={`${michroma.className} break-words text-xl leading-tight tracking-[-0.02em] text-white sm:text-3xl lg:text-4xl`}
                                                     >
                                                         {product.name}
                                                     </h2>
 
-                                                    <p className='mt-3 max-w-2xl text-base leading-7 text-gray-300'>{product.description}</p>
+                                                    <p className='mx-auto mt-3 max-w-2xl break-words text-sm leading-7 text-gray-300 sm:text-base md:mx-0'>{product.description}</p>
 
-                                                    <div className='mt-7 grid gap-3 sm:grid-cols-2'>
+                                                    <div className='mt-6 grid min-w-0 gap-3 md:grid-cols-2'>
                                                         {product.features.map((feature, i) => (
                                                             <div
                                                                 key={i}
-                                                                className='flex items-center gap-3 rounded-xl border border-[#2c7bbe]/15 bg-white/[0.025] px-3 py-2.5 transition-all duration-300 hover:border-[#4cc7e8]/35 hover:bg-[#4cc7e8]/[0.04]'
+                                                                className='flex min-w-0 items-start gap-3 rounded-xl border border-[#2c7bbe]/15 bg-white/[0.025] px-3 py-2.5 transition-all duration-300 hover:border-[#4cc7e8]/35 hover:bg-[#4cc7e8]/[0.04]'
                                                             >
                                                                 <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#4cc7e8]/50 bg-transparent'>
                                                                     <CheckCircle className='h-4 w-4 text-[#4cc7e8]' />
                                                                 </span>
-                                                                <span className='text-sm leading-6 text-gray-100 sm:text-base'>{feature}</span>
+                                                                <span className='min-w-0 break-words text-left text-sm leading-6 text-gray-100 sm:text-base'>{feature}</span>
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col justify-center rounded-[24px] border border-[#2c7bbe]/24 bg-[#050608]/55 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
-                                                <div className='flex items-end gap-2'>
-                                                    <span className={`${michroma.className} text-4xl tracking-[-0.06em] text-white sm:text-5xl xl:text-6xl`}>
+                                            <div className='flex w-full min-w-0 flex-col justify-center rounded-[24px] border border-[#2c7bbe]/24 bg-[#050608]/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
+                                                <div className='flex min-w-0 flex-wrap items-end gap-1 sm:gap-2'>
+                                                    <span className={`${michroma.className} text-[2.7rem] leading-none tracking-[-0.06em] text-white sm:text-5xl xl:text-6xl`}>
                                                         {getProductPrice(product)}
                                                     </span>
-                                                    <span className='pb-2 text-lg text-gray-300 sm:text-xl'>{getProductPeriod(product)}</span>
+                                                    <span className='pb-1 text-base text-gray-300 sm:pb-2 sm:text-xl'>{getProductPeriod(product)}</span>
                                                 </div>
 
                                                 {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
@@ -479,7 +476,7 @@ function Pricing() {
                                                 {product.available ? (
                                                     <Button
                                                         size='lg'
-                                                        className={`mt-6 h-14 w-full cursor-pointer rounded-2xl bg-gradient-to-r ${product.color} text-base font-black text-white shadow-[0_0_40px_rgba(44,123,190,0.32)] transition-all duration-300 hover:scale-[1.02] hover:from-[#4cc7e8] hover:to-[#2c7bbe] sm:h-16 sm:text-lg`}
+                                                        className={`mt-6 h-14 w-full cursor-pointer rounded-2xl bg-gradient-to-r ${product.color} text-sm font-black text-white shadow-[0_0_40px_rgba(44,123,190,0.32)] transition-all duration-300 hover:scale-[1.02] hover:from-[#4cc7e8] hover:to-[#2c7bbe] sm:h-16 sm:text-lg`}
                                                         onClick={() => goToProduct(product.redirectRoute)}
                                                     >
                                                         Get Started
@@ -494,9 +491,9 @@ function Pricing() {
                                                     </div>
                                                 )}
 
-                                                <div className='mt-4 flex items-center gap-3 text-sm text-gray-400'>
+                                                <div className='mt-4 flex min-w-0 items-start gap-3 text-sm text-gray-400'>
                                                     <LockKeyhole className='h-5 w-5 text-[#4cc7e8]' />
-                                                    <span>Secure payments. Cancel anytime.</span>
+                                                    <span className='min-w-0 break-words leading-6'>Secure payments. Cancel anytime.</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -505,7 +502,7 @@ function Pricing() {
                             })}
                         </div>
 
-                        <div className='pointer-events-none absolute inset-x-0 bottom-4 z-20 flex items-center justify-between px-5 sm:px-7 lg:px-10'>
+                        <div className='pointer-events-none absolute inset-x-0 bottom-5 z-20 flex items-center justify-between px-5 sm:px-7 lg:px-10'>
                             <button
                                 type='button'
                                 onClick={handlePrevProduct}
@@ -521,9 +518,8 @@ function Pricing() {
                                         key={item.id}
                                         type='button'
                                         onClick={() => setActiveProductIndex(index)}
-                                        className={`h-2 rounded-full transition-all duration-300 ${
-                                            activeProductIndex === index ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/45 hover:bg-[#4cc7e8]/70'
-                                        }`}
+                                        className={`h-2 rounded-full transition-all duration-300 ${activeProductIndex === index ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/45 hover:bg-[#4cc7e8]/70'
+                                            }`}
                                         aria-label={`Show ${item.name}`}
                                     ></button>
                                 ))}
@@ -774,8 +770,15 @@ function Pricing() {
                 }
 
                 .pricing-hero-card {
+                    --pricing-card-x: 0;
                     transform-style: preserve-3d;
                     animation: pricing-float 5.5s ease-in-out infinite;
+                }
+
+                @media (min-width: 1024px) {
+                    .pricing-hero-card {
+                        --pricing-card-x: -50%;
+                    }
                 }
 
                 .pricing-slider-track {
@@ -786,10 +789,10 @@ function Pricing() {
                 @keyframes pricing-float {
                     0%,
                     100% {
-                        transform: translateX(-50%) translateY(0);
+                        transform: translateX(var(--pricing-card-x)) translateY(0);
                     }
                     50% {
-                        transform: translateX(-50%) translateY(-12px);
+                        transform: translateX(var(--pricing-card-x)) translateY(-12px);
                     }
                 }
             `}</style>

@@ -25,59 +25,99 @@ const isDashboardRoute = (url: string) => {
     );
 };
 
-export default function PageChangeLoader({ logoSrc = '/logocolored.png', duration = 2500 }: PageChangeLoaderProps) {
+export default function PageChangeLoader({
+    logoSrc = '/logocolored.png',
+    duration = 2700,
+}: PageChangeLoaderProps) {
     const router = useRouter();
+
     const [visible, setVisible] = useState(false);
     const [animationKey, setAnimationKey] = useState(0);
+
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const startedAtRef = useRef<number>(0);
+    const loaderActiveRef = useRef(false);
+
+    const clearLoaderTimeout = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+    };
+
+    const hideLoader = () => {
+        clearLoaderTimeout();
+        loaderActiveRef.current = false;
+        setVisible(false);
+    };
+
+    const hideLoaderAfterRemainingTime = () => {
+        clearLoaderTimeout();
+
+        const elapsed = Date.now() - startedAtRef.current;
+        const remaining = Math.max(duration - elapsed, 0);
+
+        timeoutRef.current = setTimeout(() => {
+            loaderActiveRef.current = false;
+            setVisible(false);
+        }, remaining);
+    };
 
     useEffect(() => {
-        const showLoader = (nextUrl: string) => {
+        const handleRouteChangeStart = (nextUrl: string) => {
             const currentUrl = router.asPath;
 
-            if (isDashboardRoute(currentUrl) || isDashboardRoute(nextUrl)) return;
+            const shouldSkipLoader =
+                isDashboardRoute(currentUrl) || isDashboardRoute(nextUrl);
 
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
+            if (shouldSkipLoader) {
+                hideLoader();
+                return;
             }
+
+            clearLoaderTimeout();
+
+            loaderActiveRef.current = true;
+            startedAtRef.current = Date.now();
 
             setAnimationKey((prev) => prev + 1);
             setVisible(true);
 
+            // Safety fallback: even if routeChangeComplete does not fire properly,
+            // loader will still disappear.
             timeoutRef.current = setTimeout(() => {
+                loaderActiveRef.current = false;
                 setVisible(false);
-            }, duration);
+            }, duration + 150);
         };
 
-        const hideLoaderOnError = () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
+        const handleRouteChangeComplete = () => {
+            if (!loaderActiveRef.current) return;
 
-            setVisible(false);
+            hideLoaderAfterRemainingTime();
         };
 
-        router.events.on('routeChangeStart', showLoader);
-        router.events.on('routeChangeError', hideLoaderOnError);
+        const handleRouteChangeError = () => {
+            hideLoader();
+        };
+
+        router.events.on('routeChangeStart', handleRouteChangeStart);
+        router.events.on('routeChangeComplete', handleRouteChangeComplete);
+        router.events.on('routeChangeError', handleRouteChangeError);
 
         return () => {
-            router.events.off('routeChangeStart', showLoader);
-            router.events.off('routeChangeError', hideLoaderOnError);
+            router.events.off('routeChangeStart', handleRouteChangeStart);
+            router.events.off('routeChangeComplete', handleRouteChangeComplete);
+            router.events.off('routeChangeError', handleRouteChangeError);
 
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
+            clearLoaderTimeout();
         };
-    }, [router, duration]);
+    }, [router.events, router.asPath, duration]);
 
     if (!visible) return null;
 
     return (
         <div className='fixed inset-0 z-[999999] flex items-center justify-center overflow-hidden bg-black'>
-            {/* <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(76,199,232,0.16),transparent_38%)]' /> */}
-
-            {/* <div className='absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4cc7e8]/10 blur-3xl' /> */}
-
             <div className='relative z-10 flex w-full max-w-sm flex-col items-center justify-center px-6'>
                 <div className='relative mb-8 flex items-center justify-center'>
                     <div className='absolute h-40 w-40 rounded-full bg-[#4cc7e8]/10 blur-3xl' />
@@ -87,6 +127,7 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
                         height={100}
                         src={logoSrc}
                         alt='Logo'
+                        priority
                         className='relative h-32 w-32 object-contain drop-shadow-blue-950 sm:h-48 sm:w-48 lg:h-56 lg:w-56'
                     />
                 </div>
@@ -102,8 +143,6 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
 
                     <div className='absolute inset-0 animate-shine bg-gradient-to-r from-transparent via-white/35 to-transparent' />
                 </div>
-
-                {/* <div className='mt-3 h-px w-44 bg-gradient-to-r from-transparent via-[#4cc7e8]/70 to-transparent' /> */}
             </div>
 
             <style jsx>{`
@@ -134,38 +173,8 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
                     }
                 }
 
-                @keyframes logoFloat {
-                    0%,
-                    100% {
-                        transform: translateY(0) scale(1);
-                    }
-                    50% {
-                        transform: translateY(-8px) scale(1.04);
-                    }
-                }
-
-                @keyframes dot {
-                    0%,
-                    100% {
-                        opacity: 0.25;
-                        transform: translateY(0);
-                    }
-                    50% {
-                        opacity: 1;
-                        transform: translateY(-4px);
-                    }
-                }
-
                 .animate-shine {
                     animation: shine 1.15s ease-in-out infinite;
-                }
-
-                .animate-logoFloat {
-                    animation: logoFloat 2s ease-in-out infinite;
-                }
-
-                .animate-dot {
-                    animation: dot 0.9s ease-in-out infinite;
                 }
             `}</style>
         </div>
