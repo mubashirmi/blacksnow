@@ -57,7 +57,7 @@ function Page() {
                 </div>
             </div>
 
-            {/* HERO SECTION - Updated content from images */}
+            {/* HERO SECTION - Updated content */}
             <section className='bg-[#CDE7FF] relative min-h-screen flex items-center justify-center px-8 py-32'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-20 items-center'>
