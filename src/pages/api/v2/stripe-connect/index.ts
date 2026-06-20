@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         if (method === 'POST') {
-            const { id, rsvpLink, newsletterLink, digitalBillboardLink, emailMarketingLink } = req.body;
+            const { id, digitalBillboardLink, emailMarketingLink, invoiceToolLink } = req.body;
             const userId = Number(id);
 
             if (!userId || Number.isNaN(userId)) {
@@ -95,10 +95,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // ✅ Create referral products if not exist
             await prisma.referralProducts.createMany({
                 data: [
-                    { productName: 'rsvp', productLink: rsvpLink, authId: userId },
-                    { productName: 'newsLetter', productLink: newsletterLink, authId: userId },
                     { productName: 'digitalBillboard', productLink: digitalBillboardLink, authId: userId },
                     { productName: 'emailMarketing', productLink: emailMarketingLink, authId: userId },
+                    { productName: 'InvoiceTool', productLink: invoiceToolLink, authId: userId },
                 ],
                 skipDuplicates: true,
             });

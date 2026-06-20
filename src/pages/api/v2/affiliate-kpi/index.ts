@@ -9,6 +9,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
         if (method === 'GET') {
             const affiliateData = await prisma.referralProducts.findMany({
                 where: { authId: Number(id) },
+                include: { referralProductsClicks: true },
             });
             const totalClicks = await prisma.referralProductsClicks.aggregate({
                 _sum: {

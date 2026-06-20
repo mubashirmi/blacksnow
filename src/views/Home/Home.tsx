@@ -871,32 +871,33 @@ function Home() {
             )}
 
             {/* ─── HERO SECTION ─── */}
-            <section className='relative flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 md:px-8 lg:px-4 min-h-[calc(100vh-64px)] min-[1100px]:min-h-0'>
+            <section className='relative flex items-center justify-center py-10 sm:py-14 min-[1100px]:py-14 px-4 sm:px-6 md:px-8 lg:px-8 min-h-[calc(100vh-64px)] min-[1100px]:min-h-0'>
                 <div className='absolute inset-0'>
                     <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
                     <div className='absolute inset-0 bg-black/90' />
                 </div>
 
-                <div className='container mx-auto max-w-8xl relative z-10 w-full'>
-                    <div className='grid min-[1100px]:grid-cols-[minmax(0,1fr)_auto] min-[1100px]:gap-6 min-[1501px]:gap-4 items-center min-[1100px]:items-start'>
+                <div className='relative z-10 w-full max-w-[1160px] mx-auto'>
+                    <div className='grid min-[1100px]:grid-cols-2 items-center'>
                         {/* ── LEFT ── */}
-                        <div className='flex flex-col gap-5 sm:gap-8 md:gap-10 min-[1100px]:h-[440px] min-[1200px]:h-[470px] min-[1350px]:h-[500px] min-[1501px]:h-[550px] min-[1100px]:justify-between min-[1100px]:gap-0'>
+                        <div className='flex flex-col gap-7 min-[1100px]:gap-8 min-w-0'>
                             <div className='space-y-3 animate-slide-in-left delay-200'>
-                                <h1 className='text-4xl sm:text-5xl md:text-6xl min-[1100px]:text-5xl min-[1280px]:text-6xl min-[1501px]:text-7xl font-black leading-tight tracking-tight'>
-                                    <span className='text-[#f4f4f4]'>Global Multi-Asset</span>
+                                <h1 className='font-michroma text-3xl sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.22] tracking-tight'>
+                                    <span className='text-[#f4f4f4] min-[1100px]:whitespace-nowrap'>Global Multi-Asset</span>
                                     <br />
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black'>
+                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black min-[1100px]:whitespace-nowrap'>
                                         Intelligence Engine
                                     </span>
                                 </h1>
 
-                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light'>
+                                <p className='text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed max-w-xl font-light'>
                                     Data-driven global paper trading, stock screening, watchlists, and economic KPI&apos;s
                                 </p>
                             </div>
 
+                            {/* Mobile animation */}
                             <div className='block min-[1100px]:hidden w-full animate-slide-in-left delay-300'>
-                                <div className='flex items-center justify-center w-full rounded-2xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full rounded-2xl border border-[#2c7bbe]/20 bg-[#07131a]/50'>
                                     <LottieAnimation
                                         src='/animations/growthChartIcon.json'
                                         className='w-full h-[220px] xs:h-[250px]'
@@ -906,14 +907,14 @@ function Home() {
                                 </div>
                             </div>
 
-                            <div className='animate-slide-in-left delay-400 overflow-hidden w-full min-[1100px]:w-[90%]'>
+                            <div className='animate-slide-in-left delay-400 overflow-hidden w-full'>
                                 <NewsletterSubscribeBar />
                             </div>
                         </div>
 
                         {/* ── RIGHT — desktop only ── */}
-                        <div className='hidden min-[1100px]:block relative animate-slide-in-right'>
-                            <div className='w-[440px] h-[440px] min-[1200px]:w-[470px] min-[1200px]:h-[470px] min-[1350px]:w-[500px] min-[1350px]:h-[500px] min-[1501px]:w-[550px] min-[1501px]:h-[550px] bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 overflow-hidden'>
+                        <div className='hidden min-[1100px]:flex relative animate-slide-in-right w-full items-center justify-center'>
+                            <div className='w-full max-w-[440px] aspect-square bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 overflow-hidden'>
                                 <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full' loop={true} autoplay={true} />
                             </div>
                         </div>

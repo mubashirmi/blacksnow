@@ -2,6 +2,7 @@
 
 import AuthModal from '@/components/AuthModal';
 import LightningSilverSlideshow from '@/components/LightningSilverSlideshow';
+import { MultiCurrencyAcceptanceSection } from '@/components/MultiCurrencyAcceptanceSection';
 import { PricingComponent } from '@/components/PricingComponent';
 import { RevenuePayoutsSection } from '@/components/RevenuePayoutsSection';
 import ShareBanner from '@/components/ShareBanner';
@@ -227,6 +228,7 @@ function LightningSilver() {
             </section>
 
             <RevenuePayoutsSection />
+            <MultiCurrencyAcceptanceSection />
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>

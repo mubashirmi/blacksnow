@@ -262,7 +262,7 @@ export type ProductContext = {
     icon?: React.ElementType;
 };
 
-export type AuthModalVisualVariant = 'default' | 'danger';
+export type AuthModalVisualVariant = 'default' | 'danger' | 'success';
 
 // ─── Auth Modal Props ─────────────────────────────────────────────────────────
 export type AuthModalProps = {
@@ -444,10 +444,13 @@ export default function AuthModal({
 
     const hasProduct = !!productContext;
     const isDangerVariant = visualVariant === 'danger';
+    const isSuccessVariant = visualVariant === 'success';
 
     const modalAccent = '#4cc7e8';
 
     const redLogoFilter = 'brightness(0) saturate(100%) invert(18%) sepia(98%) saturate(4622%) hue-rotate(345deg) brightness(98%) contrast(98%)';
+    const greenLogoFilter = 'brightness(0) saturate(100%) invert(24%) sepia(91%) saturate(876%) hue-rotate(115deg) brightness(82%) contrast(96%)';
+    const logoFilter = isDangerVariant ? redLogoFilter : isSuccessVariant ? greenLogoFilter : undefined;
 
     useEffect(() => {
         if (!router.isReady) return;
@@ -665,11 +668,11 @@ export default function AuthModal({
                                         <Image
                                             width={120}
                                             height={120}
-                                            src='/logocolored.png'
+                                            src='/logo.png'
                                             alt='Logo'
                                             className='object-contain'
                                             style={{
-                                                filter: isDangerVariant ? redLogoFilter : undefined,
+                                                filter: logoFilter,
                                             }}
                                         />
                                     </div>

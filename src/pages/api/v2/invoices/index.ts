@@ -1,8 +1,16 @@
-// pages/api/invoices/index.ts
 import prisma from '@/lib/prisma';
+import type { File as FormidableFile } from 'formidable';
 import formidable, { Fields, Files } from 'formidable';
+import fs from 'fs/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import nodemailer from 'nodemailer';
 import { getFileUrl, uploadFileToS3 } from '../../../../../bucket/bucketConfig';
+
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
 
 function parseForm(req: NextApiRequest): Promise<{ fields: Fields; files: Files }> {
     const form = formidable({
@@ -20,25 +28,180 @@ function parseForm(req: NextApiRequest): Promise<{ fields: Fields; files: Files 
 
 function getField(fields: Fields, key: string): string | undefined {
     const value = fields[key];
-    if (Array.isArray(value)) return value[0] as string;
-    return value as string | undefined;
+
+    if (Array.isArray(value)) {
+        const first = value[0];
+        return first === undefined || first === null ? undefined : String(first);
+    }
+
+    if (value === undefined || value === null) return undefined;
+
+    return String(value);
 }
+
+function getFile(files: Files, key: string): FormidableFile | undefined {
+    const value = files[key];
+    return Array.isArray(value) ? value[0] : value;
+}
+
+function isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function sanitizeFileName(fileName: string): string {
+    return fileName.replace(/[^\w.\-() ]+/g, '_');
+}
+
+function getUploadedFileName(pdfFile: FormidableFile, invoiceName?: string): string {
+    const originalName = pdfFile.originalFilename;
+
+    if (originalName) {
+        return sanitizeFileName(originalName);
+    }
+
+    if (invoiceName) {
+        return `${sanitizeFileName(invoiceName)}.pdf`;
+    }
+
+    return 'invoice.pdf';
+}
+
+function parseBoolean(value: string | undefined): boolean | undefined {
+    if (value === undefined) return undefined;
+
+    const normalized = value.trim().toLowerCase();
+
+    if (['true', '1', 'yes', 'paid'].includes(normalized)) {
+        return true;
+    }
+
+    if (['false', '0', 'no', 'unpaid'].includes(normalized)) {
+        return false;
+    }
+
+    return undefined;
+}
+
+function escapeHtml(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+function getSmtpTransporter() {
+    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = Number(process.env.SMTP_PORT || 465);
+
+    const secure = process.env.SMTP_SECURE !== undefined ? process.env.SMTP_SECURE === 'true' : port === 465;
+
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS;
+
+    if (!user || !pass) {
+        throw new Error('SMTP_USER or SMTP_PASS is missing');
+    }
+
+    return nodemailer.createTransport({
+        host,
+        port,
+        secure,
+        auth: {
+            user,
+            pass,
+        },
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 60000,
+    });
+}
+
+async function sendInvoiceCreatedMail(params: {
+    to: string;
+    name?: string;
+    businessName?: string;
+    price?: string;
+    transactionId?: string;
+    paid?: boolean;
+    pdfFile: FormidableFile;
+    pdfBuffer: Buffer;
+}) {
+    const { to, name, businessName, price, transactionId, paid, pdfFile, pdfBuffer } = params;
+
+    const transporter = getSmtpTransporter();
+
+    await transporter.verify();
+
+    const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'no-reply@example.com';
+    const fileName = getUploadedFileName(pdfFile, businessName || name);
+
+    const displayName = name || 'there';
+    const safeDisplayName = escapeHtml(displayName);
+    const safeBusinessName = businessName ? escapeHtml(businessName) : '';
+    const safePrice = price ? escapeHtml(price) : '';
+    const safeTransactionId = transactionId ? escapeHtml(transactionId) : '';
+
+    await transporter.sendMail({
+        from,
+        to,
+        subject: 'Invoice created successfully',
+        text: `Hi ${displayName},
+
+Your invoice has been created successfully.
+
+${businessName ? `Business Name: ${businessName}` : ''}
+${price ? `Price: ${price}` : ''}
+${transactionId ? `Transaction ID: ${transactionId}` : ''}
+Payment Status: ${paid ? 'Paid' : 'Unpaid'}
+
+Please find the attached PDF copy of your invoice.
+
+Thank you.`,
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <p>Hi ${safeDisplayName},</p>
+
+                <p>Your invoice has been created successfully.</p>
+
+                ${businessName ? `<p><strong>Business Name:</strong> ${safeBusinessName}</p>` : ''}
+
+                ${price ? `<p><strong>Price:</strong> ${safePrice}</p>` : ''}
+
+                ${transactionId ? `<p><strong>Transaction ID:</strong> ${safeTransactionId}</p>` : ''}
+
+                <p><strong>Payment Status:</strong> ${paid ? 'Paid' : 'Unpaid'}</p>
+
+                <p>Please find the attached PDF copy of your invoice.</p>
+
+                <p>Thank you.</p>
+            </div>
+        `,
+        attachments: [
+            {
+                filename: fileName,
+                content: pdfBuffer,
+                contentType: pdfFile.mimetype || 'application/pdf',
+            },
+        ],
+    });
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const idParam = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
-    const contractId = Array.isArray(req.query.contractId) ? req.query.contractId[0] : req.query.contractId;
-    const authId = Array.isArray(req.query.authId) ? req.query.authId[0] : req.query.authId;
+    const contractIdParam = Array.isArray(req.query.contractId) ? req.query.contractId[0] : req.query.contractId;
+    const authIdParam = Array.isArray(req.query.authId) ? req.query.authId[0] : req.query.authId;
+
     try {
         switch (req.method) {
-            // GET /api/invoices  -> list invoices
             case 'GET': {
-                // don't allow both at once
-                if (idParam && contractId) {
-                    return res.status(400).json({ message: 'Provide either id or authId, not both' });
+                const providedFilters = [idParam, contractIdParam, authIdParam].filter(Boolean);
+
+                if (providedFilters.length > 1) {
+                    return res.status(400).json({
+                        message: 'Provide only one of id, contractId, or authId',
+                    });
                 }
 
-                // GET by invoice id
                 if (idParam) {
                     const id = Number(idParam);
+
                     if (!Number.isFinite(id)) {
                         return res.status(400).json({ message: 'Invalid id' });
                     }
@@ -53,8 +216,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     }
 
                     const signedPdfUrl = invoice.Contract?.pdf ? await getFileUrl(invoice.Contract.pdf) : null;
-
                     const imageUrl = invoice.image ? await getFileUrl(invoice.image) : null;
+
                     const modified = {
                         ...invoice,
                         image: imageUrl,
@@ -64,15 +227,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(200).json({ invoice: modified });
                 }
 
-                // GET by authId (list)
-                if (contractId) {
-                    const authId = Number(contractId);
+                if (contractIdParam) {
+                    const contractId = Number(contractIdParam);
+
+                    if (!Number.isFinite(contractId)) {
+                        return res.status(400).json({ message: 'Invalid contractId' });
+                    }
+
+                    const invoices = await prisma.invoice.findMany({
+                        where: { contractId },
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            Contract: true,
+                        },
+                    });
+
+                    const modified = await Promise.all(
+                        invoices.map(async (data) => {
+                            const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
+                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+
+                            return {
+                                ...data,
+                                image: imageUrl,
+                                Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
+                            };
+                        })
+                    );
+
+                    return res.status(200).json({ invoices: modified });
+                }
+
+                if (authIdParam) {
+                    const authId = Number(authIdParam);
+
                     if (!Number.isFinite(authId)) {
                         return res.status(400).json({ message: 'Invalid authId' });
                     }
 
                     const invoices = await prisma.invoice.findMany({
-                        where: { contractId: Number(contractId) },
+                        where: { authId },
                         orderBy: { createdAt: 'desc' },
                         include: {
                             Contract: true,
@@ -84,56 +278,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
                             const imageUrl = data.image ? await getFileUrl(data.image) : null;
 
-                            const modified = {
+                            return {
                                 ...data,
                                 image: imageUrl,
                                 Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
                             };
-                            return modified;
-                        })
-                    );
-
-                    return res.status(200).json({ invoices: modified });
-                }
-                if (authId) {
-                    const AuthId = Number(authId);
-                    if (!Number.isFinite(AuthId)) {
-                        return res.status(400).json({ message: 'Invalid authId' });
-                    }
-
-                    const invoices = await prisma.invoice.findMany({
-                        where: { authId: Number(AuthId) },
-                        orderBy: { createdAt: 'desc' },
-                        include: {
-                            Contract: true,
-                        },
-                    });
-                    const modified = await Promise.all(
-                        invoices.map(async (data) => {
-                            const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
-                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
-
-                            const modified = {
-                                ...data,
-                                image: imageUrl,
-                                Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
-                            };
-                            return modified;
                         })
                     );
 
                     return res.status(200).json({ invoices: modified });
                 }
 
-                return res.status(400).json({ message: 'id or contractId query param is required' });
+                return res.status(400).json({
+                    message: 'id, contractId, or authId query param is required',
+                });
             }
 
-            // POST /api/invoices  -> create invoice
             case 'POST': {
                 const { fields, files } = await parseForm(req);
-                // eslint-disable-next-line
-                const image = files['image'];
-                const imageFile = Array.isArray(image) ? image[0] : image;
+
+                const imageFile = getFile(files, 'image');
+                const pdfFile = getFile(files, 'pdf');
 
                 const contractId = getField(fields, 'contractId');
                 const name = getField(fields, 'name');
@@ -141,25 +306,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const businessName = getField(fields, 'businessName');
                 const price = getField(fields, 'price');
                 const authId = getField(fields, 'authId');
-
-                // const formData = await req.formData();
+                const transactionId = getField(fields, 'transactionId');
+                const paid = getField(fields, 'paid');
 
                 if (!imageFile) {
+                    return res.status(400).json({ message: 'Invalid image' });
+                }
+
+                if (!pdfFile) {
                     return res.status(400).json({ message: 'Invalid pdf' });
                 }
 
-                const s3Key = await uploadFileToS3(image, 'uploads'); // or 'uploads'
-                console.log('s3Key', s3Key);
-                console.log('pdfFile', image);
+                if (!email || !isValidEmail(email)) {
+                    return res.status(400).json({
+                        message: 'Valid email is required',
+                    });
+                }
 
                 let contractIdNumber: number | null = null;
+
                 if (contractId !== undefined && contractId !== null) {
                     const parsed = Number(contractId);
+
+                    if (!Number.isFinite(parsed)) {
+                        return res.status(400).json({ message: 'Invalid contractId' });
+                    }
+
+                    contractIdNumber = parsed;
+                }
+
+                let authIdNumber: number | null = null;
+
+                if (authId !== undefined && authId !== null) {
+                    const parsed = Number(authId);
+
                     if (!Number.isFinite(parsed)) {
                         return res.status(400).json({ message: 'Invalid authId' });
                     }
-                    contractIdNumber = parsed;
+
+                    authIdNumber = parsed;
                 }
+
+                const paidBoolean = parseBoolean(paid);
+
+                if (paid !== undefined && paidBoolean === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid paid value',
+                    });
+                }
+
+                const pdfBuffer = await fs.readFile(pdfFile.filepath);
+                const s3Key = await uploadFileToS3(imageFile, 'uploads');
 
                 const invoice = await prisma.invoice.create({
                     data: {
@@ -167,76 +364,128 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         email,
                         businessName,
                         price,
-                        authId: Number(authId),
+                        authId: authIdNumber ?? undefined,
                         image: s3Key,
                         contractId: contractIdNumber ?? undefined,
+                        transactionId,
+                        paid: paidBoolean ?? false,
                     },
                 });
 
-                return res.status(201).json({ message: 'Created', invoice });
+                try {
+                    await sendInvoiceCreatedMail({
+                        to: email,
+                        name,
+                        businessName,
+                        price,
+                        transactionId,
+                        paid: invoice.paid,
+                        pdfFile,
+                        pdfBuffer,
+                    });
+                } catch (mailError: any) {
+                    console.error('Invoice created but email failed:', mailError);
+
+                    return res.status(201).json({
+                        message: 'Created, but email failed to send',
+                        mailSent: false,
+                        mailError: mailError?.message,
+                        invoice,
+                    });
+                }
+
+                return res.status(201).json({
+                    message: 'Created and email sent',
+                    mailSent: true,
+                    invoice,
+                });
             }
 
-            // =========================
-            // PUT /api/v2/invoices?id=8
-            // =========================
             case 'PUT': {
                 if (!idParam) {
                     return res.status(400).json({ message: 'id query param is required' });
                 }
 
                 const id = Number(idParam);
+
                 if (!Number.isFinite(id)) {
                     return res.status(400).json({ message: 'Invalid id' });
                 }
 
                 const { fields, files } = await parseForm(req);
-                // eslint-disable-next-line
-                const image = files['image'];
-                const imageFile = Array.isArray(image) ? image[0] : image;
-                if (!imageFile) {
-                    return res.status(400).json({ message: 'Invalid pdf' });
-                }
 
-                const s3Key = await uploadFileToS3(image, 'uploads'); // or 'uploads'
-                console.log('s3Key', s3Key);
-                console.log('pdfFile', image);
+                const imageFile = getFile(files, 'image');
 
                 const name = getField(fields, 'name');
                 const email = getField(fields, 'email');
                 const businessName = getField(fields, 'businessName');
                 const price = getField(fields, 'price');
+                const contractId = getField(fields, 'contractId');
+                const authId = getField(fields, 'authId');
+                const transactionId = getField(fields, 'transactionId');
+                const paid = getField(fields, 'paid');
 
                 const data: any = {};
 
                 if (imageFile) {
                     const s3Key = await uploadFileToS3(imageFile, 'uploads');
-                    console.log('s3Key', s3Key);
-                    console.log('pdfFile', imageFile);
-                    data.pdf = s3Key;
+                    data.image = s3Key;
                 }
+
                 if (name !== undefined) {
-                    if (typeof name !== 'string') {
-                        return res.status(400).json({ message: 'Invalid name  ' });
-                    }
                     data.name = name;
                 }
+
                 if (email !== undefined) {
-                    if (typeof email !== 'string') {
-                        return res.status(400).json({ message: 'Invalid email  ' });
+                    if (!isValidEmail(email)) {
+                        return res.status(400).json({ message: 'Invalid email' });
                     }
+
                     data.email = email;
                 }
+
                 if (businessName !== undefined) {
-                    if (typeof businessName !== 'string') {
-                        return res.status(400).json({ message: 'Invalid businessName  ' });
-                    }
                     data.businessName = businessName;
                 }
+
                 if (price !== undefined) {
-                    if (typeof price !== 'string') {
-                        return res.status(400).json({ message: 'Invalid price  ' });
-                    }
                     data.price = price;
+                }
+
+                if (contractId !== undefined) {
+                    const parsed = Number(contractId);
+
+                    if (!Number.isFinite(parsed)) {
+                        return res.status(400).json({ message: 'Invalid contractId' });
+                    }
+
+                    data.contractId = parsed;
+                }
+
+                if (authId !== undefined) {
+                    const parsed = Number(authId);
+
+                    if (!Number.isFinite(parsed)) {
+                        return res.status(400).json({ message: 'Invalid authId' });
+                    }
+
+                    data.authId = parsed;
+                }
+
+                if (transactionId !== undefined) {
+                    data.transactionId = transactionId;
+                }
+
+                if (paid !== undefined) {
+                    const paidBoolean = parseBoolean(paid);
+
+                    if (paidBoolean === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid paid value',
+                        });
+                    }
+
+                    data.paid = paidBoolean;
                 }
 
                 try {
@@ -245,24 +494,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         data,
                     });
 
-                    return res.status(200).json({ message: 'Updated', invoice: updated });
+                    return res.status(200).json({
+                        message: 'Updated',
+                        invoice: updated,
+                    });
                 } catch (e: any) {
                     if (e.code === 'P2025') {
                         return res.status(404).json({ message: 'Invoice not found' });
                     }
+
                     throw e;
                 }
             }
 
-            // =========================
-            // DELETE /api/v2/invoices?id=8
-            // =========================
             case 'DELETE': {
                 if (!idParam) {
                     return res.status(400).json({ message: 'id query param is required' });
                 }
 
                 const id = Number(idParam);
+
                 if (!Number.isFinite(id)) {
                     return res.status(400).json({ message: 'Invalid id' });
                 }
@@ -272,21 +523,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         where: { id },
                     });
 
-                    return res.status(200).json({ message: 'Deleted', invoice: deleted });
+                    return res.status(200).json({
+                        message: 'Deleted',
+                        invoice: deleted,
+                    });
                 } catch (e: any) {
                     if (e.code === 'P2025') {
                         return res.status(404).json({ message: 'Invoice not found' });
                     }
+
                     throw e;
                 }
             }
 
             default:
-                res.setHeader('Allow', ['GET', 'POST']);
+                res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
                 return res.status(405).json({ message: 'Method not allowed' });
         }
     } catch (e: any) {
         console.error('Error in /api/invoices:', e);
-        return res.status(500).json({ message: 'Internal server error', error: e?.message });
+
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: e?.message,
+        });
     }
 }

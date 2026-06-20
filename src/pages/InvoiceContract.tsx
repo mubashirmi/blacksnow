@@ -23,6 +23,7 @@ import {
     Users,
     Zap,
 } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
 
@@ -32,6 +33,31 @@ export default function InvoiceContractPage() {
     const [authOpen, setAuthOpen] = useState(false);
     const [pricingOpen, setPricingOpen] = useState(false);
     const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
+
+    const router = useRouter();
+
+    useEffect(() => {
+        const trackRefIdClick = async () => {
+            const { refId } = router.query;
+            if (refId) {
+                localStorage.setItem('referredby', refId as string);
+                try {
+                    const currentUrl = `https://blacksnowholdings.com/InvoiceContract`;
+                    const response = await fetch(`/api/v2/clicks/?id=${refId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productLink: currentUrl }),
+                    });
+                    if (response.ok) console.log('RefId click tracked successfully');
+                    else console.error('Failed to track refId click');
+                } catch (error) {
+                    console.error('Error tracking refId click:', error);
+                }
+            }
+        };
+
+        if (router.isReady) trackRefIdClick();
+    }, [router.isReady, router.query]);
 
     const LottieAnimation = ({ src, loop, autoplay, style }) => {
         const containerRef = useRef(null);

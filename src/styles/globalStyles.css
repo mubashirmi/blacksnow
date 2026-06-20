@@ -2,10 +2,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
 @import 'tailwindcss';
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.mantine-Title-root {
+    font-family: var(--font-michroma), sans-serif !important;
+}
+
 .outlineButton {
     background-color: black !important;
     border: 1px solid #08fcfc;
     color: #08fcfc !important;
+
     &:hover {
         background-color: #08fcfc !important;
         color: black !important;
@@ -25,11 +36,13 @@
     color: black;
     opacity: 75%;
 }
+
 .fontArchivoBlack {
     font-family: 'Archivo Black', sans-serif;
     font-weight: 700;
     /* line-height: 1; */
 }
+
 .whiteTextInput .mantine-InputPlaceholder-placeholder {
     color: black;
     opacity: 0.75;
@@ -46,51 +59,61 @@
 .card-root:hover {
     outline: 5px solid #cde7ff;
 }
+
 @keyframes cubicText {
     0% {
         opacity: 0;
         transform: translateY(20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
 @keyframes hamburger-open {
     0% {
         opacity: 0;
         transform: scale(0.5) rotate(-90deg);
     }
+
     100% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
     }
 }
+
 @keyframes hamburger-close {
     0% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
     }
+
     100% {
         opacity: 0;
         transform: scale(0.5) rotate(90deg);
     }
 }
+
 @keyframes close-open {
     0% {
         opacity: 0;
         transform: scale(0.5) rotate(-45deg);
     }
+
     100% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
     }
 }
+
 @keyframes close-close {
     0% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
     }
+
     100% {
         opacity: 0;
         transform: scale(0.5) rotate(45deg);
@@ -137,12 +160,15 @@
 .dot-spinner__dot:nth-child(2) {
     transform: rotate(72deg);
 }
+
 .dot-spinner__dot:nth-child(3) {
     transform: rotate(144deg);
 }
+
 .dot-spinner__dot:nth-child(4) {
     transform: rotate(216deg);
 }
+
 .dot-spinner__dot:nth-child(5) {
     transform: rotate(288deg);
 }
@@ -151,12 +177,15 @@
 .dot-spinner__dot:nth-child(2)::before {
     animation-delay: calc(var(--uib-speed) * -0.8);
 }
+
 .dot-spinner__dot:nth-child(3)::before {
     animation-delay: calc(var(--uib-speed) * -0.6);
 }
+
 .dot-spinner__dot:nth-child(4)::before {
     animation-delay: calc(var(--uib-speed) * -0.4);
 }
+
 .dot-spinner__dot:nth-child(5)::before {
     animation-delay: calc(var(--uib-speed) * -0.2);
 }
@@ -167,6 +196,7 @@
         transform: scale(0);
         opacity: 0.5;
     }
+
     50% {
         transform: scale(1);
         opacity: 1;

@@ -2,6 +2,7 @@
 
 import AuthModal from '@/components/AuthModal';
 import LightningGoldSlideshow from '@/components/LightningGoldSlideshow';
+import { MultiCurrencyAcceptanceSection } from '@/components/MultiCurrencyAcceptanceSection';
 import { PricingComponent } from '@/components/PricingComponent';
 import { RevenuePayoutsSection } from '@/components/RevenuePayoutsSection';
 import ShareBanner from '@/components/ShareBanner';
@@ -247,6 +248,7 @@ function LightningGold() {
             </section>
 
             <RevenuePayoutsSection />
+            <MultiCurrencyAcceptanceSection />
 
             {/* ── FINAL CTA ────────────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>

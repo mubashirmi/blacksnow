@@ -391,103 +391,18 @@ function getRoleOptionsFromUserRoles(rawRoles: any[] = []) {
     }, []);
 }
 
-function RoleSelectionModal({
-    open,
-    roles,
-    onOpenChange,
-    onSelect,
-}: {
-    open: boolean;
-    roles: RoleOption[];
-    onOpenChange: (v: boolean) => void;
-    onSelect: (route: string) => void;
-}) {
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='sm:max-w-[720px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
-                <DialogTitle className='sr-only'>Choose your dashboard</DialogTitle>
+const DASHBOARD_ROLE_PRIORITY: ProductRole[] = ['DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningGold', 'LightningSilver', 'NewsLetter'];
 
-                <div
-                    className='relative rounded-[32px] border overflow-hidden bg-[#07090d]'
-                    style={{
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                    }}
-                >
-                    <div
-                        className='absolute inset-0 pointer-events-none'
-                        style={{
-                            background:
-                                'radial-gradient(circle at top, rgba(76,199,232,0.12) 0%, transparent 38%), linear-gradient(135deg, rgba(255,255,255,0.055) 0%, transparent 42%, rgba(255,255,255,0.025) 100%)',
-                        }}
-                    />
+function getPriorityDashboardRoute(rawRoles: any[] = []) {
+    const roleOptions = getRoleOptionsFromUserRoles(rawRoles);
 
-                    <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]' />
+    for (const priorityRole of DASHBOARD_ROLE_PRIORITY) {
+        const matchedRoleOption = roleOptions.find((option) => option.role === priorityRole);
 
-                    <button
-                        type='button'
-                        onClick={() => onOpenChange(false)}
-                        className='absolute top-4 right-4 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
-                        aria-label='Close dashboard selector'
-                    >
-                        <X className='w-4 h-4 text-white/60' />
-                    </button>
+        if (matchedRoleOption) return matchedRoleOption.route;
+    }
 
-                    <div className='relative z-10 px-6 sm:px-8 py-8'>
-                        <div className='text-center mb-7'>
-                            <div className='w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10 bg-white/5'>
-                                <Image width={120} height={120} src='/logocolored.png' alt='Logo' />
-                            </div>
-
-                            <h2 className='text-2xl sm:text-3xl font-black text-white mb-2'>Choose Your Dashboard</h2>
-                            <p className='text-sm sm:text-base text-white/55 max-w-md mx-auto'>
-                                Your account has multiple active products. Select where you want to go.
-                            </p>
-                        </div>
-
-                        <div className='grid sm:grid-cols-2 gap-4'>
-                            {roles.map(({ role, label, route, description, Icon, accent }) => (
-                                <button
-                                    key={role}
-                                    type='button'
-                                    onClick={() => onSelect(route)}
-                                    className='group relative text-left rounded-2xl border bg-white/[0.035] p-5 transition-all hover:scale-[1.02] active:scale-[0.99]'
-                                    style={{
-                                        borderColor: `${accent}35`,
-                                        boxShadow: `0 12px 30px ${accent}10`,
-                                    }}
-                                >
-                                    <div
-                                        className='absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none'
-                                        style={{ background: `radial-gradient(circle at top left, ${accent}18 0%, transparent 55%)` }}
-                                    />
-
-                                    <div className='relative z-10 flex items-start gap-4'>
-                                        <div
-                                            className='w-12 h-12 rounded-2xl flex items-center justify-center border flex-shrink-0'
-                                            style={{ borderColor: `${accent}45`, backgroundColor: `${accent}14` }}
-                                        >
-                                            <Icon className='w-6 h-6' style={{ color: accent }} />
-                                        </div>
-
-                                        <div className='min-w-0'>
-                                            <h3 className='text-white font-extrabold text-lg leading-tight mb-1'>{label}</h3>
-                                            <p className='text-white/55 text-sm leading-relaxed mb-3'>{description}</p>
-                                            <span className='inline-flex items-center text-xs font-bold' style={{ color: accent }}>
-                                                Continue
-                                                <ArrowRight className='w-4 h-4 ml-1 transition-transform group-hover:translate-x-1' />
-                                            </span>
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
+    return undefined;
 }
 
 function ProductCarousel() {
@@ -982,8 +897,6 @@ function SignIn() {
     const [isLoading, setIsLoading] = useState(false);
     const [showPostSignupSlideshow, setShowPostSignupSlideshow] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
-    const [showRoleSelectionModal, setShowRoleSelectionModal] = useState(false);
-    const [availableRoleOptions, setAvailableRoleOptions] = useState<RoleOption[]>([]);
     const [alert, setAlert] = useState({ type: '', message: '' });
     const router = useRouter();
 
@@ -1034,11 +947,6 @@ function SignIn() {
         if (user?.email != null) setCookie('email', String(user.email));
 
         localStorage.setItem('roles', JSON.stringify(user?.roles || []));
-    };
-
-    const handleRoleSelection = (route: string) => {
-        setShowRoleSelectionModal(false);
-        router.push(route);
     };
 
     const onSubmit = async (data: AuthFormValues) => {
@@ -1135,23 +1043,17 @@ function SignIn() {
 
                 saveUserSession(token, user);
 
-                const productRoleOptions = getRoleOptionsFromUserRoles(rawRoles);
+                const priorityDashboardRoute = getPriorityDashboardRoute(rawRoles);
 
                 setAlert({ type: 'success', message: 'Login successful!' });
                 reset();
 
-                if (productRoleOptions.length === 0) {
+                if (!priorityDashboardRoute) {
                     setShowPostSignupSlideshow(true);
                     return;
                 }
 
-                if (productRoleOptions.length === 1) {
-                    router.push(productRoleOptions[0].route);
-                    return;
-                }
-
-                setAvailableRoleOptions(productRoleOptions);
-                setShowRoleSelectionModal(true);
+                router.push(priorityDashboardRoute);
             }
         } catch (error: any) {
             setAlert({ type: 'error', message: error?.response?.data?.message || 'Something went wrong. Please try again.' });
@@ -1175,13 +1077,6 @@ function SignIn() {
                 open={showTermsModal}
                 onOpenChange={setShowTermsModal}
                 onComplete={() => setValue('termsAccepted', true, { shouldValidate: true })}
-            />
-
-            <RoleSelectionModal
-                open={showRoleSelectionModal}
-                roles={availableRoleOptions}
-                onOpenChange={setShowRoleSelectionModal}
-                onSelect={handleRoleSelection}
             />
 
             <div className='relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6'>

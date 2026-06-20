@@ -222,7 +222,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 variant='ghost'
                 size='icon'
                 onClick={() => setIsOpen(!isOpen)}
-                className='relative z-50 w-16 h-12 text-[#4cc7e8] hover:bg-[#2c7bbe]/20 transition-all duration-300 cursor-pointer'
+                className='relative z-50 w-16 h-12 text-[#f4f4f4] hover:bg-[#2c7bbe]/20 transition-all duration-300 cursor-pointer'
                 aria-label='Toggle menu'
             >
                 <div className='w-6 h-6 flex flex-col justify-center items-center'>

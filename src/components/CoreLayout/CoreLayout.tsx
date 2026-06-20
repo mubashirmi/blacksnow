@@ -1,4 +1,3 @@
-import { FeedbackUnsubscribeButtons } from '@/components/unsubscribe-flow';
 import { AuthProvider } from '@/lib/auth';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
@@ -28,7 +27,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
 
                             {/* Text - perfectly centered on mobile */}
                             <div className='h-8 md:h-9 flex items-center absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0'>
-                                <span className='text-[28px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#4cc7e8] fontArchivoBlack whitespace-nowrap leading-none'>
+                                <span className='text-[28px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#f4f4f4] fontArchivoBlack whitespace-nowrap leading-none'>
                                     Black Snow
                                 </span>
                             </div>
@@ -64,15 +63,15 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                 </div>
 
                                 {/* Mobile buttons - right side opposite logo */}
-                                <div className='shrink-0 lg:hidden'>
+                                {/* <div className='shrink-0 lg:hidden'>
                                     <FeedbackUnsubscribeButtons size='footer' />
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* Desktop buttons - show under logo */}
-                            <div className='hidden lg:block'>
+                            {/* <div className='hidden lg:block'>
                                 <FeedbackUnsubscribeButtons size='footer' />
-                            </div>
+                            </div> */}
 
                             <div className='flex space-x-4'>
                                 {[
@@ -99,7 +98,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Market Intelligence Platform', href: '/about' },
                                     { name: 'Careers', href: '/careers' },
                                     { name: 'Blogs', href: '/blogdirectory' },
-                                    { name: 'Digital Billboard', href: '/advertising' },
+                                    { name: 'Advertisements', href: '/billboards' },
                                     { name: 'FAQ', href: '/faq' },
                                     { name: 'Pricing', href: '/pricing' },
                                     { name: 'Support', href: '/support' },
@@ -125,6 +124,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
                                     { name: 'Business Invoice', href: '/InvoiceContract' },
+                                    { name: 'Digital Billboards', href: '/advertising' },
                                     { name: 'Email CRM', href: '/emailMarketing' },
                                     { name: 'Lightning Silver', href: '/lightningSilver' },
                                     { name: 'Lightning Gold', href: '/lightningGold' },

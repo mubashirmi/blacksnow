@@ -143,13 +143,13 @@ export default function Page() {
             {/* Hero (compact) */}
             <section className='relative pt-24 pb-6 px-6'>
                 <div className='container mx-auto max-w-6xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                    {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                         DIGITAL BILLBOARD SHOWCASE
-                    </Badge>
+                    </Badge> */}
                     <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                         Premium <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Billboards</span>
                     </h1>
-                    <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div>
+                    {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
                     <p className='text-base md:text-lg text-gray-300 max-w-3xl mx-auto'>Wide, readable, and elegant — not oversized.</p>
                 </div>
             </section>

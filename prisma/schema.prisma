@@ -560,7 +560,7 @@ model Contract {
   pdf          String
   signed       String @default("notSigned")
 
-  authId   Int? // optional foreign key
+  authId   Int?
   Auth     Auth?     @relation(fields: [authId], references: [id])
   invoices Invoice[]
 }
@@ -574,10 +574,15 @@ model Invoice {
   businessName String   @default("")
   price        String   @default("")
 
-  contractId Int? // optional foreign key
+  image         String  @default("")
+  transactionId String?
+  paid          Boolean @default(false)
+
+  contractId Int?
   Contract   Contract? @relation(fields: [contractId], references: [id])
-  auth       Auth?     @relation(fields: [authId], references: [id])
-  authId     Int?
+
+  authId Int?
+  auth   Auth? @relation(fields: [authId], references: [id])
 }
 
 model ToolFeedback {

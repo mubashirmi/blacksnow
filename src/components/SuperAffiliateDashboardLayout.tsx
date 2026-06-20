@@ -151,8 +151,7 @@ export default function SuperAffiliateLayout({ children }: { children: React.Rea
 
             const connectData = {
                 id: parseInt(userId),
-                rsvpLink: 'https://blacksnowholdings.com/rsvp',
-                newsletterLink: 'https://blacksnowholdings.com',
+                invoiceToolLink: 'https://blacksnowholdings.com/InvoiceContract',
                 digitalBillboardLink: 'https://blacksnowholdings.com/advertising',
                 emailMarketingLink: 'https://blacksnowholdings.com/emailMarketing',
             };

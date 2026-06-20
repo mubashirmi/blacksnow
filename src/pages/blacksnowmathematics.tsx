@@ -597,17 +597,13 @@ export default function BlackSnowMathematics() {
                 </MobilePhoneFrame>
             </div>
 
-            {/* Desktop version: stacked one by one, not grid */}
+            {/* Desktop version: same dropdown calculator flow as mobile, only larger */}
             <div className='hidden lg:block max-w-7xl mx-auto'>
                 <DesktopWideFrame>
                     <div className='text-center text-[#2cbbff] text-xl font-semibold mb-6'>Black Snow Mathematics</div>
 
-                    <div className='space-y-6'>
-                        {CALCULATORS.map(({ key, Component }) => (
-                            <div key={key} className='rounded-3xl border border-[#2c7bbe]/30 bg-[#050608]/70 p-5 lg:p-6 shadow-[0_18px_50px_rgba(0,0,0,0.35)]'>
-                                <Component />
-                            </div>
-                        ))}
+                    <div className='rounded-3xl border border-[#2c7bbe]/30 bg-[#050608]/70 p-6 lg:p-8 shadow-[0_18px_50px_rgba(0,0,0,0.35)]'>
+                        <ActiveCalculator showSelector selectedKey={selectedCalculator} onSelectedKeyChange={setSelectedCalculator} />
                     </div>
                 </DesktopWideFrame>
             </div>

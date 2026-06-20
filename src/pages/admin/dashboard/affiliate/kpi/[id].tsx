@@ -35,12 +35,60 @@ export default function KPI() {
         }
     };
 
+    const normalizeText = (value) => {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/[\s_-]/g, '');
+    };
+
+    const isNewsletterProduct = (product) => {
+        const productName = normalizeText(product?.productName || product?.name);
+        const productLink = normalizeText(product?.productLink || product?.link);
+
+        return productName.includes('newsletter') || productLink.includes('newsletter');
+    };
+
+    const toNumber = (value) => {
+        const numberValue = Number(value);
+        return Number.isFinite(numberValue) ? numberValue : 0;
+    };
+
+    const hasProductMetricValue = (products, key) => {
+        return products.some((product) => product?.[key] !== undefined && product?.[key] !== null && product?.[key] !== '');
+    };
+
+    const getVisibleAffiliateData = () => {
+        if (!Array.isArray(apiData?.affiliateData)) return [];
+
+        return apiData.affiliateData.filter((product) => !isNewsletterProduct(product));
+    };
+
+    const formatProductName = (productName) => {
+        return String(productName || '')
+            .replace(/([A-Z])/g, ' $1')
+            .trim();
+    };
+
     const calculateMetrics = () => {
         if (!apiData) return null;
 
-        const totalClicks = apiData.totalClicks?._sum?.clicks || 0;
-        const totalConversions = apiData.totalConversions?._sum?.conversion || 0;
-        const totalCommission = apiData.totalCommision?._sum?.comission || 0;
+        const visibleAffiliateData = getVisibleAffiliateData();
+
+        const hasProductClicks = hasProductMetricValue(visibleAffiliateData, 'clicks');
+        const hasProductConversions = hasProductMetricValue(visibleAffiliateData, 'conversion');
+        const hasProductCommission = hasProductMetricValue(visibleAffiliateData, 'comission');
+
+        const totalClicks = hasProductClicks
+            ? visibleAffiliateData.reduce((sum, product) => sum + toNumber(product.clicks), 0)
+            : toNumber(apiData.totalClicks?._sum?.clicks);
+
+        const totalConversions = hasProductConversions
+            ? visibleAffiliateData.reduce((sum, product) => sum + toNumber(product.conversion), 0)
+            : toNumber(apiData.totalConversions?._sum?.conversion);
+
+        const totalCommission = hasProductCommission
+            ? visibleAffiliateData.reduce((sum, product) => sum + toNumber(product.comission), 0)
+            : toNumber(apiData.totalCommision?._sum?.comission);
 
         const conversionRate = totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(1) : 0;
         const avgOrderValue = totalConversions > 0 ? (totalCommission / totalConversions).toFixed(2) : 0;
@@ -57,45 +105,47 @@ export default function KPI() {
     const formatMonthlyData = () => {
         if (!apiData?.monthlyStats) return [];
 
-        return apiData.monthlyStats.map((stat) => {
-            const monthName = stat.month.substring(0, 7);
-            return {
-                month: monthName,
-                revenue: stat.comission || 0,
-                clicks: stat.clicks || 0,
-                conversions: stat.conversion || 0,
-            };
-        });
+        return apiData.monthlyStats
+            .filter((stat) => !isNewsletterProduct(stat))
+            .map((stat) => {
+                const monthName = stat.month.substring(0, 7);
+                return {
+                    month: monthName,
+                    revenue: toNumber(stat.comission),
+                    clicks: toNumber(stat.clicks),
+                    conversions: toNumber(stat.conversion),
+                };
+            });
     };
 
     const getTopProducts = () => {
-        if (!apiData?.affiliateData) return [];
+        const visibleAffiliateData = getVisibleAffiliateData();
 
-        return apiData.affiliateData.sort((a, b) => b.comission - a.comission).slice(0, 5);
+        return [...visibleAffiliateData].sort((a, b) => toNumber(b.comission) - toNumber(a.comission)).slice(0, 5);
     };
 
     const getProductPerformanceData = () => {
-        if (!apiData?.affiliateData) return [];
+        const visibleAffiliateData = getVisibleAffiliateData();
 
-        return apiData.affiliateData.map((product) => ({
-            name: product.productName.replace(/([A-Z])/g, ' $1').trim(),
-            revenue: product.comission,
-            clicks: product.clicks,
-            conversions: product.conversion,
+        return visibleAffiliateData.map((product) => ({
+            name: formatProductName(product.productName),
+            revenue: toNumber(product.comission),
+            clicks: toNumber(product.clicks),
+            conversions: toNumber(product.conversion),
         }));
     };
 
     const getTrafficDistribution = () => {
-        if (!apiData?.affiliateData) return [];
+        const visibleAffiliateData = getVisibleAffiliateData();
 
-        const totalClicks = apiData.affiliateData.reduce((sum, p) => sum + p.clicks, 0);
+        const totalClicks = visibleAffiliateData.reduce((sum, product) => sum + toNumber(product.clicks), 0);
 
-        return apiData.affiliateData
-            .filter((product) => product.clicks > 0)
+        return visibleAffiliateData
+            .filter((product) => toNumber(product.clicks) > 0)
             .map((product) => ({
-                name: product.productName.replace(/([A-Z])/g, ' $1').trim(),
-                value: product.clicks,
-                percentage: totalClicks > 0 ? ((product.clicks / totalClicks) * 100).toFixed(1) : 0,
+                name: formatProductName(product.productName),
+                value: toNumber(product.clicks),
+                percentage: totalClicks > 0 ? ((toNumber(product.clicks) / totalClicks) * 100).toFixed(1) : 0,
             }));
     };
 
@@ -383,7 +433,7 @@ export default function KPI() {
                                         border: '1px solid #E5E7EB',
                                         borderRadius: '8px',
                                     }}
-                                    formatter={(value, name) => [value, 'Clicks']}
+                                    formatter={(value) => [value, 'Clicks']}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -409,19 +459,19 @@ export default function KPI() {
                                         {index + 1}
                                     </div>
                                     <div className='text-right'>
-                                        <div className='text-2xl font-bold text-green-600'>${product.comission}</div>
+                                        <div className='text-2xl font-bold text-green-600'>${toNumber(product.comission)}</div>
                                         <div className='text-xs text-gray-500'>Revenue</div>
                                     </div>
                                 </div>
-                                <h4 className='font-semibold text-gray-900 mb-2 capitalize'>{product.productName.replace(/([A-Z])/g, ' $1').trim()}</h4>
+                                <h4 className='font-semibold text-gray-900 mb-2 capitalize'>{formatProductName(product.productName)}</h4>
                                 <div className='flex items-center justify-between text-sm text-gray-600'>
                                     <div className='flex items-center gap-1'>
                                         <MousePointer className='w-4 h-4' />
-                                        <span>{product.clicks} clicks</span>
+                                        <span>{toNumber(product.clicks)} clicks</span>
                                     </div>
                                     <div className='flex items-center gap-1'>
                                         <Target className='w-4 h-4' />
-                                        <span>{product.conversion} conv.</span>
+                                        <span>{toNumber(product.conversion)} conv.</span>
                                     </div>
                                 </div>
                             </div>
