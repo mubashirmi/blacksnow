@@ -289,7 +289,7 @@ function Advertising() {
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h1 className='text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Digital
                                         </span>
