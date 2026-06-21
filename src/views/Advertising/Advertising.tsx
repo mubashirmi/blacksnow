@@ -13,12 +13,24 @@ import { BarChart3, CheckCircle, Clock, Eye, Globe, Loader2, Megaphone, Monitor,
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 function Advertising() {
     // const pricingRef = useRef<HTMLDivElement | null>(null);
-    const LottieAnimation = ({ src, loop, autoplay, style }) => {
-        const containerRef = useRef(null);
+    const LottieAnimation = ({
+        src,
+        loop = true,
+        autoplay = true,
+        style,
+        className = '',
+    }: {
+        src: string;
+        loop?: boolean;
+        autoplay?: boolean;
+        style?: CSSProperties;
+        className?: string;
+    }) => {
+        const containerRef = useRef<HTMLDivElement | null>(null);
 
         useEffect(() => {
             if (typeof window !== 'undefined' && containerRef.current) {
@@ -34,7 +46,7 @@ function Advertising() {
             }
         }, [src, loop, autoplay]);
 
-        return <div ref={containerRef} style={style} />;
+        return <div ref={containerRef} className={className} style={style} />;
     };
     const [slideshowOpen, setSlideshowOpen] = useState(false);
     const [authOpen, setAuthOpen] = useState(false);
@@ -270,7 +282,7 @@ function Advertising() {
         <div className='min-h-screen bg-[#050608]'>
             <ShareBanner />
             {/* Hero Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative overflow-x-hidden lg:overflow-visible py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         {/* Left Content */}
@@ -313,17 +325,28 @@ function Advertising() {
                             </div>
                         </div>
 
-                        {/* RIGHT */}
-                        <div className='relative animate-slide-in-right '>
-                            <div className='relative overflow-hidden '>
+                        {/* RIGHT - Mobile */}
+                        <div className='relative w-full max-w-full overflow-hidden lg:hidden'>
+                            <div className='relative w-full max-w-full overflow-hidden'>
                                 <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='flex items-center justify-center w-full max-w-[340px] mx-auto rounded-2xl border border-[#2c7bbe]/20 sm:max-w-[400px] sm:rounded-3xl md:max-w-[500px]'>
                                         <LottieAnimation
                                             src='/animations/billboardherosection.json'
-                                            className='w-[90%] h-full sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:min-w-[950px] lg:h-[750px]'
+                                            className='w-full h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]'
                                             loop={true}
                                             autoplay={true}
                                         />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT - Desktop - kept like your attached code */}
+                        <div className='relative hidden lg:block animate-slide-in-right '>
+                            <div className='relative overflow-hidden '>
+                                <div className='relative flex items-center justify-center w-full h-full'>
+                                    <div className=' flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                        <LottieAnimation src='/animations/billboardherosection.json' loop={true} autoplay={true} />
                                     </div>
                                 </div>
                             </div>
