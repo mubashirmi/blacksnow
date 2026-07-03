@@ -22,15 +22,20 @@ function validateRoles(roles: string[]) {
     }
 }
 
+function normalizeOptionalString(input: unknown): string | undefined {
+    if (input === undefined || input === null) return undefined;
+
+    const value = String(input).trim();
+    // eslint-disable-next-line
+    return value ? value : undefined;
+}
+
 function escapeHtml(input: string) {
     return input.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
 async function sendSignupEmail(params: { to: string; roles: string[]; plainPassword: string }) {
     const { to, roles, plainPassword } = params;
-
-    // ✅ Gmail service approach (as requested)
-    // Put these in env vars to avoid hardcoding secrets.
 
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -78,11 +83,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
     try {
         if (req.method === 'POST') {
-            const { email, firstName, lastName, password } = req.body;
+            const { email, firstName, lastName, password, phone } = req.body;
 
             // accept both `roles` and legacy `role`
             const rolesInput = 'roles' in req.body ? req.body.roles : req.body.role;
             const roles = normalizeRoles(rolesInput);
+
+            // phone is optional to avoid disturbing existing signup functionality
+            const phoneNumber = normalizeOptionalString(phone);
 
             // basic required fields
             if (!email || !firstName || !lastName || !password) {
@@ -98,10 +106,24 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(400).json({ message: e.message });
             }
 
-            // check existing
-            const existing = await prisma.auth.findUnique({ where: { email: String(email) } });
+            // check existing email
+            const existing = await prisma.auth.findUnique({
+                where: { email: String(email) },
+            });
+
             if (existing) {
                 return res.status(409).json({ message: 'Email already exists.' });
+            }
+
+            // check existing phone only if phone is provided
+            if (phoneNumber) {
+                const existingPhone = await prisma.auth.findUnique({
+                    where: { phone: phoneNumber },
+                });
+
+                if (existingPhone) {
+                    return res.status(409).json({ message: 'Phone number already exists.' });
+                }
             }
 
             const plainPassword = String(password);
@@ -110,6 +132,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             const user = await prisma.auth.create({
                 data: {
                     email: String(email),
+                    phone: phoneNumber,
                     firstName: String(firstName),
                     lastName: String(lastName),
                     password: hashedPassword,

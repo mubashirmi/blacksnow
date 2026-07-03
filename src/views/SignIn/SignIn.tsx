@@ -21,6 +21,7 @@ import {
     MessageSquare,
     Monitor,
     Newspaper,
+    Phone,
     Shield,
     User,
     X,
@@ -50,8 +51,14 @@ type Flake = {
 type AuthFormValues = {
     fullName?: string;
     email: string;
+    phone?: string;
     password: string;
     termsAccepted?: boolean;
+};
+
+type PendingSignupFlow = {
+    user: any;
+    role: string;
 };
 
 type ToolSlide = {
@@ -897,6 +904,14 @@ function SignIn() {
     const [isLoading, setIsLoading] = useState(false);
     const [showPostSignupSlideshow, setShowPostSignupSlideshow] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    const [showVerification, setShowVerification] = useState(false);
+    const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
+    const [pendingSignupFlow, setPendingSignupFlow] = useState<PendingSignupFlow | null>(null);
+    const [verificationEmail, setVerificationEmail] = useState('');
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpVerifying, setOtpVerifying] = useState(false);
     const [alert, setAlert] = useState({ type: '', message: '' });
     const router = useRouter();
 
@@ -929,6 +944,11 @@ function SignIn() {
 
     const validatePassword = (value: string) => value.length >= 6 || 'Password must be at least 6 characters long';
 
+    const validatePhone = (value: string) => {
+        const cleaned = String(value || '').replace(/[^0-9+]/g, '');
+        return cleaned.length >= 7 || 'Please enter a valid phone number';
+    };
+
     const setCookie = (name: string, value: string, days = 7) => {
         const expires = new Date(Date.now() + days * 864e5).toUTCString();
         document.cookie = `${name}=${value}; expires=${expires}; path=/`;
@@ -947,6 +967,85 @@ function SignIn() {
         if (user?.email != null) setCookie('email', String(user.email));
 
         localStorage.setItem('roles', JSON.stringify(user?.roles || []));
+    };
+
+    const resetVerificationState = () => {
+        setShowVerification(false);
+        setVerificationMethod('email');
+        setPendingSignupFlow(null);
+        setVerificationEmail('');
+        setOtp('');
+        setOtpSent(false);
+        setOtpSending(false);
+        setOtpVerifying(false);
+    };
+
+    const completeSignupFlow = () => {
+        const signupUser = pendingSignupFlow?.user;
+
+        if (!signupUser) {
+            setAlert({ type: 'error', message: 'Signup session expired. Please sign up again.' });
+            resetVerificationState();
+            return;
+        }
+
+        localStorage.setItem('userId', String(signupUser.id));
+        localStorage.setItem('id', String(signupUser.id));
+        localStorage.setItem('roles', JSON.stringify(signupUser.roles || []));
+        setCookie('firstName', signupUser.firstName);
+        setCookie('lastName', signupUser.lastName);
+        setCookie('email', signupUser.email);
+        setCookie('id', String(signupUser.id));
+
+        setAlert({ type: 'success', message: 'Email verified successfully!' });
+        reset();
+        resetVerificationState();
+        setShowPostSignupSlideshow(true);
+    };
+
+    const handleSendEmailOtp = async () => {
+        if (!verificationEmail) {
+            setAlert({ type: 'error', message: 'Email is missing. Please sign up again.' });
+            return;
+        }
+
+        setOtpSending(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-email', { email: verificationEmail });
+            setOtpSent(true);
+            setAlert({ type: 'success', message: `OTP sent to ${verificationEmail}` });
+        } catch (error: any) {
+            setAlert({ type: 'error', message: error?.response?.data?.message || 'Unable to send OTP. Please try again.' });
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyEmailOtp = async () => {
+        const trimmedOtp = otp.trim();
+
+        if (!trimmedOtp) {
+            setAlert({ type: 'error', message: 'Please enter the OTP sent to your email.' });
+            return;
+        }
+
+        setOtpVerifying(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-email/verify', {
+                email: verificationEmail,
+                otp: trimmedOtp,
+            });
+
+            completeSignupFlow();
+        } catch (error: any) {
+            setAlert({ type: 'error', message: error?.response?.data?.message || 'Invalid OTP. Please try again.' });
+        } finally {
+            setOtpVerifying(false);
+        }
     };
 
     const onSubmit = async (data: AuthFormValues) => {
@@ -971,6 +1070,7 @@ function SignIn() {
                         firstName,
                         lastName,
                         password: data.password,
+                        phone: data.phone,
                         role: '',
                     });
                 } else {
@@ -979,23 +1079,20 @@ function SignIn() {
                         firstName,
                         lastName,
                         password: data.password,
+                        phone: data.phone,
                         role: '',
                     });
                 }
 
                 const signupUser = response.data.user;
 
-                localStorage.setItem('userId', String(signupUser.id));
-                localStorage.setItem('id', String(signupUser.id));
-                localStorage.setItem('roles', JSON.stringify(signupUser.roles || []));
-                setCookie('firstName', signupUser.firstName);
-                setCookie('lastName', signupUser.lastName);
-                setCookie('email', signupUser.email);
-                setCookie('id', String(signupUser.id));
-
-                setAlert({ type: 'success', message: 'Account created successfully!' });
-                reset();
-                setShowPostSignupSlideshow(true);
+                setPendingSignupFlow({ user: signupUser, role: '' });
+                setVerificationEmail(data.email);
+                setVerificationMethod('email');
+                setOtp('');
+                setOtpSent(false);
+                setShowVerification(true);
+                setAlert({ type: 'success', message: 'Account created successfully. Please verify your email to continue.' });
             } else {
                 const response = await axios.post('/api/v2/login', {
                     email: data.email,
@@ -1121,7 +1218,9 @@ function SignIn() {
                                         <Image width={120} height={120} src={'/logocolored.png'} alt='Logo' />
                                     </div>
 
-                                    <h2 className='text-2xl font-bold text-white mb-1'>{isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}</h2>
+                                    <h2 className='text-2xl font-bold text-white mb-1'>
+                                        {showVerification ? 'Verify Your Account' : isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                                    </h2>
 
                                     {/* <p className='text-gray-400 text-sm'>
                                         {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
@@ -1135,147 +1234,278 @@ function SignIn() {
                                     </Alert>
                                 )}
 
-                                <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
-                                    {isSignUp && (
+                                {showVerification ? (
+                                    <div className='space-y-5'>
+                                        <div className='rounded-2xl border border-[#2c7bbe]/25 bg-[#050608]/45 p-5 text-left'>
+                                            <p className='text-xs font-bold uppercase tracking-[0.18em] text-[#4cc7e8] mb-2'>Verify your account</p>
+                                            <h3 className='text-xl font-black text-white mb-2'>Choose a verification method</h3>
+                                            <p className='text-sm text-gray-400 leading-relaxed'>
+                                                Send an email OTP to <span className='text-white font-semibold'>{verificationEmail}</span>. SMS verification is
+                                                visible for the flow, but disabled for now.
+                                            </p>
+                                        </div>
+
+                                        <div className='grid grid-cols-2 gap-3'>
+                                            <button
+                                                type='button'
+                                                onClick={() => setVerificationMethod('email')}
+                                                className='rounded-2xl border p-4 text-left transition-all duration-300 hover:scale-[1.01]'
+                                                style={{
+                                                    backgroundColor: verificationMethod === 'email' ? 'rgba(76,199,232,0.13)' : 'rgba(5,6,8,0.45)',
+                                                    borderColor: verificationMethod === 'email' ? 'rgba(76,199,232,0.58)' : 'rgba(255,255,255,0.10)',
+                                                }}
+                                            >
+                                                <Mail className='w-5 h-5 text-[#4cc7e8] mb-3' />
+                                                <p className='text-white font-bold text-sm'>Email</p>
+                                                <p className='text-[#4cc7e8] text-xs mt-1'>Enabled</p>
+                                            </button>
+
+                                            <button
+                                                type='button'
+                                                disabled
+                                                className='rounded-2xl border border-white/10 bg-[#050608]/30 p-4 text-left opacity-45 cursor-not-allowed'
+                                            >
+                                                <MessageSquare className='w-5 h-5 text-white/50 mb-3' />
+                                                <p className='text-white font-bold text-sm'>SMS</p>
+                                                <p className='text-white/45 text-xs mt-1'>Disabled</p>
+                                            </button>
+                                        </div>
+
+                                        <Button
+                                            type='button'
+                                            onClick={handleSendEmailOtp}
+                                            disabled={otpSending || otpVerifying || verificationMethod !== 'email'}
+                                            className='w-full cursor-pointer rounded-2xl border py-6 text-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
+                                            style={{
+                                                background:
+                                                    'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
+                                                borderColor: 'rgba(255,255,255,0.10)',
+                                                WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                                backdropFilter: 'blur(7px) saturate(145%)',
+                                                boxShadow:
+                                                    'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
+                                            }}
+                                        >
+                                            {otpSending ? (
+                                                <span className='flex items-center justify-center'>
+                                                    <svg className='animate-spin h-5 w-5 mr-2 text-white' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                                    </svg>
+                                                    Sending OTP...
+                                                </span>
+                                            ) : otpSent ? (
+                                                'Resend OTP'
+                                            ) : (
+                                                'Send OTP'
+                                            )}
+                                        </Button>
+
+                                        {otpSent && (
+                                            <div className='space-y-4'>
+                                                <div className='relative'>
+                                                    <Input
+                                                        id='emailOtp'
+                                                        inputMode='numeric'
+                                                        placeholder='Enter OTP'
+                                                        value={otp}
+                                                        onChange={(event) => setOtp(event.target.value)}
+                                                        className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                                    />
+                                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
+                                                        <Shield className='w-5 h-5 text-[#4cc7e8]' />
+                                                    </div>
+                                                </div>
+
+                                                <Button
+                                                    type='button'
+                                                    onClick={handleVerifyEmailOtp}
+                                                    disabled={otpVerifying || otpSending || !otp.trim()}
+                                                    className='w-full cursor-pointer rounded-2xl border py-6 text-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
+                                                    style={{
+                                                        background: `linear-gradient(135deg, #4cc7e8cc, #2c7bbe99)`,
+                                                        borderColor: 'rgba(76,199,232,0.46)',
+                                                        boxShadow: '0 14px 34px rgba(76,199,232,0.18)',
+                                                    }}
+                                                >
+                                                    {otpVerifying ? (
+                                                        <span className='flex items-center justify-center'>
+                                                            <svg className='animate-spin h-5 w-5 mr-2 text-white' viewBox='0 0 24 24'>
+                                                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                                                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                                            </svg>
+                                                            Verifying...
+                                                        </span>
+                                                    ) : (
+                                                        'Verify OTP'
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
+                                        {isSignUp && (
+                                            <div className='space-y-1.5'>
+                                                <div className='relative'>
+                                                    <Input
+                                                        id='fullName'
+                                                        type='text'
+                                                        placeholder='Enter your full name'
+                                                        {...register('fullName', {
+                                                            required: 'Full name is required',
+                                                            validate: (v) =>
+                                                                String(v || '')
+                                                                    .trim()
+                                                                    .replace(/\s+/g, ' ').length >= 2 || 'Please enter your name',
+                                                        })}
+                                                        className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                                    />
+                                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
+                                                        <User className='w-5 h-5 text-[#4cc7e8]' />
+                                                    </div>
+                                                </div>
+                                                {errors.fullName && <p className='text-red-400 text-sm'>{errors.fullName.message}</p>}
+                                            </div>
+                                        )}
+
+                                        {isSignUp && (
+                                            <div className='space-y-1.5'>
+                                                <div className='relative'>
+                                                    <Input
+                                                        id='phone'
+                                                        type='tel'
+                                                        placeholder='Enter your phone number'
+                                                        {...register('phone', { required: 'Phone number is required', validate: validatePhone })}
+                                                        className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
+                                                    />
+                                                    <div className='absolute left-4 top-1/2 -translate-y-1/2'>
+                                                        <Phone className='w-5 h-5 text-[#4cc7e8]' />
+                                                    </div>
+                                                </div>
+                                                {errors.phone && <p className='text-red-400 text-sm'>{errors.phone.message}</p>}
+                                            </div>
+                                        )}
+
                                         <div className='space-y-1.5'>
                                             <div className='relative'>
                                                 <Input
-                                                    id='fullName'
-                                                    type='text'
-                                                    placeholder='Enter your full name'
-                                                    {...register('fullName', {
-                                                        required: 'Full name is required',
-                                                        validate: (v) =>
-                                                            String(v || '')
-                                                                .trim()
-                                                                .replace(/\s+/g, ' ').length >= 2 || 'Please enter your name',
-                                                    })}
+                                                    id='email'
+                                                    type='email'
+                                                    placeholder='Enter your email'
+                                                    {...register('email', { required: 'Email is required', validate: validateEmail })}
                                                     className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
                                                 />
                                                 <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                    <User className='w-5 h-5 text-[#4cc7e8]' />
+                                                    <Mail className='w-5 h-5 text-[#4cc7e8]' />
                                                 </div>
                                             </div>
-                                            {errors.fullName && <p className='text-red-400 text-sm'>{errors.fullName.message}</p>}
+                                            {errors.email && <p className='text-red-400 text-sm'>{errors.email.message}</p>}
                                         </div>
-                                    )}
 
-                                    <div className='space-y-1.5'>
-                                        <div className='relative'>
-                                            <Input
-                                                id='email'
-                                                type='email'
-                                                placeholder='Enter your email'
-                                                {...register('email', { required: 'Email is required', validate: validateEmail })}
-                                                className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 rounded-2xl transition-all duration-300'
-                                            />
-                                            <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                <Mail className='w-5 h-5 text-[#4cc7e8]' />
+                                        <div className='space-y-1.5'>
+                                            <div className='relative'>
+                                                <Input
+                                                    id='password'
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    placeholder='Enter your password'
+                                                    {...register('password', { required: 'Password is required', validate: validatePassword })}
+                                                    className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 pr-12 rounded-2xl transition-all duration-300'
+                                                />
+                                                <div className='absolute left-4 top-1/2 -translate-y-1/2'>
+                                                    <Lock className='w-5 h-5 text-[#4cc7e8]' />
+                                                </div>
+                                                <button
+                                                    type='button'
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
+                                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                >
+                                                    {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                                                </button>
                                             </div>
+                                            {errors.password && <p className='text-red-400 text-sm'>{errors.password.message}</p>}
                                         </div>
-                                        {errors.email && <p className='text-red-400 text-sm'>{errors.email.message}</p>}
-                                    </div>
 
-                                    <div className='space-y-1.5'>
-                                        <div className='relative'>
-                                            <Input
-                                                id='password'
-                                                type={showPassword ? 'text' : 'password'}
-                                                placeholder='Enter your password'
-                                                {...register('password', { required: 'Password is required', validate: validatePassword })}
-                                                className='bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-base py-6 pl-12 pr-12 rounded-2xl transition-all duration-300'
-                                            />
-                                            <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                <Lock className='w-5 h-5 text-[#4cc7e8]' />
+                                        {isSignUp && (
+                                            <div className='space-y-1.5'>
+                                                <div className='flex items-start gap-3 text-sm text-gray-300 leading-relaxed'>
+                                                    <input
+                                                        id='termsAccepted'
+                                                        type='checkbox'
+                                                        {...register('termsAccepted', {
+                                                            required: 'Please accept the terms to continue',
+                                                        })}
+                                                        className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
+                                                    />
+
+                                                    <p>
+                                                        <label htmlFor='termsAccepted' className='cursor-pointer'>
+                                                            I agree to the{' '}
+                                                        </label>
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => setShowTermsModal(true)}
+                                                            className='text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors'
+                                                        >
+                                                            Terms & Conditions
+                                                        </button>
+                                                        .
+                                                    </p>
+                                                </div>
+                                                {errors.termsAccepted && <p className='text-red-400 text-sm'>{errors.termsAccepted.message}</p>}
                                             </div>
+                                        )}
+
+                                        <Button
+                                            type='submit'
+                                            disabled={isLoading}
+                                            className='w-full cursor-pointer rounded-2xl border py-6 text-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] group'
+                                            style={{
+                                                background:
+                                                    'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
+                                                borderColor: 'rgba(255,255,255,0.10)',
+                                                WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                                backdropFilter: 'blur(7px) saturate(145%)',
+                                                boxShadow:
+                                                    'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
+                                            }}
+                                        >
+                                            {isLoading ? (
+                                                <div className='flex items-center justify-center'>
+                                                    <svg className='animate-spin h-5 w-5 mr-2 text-white' viewBox='0 0 24 24'>
+                                                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
+                                                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                                    </svg>
+                                                    Processing...
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    {isSignUp ? 'Create Account' : 'Dashboard'}
+                                                    <ArrowRight className='w-5 h-5 ml-2 opacity-70 group-hover:translate-x-1 transition-transform duration-300' />
+                                                </>
+                                            )}
+                                        </Button>
+
+                                        <div className='text-center'>
                                             <button
                                                 type='button'
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
-                                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                onClick={() => {
+                                                    setIsSignUp(!isSignUp);
+                                                    setAlert({ type: '', message: '' });
+                                                    reset();
+                                                    resetVerificationState();
+                                                }}
+                                                className='text-white text-sm font-semibold'
                                             >
-                                                {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                                                {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                                                <span className='cursor-pointer text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'>
+                                                    {isSignUp ? 'Sign In' : 'Sign Up'}
+                                                </span>
                                             </button>
                                         </div>
-                                        {errors.password && <p className='text-red-400 text-sm'>{errors.password.message}</p>}
-                                    </div>
-
-                                    {isSignUp && (
-                                        <div className='space-y-1.5'>
-                                            <div className='flex items-start gap-3 text-sm text-gray-300 leading-relaxed'>
-                                                <input
-                                                    id='termsAccepted'
-                                                    type='checkbox'
-                                                    {...register('termsAccepted', {
-                                                        required: 'Please accept the terms to continue',
-                                                    })}
-                                                    className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
-                                                />
-
-                                                <p>
-                                                    <label htmlFor='termsAccepted' className='cursor-pointer'>
-                                                        I agree to the{' '}
-                                                    </label>
-                                                    <button
-                                                        type='button'
-                                                        onClick={() => setShowTermsModal(true)}
-                                                        className='text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors'
-                                                    >
-                                                        Terms & Conditions
-                                                    </button>
-                                                    .
-                                                </p>
-                                            </div>
-                                            {errors.termsAccepted && <p className='text-red-400 text-sm'>{errors.termsAccepted.message}</p>}
-                                        </div>
-                                    )}
-
-                                    <Button
-                                        type='submit'
-                                        disabled={isLoading}
-                                        className='w-full cursor-pointer rounded-2xl border py-6 text-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] group'
-                                        style={{
-                                            background:
-                                                'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
-                                            borderColor: 'rgba(255,255,255,0.10)',
-                                            WebkitBackdropFilter: 'blur(7px) saturate(145%)',
-                                            backdropFilter: 'blur(7px) saturate(145%)',
-                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
-                                        }}
-                                    >
-                                        {isLoading ? (
-                                            <div className='flex items-center justify-center'>
-                                                <svg className='animate-spin h-5 w-5 mr-2 text-white' viewBox='0 0 24 24'>
-                                                    <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                                                    <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
-                                                </svg>
-                                                Processing...
-                                            </div>
-                                        ) : (
-                                            <>
-                                                {isSignUp ? 'Create Account' : 'Dashboard'}
-                                                <ArrowRight className='w-5 h-5 ml-2 opacity-70 group-hover:translate-x-1 transition-transform duration-300' />
-                                            </>
-                                        )}
-                                    </Button>
-
-                                    <div className='text-center'>
-                                        <button
-                                            type='button'
-                                            onClick={() => {
-                                                setIsSignUp(!isSignUp);
-                                                setAlert({ type: '', message: '' });
-                                                reset();
-                                            }}
-                                            className='text-white text-sm font-semibold'
-                                        >
-                                            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                                            <span className='cursor-pointer text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'>
-                                                {isSignUp ? 'Sign In' : 'Sign Up'}
-                                            </span>
-                                        </button>
-                                    </div>
-                                </form>
+                                    </form>
+                                )}
                             </div>
                         </>
                     )}
