@@ -103,7 +103,7 @@ function LightningSilver() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/lightningSilver'
                     onSuccess={() => {
                         setIsLoggedIn(true);
@@ -123,8 +123,9 @@ function LightningSilver() {
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
                                 <div style={{ display: 'table' }}>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#8d96c2] mb-3 sm:mb-4 leading-tight'>
-                                        Lightning Silver <br /> 25% Commission
+                                    <h1 className='text-[clamp(1.8rem,8vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#8d96c2] mb-3 sm:mb-4 leading-[1.18] sm:leading-tight'>
+                                        <span className='block whitespace-nowrap'>Lightning Silver</span>
+                                        <span className='block whitespace-nowrap'>25% Commission</span>
                                     </h1>
                                 </div>
 
@@ -172,7 +173,7 @@ function LightningSilver() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Build Earnings From <span className='text-[#8d96c2]'>Subscribers</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
@@ -234,7 +235,7 @@ function LightningSilver() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Get <span className='text-[#8d96c2]'>25% Lifetime</span> Commissions
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>

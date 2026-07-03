@@ -289,7 +289,7 @@ function Advertising() {
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
-                                    <h1 className='text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h1 className='text-[clamp(1.55rem,7.5vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.18] sm:leading-tight whitespace-nowrap'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Digital
                                         </span>
@@ -357,7 +357,7 @@ function Advertising() {
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
-                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 text-center'>
+                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22] text-center leading-[1.22]'>
                         Digital Billboard <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Features</span>{' '}
                     </h2>
                     <p className='text-base sm:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center px-20'>
@@ -423,7 +423,9 @@ function Advertising() {
                                     </div>
 
                                     <div className='space-y-2'>
-                                        <h3 className='text-lg font-bold text-white group-hover:text-[#4cc7e8] transition-colors'>{feature.title}</h3>
+                                        <h3 className='text-lg font-bold text-white leading-[1.28] group-hover:text-[#4cc7e8] transition-colors'>
+                                            {feature.title}
+                                        </h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
                                     </div>
                                 </div>
@@ -436,7 +438,7 @@ function Advertising() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Why Choose Our{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Billboard?</span>
                         </h2>
@@ -486,7 +488,7 @@ function Advertising() {
                                     <div className='w-16 h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-6'>
                                         <feature.icon className='w-8 h-8 text-white' />
                                     </div>
-                                    <h3 className='text-2xl font-bold text-white mb-4'>{feature.title}</h3>
+                                    <h3 className='text-2xl font-bold text-white mb-4 leading-[1.28]'>{feature.title}</h3>
                                     <p className='text-gray-300 leading-relaxed'>{feature.description}</p>
                                 </CardContent>
                             </Card>
@@ -501,9 +503,9 @@ function Advertising() {
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
-                                <br />
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
+                                Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform&nbsp;</span>
+                                <br className='hidden sm:block' />
                                 Your Future?
                             </h2>
                             <p className='text-xl text-gray-300 leading-relaxed'>
@@ -548,7 +550,7 @@ function Advertising() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/advertising'
                     onSuccess={handleAuthSuccess}
                 />

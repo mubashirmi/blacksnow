@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { CheckCircle } from 'lucide-react';
 
 const BENEFITS = [
@@ -35,10 +34,7 @@ export default function IndependentContractorPage() {
             {/* Header */}
             <div className='relative z-10 pt-20 pb-10 px-6'>
                 <div className='container mx-auto max-w-4xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                        WORK WITH US
-                    </Badge>
-                    <h1 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
+                    <h1 className='text-2xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Independent Contractor</span>
                     </h1>
                 </div>
@@ -50,7 +46,7 @@ export default function IndependentContractorPage() {
                     {/* ── Intro card ── */}
                     <div className='bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/20 rounded-3xl p-10 shadow-xl shadow-[#2c7bbe]/10 animate-slide-in-up relative'>
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-t-3xl' />
-                        <h2 className='text-2xl font-bold text-white mb-4'>Our Commitment to Independent Contractors</h2>
+                        <h2 className='text-xl font-bold text-white mb-4'>Our Commitment to Independent Contractors</h2>
                         <p className='text-gray-300 leading-relaxed text-base mb-4'>
                             At Black Snow Holdings, we empower independent contractors to thrive in the dynamic world of finance and investment. As a
                             forward-thinking investment firm founded in 2024, we recognize the value of flexible, expert-driven collaborations that align with
@@ -69,7 +65,7 @@ export default function IndependentContractorPage() {
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-t-3xl' />
 
                         <div className='mb-8'>
-                            <h2 className='text-2xl font-bold text-white mb-2'>Core Benefits</h2>
+                            <h2 className='text-xl font-bold text-white mb-2'>Core Benefits</h2>
                             <p className='text-gray-400 text-sm'>
                                 The advantages that define our independent contractor opportunities and support your professional growth.
                             </p>
@@ -96,7 +92,7 @@ export default function IndependentContractorPage() {
                         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-t-3xl' />
 
                         <div className='mb-8'>
-                            <h2 className='text-2xl font-bold text-white mb-2'>Requirements and Qualifications</h2>
+                            <h2 className='text-xl font-bold text-white mb-2'>Requirements and Qualifications</h2>
                             <p className='text-gray-400 text-sm'>
                                 To ensure mutual success, we seek independent contractors who embody our core values of growth, diversity, and value.
                             </p>

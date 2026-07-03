@@ -591,7 +591,7 @@ export default function BlackSnowMathematics() {
             {/* Mobile version remains the same */}
             <div className='lg:hidden flex justify-center'>
                 <MobilePhoneFrame>
-                    <div className='text-center text-[#2cbbff] text-sm font-semibold mb-3'>Black Snow Mathematics</div>
+                    <h1 className='text-center text-[#2cbbff] text-sm font-semibold mb-3'>Black Snow Mathematics</h1>
 
                     <ActiveCalculator showSelector selectedKey={selectedCalculator} onSelectedKeyChange={setSelectedCalculator} />
                 </MobilePhoneFrame>
@@ -600,7 +600,7 @@ export default function BlackSnowMathematics() {
             {/* Desktop version: same dropdown calculator flow as mobile, only larger */}
             <div className='hidden lg:block max-w-7xl mx-auto'>
                 <DesktopWideFrame>
-                    <div className='text-center text-[#2cbbff] text-xl font-semibold mb-6'>Black Snow Mathematics</div>
+                    <h1 className='text-center text-[#2cbbff] text-2xl font-semibold mb-6'>Black Snow Mathematics</h1>
 
                     <div className='rounded-3xl border border-[#2c7bbe]/30 bg-[#050608]/70 p-6 lg:p-8 shadow-[0_18px_50px_rgba(0,0,0,0.35)]'>
                         <ActiveCalculator showSelector selectedKey={selectedCalculator} onSelectedKeyChange={setSelectedCalculator} />

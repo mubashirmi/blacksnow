@@ -108,6 +108,7 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
 
             clearLoaderTimeout();
         };
+        // eslint-disable-next-line
     }, [router.events, router.asPath, duration]);
 
     if (!visible) return null;

@@ -106,7 +106,7 @@ export default function Page() {
                             </div>
 
                             <div className='flex-1'>
-                                <h3 className='text-xl sm:text-2xl font-black text-white mb-4'>Manage Feedback & Subscription Access</h3>
+                                <h3 className='text-xl sm:text-2xl font-black text-white mb-4 leading-[1.25]'>Manage Feedback & Subscription Access</h3>
 
                                 <p className='text-sm sm:text-base text-gray-300 mb-6 leading-relaxed'>
                                     Share feedback with our team or review your current product access. If you need to unsubscribe, we will first verify your
@@ -124,7 +124,7 @@ export default function Page() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Elite Customer Care</span>
                         </h2>
 
@@ -143,7 +143,7 @@ export default function Page() {
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
 
-                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>{feature.title}</h3>
+                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>{feature.title}</h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed flex-1'>{feature.description}</p>
                                     </CardContent>
                                 </Card>
@@ -157,7 +157,7 @@ export default function Page() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Flexible Plans</span>
                         </h2>
 
@@ -175,7 +175,7 @@ export default function Page() {
                                             <step.icon className='w-6 h-6 text-[#4cc7e8]' />
                                         </div>
 
-                                        <h3 className='text-lg font-bold text-white mb-2'>{step.title}</h3>
+                                        <h3 className='text-lg font-bold text-white mb-2 leading-[1.28]'>{step.title}</h3>
                                         <p className='text-sm text-gray-300 leading-relaxed'>{step.description}</p>
                                     </CardContent>
                                 </Card>
@@ -192,7 +192,7 @@ export default function Page() {
                             </div>
 
                             <div className='flex-1'>
-                                <h3 className='text-xl sm:text-2xl font-black text-white mb-4'>Need to Unsubscribe Your Plan?</h3>
+                                <h3 className='text-xl sm:text-2xl font-black text-white mb-4 leading-[1.25]'>Need to Unsubscribe Your Plan?</h3>
 
                                 <p className='text-sm sm:text-base text-gray-300 mb-6 leading-relaxed'>
                                     If you unsubscribe your plan, you can always log back into your account or contact our support team for assistance. We will
@@ -213,7 +213,7 @@ export default function Page() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Our&nbsp;
                                 <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Commitment</span>
                                 <br />

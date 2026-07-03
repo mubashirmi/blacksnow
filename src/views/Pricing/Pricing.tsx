@@ -267,16 +267,13 @@ function Pricing() {
                 <div className='mx-auto max-w-[1380px]'>
                     <div className='grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14'>
                         <div className='relative z-10 animate-slide-in-left'>
-                            {/* <div className='mb-5 inline-flex items-center gap-3 rounded-full border border-[#2c7bbe]/35 bg-[#050608]/70 px-4 py-2 shadow-[0_0_35px_rgba(44,123,190,0.16)] backdrop-blur-xl'>
-                                <Sparkles className='h-4 w-4 text-[#4cc7e8]' />
-                                <span className={`${michroma.className} text-[11px] uppercase tracking-[0.42em] text-[#4cc7e8]`}>Pricing</span>
-                            </div> */}
-
                             <h1
                                 className={`${michroma.className} max-w-3xl text-4xl leading-[1.15] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl xl:text-7xl`}
                             >
-                                Simple Pricing.
-                                <span className='block bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Powerful Value.</span>
+                                <span className='block lg:whitespace-nowrap'>Simple Pricing.</span>
+                                <span className='block bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent lg:whitespace-nowrap'>
+                                    Powerful Value.
+                                </span>
                             </h1>
 
                             <p className='mt-7 max-w-xl text-base leading-8 text-gray-300 sm:text-lg'>

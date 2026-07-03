@@ -127,8 +127,9 @@ function MobileDesktopSection() {
         <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
             <div className='container mx-auto max-w-6xl'>
                 <div className='text-center mb-8 sm:mb-10'>
-                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-white mb-3'>
-                        Mobile & Desktop <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Compatible</span>
+                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black leading-[1.22] sm:leading-tight text-white mb-3'>
+                        <span className='whitespace-nowrap'>Mobile & Desktop</span>{' '}
+                        <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent whitespace-nowrap'>Compatible</span>
                     </h2>
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
                         A clean, seamless experience across every screen — designed for modern traders.
@@ -149,7 +150,7 @@ function MobileDesktopSection() {
                             </div>
 
                             <div className='min-w-0'>
-                                <h3 className='text-white font-extrabold text-base sm:text-[28px] leading-tight mb-1.5'>{title}</h3>
+                                <h3 className='text-white font-extrabold text-base sm:text-[28px] leading-[1.28] sm:leading-tight mb-1.5'>{title}</h3>
                                 <p className='text-gray-400 text-sm sm:text-xl leading-relaxed max-w-4xl'>{desc}</p>
                             </div>
                         </div>
@@ -157,9 +158,9 @@ function MobileDesktopSection() {
 
                     <div className='px-4 sm:px-8 pb-4 sm:pb-8 pt-2 sm:pt-5'>
                         <Button
-                            onClick={() => router.push('/pricing')}
+                            onClick={() => router.push('/login?signup')}
                             size='lg'
-                            className='w-full h-14 sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
+                            className='w-full h-14 cursor-pointer sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
                         >
                             Open Account
                             {/* <span className='ml-3 text-lg sm:text-2xl'>→</span> */}
@@ -170,137 +171,6 @@ function MobileDesktopSection() {
         </section>
     );
 }
-
-// ─── Black Snow Mathematics Banner ──────────────────────────────────────────
-// function BSMBanner() {
-//     const router = useRouter();
-
-//     return (
-//         <section className='relative px-4 sm:px-6 md:px-8 py-6 sm:py-8'>
-//             <div className='container mx-auto max-w-7xl'>
-//                 <button
-//                     onClick={() => router.push('/blacksnowmathematics')}
-//                     className='group relative block w-full overflow-hidden cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]'
-//                     style={{
-//                         background: 'linear-gradient(180deg, #07111e 0%, #0a1324 50%, #07111e 100%)',
-//                         border: '1px solid rgba(56,126,189,0.55)',
-//                         boxShadow: '0 0 24px rgba(44,123,190,0.20), inset 0 0 28px rgba(0,0,0,0.55)',
-//                     }}
-//                 >
-//                     <div
-//                         className='absolute inset-0 pointer-events-none'
-//                         style={{
-//                             background:
-//                                 'linear-gradient(90deg, transparent 0%, rgba(76,199,232,0.06) 20%, rgba(76,199,232,0.12) 50%, rgba(76,199,232,0.06) 80%, transparent 100%)',
-//                         }}
-//                     />
-//                     <div
-//                         className='absolute top-0 left-0 right-0 h-[1px]'
-//                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.9), transparent)' }}
-//                     />
-//                     <div
-//                         className='absolute bottom-0 left-0 right-0 h-[1px]'
-//                         style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.7), transparent)' }}
-//                     />
-
-//                     <div className='relative px-4 sm:px-6 md:px-10 py-4 sm:py-5'>
-//                         <div className='flex w-full items-center justify-center gap-2 sm:gap-4 md:gap-6'>
-//                             <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0'>
-//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-//                                     <div
-//                                         key={`lA-${i}`}
-//                                         style={{
-//                                             width: 0,
-//                                             height: 0,
-//                                             borderTop: '8px solid transparent',
-//                                             borderBottom: '8px solid transparent',
-//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-//                                         }}
-//                                     />
-//                                 ))}
-//                                 <span className='mx-1' />
-//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-//                                     <div
-//                                         key={`lB-${i}`}
-//                                         style={{
-//                                             width: 0,
-//                                             height: 0,
-//                                             borderTop: '8px solid transparent',
-//                                             borderBottom: '8px solid transparent',
-//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-//                                         }}
-//                                     />
-//                                 ))}
-//                             </div>
-
-//                             <div className='flex min-w-0 flex-1 items-center justify-center gap-2 sm:gap-3 md:gap-4'>
-//                                 <div
-//                                     className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
-//                                     style={{ background: 'linear-gradient(90deg, transparent, rgba(76,199,232,0.55))' }}
-//                                 />
-
-//                                 <h2 className='min-w-0 text-center uppercase font-black tracking-[0.05em] sm:tracking-[0.09em] leading-tight text-[13px] xs:text-[15px] sm:text-lg md:text-2xl lg:text-[28px] whitespace-normal break-words'>
-//                                     <span style={{ color: '#f5f7fb', textShadow: '0 0 12px rgba(255,255,255,0.10)' }}>BLACK SNOW</span>{' '}
-//                                     <span style={{ color: '#4cc7e8', textShadow: '0 0 14px rgba(76,199,232,0.60)' }}>MATHEMATICS</span>
-//                                 </h2>
-
-//                                 <div
-//                                     className='flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border flex items-center justify-center'
-//                                     style={{
-//                                         borderColor: 'rgba(76,199,232,0.55)',
-//                                         background: 'rgba(76,199,232,0.08)',
-//                                         boxShadow: '0 0 10px rgba(76,199,232,0.22)',
-//                                     }}
-//                                 >
-//                                     <span className='text-[11px] sm:text-sm font-black leading-none' style={{ color: '#4cc7e8' }}>
-//                                         ›
-//                                     </span>
-//                                 </div>
-
-//                                 <div
-//                                     className='hidden md:block flex-shrink-0 h-[1px] w-8 lg:w-14 xl:w-20'
-//                                     style={{ background: 'linear-gradient(270deg, transparent, rgba(76,199,232,0.55))' }}
-//                                 />
-//                             </div>
-
-//                             <div className='hidden lg:flex items-center flex-shrink-0 gap-[3px] min-w-0' style={{ transform: 'scaleX(-1)' }}>
-//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-//                                     <div
-//                                         key={`rA-${i}`}
-//                                         style={{
-//                                             width: 0,
-//                                             height: 0,
-//                                             borderTop: '8px solid transparent',
-//                                             borderBottom: '8px solid transparent',
-//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-//                                         }}
-//                                     />
-//                                 ))}
-//                                 <span className='mx-1' />
-//                                 {[0.25, 0.45, 0.7, 1].map((opacity, i) => (
-//                                     <div
-//                                         key={`rB-${i}`}
-//                                         style={{
-//                                             width: 0,
-//                                             height: 0,
-//                                             borderTop: '8px solid transparent',
-//                                             borderBottom: '8px solid transparent',
-//                                             borderLeft: `9px solid rgba(76,199,232,${opacity})`,
-//                                             filter: opacity === 1 ? 'drop-shadow(0 0 5px rgba(76,199,232,0.9))' : 'none',
-//                                         }}
-//                                     />
-//                                 ))}
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </button>
-//             </div>
-//         </section>
-//     );
-// }
 
 // ─── Data Driven Analytics Section ──────────────────────────────────────────
 function DataAnalyticsSection() {
@@ -365,9 +235,11 @@ function DataAnalyticsSection() {
 
             <div className='container mx-auto max-w-7xl relative z-10'>
                 <div className='text-center mb-12 sm:mb-14'>
-                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight'>
-                        Built for Modern{' '}
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Trading Workflows</span>
+                    <h2 className='text-[clamp(1.6rem,6.8vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-[1.22] sm:leading-tight'>
+                        <span className='whitespace-nowrap'>Built for Modern</span>{' '}
+                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent whitespace-nowrap'>
+                            Trading Workflows
+                        </span>
                     </h2>
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
                         Professional tools, cleaner presentation, and a sharper focus on what matters most.
@@ -401,7 +273,7 @@ function DataAnalyticsSection() {
                                     <p className='text-[11px] font-bold tracking-[0.22em] uppercase' style={{ color: accent }}>
                                         {label}
                                     </p>
-                                    <h3 className='text-xl sm:text-2xl font-bold text-white mt-1 leading-tight'>{title}</h3>
+                                    <h3 className='text-xl sm:text-2xl font-bold text-white mt-1 leading-[1.28] sm:leading-tight'>{title}</h3>
                                 </div>
                             </div>
 
@@ -595,7 +467,7 @@ function Home() {
             <div className='absolute inset-0 rounded-2xl pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(76,199,232,0.12),transparent_55%)]' />
             <div className='relative'>
                 <div className='space-y-2'>
-                    <h3 className='text-lg sm:text-xl font-bold text-white'>Weekly Market Intelligence</h3>
+                    <h3 className='max-[420px]:text-base text-lg sm:text-xl font-bold text-white leading-[1.28]'>Weekly Market Intelligence</h3>
                     <p className='text-sm sm:text-base text-gray-400'>Subscribe for weekly trading insights and market data.</p>
                 </div>
                 <div className='mt-4 flex flex-col sm:flex-row gap-3 sm:gap-4'>
@@ -652,18 +524,19 @@ function Home() {
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     {/* Section Heading */}
                     <div className='text-center mb-12'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-tight'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                        <h2 className='text-[clamp(1.38rem,5.8vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.22] sm:leading-tight'>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent whitespace-nowrap'>
                                 Explore Data-Driven
                             </span>
                             <br />
-                            <span className='text-white'>Market </span>
-                            <div className='relative inline-block'>
-                                <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>
-                                    {' '}
-                                    Intelligence Hub
+                            <span className='whitespace-nowrap'>
+                                <span className='text-white'>Market </span>
+                                <span className='relative inline-block'>
+                                    <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                        Intelligence Hub
+                                    </span>
                                 </span>
-                            </div>
+                            </span>
                         </h2>
                         <p className='text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed font-light mt-6'>
                             Master every tool in your trading arsenal. Explore each strategy and discover how it works.
@@ -786,7 +659,7 @@ function Home() {
                                                 }`}
                                             >
                                                 <div>
-                                                    <h3 className='text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight mb-6 md:mb-8'>
+                                                    <h3 className='text-2xl md:text-5xl lg:text-6xl font-extralight text-white leading-[1.22] md:leading-tight mb-6 md:mb-8'>
                                                         {panel.title}
                                                     </h3>
 
@@ -864,7 +737,7 @@ function Home() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/'
                     onSuccess={handleAuthSuccess}
                 />
@@ -882,10 +755,10 @@ function Home() {
                         {/* ── LEFT ── */}
                         <div className='flex flex-col gap-7 min-[1100px]:gap-8 min-w-0'>
                             <div className='space-y-3 animate-slide-in-left delay-200'>
-                                <h1 className='font-michroma text-3xl sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.22] tracking-tight'>
-                                    <span className='text-[#f4f4f4] min-[1100px]:whitespace-nowrap'>Global Multi-Asset</span>
+                                <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight'>
+                                    <span className='text-[#f4f4f4] whitespace-nowrap'>Global Multi-Asset</span>
                                     <br />
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black min-[1100px]:whitespace-nowrap'>
+                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black whitespace-nowrap'>
                                         Intelligence Engine
                                     </span>
                                 </h1>

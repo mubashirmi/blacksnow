@@ -52,7 +52,7 @@ export function MultiCurrencyAcceptanceSection() {
 
             <div className='container mx-auto max-w-7xl relative z-10'>
                 <div className='text-center mb-12 sm:mb-14'>
-                    <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight'>
+                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight'>
                         Global Multi-Currency <span className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>Acceptance</span>
                     </h2>
 

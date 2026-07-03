@@ -141,6 +141,22 @@ type EmailSentHistoryResponse = {
     };
 };
 
+type FeedbackApiItem = {
+    id: number | string;
+    authId?: number | string;
+    review?: string | null;
+    stars?: string | number | null;
+    toolName?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    Auth?: {
+        id?: number | string;
+        email?: string | null;
+        firstName?: string | null;
+        lastName?: string | null;
+    } | null;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -168,6 +184,7 @@ const LIGHTNING_SILVER_PRODUCT_OPTIONS: { label: string; value: AffiliateMetricP
 type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
 type MetricPeriod = 'Week' | 'Month' | 'Year';
 type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
+type ToolFeedbackMetricType = 'FeedbackCount' | 'AverageStars';
 
 function safeNumber(n: any, fallback = 0) {
     const x = typeof n === 'number' ? n : Number(n);
@@ -369,6 +386,14 @@ export default function KPIPage() {
     const [emailSentError, setEmailSentError] = useState<string | null>(null);
     const [emailSentPeriod, setEmailSentPeriod] = useState<EmailSentPeriod>('Weekly');
 
+    // Chart E: Tool Feedback
+    const [toolFeedback, setToolFeedback] = useState<FeedbackApiItem[]>([]);
+    const [toolFeedbackLoading, setToolFeedbackLoading] = useState(false);
+    const [toolFeedbackError, setToolFeedbackError] = useState<string | null>(null);
+    const [toolFeedbackTool, setToolFeedbackTool] = useState<string>('All');
+    const [toolFeedbackMetricType, setToolFeedbackMetricType] = useState<ToolFeedbackMetricType>('FeedbackCount');
+    const [toolFeedbackMetricPeriod, setToolFeedbackMetricPeriod] = useState<MetricPeriod>('Week');
+
     // ─────────────────────────────────────────────────────────────────────────
 
     async function fetchMetric(type: 'Sales' | 'Affiliate', product: string) {
@@ -543,6 +568,33 @@ export default function KPIPage() {
         };
     }, []);
 
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setToolFeedbackLoading(true);
+                setToolFeedbackError(null);
+
+                const json = await fetchJSON<FeedbackApiItem[] | { data?: FeedbackApiItem[] }>('/api/v5/tool-feedback');
+                const payload = json as any;
+                const list: FeedbackApiItem[] = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+
+                if (cancelled) return;
+                setToolFeedback(list);
+            } catch (e: any) {
+                if (cancelled) return;
+                setToolFeedbackError(e?.message || 'Failed to load tool feedback chart');
+                setToolFeedback([]);
+            } finally {
+                if (!cancelled) setToolFeedbackLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     // ─────────────────────────────────────────────────────────────────────────
 
     // ─── v4 derived data ──────────────────────────────────────────────────────
@@ -640,6 +692,145 @@ export default function KPIPage() {
         return emailSentTotals.yearly;
     }, [emailSentPeriod, emailSentTotals]);
 
+    const toolFeedbackToolOptions = useMemo(() => {
+        const tools = Array.from(new Set(toolFeedback.map((item) => item.toolName?.trim()).filter(Boolean) as string[]));
+        return ['All', ...tools.sort((a, b) => formatProductName(a).localeCompare(formatProductName(b)))];
+    }, [toolFeedback]);
+
+    const filteredToolFeedback = useMemo(() => {
+        if (toolFeedbackTool === 'All') return toolFeedback;
+        return toolFeedback.filter((item) => (item.toolName?.trim() || 'Unknown') === toolFeedbackTool);
+    }, [toolFeedback, toolFeedbackTool]);
+
+    const toolFeedbackChartData = useMemo(() => {
+        const buildBucket = (period: string, active = false) => ({
+            period,
+            feedbacks: 0,
+            starSum: 0,
+            starCount: 0,
+            value: 0,
+            active,
+        });
+
+        const now = new Date();
+        let buckets: ReturnType<typeof buildBucket>[] = [];
+
+        if (toolFeedbackMetricPeriod === 'Week') {
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const currentDayIndex = (now.getDay() + 6) % 7;
+            buckets = labels.map((label, index) => buildBucket(label, index === currentDayIndex));
+
+            const weekStart = new Date(now);
+            weekStart.setHours(0, 0, 0, 0);
+            weekStart.setDate(weekStart.getDate() - currentDayIndex);
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+
+            filteredToolFeedback.forEach((item) => {
+                const date = item.createdAt ? new Date(item.createdAt) : null;
+                if (!date || Number.isNaN(date.getTime())) return;
+                if (date < weekStart || date >= weekEnd) return;
+
+                const bucketIndex = (date.getDay() + 6) % 7;
+                const bucket = buckets[bucketIndex];
+                bucket.feedbacks += 1;
+
+                const starValue = item.stars != null ? Number(item.stars) : Number.NaN;
+                if (Number.isFinite(starValue)) {
+                    bucket.starSum += starValue;
+                    bucket.starCount += 1;
+                }
+            });
+        }
+
+        if (toolFeedbackMetricPeriod === 'Month') {
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const currentMonthIndex = now.getMonth();
+            const currentYear = now.getFullYear();
+            buckets = labels.map((label, index) => buildBucket(label, index === currentMonthIndex));
+
+            filteredToolFeedback.forEach((item) => {
+                const date = item.createdAt ? new Date(item.createdAt) : null;
+                if (!date || Number.isNaN(date.getTime())) return;
+                if (date.getFullYear() !== currentYear) return;
+
+                const bucket = buckets[date.getMonth()];
+                bucket.feedbacks += 1;
+
+                const starValue = item.stars != null ? Number(item.stars) : Number.NaN;
+                if (Number.isFinite(starValue)) {
+                    bucket.starSum += starValue;
+                    bucket.starCount += 1;
+                }
+            });
+        }
+
+        if (toolFeedbackMetricPeriod === 'Year') {
+            const labels = getMetricPeriodLabels('Year');
+            const currentYear = now.getFullYear();
+            buckets = labels.map((label) => buildBucket(label, Number(label) === currentYear));
+
+            filteredToolFeedback.forEach((item) => {
+                const date = item.createdAt ? new Date(item.createdAt) : null;
+                if (!date || Number.isNaN(date.getTime())) return;
+
+                const yearLabel = String(date.getFullYear());
+                const bucket = buckets.find((row) => row.period === yearLabel);
+                if (!bucket) return;
+
+                bucket.feedbacks += 1;
+
+                const starValue = item.stars != null ? Number(item.stars) : Number.NaN;
+                if (Number.isFinite(starValue)) {
+                    bucket.starSum += starValue;
+                    bucket.starCount += 1;
+                }
+            });
+        }
+
+        return buckets.map((bucket) => {
+            const averageStars = bucket.starCount ? Number((bucket.starSum / bucket.starCount).toFixed(1)) : 0;
+            return {
+                period: bucket.period,
+                feedbacks: bucket.feedbacks,
+                averageStars,
+                value: toolFeedbackMetricType === 'FeedbackCount' ? bucket.feedbacks : averageStars,
+                active: bucket.active,
+            };
+        });
+    }, [filteredToolFeedback, toolFeedbackMetricType, toolFeedbackMetricPeriod]);
+
+    const toolFeedbackStats = useMemo(() => {
+        const validStars = filteredToolFeedback.map((item) => (item.stars != null ? Number(item.stars) : Number.NaN)).filter((value) => Number.isFinite(value));
+
+        const averageStars = validStars.length ? (validStars.reduce((sum, value) => sum + value, 0) / validStars.length).toFixed(1) : '-';
+
+        const toolCountMap: Record<string, number> = {};
+        toolFeedback.forEach((item) => {
+            const toolKey = item.toolName?.trim() || 'Unknown';
+            toolCountMap[toolKey] = (toolCountMap[toolKey] || 0) + 1;
+        });
+
+        const topToolKey = Object.entries(toolCountMap).sort((a, b) => b[1] - a[1])[0]?.[0];
+
+        return {
+            total: filteredToolFeedback.length,
+            averageStars,
+            topTool: topToolKey ? formatProductName(topToolKey) : '-',
+        };
+    }, [filteredToolFeedback, toolFeedback]);
+
+    const toolFeedbackSelectedValue = useMemo(() => {
+        const activeRow = toolFeedbackChartData.find((item) => item.active) || toolFeedbackChartData[toolFeedbackChartData.length - 1];
+        return safeNumber(activeRow?.value, 0);
+    }, [toolFeedbackChartData]);
+
+    const toolFeedbackSelectedLabel = useMemo(() => {
+        if (toolFeedbackMetricType === 'AverageStars') return `${toolFeedbackSelectedValue.toFixed(1)} ★`;
+        return `${toolFeedbackSelectedValue} feedbacks`;
+    }, [toolFeedbackMetricType, toolFeedbackSelectedValue]);
+
     // ─────────────────────────────────────────────────────────────────────────
 
     const salesSeries = useMemo(
@@ -702,6 +893,122 @@ export default function KPIPage() {
                 <div className='bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg shadow-lg p-8 text-white'>
                     <h1 className='text-4xl font-bold mb-2'>Analytics Dashboard</h1>
                     <p className='text-blue-100'>Comprehensive KPI metrics and insights</p>
+                </div>
+
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART: Tool Feedback Analytics                         */}
+                {/* GET /api/v5/tool-feedback                                    */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Tool Feedback</h3>
+                            <p className='text-sm text-gray-500'>Choose tool + metric + timeframe (Week/Month/Year)</p>
+
+                            <div className='mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500'>
+                                <span>
+                                    Total: <span className='font-semibold text-gray-800'>{toolFeedbackStats.total}</span>
+                                </span>
+                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
+                                <span>
+                                    Avg Stars: <span className='font-semibold text-gray-800'>{toolFeedbackStats.averageStars}</span>
+                                </span>
+                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
+                                <span>
+                                    Top Tool: <span className='font-semibold text-gray-800'>{toolFeedbackStats.topTool}</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            <select
+                                value={toolFeedbackTool}
+                                onChange={(e) => setToolFeedbackTool(e.target.value)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {toolFeedbackToolOptions.map((tool) => (
+                                    <option key={tool} value={tool}>
+                                        {tool === 'All' ? 'All Tools' : formatProductName(tool)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={toolFeedbackMetricType}
+                                onChange={(e) => setToolFeedbackMetricType(e.target.value as ToolFeedbackMetricType)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='FeedbackCount'>Feedback Count</option>
+                                <option value='AverageStars'>Average Stars</option>
+                            </select>
+
+                            <select
+                                value={toolFeedbackMetricPeriod}
+                                onChange={(e) => setToolFeedbackMetricPeriod(e.target.value as MetricPeriod)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+
+                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
+                                <span className='text-gray-500 mr-2'>Selected:</span>
+                                <span className='font-semibold text-gray-900'>{toolFeedbackSelectedLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {toolFeedbackError && <div className='mb-4 text-sm text-red-600'>{toolFeedbackError}</div>}
+
+                    {toolFeedbackLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading feedback chart...</div>
+                    ) : toolFeedback.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={240}>
+                            <LineChart data={toolFeedbackChartData as any}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='period' />
+                                <YAxis
+                                    domain={toolFeedbackMetricType === 'AverageStars' ? [0, 5] : undefined}
+                                    allowDecimals={toolFeedbackMetricType === 'AverageStars'}
+                                />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (toolFeedbackMetricType === 'AverageStars') return `${v.toFixed(1)} ★`;
+                                        return `${v}`;
+                                    }}
+                                />
+                                <Legend />
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name={toolFeedbackMetricType === 'AverageStars' ? 'Average Stars' : 'Feedback Count'}
+                                    stroke='#8b5cf6'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, payload } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const active = Boolean(payload?.active);
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={active ? 6 : 4}
+                                                fill={active ? '#8b5cf6' : 'rgba(139,92,246,0.35)'}
+                                                stroke='#8b5cf6'
+                                                strokeWidth={active ? 2 : 1}
+                                            />
+                                        );
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No feedback data available</div>
+                    )}
                 </div>
 
                 {/* ============================================================ */}
