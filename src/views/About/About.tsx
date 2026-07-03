@@ -12,7 +12,7 @@ function About() {
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
-                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight'>
+                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.22] sm:leading-tight'>
                                         Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Story</span>
                                     </h2>
                                 </div>
@@ -59,7 +59,7 @@ function About() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]' id='core-values'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-12 sm:mb-16'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Core <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Values</span>
                         </h2>
                         <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto'>
@@ -78,7 +78,7 @@ function About() {
                                         </div>
                                     </div>
                                     <div className='space-y-4'>
-                                        <h3 className='text-2xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                        <h3 className='text-2xl font-bold text-white leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                             Growth Mindset
                                         </h3>
                                         <p className='text-gray-300 leading-relaxed text-base sm:text-md md:text-lg'>
@@ -104,7 +104,9 @@ function About() {
                                         </div>
                                     </div>
                                     <div className='space-y-4'>
-                                        <h3 className='text-2xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>Diversity</h3>
+                                        <h3 className='text-2xl font-bold text-white leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                            Diversity
+                                        </h3>
                                         <p className='text-gray-300 leading-relaxed text-base sm:text-md md:text-lg'>
                                             <span className='text-[#4cc7e8] font-semibold'>Diversity is at the heart</span> of Black Snow. We are proud of our
                                             inclusive culture, where a wide range of perspectives and experiences come together to drive innovation and success.
@@ -127,7 +129,9 @@ function About() {
                                         </div>
                                     </div>
                                     <div className='space-y-4'>
-                                        <h3 className='text-2xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>Value</h3>
+                                        <h3 className='text-2xl font-bold text-white leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                            Value
+                                        </h3>
                                         <p className='text-gray-300 leading-relaxed text-base sm:text-md md:text-lg'>
                                             Our core value is to <span className='text-[#4cc7e8] font-semibold'>deliver exceptional value</span> in everything
                                             we do. We are committed to providing high-quality services that not only meet but exceed our clients&apos;

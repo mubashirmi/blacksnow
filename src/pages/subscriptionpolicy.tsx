@@ -1,17 +1,12 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-
 export default function SubscriptionPolicyPage() {
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
             {/* Header */}
             <div className='relative z-10 pt-20 pb-10 px-6'>
                 <div className='container mx-auto max-w-4xl text-center'>
-                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
-                        LEGAL INFORMATION
-                    </Badge>
-                    <h1 className='text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
+                    <h1 className='text-2xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Subscription Policy</span>
                     </h1>
                 </div>

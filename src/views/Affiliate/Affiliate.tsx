@@ -88,8 +88,8 @@ function Affiliate() {
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
                             <div>
-                                <div className='inline-block'>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight'>
+                                <div className='inline-block mb-5'>
+                                    <h1 className='text-[clamp(1.55rem,7.4vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.18] sm:leading-tight whitespace-nowrap'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Lightning
                                         </span>{' '}
@@ -156,7 +156,7 @@ function Affiliate() {
             <section ref={earnBigRef} className='relative pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-14 sm:mb-16'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Earn <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Big</span> Commissions
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
@@ -171,7 +171,7 @@ function Affiliate() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-10 sm:mb-14'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Referral <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Program</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
@@ -187,7 +187,7 @@ function Affiliate() {
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg'>
                                     <Users className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
-                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>$100 / month bonus</h3>
+                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>$100 / month bonus</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
                                     Earn $100 per month for every 10 products sold—paid on an ongoing basis as long as customers stay subscribed.
                                 </p>
@@ -199,7 +199,7 @@ function Affiliate() {
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg'>
                                     <Rocket className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
-                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>Stacks with commissions</h3>
+                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>Stacks with commissions</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
                                     Referral bonuses stack on top of standard commissions—creating an extra recurring revenue layer.
                                 </p>
@@ -211,7 +211,7 @@ function Affiliate() {
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg'>
                                     <BarChart3 className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
-                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>Built for long-term growth</h3>
+                                <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>Built for long-term growth</h3>
                                 <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>
                                     Bonuses remain active as long as referred customers continue their subscriptions—rewarding consistency and retention.
                                 </p>
@@ -224,8 +224,11 @@ function Affiliate() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                            Why Join Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliate Program</span>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
+                            Why Join Our{' '}
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent whitespace-nowrap'>
+                                Affiliate Program
+                            </span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Lightning combines real products, automation, and analytics into one affiliate ecosystem. <br />
@@ -242,7 +245,7 @@ function Affiliate() {
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
-                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
@@ -258,8 +261,10 @@ function Affiliate() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Choose Your <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Affiliate</span> Level
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
+                                Choose Your{' '}
+                                <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent whitespace-nowrap'>Affiliate</span>{' '}
+                                Level
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
                                 Choose the affiliate level that fits your goals and earning strategy. Both options include the same tools, tracking, and

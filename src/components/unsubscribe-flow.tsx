@@ -1016,7 +1016,7 @@ export function FeedbackUnsubscribeButtons({ size = 'section', className = '', o
             <AuthModal
                 open={authModalOpen}
                 onOpenChange={setAuthModalOpen}
-                defaultView='signin'
+                defaultView='signup'
                 redirectAfterLogin='/'
                 redirectAfterSignup='/'
                 sourceRoute={authFlow === 'feedback' ? '/feedback' : '/unsubscribe'}

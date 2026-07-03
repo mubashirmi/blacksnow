@@ -239,7 +239,7 @@ export default function InvoiceContractPage() {
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h1 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.18] sm:leading-tight whitespace-nowrap'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Business{' '}
                                         </span>
@@ -299,7 +299,7 @@ export default function InvoiceContractPage() {
 
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             How It <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Works</span>
                         </h2>
                         {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
@@ -320,7 +320,7 @@ export default function InvoiceContractPage() {
                                         </div>
 
                                         <div className='mt-6 sm:mt-8'>
-                                            <h3 className='text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                            <h3 className='text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                                 {item.title}
                                             </h3>
                                             <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{item.description}</p>
@@ -346,7 +346,7 @@ export default function InvoiceContractPage() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-transparent via-[#0a0b0f] to-transparent'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Professional Custom <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Invoices </span>
                         </h2>
                         {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5 mx-auto'></div> */}
@@ -374,7 +374,7 @@ export default function InvoiceContractPage() {
 
                                     {/* Content */}
                                     <div className='flex-1 min-w-0'>
-                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{feature.description}</p>
@@ -395,7 +395,7 @@ export default function InvoiceContractPage() {
 
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Why Choose Our <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'> Digital Solution</span>
                         </h2>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Transform your document workflow</p>
@@ -413,7 +413,7 @@ export default function InvoiceContractPage() {
                                 </div>
 
                                 {/* Content */}
-                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                     {benefit.title}
                                 </h3>
                                 <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{benefit.description}</p>
@@ -430,7 +430,7 @@ export default function InvoiceContractPage() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-transparent via-[#0a0b0f] to-transparent'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Perfect For Every <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Business</span>
                         </h2>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Discover how our platform adapts to your needs</p>
@@ -490,7 +490,7 @@ export default function InvoiceContractPage() {
                                         </div>
 
                                         {/* Content */}
-                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                             {useCase.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{useCase.description}</p>
@@ -511,7 +511,7 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Create New <br className='inline sm:hidden' />
                                 <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>&nbsp;Transactions</span>
                                 <br />
@@ -555,7 +555,7 @@ export default function InvoiceContractPage() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/invoiceContract'
                     onSuccess={handleAuthSuccess}
                 />

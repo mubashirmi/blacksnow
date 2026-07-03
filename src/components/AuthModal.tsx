@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
-import { CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, Shield, User, X } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Lock, Mail, MessageSquare, Phone, Shield, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -264,6 +264,11 @@ export type ProductContext = {
 
 export type AuthModalVisualVariant = 'default' | 'danger' | 'success';
 
+type PendingSignupFlow = {
+    user: any;
+    role: string;
+};
+
 // ─── Auth Modal Props ─────────────────────────────────────────────────────────
 export type AuthModalProps = {
     open: boolean;
@@ -304,6 +309,11 @@ function validateEmail(value: string) {
 
 function validatePassword(value: string) {
     return value.length >= 6 || 'Password must be at least 6 characters long';
+}
+
+function validatePhoneNumber(value: string) {
+    const cleaned = String(value || '').replace(/[^0-9+]/g, '');
+    return cleaned.length >= 7 || 'Please enter a valid phone number';
 }
 
 // ─── Product Header Sub-component ─────────────────────────────────────────
@@ -409,7 +419,7 @@ function ProductHeader({
 export default function AuthModal({
     open,
     onOpenChange,
-    defaultView = 'signin',
+    defaultView = 'signup',
     redirectAfterLogin = '/',
     redirectAfterSignup = '/pricing',
     sourceRoute,
@@ -426,6 +436,14 @@ export default function AuthModal({
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [termsCompleted, setTermsCompleted] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    const [showVerification, setShowVerification] = useState(false);
+    const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
+    const [pendingSignupFlow, setPendingSignupFlow] = useState<PendingSignupFlow | null>(null);
+    const [verificationEmail, setVerificationEmail] = useState('');
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpVerifying, setOtpVerifying] = useState(false);
     const [alert, setAlert] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
 
     const {
@@ -471,6 +489,119 @@ export default function AuthModal({
         setIsSignUp(shouldSignUp ? true : defaultView === 'signup');
     }, [router.isReady, router.query, defaultView]);
 
+    const resetVerificationState = () => {
+        setShowVerification(false);
+        setVerificationMethod('email');
+        setPendingSignupFlow(null);
+        setVerificationEmail('');
+        setOtp('');
+        setOtpSent(false);
+        setOtpSending(false);
+        setOtpVerifying(false);
+    };
+
+    const completeSignupFlow = () => {
+        const signupUser = pendingSignupFlow?.user;
+        const signupRole = pendingSignupFlow?.role || '';
+
+        if (!signupUser) {
+            setAlert({ type: 'error', message: 'Signup session expired. Please sign up again.' });
+            resetVerificationState();
+            return;
+        }
+
+        const userId = signupUser?.id ? String(signupUser.id) : undefined;
+        const userRoles = Array.isArray(signupUser?.roles) ? signupUser.roles : [];
+
+        if (userId) {
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('id', userId);
+            setCookie('id', userId);
+            setCookie('firstName', signupUser.firstName);
+            setCookie('lastName', signupUser.lastName);
+            setCookie('email', signupUser.email);
+        }
+
+        localStorage.setItem('roles', JSON.stringify(userRoles));
+
+        setAlert({ type: 'success', message: 'Email verified successfully!' });
+        reset();
+        resetVerificationState();
+
+        const preventDefault =
+            onSuccess?.({
+                kind: 'signup',
+                role: signupRole,
+                roles: userRoles,
+                userId,
+            }) === false;
+
+        if (preventDefault) {
+            onOpenChange(false);
+            return;
+        }
+
+        onOpenChange(false);
+
+        if (currentRoute === '/lightningSilver') {
+            router.push('/affiliate/dashboard/kpi');
+            return;
+        }
+
+        router.push(redirectAfterSignup || '/pricing');
+    };
+
+    const handleSendEmailOtp = async () => {
+        if (!verificationEmail) {
+            setAlert({ type: 'error', message: 'Email is missing. Please sign up again.' });
+            return;
+        }
+
+        setOtpSending(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-email', { email: verificationEmail });
+            setOtpSent(true);
+            setAlert({ type: 'success', message: `OTP sent to ${verificationEmail}` });
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Unable to send OTP. Please try again.',
+            });
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyEmailOtp = async () => {
+        const trimmedOtp = otp.trim();
+
+        if (!trimmedOtp) {
+            setAlert({ type: 'error', message: 'Please enter the OTP sent to your email.' });
+            return;
+        }
+
+        setOtpVerifying(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-email/verify', {
+                email: verificationEmail,
+                otp: trimmedOtp,
+            });
+
+            completeSignupFlow();
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Invalid OTP. Please try again.',
+            });
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
     async function onSubmit(data: any) {
         setIsLoading(true);
         setAlert({ type: '', message: '' });
@@ -484,49 +615,19 @@ export default function AuthModal({
                     firstName,
                     lastName,
                     password: data.password,
+                    phoneNumber: data.phoneNumber,
                     role: '',
                 };
 
                 const response = await axios.post('/api/v2/signup', signupData);
 
-                const userId = response.data.user?.id ? String(response.data.user.id) : undefined;
-                const userRoles = Array.isArray(response.data.user?.roles) ? response.data.user.roles : [];
-
-                if (userId) {
-                    localStorage.setItem('userId', userId);
-                    localStorage.setItem('id', userId);
-                    setCookie('id', userId);
-                    setCookie('firstName', response.data.user.firstName);
-                    setCookie('lastName', response.data.user.lastName);
-                    setCookie('email', response.data.user.email);
-                }
-
-                localStorage.setItem('roles', JSON.stringify(userRoles));
-
-                setAlert({ type: 'success', message: 'Account created successfully!' });
-                reset();
-
-                const preventDefault =
-                    onSuccess?.({
-                        kind: 'signup',
-                        role: signupData.role,
-                        roles: userRoles,
-                        userId,
-                    }) === false;
-
-                if (preventDefault) {
-                    onOpenChange(false);
-                    return;
-                }
-
-                onOpenChange(false);
-
-                if (currentRoute === '/lightningSilver') {
-                    router.push('/affiliate/dashboard/kpi');
-                    return;
-                }
-
-                router.push(redirectAfterSignup || '/pricing');
+                setPendingSignupFlow({ user: response.data.user, role: signupData.role });
+                setVerificationEmail(data.email);
+                setVerificationMethod('email');
+                setOtp('');
+                setOtpSent(false);
+                setShowVerification(true);
+                setAlert({ type: 'success', message: 'Account created successfully. Please verify your email to continue.' });
                 return;
             }
 
@@ -618,7 +719,7 @@ export default function AuthModal({
             <Dialog
                 open={open}
                 onOpenChange={(v) => {
-                    if (!isLoading) onOpenChange(v);
+                    if (!isLoading && !otpSending && !otpVerifying) onOpenChange(v);
                 }}
             >
                 <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
@@ -640,7 +741,7 @@ export default function AuthModal({
                         <button
                             type='button'
                             onClick={() => {
-                                if (!isLoading) onOpenChange(false);
+                                if (!isLoading && !otpSending && !otpVerifying) onOpenChange(false);
                             }}
                             className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border hover:bg-white/10 transition-all duration-300 z-20'
                             style={{
@@ -678,7 +779,7 @@ export default function AuthModal({
                                     </div>
 
                                     <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
-                                        {isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                                        {showVerification ? 'Verify Your Account' : isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
                                     </DialogTitle>
                                 </div>
                             </DialogHeader>
@@ -686,7 +787,9 @@ export default function AuthModal({
 
                         {hasProduct && (
                             <div className='relative z-10 px-7 pt-3 pb-0 text-center'>
-                                <p className='text-[15px] font-bold text-white/90'>{isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}</p>
+                                <p className='text-[15px] font-bold text-white/90'>
+                                    {showVerification ? 'Verify your account' : isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}
+                                </p>
 
                                 <p className='text-xs text-white/40 mt-0.5'>
                                     {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
@@ -697,6 +800,7 @@ export default function AuthModal({
                                             setIsSignUp((v) => !v);
                                             setAlert({ type: '', message: '' });
                                             reset();
+                                            resetVerificationState();
                                         }}
                                         className='font-semibold hover:text-white transition-colors duration-300 cursor-pointer'
                                         style={{ color: modalAccent }}
@@ -733,156 +837,301 @@ export default function AuthModal({
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2.5 flex-1'>
-                                {isSignUp && (
+                            {showVerification ? (
+                                <div className='flex flex-col gap-3 flex-1'>
+                                    <div className='rounded-2xl border border-white/10 bg-black/25 p-4'>
+                                        <p className='text-[10px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: modalAccent }}>
+                                            Verify your account
+                                        </p>
+                                        <h3 className='text-lg font-black text-white mb-2'>Choose a verification method</h3>
+                                        <p className='text-xs text-white/50 leading-relaxed'>
+                                            Send an email OTP to <span className='font-semibold text-white/80'>{verificationEmail}</span>. SMS verification is
+                                            visible, but disabled for now.
+                                        </p>
+                                    </div>
+
+                                    <div className='grid grid-cols-2 gap-2'>
+                                        <button
+                                            type='button'
+                                            onClick={() => setVerificationMethod('email')}
+                                            className='rounded-2xl border p-3 text-left transition-all duration-300 hover:scale-[1.01]'
+                                            style={{
+                                                backgroundColor: verificationMethod === 'email' ? `${modalAccent}18` : 'rgba(0,0,0,0.25)',
+                                                borderColor: verificationMethod === 'email' ? `${modalAccent}60` : 'rgba(255,255,255,0.10)',
+                                            }}
+                                        >
+                                            <Mail className='w-4 h-4 mb-2' style={{ color: modalAccent }} />
+                                            <p className='text-white font-bold text-xs'>Email</p>
+                                            <p className='text-[11px] mt-0.5' style={{ color: modalAccent }}>
+                                                Enabled
+                                            </p>
+                                        </button>
+
+                                        <button
+                                            type='button'
+                                            disabled
+                                            className='rounded-2xl border border-white/10 bg-black/20 p-3 text-left opacity-45 cursor-not-allowed'
+                                        >
+                                            <MessageSquare className='w-4 h-4 text-white/50 mb-2' />
+                                            <p className='text-white font-bold text-xs'>SMS</p>
+                                            <p className='text-white/40 text-[11px] mt-0.5'>Disabled</p>
+                                        </button>
+                                    </div>
+
+                                    <Button
+                                        type='button'
+                                        onClick={handleSendEmailOtp}
+                                        disabled={otpSending || otpVerifying || verificationMethod !== 'email'}
+                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                        style={{
+                                            background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
+                                            borderColor: 'rgba(255,255,255,0.09)',
+                                            color: 'rgba(255,255,255,0.70)',
+                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
+                                            opacity: otpSending || otpVerifying || verificationMethod !== 'email' ? 0.58 : 1,
+                                        }}
+                                    >
+                                        {otpSending ? (
+                                            <span className='flex items-center justify-center gap-2'>
+                                                <svg className='animate-spin h-4 w-4 text-white/70' viewBox='0 0 24 24'>
+                                                    <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' fill='none' />
+                                                    <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                                </svg>
+                                                Sending OTP...
+                                            </span>
+                                        ) : otpSent ? (
+                                            'Resend OTP'
+                                        ) : (
+                                            'Send OTP'
+                                        )}
+                                    </Button>
+
+                                    {otpSent && (
+                                        <div className='space-y-3'>
+                                            <div className='relative'>
+                                                <Input
+                                                    id='emailOtp'
+                                                    inputMode='numeric'
+                                                    placeholder='Enter OTP'
+                                                    value={otp}
+                                                    onChange={(event) => setOtp(event.target.value)}
+                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                />
+
+                                                <Shield className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            </div>
+
+                                            <Button
+                                                type='button'
+                                                onClick={handleVerifyEmailOtp}
+                                                disabled={otpVerifying || otpSending || !otp.trim()}
+                                                className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                                style={{
+                                                    background: `linear-gradient(135deg, ${modalAccent}cc, ${modalAccent}88)`,
+                                                    borderColor: `${modalAccent}60`,
+                                                    color: 'rgba(255,255,255,0.88)',
+                                                    boxShadow: `0 14px 34px ${modalAccent}22`,
+                                                    opacity: otpVerifying || otpSending || !otp.trim() ? 0.58 : 1,
+                                                }}
+                                            >
+                                                {otpVerifying ? (
+                                                    <span className='flex items-center justify-center gap-2'>
+                                                        <svg className='animate-spin h-4 w-4 text-white/80' viewBox='0 0 24 24'>
+                                                            <circle
+                                                                className='opacity-25'
+                                                                cx='12'
+                                                                cy='12'
+                                                                r='10'
+                                                                stroke='currentColor'
+                                                                strokeWidth='4'
+                                                                fill='none'
+                                                            />
+                                                            <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8z' />
+                                                        </svg>
+                                                        Verifying...
+                                                    </span>
+                                                ) : (
+                                                    'Verify OTP'
+                                                )}
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2.5 flex-1'>
+                                    {isSignUp && (
+                                        <div className='space-y-1'>
+                                            <div className='relative'>
+                                                <Input
+                                                    id='fullName'
+                                                    type='text'
+                                                    placeholder='Full name'
+                                                    {...register('fullName', {
+                                                        required: 'Full name is required',
+                                                        validate: (v: string) => {
+                                                            const cleaned = String(v || '')
+                                                                .trim()
+                                                                .replace(/\s+/g, ' ');
+
+                                                            return cleaned.length >= 2 || 'Please enter your name';
+                                                        },
+                                                    })}
+                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    style={{
+                                                        borderColor: undefined,
+                                                    }}
+                                                />
+
+                                                <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            </div>
+
+                                            {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
+                                        </div>
+                                    )}
+
+                                    {isSignUp && (
+                                        <div className='space-y-1'>
+                                            <div className='relative'>
+                                                <Input
+                                                    id='phoneNumber'
+                                                    type='tel'
+                                                    placeholder='Phone number'
+                                                    {...register('phoneNumber', { required: 'Phone number is required', validate: validatePhoneNumber as any })}
+                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                />
+
+                                                <Phone className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            </div>
+
+                                            {errors?.phoneNumber && <p className='text-red-400 text-xs px-1'>{(errors as any).phoneNumber.message}</p>}
+                                        </div>
+                                    )}
+
                                     <div className='space-y-1'>
                                         <div className='relative'>
                                             <Input
-                                                id='fullName'
-                                                type='text'
-                                                placeholder='Full name'
-                                                {...register('fullName', {
-                                                    required: 'Full name is required',
-                                                    validate: (v: string) => {
-                                                        const cleaned = String(v || '')
-                                                            .trim()
-                                                            .replace(/\s+/g, ' ');
-
-                                                        return cleaned.length >= 2 || 'Please enter your name';
-                                                    },
-                                                })}
+                                                id='email'
+                                                type='email'
+                                                placeholder='Email address'
+                                                {...register('email', { required: 'Email is required', validate: validateEmail as any })}
                                                 className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
-                                                style={{
-                                                    borderColor: undefined,
-                                                }}
                                             />
 
-                                            <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
                                         </div>
 
-                                        {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
-                                    </div>
-                                )}
-
-                                <div className='space-y-1'>
-                                    <div className='relative'>
-                                        <Input
-                                            id='email'
-                                            type='email'
-                                            placeholder='Email address'
-                                            {...register('email', { required: 'Email is required', validate: validateEmail as any })}
-                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
-                                        />
-
-                                        <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                        {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
                                     </div>
 
-                                    {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
-                                </div>
+                                    <div className='space-y-1'>
+                                        <div className='relative'>
+                                            <Input
+                                                id='password'
+                                                type={showPassword ? 'text' : 'password'}
+                                                placeholder='Password'
+                                                {...register('password', { required: 'Password is required', validate: validatePassword as any })}
+                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                            />
 
-                                <div className='space-y-1'>
-                                    <div className='relative'>
-                                        <Input
-                                            id='password'
-                                            type={showPassword ? 'text' : 'password'}
-                                            placeholder='Password'
-                                            {...register('password', { required: 'Password is required', validate: validatePassword as any })}
-                                            className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
-                                        />
+                                            <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
 
-                                        <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
-
-                                        <button
-                                            type='button'
-                                            onClick={() => setShowPassword((p) => !p)}
-                                            className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
-                                        >
-                                            {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
-                                        </button>
-                                    </div>
-
-                                    {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
-                                </div>
-
-                                {isSignUp && (
-                                    <div className='flex items-start gap-3 pt-0.5'>
-                                        <button
-                                            type='button'
-                                            disabled={!termsCompleted}
-                                            onClick={() => termsCompleted && setTermsAccepted((v) => !v)}
-                                            className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
-                                            style={{
-                                                backgroundColor: termsAccepted ? modalAccent : 'transparent',
-                                                borderColor: termsAccepted ? modalAccent : termsCompleted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)',
-                                                opacity: termsCompleted ? 1 : 0.5,
-                                            }}
-                                        >
-                                            {termsAccepted && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
-                                        </button>
-
-                                        <p className='leading-relaxed text-xs text-white/50'>
-                                            I agree to our{' '}
                                             <button
                                                 type='button'
-                                                onClick={() => setShowTermsModal(true)}
-                                                className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                                style={{ color: '#93c5fd' }}
+                                                onClick={() => setShowPassword((p) => !p)}
+                                                className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
                                             >
-                                                Terms & Conditions
-                                            </button>{' '}
-                                        </p>
+                                                {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                                            </button>
+                                        </div>
+
+                                        {errors?.password && <p className='text-red-400 text-xs px-1'>{(errors as any).password.message}</p>}
                                     </div>
-                                )}
 
-                                <Button
-                                    type='submit'
-                                    disabled={isLoading || (isSignUp && !termsAccepted)}
-                                    className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 group disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-3 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
-                                    style={{
-                                        background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
-                                        borderColor: 'rgba(255,255,255,0.09)',
-                                        color: 'rgba(255,255,255,0.66)',
-                                        WebkitBackdropFilter: 'blur(18px) saturate(135%)',
-                                        backdropFilter: 'blur(18px) saturate(135%)',
-                                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
-                                        opacity: isLoading || (isSignUp && !termsAccepted) ? 0.58 : 1,
-                                    }}
-                                >
-                                    {isLoading ? (
-                                        <div className='flex items-center justify-center gap-2'>Processing...</div>
-                                    ) : (
-                                        <>
-                                            <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
-                                            <ChevronRight className='h-4 w-4 text-white/45 transition-transform duration-300 group-hover:translate-x-0.5' />
-                                        </>
-                                    )}
-                                </Button>
-
-                                {!hasProduct && (
-                                    <div className='text-center pt-1'>
-                                        <button
-                                            type='button'
-                                            onClick={() => {
-                                                setIsSignUp((v) => !v);
-                                                setAlert({ type: '', message: '' });
-                                                reset();
-                                            }}
-                                            className='text-white/50 text-sm'
-                                        >
-                                            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-
-                                            <span
-                                                className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
+                                    {isSignUp && (
+                                        <div className='flex items-start gap-3 pt-0.5'>
+                                            <button
+                                                type='button'
+                                                disabled={!termsCompleted}
+                                                onClick={() => termsCompleted && setTermsAccepted((v) => !v)}
+                                                className='mt-0.5 h-5 w-5 shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
                                                 style={{
-                                                    color: '#4cc7e8',
+                                                    backgroundColor: termsAccepted ? modalAccent : 'transparent',
+                                                    borderColor: termsAccepted
+                                                        ? modalAccent
+                                                        : termsCompleted
+                                                        ? 'rgba(255,255,255,0.35)'
+                                                        : 'rgba(255,255,255,0.15)',
+                                                    opacity: termsCompleted ? 1 : 0.5,
                                                 }}
                                             >
-                                                {isSignUp ? ' Sign In' : ' Sign Up'}
-                                            </span>
-                                        </button>
-                                    </div>
-                                )}
-                            </form>
+                                                {termsAccepted && <CheckCircle className='h-3.5 w-3.5 text-[#080b12]' strokeWidth={3} />}
+                                            </button>
+
+                                            <p className='leading-relaxed text-xs text-white/50'>
+                                                I agree to our{' '}
+                                                <button
+                                                    type='button'
+                                                    onClick={() => setShowTermsModal(true)}
+                                                    className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
+                                                    style={{ color: '#93c5fd' }}
+                                                >
+                                                    Terms & Conditions
+                                                </button>{' '}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        type='submit'
+                                        disabled={isLoading || (isSignUp && !termsAccepted)}
+                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 group disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-3 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                        style={{
+                                            background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
+                                            borderColor: 'rgba(255,255,255,0.09)',
+                                            color: 'rgba(255,255,255,0.66)',
+                                            WebkitBackdropFilter: 'blur(18px) saturate(135%)',
+                                            backdropFilter: 'blur(18px) saturate(135%)',
+                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
+                                            opacity: isLoading || (isSignUp && !termsAccepted) ? 0.58 : 1,
+                                        }}
+                                    >
+                                        {isLoading ? (
+                                            <div className='flex items-center justify-center gap-2'>Processing...</div>
+                                        ) : (
+                                            <>
+                                                <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
+                                                <ChevronRight className='h-4 w-4 text-white/45 transition-transform duration-300 group-hover:translate-x-0.5' />
+                                            </>
+                                        )}
+                                    </Button>
+
+                                    {!hasProduct && (
+                                        <div className='text-center pt-1'>
+                                            <button
+                                                type='button'
+                                                onClick={() => {
+                                                    setIsSignUp((v) => !v);
+                                                    setAlert({ type: '', message: '' });
+                                                    reset();
+                                                    resetVerificationState();
+                                                }}
+                                                className='text-white/50 text-sm'
+                                            >
+                                                {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+
+                                                <span
+                                                    className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
+                                                    style={{
+                                                        color: '#4cc7e8',
+                                                    }}
+                                                >
+                                                    {isSignUp ? ' Sign In' : ' Sign Up'}
+                                                </span>
+                                            </button>
+                                        </div>
+                                    )}
+                                </form>
+                            )}
 
                             <div className='mt-3 flex items-center justify-center gap-2 text-xs text-white/30'>
                                 <Lock className='h-3.5 w-3.5' />

@@ -183,7 +183,7 @@ function EmailMarketing() {
                         <div className='space-y-10 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h1 className='text-[clamp(1.75rem,7.5vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.18] sm:leading-tight whitespace-nowrap'>
                                         Email/SMS{' '}
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
                                     </h1>
@@ -241,7 +241,7 @@ function EmailMarketing() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Powerful <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email Marketing</span>
                             <br />
                             Capabilities
@@ -287,7 +287,7 @@ function EmailMarketing() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Why Choose Our Digital{' '}
                             <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email/SMS CRM </span>
                         </h2>
@@ -304,7 +304,7 @@ function EmailMarketing() {
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
-                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4cc7e8] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
@@ -321,7 +321,7 @@ function EmailMarketing() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
-                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Start <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Automating</span>
                                 <br />
                                 Today
@@ -369,7 +369,7 @@ function EmailMarketing() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/emailMarketing'
                     onSuccess={handleAuthSuccess}
                 />

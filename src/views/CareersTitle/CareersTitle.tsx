@@ -258,7 +258,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             {badge}
                         </div> */}
 
-                        <h2 className='text-[28px] font-black text-white leading-tight mb-3'>
+                        <h2 className='text-[28px] font-black text-white leading-[1.24] mb-3'>
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
@@ -546,7 +546,9 @@ function CareersTitle() {
                             <div>
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
-                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>Careers</h2>
+                                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22] sm:leading-tight'>
+                                        Careers
+                                    </h2>
                                 </div>
                             </div>
 
@@ -582,7 +584,7 @@ function CareersTitle() {
 
                         <div className='relative animate-slide-in-right'>
                             <div className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl p-10 border border-[#2c7bbe]/30 shadow-xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
-                                <h3 className='text-2xl font-bold text-white mb-8 flex items-center'>
+                                <h3 className='text-2xl font-bold text-white mb-8 flex items-center leading-[1.28]'>
                                     <Globe className='w-8 h-8 text-[#4cc7e8] mr-3' />
                                     Global Opportunities
                                 </h3>
@@ -638,10 +640,10 @@ function CareersTitle() {
                             <div>
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
-                                    <h2 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-tight'>
+                                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22] sm:leading-tight'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
-                                        <br />
-                                        Inquiry
+                                        <br className='sm:block hidden' />
+                                        &nbsp;Inquiry
                                     </h2>
                                 </div>
                             </div>
@@ -682,7 +684,7 @@ function CareersTitle() {
                         </div>
                         <div className='relative animate-slide-in-left'>
                             <div className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#4cc7e8]/30 shadow-2xl shadow-[#4cc7e8]/20 backdrop-blur-2xl'>
-                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center'>
+                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center leading-[1.28]'>
                                     <Target className='w-6 h-6 sm:w-8 sm:h-8 text-[#4cc7e8] mr-3' />
                                     Recruitment Excellence
                                 </h3>
@@ -766,21 +768,23 @@ function CareersTitle() {
                         <div className='grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
                             <div>
                                 <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>{activeTalentService.eyebrow}</p>
-                                <h2 className='mb-6 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-white'>
+                                <h2 className='mb-6 max-w-2xl text-xl sm:text-4xl lg:text-5xl font-black leading-[1.22] text-white'>
                                     {activeTalentService.headline}
                                 </h2>
 
                                 <div className='space-y-5'>
                                     {activeTalentService.sections.map((section) => (
                                         <div key={section.title}>
-                                            <h3 className='mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-white'>{section.title}</h3>
+                                            <h3 className='mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-white leading-[1.3]'>
+                                                {section.title}
+                                            </h3>
                                             <p className='text-sm sm:text-base leading-relaxed text-gray-300'>{section.body}</p>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className='mt-7'>
-                                    <h3 className='mb-4 text-sm font-extrabold uppercase tracking-[0.18em] text-white'>Key Points:</h3>
+                                    <h3 className='mb-4 text-sm font-extrabold uppercase tracking-[0.18em] text-white leading-[1.3]'>Key Points:</h3>
                                     <div className='grid sm:grid-cols-2 gap-3'>
                                         {activeTalentService.keyPoints.map((point) => (
                                             <div key={point} className='flex items-start gap-3 text-sm font-semibold text-gray-200'>
@@ -883,7 +887,7 @@ function CareersTitle() {
                                 <div className='relative z-10 grid gap-8 lg:grid-cols-[0.75fr_1.55fr] lg:gap-10 lg:items-center'>
                                     <div className='text-center lg:text-left'>
                                         <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>{activeTalentService.eyebrow}</p>
-                                        <h2 className='text-4xl sm:text-5xl font-black leading-tight text-white'>
+                                        <h2 className='text-4xl sm:text-5xl font-black leading-[1.22] text-white'>
                                             Schedule
                                             <br />
                                             Consultation
@@ -1102,10 +1106,10 @@ function CareersTitle() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
-                            <h2 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Join the <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</span>
-                                <br />
-                                Revolution
+                                <br className='hidden sm:block' />
+                                &nbsp;Revolution
                             </h2>
                             <p className='text-xl text-gray-300 leading-relaxed'>
                                 Whether you&apos;re looking for your next career opportunity or seeking top talent for your organization, we&apos;re here to

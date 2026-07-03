@@ -240,6 +240,15 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
         transform: animating ? `translateX(${dir === 'next' ? '-20px' : '20px'})` : 'translateX(0)',
     };
 
+    const scrollAreaStyle = {
+        ...slideAnim,
+        '--glass-scrollbar-thumb': `${accent}99`,
+        '--glass-scrollbar-thumb-strong': accent,
+        '--glass-scrollbar-glow': `${accent}33`,
+        scrollbarColor: `${accent}99 rgba(255,255,255,0.06)`,
+        scrollbarWidth: 'thin',
+    } as React.CSSProperties;
+
     const modalEnter: React.CSSProperties = {
         transition: 'opacity 0.35s ease, transform 0.35s ease, border-color 0.5s ease, box-shadow 0.5s ease',
         opacity: inView ? 1 : 0,
@@ -270,6 +279,40 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
 
     return (
         <>
+            <style>{`
+
+                @media (max-width: 639px) {
+                    .glass-slideshow-modal {
+                        height: min(400px, calc(100vh - 2rem)) !important;
+                    }
+                }
+
+                .glass-slideshow-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: var(--glass-scrollbar-thumb) rgba(255, 255, 255, 0.06);
+                }
+
+                .glass-slideshow-scrollbar::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                .glass-slideshow-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.045);
+                    border-radius: 999px;
+                    margin: 14px 0;
+                }
+
+                .glass-slideshow-scrollbar::-webkit-scrollbar-thumb {
+                    background: linear-gradient(180deg, var(--glass-scrollbar-thumb-strong), var(--glass-scrollbar-thumb));
+                    border: 2px solid rgba(7, 9, 13, 0.42);
+                    border-radius: 999px;
+                    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 10px var(--glass-scrollbar-glow);
+                }
+
+                .glass-slideshow-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: linear-gradient(180deg, var(--glass-scrollbar-thumb-strong), rgba(255, 255, 255, 0.34));
+                }
+            `}</style>
             <div
                 onClick={() => close(false)}
                 className='fixed inset-0 z-[9990] bg-black/78 backdrop-blur-sm'
@@ -278,8 +321,8 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
 
             <div className='fixed inset-0 z-[9991] flex items-center justify-center p-4 pointer-events-none'>
                 <div
-                    className='pointer-events-auto flex w-full max-w-sm lg:max-w-2xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
-                    style={{ ...modalEnter, height: 'min(500px, calc(100vh - 2rem))' }}
+                    className='glass-slideshow-modal pointer-events-auto flex w-full max-w-sm lg:max-w-2xl relative rounded-3xl border-2 overflow-hidden flex-col backdrop-blur-[7px]'
+                    style={{ ...modalEnter, height: 'min(455px, calc(100vh - 2rem))' }}
                 >
                     <div
                         className='absolute inset-0 pointer-events-none'
@@ -312,8 +355,11 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                     </button>
 
                     <div className='relative z-10 flex flex-col flex-1 min-h-0'>
-                        <div className='px-6 lg:px-9 pt-8 lg:pt-9 pb-4 min-h-0 flex-1 overflow-y-auto' style={slideAnim}>
-                            <h2 className='text-2xl lg:text-3xl font-black text-white leading-tight mb-2 lg:mb-3'>
+                        <div
+                            className='glass-slideshow-scrollbar px-6 lg:px-9 pt-7 lg:pt-8 pb-3 min-h-0 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable]'
+                            style={scrollAreaStyle}
+                        >
+                            <h2 className='whitespace-nowrap tracking-tight text-[clamp(0.95rem,3.8vw,1.15rem)] lg:text-3xl font-black text-white leading-tight mb-2 lg:mb-3'>
                                 <GradTitle />
                             </h2>
                             <div
@@ -351,7 +397,7 @@ export function DigitalBillboardTourPopup({ onComplete }: { onComplete?: () => v
                             )}
                         </div>
 
-                        <div className='relative z-10 px-6 lg:px-9 pb-5 lg:pb-7 pt-2'>
+                        <div className='relative z-10 px-6 lg:px-9 pb-4 lg:pb-5 pt-2'>
                             <div className='grid grid-cols-[1fr_auto_1fr] items-center gap-2 lg:gap-3'>
                                 <div className='justify-self-start'>
                                     <ProgressDots current={current} total={SLIDES.length} accent={accent} onDot={handleDot} />

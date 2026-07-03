@@ -111,7 +111,7 @@ function LightningGold() {
                         setAuthOpen(open);
                         if (open) setPricingOpen(false);
                     }}
-                    defaultView='signin'
+                    defaultView='signup'
                     sourceRoute='/lightningGold'
                     onSuccess={() => {
                         setIsLoggedIn(true);
@@ -138,8 +138,9 @@ function LightningGold() {
                                 </Badge> */}
 
                                 <div style={{ display: 'table' }}>
-                                    <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#ffd500] mb-3 sm:mb-4 leading-tight'>
-                                        Lightning Gold <br /> 75% Commission
+                                    <h1 className='text-[clamp(1.8rem,8vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#ffd500] mb-3 sm:mb-4 leading-[1.18] sm:leading-tight'>
+                                        <span className='block whitespace-nowrap'>Lightning Gold</span>
+                                        <span className='block whitespace-nowrap'>75% Commission</span>
                                     </h1>
                                     {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' /> */}
                                 </div>
@@ -191,7 +192,7 @@ function LightningGold() {
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
-                        <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                        <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Build Faster and <span className='text-[#ffd500]'>Maximize Earnings</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
@@ -259,7 +260,7 @@ function LightningGold() {
                             {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 Ready to Unlock Maximum Commissions?
                             </Badge> */}
-                            <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
+                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Earn <span className='text-[#ffd500]'>75% Lifetime</span> Commissions
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
