@@ -56,10 +56,7 @@ type AuthFormValues = {
     termsAccepted?: boolean;
 };
 
-type PendingSignupFlow = {
-    user: any;
-    role: string;
-};
+type PendingAuthFlow = { kind: 'signup'; user: any; role: string } | { kind: 'login'; responseData: any };
 
 type ToolSlide = {
     id: string;
@@ -906,7 +903,7 @@ function SignIn() {
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showVerification, setShowVerification] = useState(false);
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
-    const [pendingSignupFlow, setPendingSignupFlow] = useState<PendingSignupFlow | null>(null);
+    const [pendingAuthFlow, setPendingAuthFlow] = useState<PendingAuthFlow | null>(null);
     const [verificationEmail, setVerificationEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
@@ -972,7 +969,7 @@ function SignIn() {
     const resetVerificationState = () => {
         setShowVerification(false);
         setVerificationMethod('email');
-        setPendingSignupFlow(null);
+        setPendingAuthFlow(null);
         setVerificationEmail('');
         setOtp('');
         setOtpSent(false);
@@ -981,7 +978,8 @@ function SignIn() {
     };
 
     const completeSignupFlow = () => {
-        const signupUser = pendingSignupFlow?.user;
+        const signupFlow = pendingAuthFlow?.kind === 'signup' ? pendingAuthFlow : null;
+        const signupUser = signupFlow?.user;
 
         if (!signupUser) {
             setAlert({ type: 'error', message: 'Signup session expired. Please sign up again.' });
@@ -1003,9 +1001,68 @@ function SignIn() {
         setShowPostSignupSlideshow(true);
     };
 
+    const completeLoginFlow = (responseData: any) => {
+        const { token, user, paymentRequired } = responseData || {};
+        const rawRoles = Array.isArray(user?.roles) ? user.roles : [];
+        const normalizedRoles = rawRoles.map((role: any) =>
+            String(role || '')
+                .trim()
+                .toLowerCase()
+        );
+        const responseRole = String(responseData?.role || '').toLowerCase();
+
+        if (responseRole === 'admin' || normalizedRoles.includes('admin')) {
+            setCookie('admin_token', token);
+            setCookie('role', 'admin');
+
+            if (user?.id != null) {
+                setCookie('adminId', String(user.id));
+                setCookie('id', String(user.id));
+                localStorage.setItem('adminId', String(user.id));
+            }
+
+            localStorage.setItem('roles', JSON.stringify(rawRoles));
+            setAlert({ type: 'success', message: 'Email verified successfully. Admin login successful!' });
+            reset();
+            resetVerificationState();
+            router.push('/admin/dashboard/sales');
+            return;
+        }
+
+        if (responseRole === 'sales' || normalizedRoles.includes('sales')) {
+            saveUserSession(token, user);
+            setAlert({ type: 'success', message: 'Email verified successfully. Login successful!' });
+            reset();
+            resetVerificationState();
+            router.push('/sales/dashboard/users');
+            return;
+        }
+
+        if (paymentRequired) {
+            setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
+            resetVerificationState();
+            return;
+        }
+
+        saveUserSession(token, user);
+
+        const priorityDashboardRoute = getPriorityDashboardRoute(rawRoles);
+
+        setAlert({ type: 'success', message: 'Email verified successfully. Login successful!' });
+        reset();
+        resetVerificationState();
+
+        if (!priorityDashboardRoute) {
+            setShowPostSignupSlideshow(true);
+            return;
+        }
+
+        router.push(priorityDashboardRoute);
+    };
+
     const handleSendEmailOtp = async () => {
         if (!verificationEmail) {
-            setAlert({ type: 'error', message: 'Email is missing. Please sign up again.' });
+            setAlert({ type: 'error', message: 'Email is missing. Please start again.' });
             return;
         }
 
@@ -1039,6 +1096,11 @@ function SignIn() {
                 email: verificationEmail,
                 otp: trimmedOtp,
             });
+
+            if (pendingAuthFlow?.kind === 'login') {
+                completeLoginFlow(pendingAuthFlow.responseData);
+                return;
+            }
 
             completeSignupFlow();
         } catch (error: any) {
@@ -1086,7 +1148,7 @@ function SignIn() {
 
                 const signupUser = response.data.user;
 
-                setPendingSignupFlow({ user: signupUser, role: '' });
+                setPendingAuthFlow({ kind: 'signup', user: signupUser, role: '' });
                 setVerificationEmail(data.email);
                 setVerificationMethod('email');
                 setOtp('');
@@ -1099,58 +1161,13 @@ function SignIn() {
                     password: data.password,
                 });
 
-                const { token, user, paymentRequired } = response.data || {};
-                const rawRoles = Array.isArray(user?.roles) ? user.roles : [];
-                const normalizedRoles = rawRoles.map((role: any) =>
-                    String(role || '')
-                        .trim()
-                        .toLowerCase()
-                );
-                const responseRole = String(response.data?.role || '').toLowerCase();
-
-                if (responseRole === 'admin' || normalizedRoles.includes('admin')) {
-                    setCookie('admin_token', token);
-                    setCookie('role', 'admin');
-
-                    if (user?.id != null) {
-                        setCookie('adminId', String(user.id));
-                        setCookie('id', String(user.id));
-                        localStorage.setItem('adminId', String(user.id));
-                    }
-
-                    localStorage.setItem('roles', JSON.stringify(rawRoles));
-                    setAlert({ type: 'success', message: 'Admin login successful!' });
-                    reset();
-                    router.push('/admin/dashboard/sales');
-                    return;
-                }
-
-                if (responseRole === 'sales' || normalizedRoles.includes('sales')) {
-                    saveUserSession(token, user);
-                    setAlert({ type: 'success', message: 'Login successful!' });
-                    reset();
-                    router.push('/sales/dashboard/users');
-                    return;
-                }
-
-                if (paymentRequired) {
-                    setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
-                    return;
-                }
-
-                saveUserSession(token, user);
-
-                const priorityDashboardRoute = getPriorityDashboardRoute(rawRoles);
-
-                setAlert({ type: 'success', message: 'Login successful!' });
-                reset();
-
-                if (!priorityDashboardRoute) {
-                    setShowPostSignupSlideshow(true);
-                    return;
-                }
-
-                router.push(priorityDashboardRoute);
+                setPendingAuthFlow({ kind: 'login', responseData: response.data });
+                setVerificationEmail(data.email);
+                setVerificationMethod('email');
+                setOtp('');
+                setOtpSent(false);
+                setShowVerification(true);
+                setAlert({ type: 'success', message: 'Login successful. Please verify your email to continue.' });
             }
         } catch (error: any) {
             setAlert({ type: 'error', message: error?.response?.data?.message || 'Something went wrong. Please try again.' });

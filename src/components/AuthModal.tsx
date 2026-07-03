@@ -264,10 +264,7 @@ export type ProductContext = {
 
 export type AuthModalVisualVariant = 'default' | 'danger' | 'success';
 
-type PendingSignupFlow = {
-    user: any;
-    role: string;
-};
+type PendingAuthFlow = { kind: 'signup'; user: any; role: string } | { kind: 'login'; responseData: any };
 
 // ─── Auth Modal Props ─────────────────────────────────────────────────────────
 export type AuthModalProps = {
@@ -438,7 +435,7 @@ export default function AuthModal({
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showVerification, setShowVerification] = useState(false);
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
-    const [pendingSignupFlow, setPendingSignupFlow] = useState<PendingSignupFlow | null>(null);
+    const [pendingAuthFlow, setPendingAuthFlow] = useState<PendingAuthFlow | null>(null);
     const [verificationEmail, setVerificationEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
@@ -492,7 +489,7 @@ export default function AuthModal({
     const resetVerificationState = () => {
         setShowVerification(false);
         setVerificationMethod('email');
-        setPendingSignupFlow(null);
+        setPendingAuthFlow(null);
         setVerificationEmail('');
         setOtp('');
         setOtpSent(false);
@@ -501,8 +498,9 @@ export default function AuthModal({
     };
 
     const completeSignupFlow = () => {
-        const signupUser = pendingSignupFlow?.user;
-        const signupRole = pendingSignupFlow?.role || '';
+        const signupFlow = pendingAuthFlow?.kind === 'signup' ? pendingAuthFlow : null;
+        const signupUser = signupFlow?.user;
+        const signupRole = signupFlow?.role || '';
 
         if (!signupUser) {
             setAlert({ type: 'error', message: 'Signup session expired. Please sign up again.' });
@@ -551,9 +549,81 @@ export default function AuthModal({
         router.push(redirectAfterSignup || '/pricing');
     };
 
+    const completeLoginFlow = (responseData: any) => {
+        if (responseData?.role === 'admin') {
+            setCookie('admin_token', responseData.token);
+            setCookie('role', responseData.role);
+            setAlert({ type: 'success', message: 'Admin login successful!' });
+            reset();
+            resetVerificationState();
+
+            const preventDefault =
+                onSuccess?.({
+                    kind: 'login',
+                    role: 'admin',
+                    userId: responseData.user?.id,
+                }) === false;
+
+            if (!preventDefault) {
+                onOpenChange(false);
+                router.push('/admin/dashboard/sales');
+            }
+
+            return;
+        }
+
+        if (responseData?.paymentRequired) {
+            setAlert({
+                type: 'error',
+                message: 'Access denied. Please complete your payment to access the system.',
+            });
+            resetVerificationState();
+            return;
+        }
+
+        const userId = responseData?.user?.id ? String(responseData.user.id) : undefined;
+        const userRoles = Array.isArray(responseData?.user?.roles) ? responseData.user.roles : [];
+
+        if (responseData?.token) {
+            setCookie('token', responseData.token);
+        }
+
+        setCookie('id', String(responseData.user.id));
+        setCookie('firstName', responseData.user.firstName);
+        setCookie('lastName', responseData.user.lastName);
+        setCookie('email', responseData.user.email);
+
+        if (userId) {
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('id', userId);
+        }
+
+        localStorage.setItem('roles', JSON.stringify(userRoles));
+
+        setAlert({ type: 'success', message: 'Email verified successfully. Login successful!' });
+        reset();
+        resetVerificationState();
+
+        const preventDefault =
+            onSuccess?.({
+                kind: 'login',
+                role: responseData.role,
+                roles: userRoles,
+                userId,
+            }) === false;
+
+        if (preventDefault) {
+            onOpenChange(false);
+            return;
+        }
+
+        onOpenChange(false);
+        router.push(redirectAfterLogin);
+    };
+
     const handleSendEmailOtp = async () => {
         if (!verificationEmail) {
-            setAlert({ type: 'error', message: 'Email is missing. Please sign up again.' });
+            setAlert({ type: 'error', message: 'Email is missing. Please start again.' });
             return;
         }
 
@@ -591,6 +661,11 @@ export default function AuthModal({
                 otp: trimmedOtp,
             });
 
+            if (pendingAuthFlow?.kind === 'login') {
+                completeLoginFlow(pendingAuthFlow.responseData);
+                return;
+            }
+
             completeSignupFlow();
         } catch (error: any) {
             setAlert({
@@ -621,7 +696,7 @@ export default function AuthModal({
 
                 const response = await axios.post('/api/v2/signup', signupData);
 
-                setPendingSignupFlow({ user: response.data.user, role: signupData.role });
+                setPendingAuthFlow({ kind: 'signup', user: response.data.user, role: signupData.role });
                 setVerificationEmail(data.email);
                 setVerificationMethod('email');
                 setOtp('');
@@ -638,72 +713,14 @@ export default function AuthModal({
 
             const response = await axios.post('/api/v2/login', loginData);
 
-            if (response.data.role === 'admin') {
-                setCookie('admin_token', response.data.token);
-                setCookie('role', response.data.role);
-                setAlert({ type: 'success', message: 'Admin login successful!' });
-                reset();
-
-                const preventDefault =
-                    onSuccess?.({
-                        kind: 'login',
-                        role: 'admin',
-                        userId: response.data.user?.id,
-                    }) === false;
-
-                if (!preventDefault) {
-                    onOpenChange(false);
-                    router.push('/admin/dashboard/sales');
-                }
-
-                return;
-            }
-
-            if (response.data.paymentRequired) {
-                setAlert({
-                    type: 'error',
-                    message: 'Access denied. Please complete your payment to access the system.',
-                });
-                return;
-            }
-
-            const userId = response.data.user?.id ? String(response.data.user.id) : undefined;
-            const userRoles = Array.isArray(response.data.user?.roles) ? response.data.user.roles : [];
-
-            if (response.data.token) {
-                setCookie('token', response.data.token);
-            }
-
-            setCookie('id', String(response.data.user.id));
-            setCookie('firstName', response.data.user.firstName);
-            setCookie('lastName', response.data.user.lastName);
-            setCookie('email', response.data.user.email);
-
-            if (userId) {
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('id', userId);
-            }
-
-            localStorage.setItem('roles', JSON.stringify(userRoles));
-
-            setAlert({ type: 'success', message: 'Login successful!' });
-            reset();
-
-            const preventDefault =
-                onSuccess?.({
-                    kind: 'login',
-                    role: response.data.role,
-                    roles: userRoles,
-                    userId,
-                }) === false;
-
-            if (preventDefault) {
-                onOpenChange(false);
-                return;
-            }
-
-            onOpenChange(false);
-            router.push(redirectAfterLogin);
+            setPendingAuthFlow({ kind: 'login', responseData: response.data });
+            setVerificationEmail(data.email);
+            setVerificationMethod('email');
+            setOtp('');
+            setOtpSent(false);
+            setShowVerification(true);
+            setAlert({ type: 'success', message: 'Login successful. Please verify your email to continue.' });
+            return;
         } catch (error: any) {
             setAlert({
                 type: 'error',
