@@ -259,17 +259,20 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     }`}
                 >
                     {/* Header */}
-                    <div className='p-6 border-b border-[#2c7bbe]/20'>
+                    <div className='p-6 border-b border-[#2c7bbe]/20 min-w-0'>
                         <h2
-                            className={`text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
+                            className={`w-full min-w-0 text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                             } gap-x-1`}
                         >
-                            <span>
+                            <span className='block max-w-full leading-tight break-words [overflow-wrap:anywhere]'>
                                 {firstName ? `${firstName} ` : 'Menu'} {lastName ? `${lastName}` : ''}
                             </span>
-                            <br />
-                            <span className='text-lg font-medium text-[#2c7bbe]'>{firstName && `${email}`}</span>
+                            {firstName && email && (
+                                <span className='mt-1 block max-w-full text-[15px] font-medium leading-snug text-[#2c7bbe] break-all [overflow-wrap:anywhere]'>
+                                    {email}
+                                </span>
+                            )}
                         </h2>
                     </div>
 
