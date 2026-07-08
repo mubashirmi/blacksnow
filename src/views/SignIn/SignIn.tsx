@@ -55,6 +55,7 @@ type AuthFormValues = {
     phone?: string;
     password: string;
     termsAccepted?: boolean;
+    smsOptInConsent?: boolean;
 };
 
 type PendingAuthFlow = { kind: 'signup'; user: any; role: string } | { kind: 'login'; responseData: any };
@@ -433,7 +434,9 @@ function ProductCarousel() {
         <div className='relative w-full h-full flex flex-col items-center justify-center px-10 py-12 select-none overflow-hidden'>
             <div
                 className='pointer-events-none absolute inset-0 transition-all duration-1000'
-                style={{ background: `radial-gradient(ellipse at 50% 45%, ${accent}1a 0%, transparent 68%)` }}
+                style={{
+                    background: `radial-gradient(ellipse at 50% 45%, ${accent}1a 0%, transparent 68%)`,
+                }}
             />
 
             <div
@@ -527,7 +530,9 @@ function PostSignupToolsSlideshow() {
             <div className='relative flex-1 flex flex-col justify-center px-8 sm:px-10 py-16 lg:py-10 overflow-hidden'>
                 <div
                     className='pointer-events-none absolute inset-0 transition-all duration-500'
-                    style={{ background: `radial-gradient(ellipse at 50% 45%, ${slide.accent}1a 0%, transparent 68%)` }}
+                    style={{
+                        background: `radial-gradient(ellipse at 50% 45%, ${slide.accent}1a 0%, transparent 68%)`,
+                    }}
                 />
 
                 <div
@@ -559,14 +564,23 @@ function PostSignupToolsSlideshow() {
                         {slide.popular ? (
                             <span
                                 className='rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide'
-                                style={{ backgroundColor: `${slide.accent}1f`, color: slide.accent, border: `1px solid ${slide.accent}40` }}
+                                style={{
+                                    backgroundColor: `${slide.accent}1f`,
+                                    color: slide.accent,
+                                    border: `1px solid ${slide.accent}40`,
+                                }}
                             >
                                 Popular
                             </span>
                         ) : null}
                     </div>
 
-                    <div className='h-1 w-16 rounded-full mb-5' style={{ background: `linear-gradient(90deg, ${slide.accent}, transparent)` }} />
+                    <div
+                        className='h-1 w-16 rounded-full mb-5'
+                        style={{
+                            background: `linear-gradient(90deg, ${slide.accent}, transparent)`,
+                        }}
+                    />
 
                     <p className='text-gray-400 text-base leading-relaxed max-w-md mb-5'>{slide.description}</p>
 
@@ -622,7 +636,10 @@ function PostSignupToolsSlideshow() {
                     onClick={() => goToSlide(current - 1)}
                     disabled={isFirstSlide}
                     className='w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    style={{
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                    }}
                     aria-label='Previous tool'
                 >
                     <ChevronLeft className='w-5 h-5 text-white' />
@@ -650,7 +667,10 @@ function PostSignupToolsSlideshow() {
                     onClick={() => goToSlide(current + 1)}
                     disabled={isLastSlide}
                     className='w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    style={{
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                    }}
                     aria-label='Next tool'
                 >
                     <ChevronRight className='w-5 h-5 text-white' />
@@ -659,6 +679,12 @@ function PostSignupToolsSlideshow() {
         </div>
     );
 }
+
+type TermsContentBlock = {
+    title?: string;
+    paragraphs?: string[];
+    bullets?: string[];
+};
 
 type TermsSlide = {
     id: string;
@@ -671,6 +697,7 @@ type TermsSlide = {
     summary: string;
     link: string;
     bullets: string[];
+    content?: TermsContentBlock[];
 };
 
 const TERMS_SLIDES: TermsSlide[] = [
@@ -697,6 +724,111 @@ const TERMS_SLIDES: TermsSlide[] = [
             'We collect only the data necessary to operate the platform and process payments. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
         link: '/privacy',
         bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
+    },
+    {
+        id: 'sms-text-messaging-terms',
+        accent: '#4cc7e8',
+        Icon: MessageSquare,
+        badge: 'SMS/Text Messaging Terms',
+        titleGrad: 'SMS/Text',
+        titlePlain: ' Messaging Terms',
+        summary:
+            'By providing your mobile phone number and opting in to receive SMS messages from BlackSnow Holdings, you agree to receive text messages related to account access, account security, and authentication.',
+        link: '/terms',
+        bullets: [
+            'SMS is used for transactional and security purposes only',
+            'Message frequency may vary based on account activity',
+            'Reply STOP to opt out or HELP for help',
+        ],
+        content: [
+            {
+                paragraphs: [
+                    'By providing your mobile phone number and opting in to receive SMS messages from BlackSnow Holdings, you agree to receive text messages related to account access, account security, and authentication.',
+                    'Messages may include:',
+                ],
+                bullets: [
+                    'One-time passcodes / OTP verification codes',
+                    'Account sign-up verification',
+                    'Login authentication codes',
+                    'Two-factor authentication messages',
+                    'Password reset or account recovery verification',
+                    'Security-related account alerts',
+                    'Account or service-related updates requested by you',
+                ],
+            },
+            {
+                paragraphs: [
+                    'BlackSnow Holdings uses SMS messages for transactional and security purposes only. We do not use this SMS program to send marketing or promotional text messages.',
+                    'Message frequency may vary based on your account activity and authentication requests. Message and data rates may apply.',
+                    'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again. Please note that opting out of authentication SMS messages may affect your ability to receive login, verification, or account security codes by text message.',
+                    'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
+                    'SMS consent is not a condition of purchase. Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
+                    'Carriers are not liable for delayed or undelivered messages.',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'acceptable-use',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Acceptable Use',
+        titleGrad: 'Acceptable',
+        titlePlain: ' Use',
+        summary:
+            'You agree not to misuse the Services, interfere with normal operation, access unauthorized areas, or use the Services for unlawful, deceptive, or harmful purposes.',
+        link: '/terms',
+        bullets: ['No unauthorized access or interference', 'No malware, harmful automation, or unlawful use', 'Only contact people with required consent'],
+        content: [
+            {
+                paragraphs: [
+                    'You agree not to misuse the Services. This means you will not attempt to interfere with the normal operation of the Services, access areas you are not authorized to access, probe or scan for vulnerabilities, introduce malware, or use automated scraping in a way that harms the Services. You also agree not to use the Services for unlawful, deceptive, or harmful purposes, including harassment, fraud, or infringement of intellectual property rights.',
+                    'If the Services allow email or SMS communications, you agree that you will only contact people who have provided the required consent or permissions under applicable laws and industry standards, including (where applicable) CAN-SPAM, TCPA, and similar regulations. You agree not to send spam or unlawful messages and to honor opt-out requests. You are solely responsible for the content you send and the legality of your communications.',
+                    'We may suspend, restrict, or terminate your access if we believe you have violated these Terms, created risk for users, harmed the Services, or engaged in unlawful conduct.',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'sms-opt-in-consent',
+        accent: '#4cc7e8',
+        Icon: MessageSquare,
+        badge: 'SMS Opt-In Consent',
+        titleGrad: 'SMS Opt-In',
+        titlePlain: ' Consent',
+        summary:
+            'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
+        link: '/terms',
+        bullets: ['Transactional and account-security messages only', 'Opt out by replying STOP', 'Mobile opt-in information will not be shared for marketing'],
+        content: [
+            {
+                paragraphs: [
+                    'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
+                    'SMS messages from BlackSnow Holdings may include:',
+                ],
+                bullets: [
+                    'Account sign-up verification codes',
+                    'Login authentication codes',
+                    'One-time passcodes / OTP messages',
+                    'Two-factor authentication messages',
+                    'Password reset verification',
+                    'Account recovery verification',
+                    'Security-related account alerts',
+                    'Account or service-related updates requested by you',
+                ],
+            },
+            {
+                paragraphs: [
+                    'BlackSnow Holdings uses SMS messaging for transactional and account security purposes only. We do not use this SMS program to send marketing or promotional text messages.',
+                    'Message frequency may vary based on your account activity and authentication requests. Message and data rates may apply.',
+                    'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again.',
+                    'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
+                    'SMS consent is not a condition of purchase. Please note that opting out of SMS messages may affect your ability to receive login, verification, password reset, or account security codes by text message.',
+                    'Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
+                    'Carriers are not liable for delayed or undelivered messages.',
+                ],
+            },
+        ],
     },
 ];
 
@@ -743,7 +875,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
     };
 
     const slide = TERMS_SLIDES[current];
-    const { accent, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets } = slide;
+    const { accent, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets, content } = slide;
     const isLast = current === TERMS_SLIDES.length - 1;
 
     const slideAnim: React.CSSProperties = {
@@ -754,34 +886,40 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+            <DialogContent className='w-[calc(100vw-2rem)] sm:max-w-[540px] max-h-[calc(100vh-2rem)] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
                 <DialogTitle className='sr-only'>{badge}</DialogTitle>
 
                 <div
                     className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#07090d]'
                     style={{
-                        minHeight: UNIFIED_CARD_HEIGHT,
-                        height: UNIFIED_CARD_HEIGHT,
+                        minHeight: 'min(560px, calc(100vh - 32px))',
+                        height: 'min(620px, calc(100vh - 32px))',
+                        maxHeight: 'calc(100vh - 32px)',
                         borderColor: `${accent}35`,
                         boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
                     }}
                 >
                     <div
                         className='absolute inset-0 pointer-events-none'
-                        style={{ background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)` }}
+                        style={{
+                            background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)`,
+                        }}
                     />
 
                     <button
                         type='button'
                         onClick={() => onOpenChange(false)}
                         className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.07)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                        }}
                         aria-label='Close terms modal'
                     >
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 flex flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
+                    <div className='relative z-10 flex h-full min-h-0 flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
                         {/* <div
                             className='inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
                             style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -794,13 +932,23 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                    <span
+                                        className='bg-clip-text text-transparent'
+                                        style={{
+                                            backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)`,
+                                        }}
+                                    >
                                         {titleGrad}
                                     </span>
                                 </>
                             ) : (
                                 <>
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                    <span
+                                        className='bg-clip-text text-transparent'
+                                        style={{
+                                            backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)`,
+                                        }}
+                                    >
                                         {titleGrad}
                                     </span>
                                     {titlePlain}
@@ -810,7 +958,13 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
 
                         <div className='h-px rounded-full mb-5 w-full bg-white/10' />
 
-                        <div className='rounded-2xl p-4 mb-5 border' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
+                        <div
+                            className='rounded-2xl p-4 mb-5 border'
+                            style={{
+                                backgroundColor: `${accent}08`,
+                                borderColor: `${accent}25`,
+                            }}
+                        >
                             <p className='text-[11px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: accent }}>
                                 Summary
                             </p>
@@ -828,18 +982,45 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             </a>
                         </div>
 
-                        <div className='flex-1'>
-                            <ul className='space-y-3'>
-                                {bullets.map((b, i) => (
-                                    <li key={i} className='flex items-start gap-2.5'>
-                                        <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                        <span className='text-white/72 text-sm leading-snug'>{b}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className='terms-body-scroll flex-1 min-h-0 overflow-y-scroll rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 pr-4 glassy-scrollbar'>
+                            {content ? (
+                                <div className='space-y-4'>
+                                    {content.map((block, blockIndex) => (
+                                        <div key={blockIndex} className='space-y-2.5'>
+                                            {block.title && <h3 className='text-white font-bold text-sm'>{block.title}</h3>}
+
+                                            {block.paragraphs?.map((paragraph, paragraphIndex) => (
+                                                <p key={paragraphIndex} className='text-white/68 text-sm leading-relaxed'>
+                                                    {paragraph}
+                                                </p>
+                                            ))}
+
+                                            {block.bullets && (
+                                                <ul className='space-y-2 pl-1'>
+                                                    {block.bullets.map((item, itemIndex) => (
+                                                        <li key={itemIndex} className='flex items-start gap-2.5'>
+                                                            <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
+                                                            <span className='text-white/72 text-sm leading-snug'>{item}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <ul className='space-y-3'>
+                                    {bullets.map((b, i) => (
+                                        <li key={i} className='flex items-start gap-2.5'>
+                                            <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
+                                            <span className='text-white/72 text-sm leading-snug'>{b}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
 
-                        <div className='pt-6 flex items-center justify-between gap-2'>
+                        <div className='pt-5 flex-shrink-0 flex items-center justify-between gap-2'>
                             <div className='flex items-center justify-between gap-1.5'>
                                 {TERMS_SLIDES.map((_, i) => (
                                     <div
@@ -856,7 +1037,10 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             <div>
                                 <span
                                     className='rounded-xl px-3 py-1 text-xs font-bold text-white/70'
-                                    style={{ backgroundColor: `${accent}14`, border: `1px solid ${accent}35` }}
+                                    style={{
+                                        backgroundColor: `${accent}14`,
+                                        border: `1px solid ${accent}35`,
+                                    }}
                                 >
                                     Slide {current + 1}/{TERMS_SLIDES.length}
                                 </span>
@@ -868,7 +1052,10 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                                     onClick={handlePrev}
                                     disabled={current === 0}
                                     className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    style={{
+                                        backgroundColor: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                    }}
                                     aria-label='Previous terms slide'
                                 >
                                     <ChevronLeft className='w-4 h-4 text-white' />
@@ -1006,7 +1193,10 @@ function SignIn() {
         const signupUser = signupFlow?.user;
 
         if (!signupUser) {
-            setAlert({ type: 'error', message: 'Signup session expired. Please sign up again.' });
+            setAlert({
+                type: 'error',
+                message: 'Signup session expired. Please sign up again.',
+            });
             resetVerificationState();
             return;
         }
@@ -1056,7 +1246,10 @@ function SignIn() {
 
         if (responseRole === 'sales' || normalizedRoles.includes('sales')) {
             saveUserSession(token, user);
-            setAlert({ type: 'success', message: 'Email verified successfully. Login successful!' });
+            setAlert({
+                type: 'success',
+                message: 'Email verified successfully. Login successful!',
+            });
             reset();
             resetVerificationState();
             router.push('/sales/dashboard/users');
@@ -1064,7 +1257,10 @@ function SignIn() {
         }
 
         if (paymentRequired) {
-            setAlert({ type: 'error', message: 'Access denied. Please complete your payment to access the system.' });
+            setAlert({
+                type: 'error',
+                message: 'Access denied. Please complete your payment to access the system.',
+            });
             resetVerificationState();
             return;
         }
@@ -1073,7 +1269,10 @@ function SignIn() {
 
         const priorityDashboardRoute = getPriorityDashboardRoute(rawRoles);
 
-        setAlert({ type: 'success', message: 'Email verified successfully. Login successful!' });
+        setAlert({
+            type: 'success',
+            message: 'Email verified successfully. Login successful!',
+        });
         reset();
         resetVerificationState();
 
@@ -1087,7 +1286,10 @@ function SignIn() {
 
     const handleSendEmailOtp = async () => {
         if (!verificationEmail) {
-            setAlert({ type: 'error', message: 'Email is missing. Please start again.' });
+            setAlert({
+                type: 'error',
+                message: 'Email is missing. Please start again.',
+            });
             return;
         }
 
@@ -1097,9 +1299,15 @@ function SignIn() {
         try {
             await axios.post('/api/auth/auth-email', { email: verificationEmail });
             setOtpSent(true);
-            setAlert({ type: 'success', message: `OTP sent to ${verificationEmail}` });
+            setAlert({
+                type: 'success',
+                message: `OTP sent to ${verificationEmail}`,
+            });
         } catch (error: any) {
-            setAlert({ type: 'error', message: error?.response?.data?.message || 'Unable to send OTP. Please try again.' });
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Unable to send OTP. Please try again.',
+            });
         } finally {
             setOtpSending(false);
         }
@@ -1109,7 +1317,10 @@ function SignIn() {
         const trimmedOtp = otp.trim();
 
         if (!trimmedOtp) {
-            setAlert({ type: 'error', message: 'Please enter the OTP sent to your email.' });
+            setAlert({
+                type: 'error',
+                message: 'Please enter the OTP sent to your email.',
+            });
             return;
         }
 
@@ -1129,7 +1340,10 @@ function SignIn() {
 
             completeSignupFlow();
         } catch (error: any) {
-            setAlert({ type: 'error', message: error?.response?.data?.message || 'Invalid OTP. Please try again.' });
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Invalid OTP. Please try again.',
+            });
         } finally {
             setOtpVerifying(false);
         }
@@ -1158,6 +1372,7 @@ function SignIn() {
                         lastName,
                         password: data.password,
                         phone: data.phone,
+                        smsOptInConsent: Boolean(data.smsOptInConsent),
                         role: '',
                     });
                 } else {
@@ -1167,6 +1382,7 @@ function SignIn() {
                         lastName,
                         password: data.password,
                         phone: data.phone,
+                        smsOptInConsent: Boolean(data.smsOptInConsent),
                         role: '',
                     });
                 }
@@ -1180,7 +1396,10 @@ function SignIn() {
                 setOtp('');
                 setOtpSent(false);
                 setShowVerification(true);
-                setAlert({ type: 'success', message: 'Account created successfully. Please verify your email to continue.' });
+                setAlert({
+                    type: 'success',
+                    message: 'Account created successfully. Please verify your email to continue.',
+                });
             } else {
                 const response = await axios.post('/api/v2/login', {
                     email: data.email,
@@ -1209,10 +1428,16 @@ function SignIn() {
                 setOtp('');
                 setOtpSent(false);
                 setShowVerification(true);
-                setAlert({ type: 'success', message: 'Login successful. Please verify your email to continue.' });
+                setAlert({
+                    type: 'success',
+                    message: 'Login successful. Please verify your email to continue.',
+                });
             }
         } catch (error: any) {
-            setAlert({ type: 'error', message: error?.response?.data?.message || 'Something went wrong. Please try again.' });
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Something went wrong. Please try again.',
+            });
         } finally {
             setIsLoading(false);
         }
@@ -1220,6 +1445,52 @@ function SignIn() {
 
     return (
         <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] relative overflow-hidden flex items-center justify-center py-8'>
+            <style>{`
+                .glassy-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(76,199,232,0.42) rgba(255,255,255,0.035);
+                }
+
+                .glassy-scrollbar::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+
+                .glassy-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(255,255,255,0.035);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    border-radius: 999px;
+                    -webkit-backdrop-filter: blur(10px);
+                    backdrop-filter: blur(10px);
+                }
+
+                .glassy-scrollbar::-webkit-scrollbar-thumb {
+                    background: linear-gradient(180deg, rgba(76,199,232,0.52), rgba(44,123,190,0.30));
+                    border: 2px solid rgba(7,9,13,0.72);
+                    border-radius: 999px;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 0 14px rgba(76,199,232,0.18);
+                }
+
+                .glassy-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: linear-gradient(180deg, rgba(76,199,232,0.72), rgba(44,123,190,0.45));
+                }
+
+                .auth-form-scroll {
+                    max-height: calc(100% - 76px);
+                    overscroll-behavior: contain;
+                }
+
+                .terms-body-scroll {
+                    max-height: min(270px, calc(100vh - 350px));
+                    overscroll-behavior: contain;
+                }
+
+                @media (max-height: 640px) {
+                    .terms-body-scroll {
+                        max-height: calc(100vh - 330px);
+                    }
+                }
+            `}</style>
             <div className='absolute inset-0'>
                 <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
                 <div className='absolute inset-0 bg-black/90' />
@@ -1234,6 +1505,19 @@ function SignIn() {
                 onOpenChange={setShowTermsModal}
                 onComplete={() => setValue('termsAccepted', true, { shouldValidate: true })}
             />
+
+            {alert.message && (
+                <div className='pointer-events-none fixed top-4 right-4 z-[9999] w-[calc(100%-2rem)] max-w-sm'>
+                    <Alert
+                        className={`rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md ${
+                            alert.type === 'success' ? 'bg-green-900/85 border-green-500/70' : 'bg-red-900/85 border-red-500/70'
+                        }`}
+                    >
+                        <AlertTitle className='text-white text-sm leading-tight'>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+                        <AlertDescription className='text-gray-200 text-xs leading-snug'>{alert.message}</AlertDescription>
+                    </Alert>
+                </div>
+            )}
 
             <div className='relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6'>
                 <div
@@ -1258,7 +1542,9 @@ function SignIn() {
 
                     <div
                         className='absolute inset-x-0 bottom-0 h-40 pointer-events-none'
-                        style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)' }}
+                        style={{
+                            background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.04) 100%)',
+                        }}
                     />
 
                     {/* <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] z-20' /> */}
@@ -1291,22 +1577,11 @@ function SignIn() {
                                     </p> */}
                                 </div>
 
-                                {alert.message && (
-                                    <div className='pointer-events-none absolute left-7 right-7 sm:left-9 sm:right-9 top-[78px] z-30'>
-                                        <Alert
-                                            className={`rounded-2xl px-3 py-2 shadow-xl backdrop-blur-md ${
-                                                alert.type === 'success' ? 'bg-green-900/70 border-green-500/70' : 'bg-red-900/70 border-red-500/70'
-                                            }`}
-                                        >
-                                            <AlertTitle className='text-white text-sm leading-tight'>
-                                                {alert.type === 'success' ? 'Success' : 'Error'}
-                                            </AlertTitle>
-                                            <AlertDescription className='text-gray-200 text-xs leading-snug'>{alert.message}</AlertDescription>
-                                        </Alert>
-                                    </div>
-                                )}
-
-                                <div className='min-h-0 overflow-visible pr-0'>
+                                <div
+                                    className={
+                                        isSignUp ? 'auth-form-scroll min-h-0 overflow-y-auto pr-2 pb-1 glassy-scrollbar' : 'min-h-0 overflow-visible pr-0'
+                                    }
+                                >
                                     {showVerification ? (
                                         <div className='space-y-2'>
                                             <div className='rounded-2xl border border-[#2c7bbe]/25 bg-[#050608]/45 p-2.5 text-left'>
@@ -1424,7 +1699,10 @@ function SignIn() {
                                             )}
                                         </div>
                                     ) : (
-                                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-2.5'>
+                                        <form
+                                            onSubmit={handleSubmit(onSubmit)}
+                                            className={`space-y-2.5 ${!isSignUp ? 'min-h-full flex flex-col justify-center' : ''}`}
+                                        >
                                             {isSignUp && (
                                                 <div className='space-y-1.5'>
                                                     <div className='relative'>
@@ -1456,7 +1734,10 @@ function SignIn() {
                                                             id='phone'
                                                             type='tel'
                                                             placeholder='Enter your phone number'
-                                                            {...register('phone', { required: 'Phone number is required', validate: validatePhone })}
+                                                            {...register('phone', {
+                                                                required: 'Phone number is required',
+                                                                validate: validatePhone,
+                                                            })}
                                                             className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
                                                         />
                                                         <div className='absolute left-4 top-1/2 -translate-y-1/2'>
@@ -1473,7 +1754,10 @@ function SignIn() {
                                                         id='email'
                                                         type='email'
                                                         placeholder='Enter your email'
-                                                        {...register('email', { required: 'Email is required', validate: validateEmail })}
+                                                        {...register('email', {
+                                                            required: 'Email is required',
+                                                            validate: validateEmail,
+                                                        })}
                                                         className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
@@ -1489,7 +1773,10 @@ function SignIn() {
                                                         id='password'
                                                         type={showPassword ? 'text' : 'password'}
                                                         placeholder='Enter your password'
-                                                        {...register('password', { required: 'Password is required', validate: validatePassword })}
+                                                        {...register('password', {
+                                                            required: 'Password is required',
+                                                            validate: validatePassword,
+                                                        })}
                                                         className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 pr-12 rounded-2xl transition-all duration-300'
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
@@ -1535,6 +1822,28 @@ function SignIn() {
                                                     </div>
                                                     {errors.termsAccepted && (
                                                         <p className='text-red-400 text-xs leading-tight'>{errors.termsAccepted.message}</p>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {isSignUp && (
+                                                <div className='space-y-1.5'>
+                                                    <div className='flex items-start gap-3 text-xs text-gray-300 leading-relaxed'>
+                                                        <input
+                                                            id='smsOptInConsent'
+                                                            type='checkbox'
+                                                            {...register('smsOptInConsent', {
+                                                                required: 'Please agree to receive SMS messages to continue',
+                                                            })}
+                                                            className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
+                                                        />
+
+                                                        <label htmlFor='smsOptInConsent' className='cursor-pointer'>
+                                                            I agree to receive SMS from BlackSnow on my phone number.
+                                                        </label>
+                                                    </div>
+                                                    {errors.smsOptInConsent && (
+                                                        <p className='text-red-400 text-xs leading-tight'>{errors.smsOptInConsent.message}</p>
                                                     )}
                                                 </div>
                                             )}
