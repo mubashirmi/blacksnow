@@ -1832,9 +1832,7 @@ function SignIn() {
                                                         <input
                                                             id='smsOptInConsent'
                                                             type='checkbox'
-                                                            {...register('smsOptInConsent', {
-                                                                required: 'Please agree to receive SMS messages to continue',
-                                                            })}
+                                                            {...register('smsOptInConsent')}
                                                             className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
                                                         />
 
