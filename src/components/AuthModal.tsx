@@ -264,7 +264,13 @@ export type ProductContext = {
 
 export type AuthModalVisualVariant = 'default' | 'danger' | 'success';
 
+type PendingAuthFlow = { kind: 'signup'; user: any; role: string };
+
+/*
+// Sign-in flow is intentionally hidden in this modal now.
+// Keeping the previous login pending flow commented for reference.
 type PendingAuthFlow = { kind: 'signup'; user: any; role: string } | { kind: 'login'; responseData: any };
+*/
 
 // ─── Auth Modal Props ─────────────────────────────────────────────────────────
 export type AuthModalProps = {
@@ -427,7 +433,7 @@ export default function AuthModal({
     const router = useRouter();
 
     const [showPassword, setShowPassword] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(defaultView === 'signup');
+    const [isSignUp, setIsSignUp] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
     const [termsAccepted, setTermsAccepted] = useState(false);
@@ -468,6 +474,15 @@ export default function AuthModal({
     const logoFilter = isDangerVariant ? redLogoFilter : isSuccessVariant ? greenLogoFilter : undefined;
 
     useEffect(() => {
+        if (open) {
+            setIsSignUp(true);
+        }
+    }, [open]);
+
+    /*
+    // Previous modal sign-in/sign-up switch logic is commented because
+    // sign-in is now handled by the dedicated /login page.
+    useEffect(() => {
         if (!router.isReady) return;
 
         const q = router.query;
@@ -485,6 +500,7 @@ export default function AuthModal({
 
         setIsSignUp(shouldSignUp ? true : defaultView === 'signup');
     }, [router.isReady, router.query, defaultView]);
+    */
 
     const resetVerificationState = () => {
         setShowVerification(false);
@@ -495,6 +511,14 @@ export default function AuthModal({
         setOtpSent(false);
         setOtpSending(false);
         setOtpVerifying(false);
+    };
+
+    const handleSignInRedirect = () => {
+        setAlert({ type: '', message: '' });
+        reset();
+        resetVerificationState();
+        onOpenChange(false);
+        router.push('/login');
     };
 
     const completeSignupFlow = () => {
@@ -549,6 +573,9 @@ export default function AuthModal({
         router.push(redirectAfterSignup || '/pricing');
     };
 
+    /*
+    // Previous embedded sign-in completion flow is commented because
+    // sign-in now redirects to /login instead of running inside this modal.
     const completeLoginFlow = (responseData: any) => {
         if (responseData?.role === 'admin') {
             setCookie('admin_token', responseData.token);
@@ -620,6 +647,7 @@ export default function AuthModal({
         onOpenChange(false);
         router.push(redirectAfterLogin);
     };
+    */
 
     const handleSendEmailOtp = async () => {
         if (!verificationEmail) {
@@ -661,10 +689,14 @@ export default function AuthModal({
                 otp: trimmedOtp,
             });
 
+            /*
+            // Previous embedded sign-in OTP verification branch is commented.
+            // Login verification is now handled from /login.
             if (pendingAuthFlow?.kind === 'login') {
                 completeLoginFlow(pendingAuthFlow.responseData);
                 return;
             }
+            */
 
             completeSignupFlow();
         } catch (error: any) {
@@ -706,6 +738,13 @@ export default function AuthModal({
                 return;
             }
 
+            // Embedded sign-in is disabled inside this modal.
+            // Any sign-in action should go to the dedicated login page.
+            router.push('/login');
+            return;
+
+            /*
+            // Previous embedded sign-in submit code is kept here, commented for reference.
             const loginData = {
                 email: data.email,
                 password: data.password,
@@ -721,6 +760,7 @@ export default function AuthModal({
             setShowVerification(true);
             setAlert({ type: 'success', message: 'Login successful. Please verify your email to continue.' });
             return;
+            */
         } catch (error: any) {
             setAlert({
                 type: 'error',
@@ -796,7 +836,7 @@ export default function AuthModal({
                                     </div>
 
                                     <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
-                                        {showVerification ? 'Verify Your Account' : isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                                        {showVerification ? 'Verify Your Account' : 'Create Your Account'}
                                     </DialogTitle>
                                 </div>
                             </DialogHeader>
@@ -805,24 +845,18 @@ export default function AuthModal({
                         {hasProduct && (
                             <div className='relative z-10 px-7 pt-3 pb-0 text-center'>
                                 <p className='text-[15px] font-bold text-white/90'>
-                                    {showVerification ? 'Verify your account' : isSignUp ? 'Create an account to continue' : 'Sign in to purchase'}
+                                    {showVerification ? 'Verify your account' : 'Create an account to continue'}
                                 </p>
 
                                 <p className='text-xs text-white/40 mt-0.5'>
-                                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-
+                                    Already have an account?
                                     <button
                                         type='button'
-                                        onClick={() => {
-                                            setIsSignUp((v) => !v);
-                                            setAlert({ type: '', message: '' });
-                                            reset();
-                                            resetVerificationState();
-                                        }}
+                                        onClick={handleSignInRedirect}
                                         className='font-semibold hover:text-white transition-colors duration-300 cursor-pointer'
                                         style={{ color: modalAccent }}
                                     >
-                                        {isSignUp ? 'Sign In' : 'Sign Up'}
+                                        Sign In
                                     </button>
                                 </p>
                             </div>
@@ -1116,7 +1150,7 @@ export default function AuthModal({
                                             <div className='flex items-center justify-center gap-2'>Processing...</div>
                                         ) : (
                                             <>
-                                                <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
+                                                <span>Create Account</span>
                                                 <ChevronRight className='h-4 w-4 text-white/45 transition-transform duration-300 group-hover:translate-x-0.5' />
                                             </>
                                         )}
@@ -1124,25 +1158,15 @@ export default function AuthModal({
 
                                     {!hasProduct && (
                                         <div className='text-center pt-1'>
-                                            <button
-                                                type='button'
-                                                onClick={() => {
-                                                    setIsSignUp((v) => !v);
-                                                    setAlert({ type: '', message: '' });
-                                                    reset();
-                                                    resetVerificationState();
-                                                }}
-                                                className='text-white/50 text-sm'
-                                            >
-                                                {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-
+                                            <button type='button' onClick={handleSignInRedirect} className='text-white/50 text-sm'>
+                                                Already have an account?
                                                 <span
                                                     className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
                                                     style={{
                                                         color: '#4cc7e8',
                                                     }}
                                                 >
-                                                    {isSignUp ? ' Sign In' : ' Sign Up'}
+                                                    Sign In
                                                 </span>
                                             </button>
                                         </div>
@@ -1195,14 +1219,26 @@ export function AuthModalTrigger({
     className?: string;
     children?: React.ReactNode;
 }) {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
+
+    const handleTriggerClick = () => {
+        const shouldRedirectToLogin = defaultView === 'signin' || buttonText.trim().toLowerCase().includes('sign in');
+
+        if (shouldRedirectToLogin) {
+            router.push('/login');
+            return;
+        }
+
+        setOpen(true);
+    };
 
     return (
         <>
             {children ? (
-                <span onClick={() => setOpen(true)}>{children}</span>
+                <span onClick={handleTriggerClick}>{children}</span>
             ) : (
-                <Button onClick={() => setOpen(true)} className={className}>
+                <Button onClick={handleTriggerClick} className={className}>
                     {buttonText}
                 </Button>
             )}

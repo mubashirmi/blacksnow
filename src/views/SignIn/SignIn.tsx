@@ -3,7 +3,6 @@
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import {
@@ -15,16 +14,12 @@ import {
     Eye,
     EyeOff,
     FilePen,
-    FileText,
     Lock,
     Mail,
     MessageSquare,
     Monitor,
     Newspaper,
-    Phone,
     Shield,
-    User,
-    X,
     Zap,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -680,415 +675,10 @@ function PostSignupToolsSlideshow() {
     );
 }
 
-type TermsContentBlock = {
-    title?: string;
-    paragraphs?: string[];
-    bullets?: string[];
-};
-
-type TermsSlide = {
-    id: string;
-    accent: string;
-    Icon: any;
-    badge: string;
-    titleGrad: string;
-    titlePlain: string;
-    gradAtEnd?: boolean;
-    summary: string;
-    link: string;
-    bullets: string[];
-    content?: TermsContentBlock[];
-};
-
-const TERMS_SLIDES: TermsSlide[] = [
-    {
-        id: 'terms',
-        accent: '#2c7bbe',
-        Icon: FileText,
-        badge: 'Terms & Conditions',
-        titleGrad: 'Terms',
-        titlePlain: ' & Conditions',
-        summary:
-            'By using our platform you agree to our Terms & Conditions. These outline your rights and responsibilities, acceptable use policies, intellectual property rules, and procedures for resolving disputes. We reserve the right to update these terms with reasonable notice.',
-        link: '/terms',
-        bullets: ['Governs platform and tool usage', 'Outlines acceptable use and IP policies', 'Dispute resolution procedures included'],
-    },
-    {
-        id: 'privacy',
-        accent: '#4cc7e8',
-        Icon: Shield,
-        badge: 'Privacy Policy',
-        titleGrad: 'Privacy',
-        titlePlain: ' Policy',
-        summary:
-            'We collect only the data necessary to operate the platform and process payments. Your data is never sold to third parties. You have the right to access, correct, or delete your personal data at any time. All data is stored securely in compliance with applicable privacy laws.',
-        link: '/privacy',
-        bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
-    },
-    {
-        id: 'sms-text-messaging-terms',
-        accent: '#4cc7e8',
-        Icon: MessageSquare,
-        badge: 'SMS/Text Messaging Terms',
-        titleGrad: 'SMS/Text',
-        titlePlain: ' Messaging Terms',
-        summary:
-            'By providing your mobile phone number and opting in to receive SMS messages from BlackSnow Holdings, you agree to receive text messages related to account access, account security, and authentication.',
-        link: '/terms',
-        bullets: [
-            'SMS is used for transactional and security purposes only',
-            'Message frequency may vary based on account activity',
-            'Reply STOP to opt out or HELP for help',
-        ],
-        content: [
-            {
-                paragraphs: [
-                    'By providing your mobile phone number and opting in to receive SMS messages from BlackSnow Holdings, you agree to receive text messages related to account access, account security, and authentication.',
-                    'Messages may include:',
-                ],
-                bullets: [
-                    'One-time passcodes / OTP verification codes',
-                    'Account sign-up verification',
-                    'Login authentication codes',
-                    'Two-factor authentication messages',
-                    'Password reset or account recovery verification',
-                    'Security-related account alerts',
-                    'Account or service-related updates requested by you',
-                ],
-            },
-            {
-                paragraphs: [
-                    'BlackSnow Holdings uses SMS messages for transactional and security purposes only. We do not use this SMS program to send marketing or promotional text messages.',
-                    'Message frequency may vary based on your account activity and authentication requests. Message and data rates may apply.',
-                    'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again. Please note that opting out of authentication SMS messages may affect your ability to receive login, verification, or account security codes by text message.',
-                    'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
-                    'SMS consent is not a condition of purchase. Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
-                    'Carriers are not liable for delayed or undelivered messages.',
-                ],
-            },
-        ],
-    },
-    {
-        id: 'acceptable-use',
-        accent: '#2c7bbe',
-        Icon: Shield,
-        badge: 'Acceptable Use',
-        titleGrad: 'Acceptable',
-        titlePlain: ' Use',
-        summary:
-            'You agree not to misuse the Services, interfere with normal operation, access unauthorized areas, or use the Services for unlawful, deceptive, or harmful purposes.',
-        link: '/terms',
-        bullets: ['No unauthorized access or interference', 'No malware, harmful automation, or unlawful use', 'Only contact people with required consent'],
-        content: [
-            {
-                paragraphs: [
-                    'You agree not to misuse the Services. This means you will not attempt to interfere with the normal operation of the Services, access areas you are not authorized to access, probe or scan for vulnerabilities, introduce malware, or use automated scraping in a way that harms the Services. You also agree not to use the Services for unlawful, deceptive, or harmful purposes, including harassment, fraud, or infringement of intellectual property rights.',
-                    'If the Services allow email or SMS communications, you agree that you will only contact people who have provided the required consent or permissions under applicable laws and industry standards, including (where applicable) CAN-SPAM, TCPA, and similar regulations. You agree not to send spam or unlawful messages and to honor opt-out requests. You are solely responsible for the content you send and the legality of your communications.',
-                    'We may suspend, restrict, or terminate your access if we believe you have violated these Terms, created risk for users, harmed the Services, or engaged in unlawful conduct.',
-                ],
-            },
-        ],
-    },
-    {
-        id: 'sms-opt-in-consent',
-        accent: '#4cc7e8',
-        Icon: MessageSquare,
-        badge: 'SMS Opt-In Consent',
-        titleGrad: 'SMS Opt-In',
-        titlePlain: ' Consent',
-        summary:
-            'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
-        link: '/terms',
-        bullets: ['Transactional and account-security messages only', 'Opt out by replying STOP', 'Mobile opt-in information will not be shared for marketing'],
-        content: [
-            {
-                paragraphs: [
-                    'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
-                    'SMS messages from BlackSnow Holdings may include:',
-                ],
-                bullets: [
-                    'Account sign-up verification codes',
-                    'Login authentication codes',
-                    'One-time passcodes / OTP messages',
-                    'Two-factor authentication messages',
-                    'Password reset verification',
-                    'Account recovery verification',
-                    'Security-related account alerts',
-                    'Account or service-related updates requested by you',
-                ],
-            },
-            {
-                paragraphs: [
-                    'BlackSnow Holdings uses SMS messaging for transactional and account security purposes only. We do not use this SMS program to send marketing or promotional text messages.',
-                    'Message frequency may vary based on your account activity and authentication requests. Message and data rates may apply.',
-                    'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again.',
-                    'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
-                    'SMS consent is not a condition of purchase. Please note that opting out of SMS messages may affect your ability to receive login, verification, password reset, or account security codes by text message.',
-                    'Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
-                    'Carriers are not liable for delayed or undelivered messages.',
-                ],
-            },
-        ],
-    },
-];
-
-function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; onOpenChange: (v: boolean) => void; onComplete: () => void }) {
-    const [current, setCurrent] = useState(0);
-    const [dir, setDir] = useState<'next' | 'prev'>('next');
-    const [animating, setAnimating] = useState(false);
-
-    useEffect(() => {
-        if (open) {
-            setCurrent(0);
-            setDir('next');
-            setAnimating(false);
-        }
-    }, [open]);
-
-    const goTo = (next: number, direction: 'next' | 'prev') => {
-        if (animating) return;
-
-        setDir(direction);
-        setAnimating(true);
-
-        window.setTimeout(() => {
-            setCurrent(next);
-            setAnimating(false);
-        }, 220);
-    };
-
-    const handleNext = () => {
-        if (animating) return;
-
-        if (current < TERMS_SLIDES.length - 1) {
-            goTo(current + 1, 'next');
-            return;
-        }
-
-        onComplete();
-        onOpenChange(false);
-    };
-
-    const handlePrev = () => {
-        if (animating || current === 0) return;
-        goTo(current - 1, 'prev');
-    };
-
-    const slide = TERMS_SLIDES[current];
-    const { accent, badge, titleGrad, titlePlain, gradAtEnd, summary, link, bullets, content } = slide;
-    const isLast = current === TERMS_SLIDES.length - 1;
-
-    const slideAnim: React.CSSProperties = {
-        transition: 'opacity 0.22s ease, transform 0.22s ease',
-        opacity: animating ? 0 : 1,
-        transform: animating ? `translateX(${dir === 'next' ? '-18px' : '18px'})` : 'translateX(0)',
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='w-[calc(100vw-2rem)] sm:max-w-[540px] max-h-[calc(100vh-2rem)] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
-                <DialogTitle className='sr-only'>{badge}</DialogTitle>
-
-                <div
-                    className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#07090d]'
-                    style={{
-                        minHeight: 'min(560px, calc(100vh - 32px))',
-                        height: 'min(620px, calc(100vh - 32px))',
-                        maxHeight: 'calc(100vh - 32px)',
-                        borderColor: `${accent}35`,
-                        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
-                    }}
-                >
-                    <div
-                        className='absolute inset-0 pointer-events-none'
-                        style={{
-                            background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)`,
-                        }}
-                    />
-
-                    <button
-                        type='button'
-                        onClick={() => onOpenChange(false)}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
-                        style={{
-                            backgroundColor: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                        }}
-                        aria-label='Close terms modal'
-                    >
-                        <X className='w-4 h-4 text-white/60' />
-                    </button>
-
-                    <div className='relative z-10 flex h-full min-h-0 flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
-                        {/* <div
-                            className='inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
-                            style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
-                        >
-                            <Icon className='w-3.5 h-3.5' />
-                            {badge}
-                        </div> */}
-
-                        <h2 className='text-[28px] font-black text-white leading-tight mb-3'>
-                            {gradAtEnd ? (
-                                <>
-                                    {titlePlain}
-                                    <span
-                                        className='bg-clip-text text-transparent'
-                                        style={{
-                                            backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)`,
-                                        }}
-                                    >
-                                        {titleGrad}
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <span
-                                        className='bg-clip-text text-transparent'
-                                        style={{
-                                            backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)`,
-                                        }}
-                                    >
-                                        {titleGrad}
-                                    </span>
-                                    {titlePlain}
-                                </>
-                            )}
-                        </h2>
-
-                        <div className='h-px rounded-full mb-5 w-full bg-white/10' />
-
-                        <div
-                            className='rounded-2xl p-4 mb-5 border'
-                            style={{
-                                backgroundColor: `${accent}08`,
-                                borderColor: `${accent}25`,
-                            }}
-                        >
-                            <p className='text-[11px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: accent }}>
-                                Summary
-                            </p>
-
-                            <p className='text-white/65 text-sm leading-relaxed'>{summary}</p>
-
-                            <a
-                                href={link}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='inline-flex items-center gap-1 mt-3 text-xs font-semibold hover:underline'
-                                style={{ color: accent }}
-                            >
-                                Read full document →
-                            </a>
-                        </div>
-
-                        <div className='terms-body-scroll flex-1 min-h-0 overflow-y-scroll rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 pr-4 glassy-scrollbar'>
-                            {content ? (
-                                <div className='space-y-4'>
-                                    {content.map((block, blockIndex) => (
-                                        <div key={blockIndex} className='space-y-2.5'>
-                                            {block.title && <h3 className='text-white font-bold text-sm'>{block.title}</h3>}
-
-                                            {block.paragraphs?.map((paragraph, paragraphIndex) => (
-                                                <p key={paragraphIndex} className='text-white/68 text-sm leading-relaxed'>
-                                                    {paragraph}
-                                                </p>
-                                            ))}
-
-                                            {block.bullets && (
-                                                <ul className='space-y-2 pl-1'>
-                                                    {block.bullets.map((item, itemIndex) => (
-                                                        <li key={itemIndex} className='flex items-start gap-2.5'>
-                                                            <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                                            <span className='text-white/72 text-sm leading-snug'>{item}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <ul className='space-y-3'>
-                                    {bullets.map((b, i) => (
-                                        <li key={i} className='flex items-start gap-2.5'>
-                                            <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: accent }} strokeWidth={2.5} />
-                                            <span className='text-white/72 text-sm leading-snug'>{b}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-
-                        <div className='pt-5 flex-shrink-0 flex items-center justify-between gap-2'>
-                            <div className='flex items-center justify-between gap-1.5'>
-                                {TERMS_SLIDES.map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className='rounded-full transition-all duration-300'
-                                        style={{
-                                            width: i === current ? 20 : 6,
-                                            height: 6,
-                                            backgroundColor: i === current ? accent : i < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                            <div>
-                                <span
-                                    className='rounded-xl px-3 py-1 text-xs font-bold text-white/70'
-                                    style={{
-                                        backgroundColor: `${accent}14`,
-                                        border: `1px solid ${accent}35`,
-                                    }}
-                                >
-                                    Slide {current + 1}/{TERMS_SLIDES.length}
-                                </span>
-                            </div>
-
-                            <div className='flex items-center gap-2'>
-                                <button
-                                    type='button'
-                                    onClick={handlePrev}
-                                    disabled={current === 0}
-                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                                    style={{
-                                        backgroundColor: 'rgba(255,255,255,0.06)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                    }}
-                                    aria-label='Previous terms slide'
-                                >
-                                    <ChevronLeft className='w-4 h-4 text-white' />
-                                </button>
-
-                                <button
-                                    type='button'
-                                    onClick={handleNext}
-                                    className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
-                                    style={{
-                                        background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
-                                        border: `1px solid ${accent}60`,
-                                        boxShadow: `0 2px 12px ${accent}30`,
-                                    }}
-                                >
-                                    {isLast ? 'I Understand ✓' : 'Next'}
-                                    {!isLast && <ChevronRight className='w-3.5 h-3.5' />}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showPostSignupSlideshow, setShowPostSignupSlideshow] = useState(false);
-    const [showTermsModal, setShowTermsModal] = useState(false);
     const [showVerification, setShowVerification] = useState(false);
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
     const [pendingAuthFlow, setPendingAuthFlow] = useState<PendingAuthFlow | null>(null);
@@ -1105,7 +695,6 @@ function SignIn() {
         handleSubmit,
         formState: { errors },
         reset,
-        setValue,
     } = useForm<AuthFormValues>();
 
     useEffect(() => {
@@ -1118,31 +707,9 @@ function SignIn() {
         return () => window.clearTimeout(timer);
     }, [alert.message, alert.type]);
 
-    useEffect(() => {
-        if (!router.isReady) return;
-
-        const q = router.query;
-        const hasSignupKey = Object.prototype.hasOwnProperty.call(q, 'signup');
-
-        const first = (k: string) => {
-            const v = (q as any)[k];
-            return Array.isArray(v) ? v[0] : v;
-        };
-
-        const raw = first('signup') ?? first('view') ?? first('mode') ?? '';
-        const val = typeof raw === 'string' ? raw.toLowerCase() : '';
-
-        setIsSignUp(hasSignupKey || ['signup', 'true', '1', 'yes'].includes(val));
-    }, [router.isReady, router.query]);
-
     const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Please enter a valid email address';
 
     const validatePassword = (value: string) => value.length >= 6 || 'Password must be at least 6 characters long';
-
-    const validatePhone = (value: string) => {
-        const cleaned = String(value || '').replace(/[^0-9+]/g, '');
-        return cleaned.length >= 7 || 'Please enter a valid phone number';
-    };
 
     const setCookie = (name: string, value: string, days = 7) => {
         const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -1186,34 +753,6 @@ function SignIn() {
         setOtpSent(false);
         setOtpSending(false);
         setOtpVerifying(false);
-    };
-
-    const completeSignupFlow = () => {
-        const signupFlow = pendingAuthFlow?.kind === 'signup' ? pendingAuthFlow : null;
-        const signupUser = signupFlow?.user;
-
-        if (!signupUser) {
-            setAlert({
-                type: 'error',
-                message: 'Signup session expired. Please sign up again.',
-            });
-            resetVerificationState();
-            return;
-        }
-
-        localStorage.setItem('userId', String(signupUser.id));
-        localStorage.setItem('id', String(signupUser.id));
-        localStorage.setItem('roles', JSON.stringify(signupUser.roles || []));
-        saveVerifiedIdentityStorage(signupUser);
-        setCookie('firstName', signupUser.firstName);
-        setCookie('lastName', signupUser.lastName);
-        setCookie('email', signupUser.email);
-        setCookie('id', String(signupUser.id));
-
-        setAlert({ type: 'success', message: 'Email verified successfully!' });
-        reset();
-        resetVerificationState();
-        setShowPostSignupSlideshow(true);
     };
 
     const completeLoginFlow = (responseData: any) => {
@@ -1324,6 +863,15 @@ function SignIn() {
             return;
         }
 
+        if (pendingAuthFlow?.kind !== 'login') {
+            setAlert({
+                type: 'error',
+                message: 'Login session expired. Please sign in again.',
+            });
+            resetVerificationState();
+            return;
+        }
+
         setOtpVerifying(true);
         setAlert({ type: '', message: '' });
 
@@ -1333,12 +881,7 @@ function SignIn() {
                 otp: trimmedOtp,
             });
 
-            if (pendingAuthFlow?.kind === 'login') {
-                completeLoginFlow(pendingAuthFlow.responseData);
-                return;
-            }
-
-            completeSignupFlow();
+            completeLoginFlow(pendingAuthFlow.responseData);
         } catch (error: any) {
             setAlert({
                 type: 'error',
@@ -1354,85 +897,37 @@ function SignIn() {
         setAlert({ type: '', message: '' });
 
         try {
-            if (isSignUp) {
-                const cleaned = String(data.fullName || '')
+            const response = await axios.post('/api/v2/login', {
+                email: data.email,
+                password: data.password,
+            });
+
+            const loginUser = response.data?.user;
+            const loginRoles = Array.isArray(loginUser?.roles) ? loginUser.roles : [];
+            const normalizedLoginRoles = loginRoles.map((role: any) =>
+                String(role || '')
                     .trim()
-                    .replace(/\s+/g, ' ');
-                const parts = cleaned ? cleaned.split(' ') : [];
-                const firstName = parts[0] || '';
-                const lastName = parts.length > 1 ? parts.slice(1).join(' ') : ' ';
-                const refId = localStorage.getItem('referredby');
+                    .toLowerCase()
+            );
+            const loginResponseRole = String(response.data?.role || '').toLowerCase();
+            const isAdminLogin = loginResponseRole === 'admin' || normalizedLoginRoles.includes('admin');
 
-                let response;
-
-                if (refId) {
-                    response = await axios.post(`/api/v2/signup?referredBy=${refId}`, {
-                        email: data.email,
-                        firstName,
-                        lastName,
-                        password: data.password,
-                        phone: data.phone,
-                        smsOptInConsent: Boolean(data.smsOptInConsent),
-                        role: '',
-                    });
-                } else {
-                    response = await axios.post('/api/v2/signup', {
-                        email: data.email,
-                        firstName,
-                        lastName,
-                        password: data.password,
-                        phone: data.phone,
-                        smsOptInConsent: Boolean(data.smsOptInConsent),
-                        role: '',
-                    });
-                }
-
-                const signupUser = response.data.user;
-
-                clearUnverifiedIdentityStorage();
-                setPendingAuthFlow({ kind: 'signup', user: signupUser, role: '' });
-                setVerificationEmail(data.email);
-                setVerificationMethod('email');
-                setOtp('');
-                setOtpSent(false);
-                setShowVerification(true);
-                setAlert({
-                    type: 'success',
-                    message: 'Account created successfully. Please verify your email to continue.',
-                });
-            } else {
-                const response = await axios.post('/api/v2/login', {
-                    email: data.email,
-                    password: data.password,
-                });
-
-                const loginUser = response.data?.user;
-                const loginRoles = Array.isArray(loginUser?.roles) ? loginUser.roles : [];
-                const normalizedLoginRoles = loginRoles.map((role: any) =>
-                    String(role || '')
-                        .trim()
-                        .toLowerCase()
-                );
-                const loginResponseRole = String(response.data?.role || '').toLowerCase();
-                const isAdminLogin = loginResponseRole === 'admin' || normalizedLoginRoles.includes('admin');
-
-                if (isAdminLogin) {
-                    completeLoginFlow(response.data);
-                    return;
-                }
-
-                clearUnverifiedIdentityStorage();
-                setPendingAuthFlow({ kind: 'login', responseData: response.data });
-                setVerificationEmail(data.email);
-                setVerificationMethod('email');
-                setOtp('');
-                setOtpSent(false);
-                setShowVerification(true);
-                setAlert({
-                    type: 'success',
-                    message: 'Login successful. Please verify your email to continue.',
-                });
+            if (isAdminLogin) {
+                completeLoginFlow(response.data);
+                return;
             }
+
+            clearUnverifiedIdentityStorage();
+            setPendingAuthFlow({ kind: 'login', responseData: response.data });
+            setVerificationEmail(data.email);
+            setVerificationMethod('email');
+            setOtp('');
+            setOtpSent(false);
+            setShowVerification(true);
+            setAlert({
+                type: 'success',
+                message: 'Login successful. Please verify your email to continue.',
+            });
         } catch (error: any) {
             setAlert({
                 type: 'error',
@@ -1474,23 +969,8 @@ function SignIn() {
                 .glassy-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: linear-gradient(180deg, rgba(76,199,232,0.72), rgba(44,123,190,0.45));
                 }
-
-                .auth-form-scroll {
-                    max-height: calc(100% - 76px);
-                    overscroll-behavior: contain;
-                }
-
-                .terms-body-scroll {
-                    max-height: min(270px, calc(100vh - 350px));
-                    overscroll-behavior: contain;
-                }
-
-                @media (max-height: 640px) {
-                    .terms-body-scroll {
-                        max-height: calc(100vh - 330px);
-                    }
-                }
             `}</style>
+
             <div className='absolute inset-0'>
                 <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
                 <div className='absolute inset-0 bg-black/90' />
@@ -1499,12 +979,6 @@ function SignIn() {
             <div className='absolute inset-0 overflow-hidden pointer-events-none z-[5]'>
                 <Snowflakes />
             </div>
-
-            <TermsSlideModal
-                open={showTermsModal}
-                onOpenChange={setShowTermsModal}
-                onComplete={() => setValue('termsAccepted', true, { shouldValidate: true })}
-            />
 
             {alert.message && (
                 <div className='pointer-events-none fixed top-4 right-4 z-[9999] w-[calc(100%-2rem)] max-w-sm'>
@@ -1547,8 +1021,6 @@ function SignIn() {
                         }}
                     />
 
-                    {/* <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] z-20' /> */}
-
                     {showPostSignupSlideshow ? (
                         <PostSignupToolsSlideshow />
                     ) : (
@@ -1565,23 +1037,15 @@ function SignIn() {
                             >
                                 <div className='text-center mb-3 flex-shrink-0'>
                                     <div className='w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-2'>
-                                        <Image width={104} height={104} src={'/logocolored.png'} alt='Logo' />
+                                        <Image width={104} height={104} src='/logocolored.png' alt='Logo' />
                                     </div>
 
                                     <h2 className='text-[22px] font-bold text-white mb-1'>
-                                        {showVerification ? 'Verify Your Account' : isSignUp ? 'Create Your Account' : 'Sign In to Your Account'}
+                                        {showVerification ? 'Verify Your Account' : 'Sign In to Your Account'}
                                     </h2>
-
-                                    {/* <p className='text-gray-400 text-sm'>
-                                        {isSignUp ? 'Fill in the details to get started' : 'Enter your credentials to access the trading platform'}
-                                    </p> */}
                                 </div>
 
-                                <div
-                                    className={
-                                        isSignUp ? 'auth-form-scroll min-h-0 overflow-y-auto pr-2 pb-1 glassy-scrollbar' : 'min-h-0 overflow-visible pr-0'
-                                    }
-                                >
+                                <div className='min-h-0 overflow-visible pr-0'>
                                     {showVerification ? (
                                         <div className='space-y-2'>
                                             <div className='rounded-2xl border border-[#2c7bbe]/25 bg-[#050608]/45 p-2.5 text-left'>
@@ -1671,7 +1135,7 @@ function SignIn() {
                                                         disabled={otpVerifying || otpSending || !otp.trim()}
                                                         className='w-full cursor-pointer rounded-2xl border h-11 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                                         style={{
-                                                            background: `linear-gradient(135deg, #4cc7e8cc, #2c7bbe99)`,
+                                                            background: 'linear-gradient(135deg, #4cc7e8cc, #2c7bbe99)',
                                                             borderColor: 'rgba(76,199,232,0.46)',
                                                             boxShadow: '0 14px 34px rgba(76,199,232,0.18)',
                                                         }}
@@ -1699,55 +1163,7 @@ function SignIn() {
                                             )}
                                         </div>
                                     ) : (
-                                        <form
-                                            onSubmit={handleSubmit(onSubmit)}
-                                            className={`space-y-2.5 ${!isSignUp ? 'min-h-full flex flex-col justify-center' : ''}`}
-                                        >
-                                            {isSignUp && (
-                                                <div className='space-y-1.5'>
-                                                    <div className='relative'>
-                                                        <Input
-                                                            id='fullName'
-                                                            type='text'
-                                                            placeholder='Enter your full name'
-                                                            {...register('fullName', {
-                                                                required: 'Full name is required',
-                                                                validate: (v) =>
-                                                                    String(v || '')
-                                                                        .trim()
-                                                                        .replace(/\s+/g, ' ').length >= 2 || 'Please enter your name',
-                                                            })}
-                                                            className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
-                                                        />
-                                                        <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                            <User className='w-5 h-5 text-[#4cc7e8]' />
-                                                        </div>
-                                                    </div>
-                                                    {errors.fullName && <p className='text-red-400 text-xs leading-tight'>{errors.fullName.message}</p>}
-                                                </div>
-                                            )}
-
-                                            {isSignUp && (
-                                                <div className='space-y-1.5'>
-                                                    <div className='relative'>
-                                                        <Input
-                                                            id='phone'
-                                                            type='tel'
-                                                            placeholder='Enter your phone number'
-                                                            {...register('phone', {
-                                                                required: 'Phone number is required',
-                                                                validate: validatePhone,
-                                                            })}
-                                                            className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
-                                                        />
-                                                        <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                            <Phone className='w-5 h-5 text-[#4cc7e8]' />
-                                                        </div>
-                                                    </div>
-                                                    {errors.phone && <p className='text-red-400 text-xs leading-tight'>{errors.phone.message}</p>}
-                                                </div>
-                                            )}
-
+                                        <form onSubmit={handleSubmit(onSubmit)} className='space-y-2.5 min-h-full flex flex-col justify-center'>
                                             <div className='space-y-1.5'>
                                                 <div className='relative'>
                                                     <Input
@@ -1794,58 +1210,6 @@ function SignIn() {
                                                 {errors.password && <p className='text-red-400 text-xs leading-tight'>{errors.password.message}</p>}
                                             </div>
 
-                                            {isSignUp && (
-                                                <div className='space-y-1.5'>
-                                                    <div className='flex items-start gap-3 text-xs text-gray-300 leading-relaxed'>
-                                                        <input
-                                                            id='termsAccepted'
-                                                            type='checkbox'
-                                                            {...register('termsAccepted', {
-                                                                required: 'Please accept the terms to continue',
-                                                            })}
-                                                            className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
-                                                        />
-
-                                                        <p>
-                                                            <label htmlFor='termsAccepted' className='cursor-pointer'>
-                                                                I agree to the{' '}
-                                                            </label>
-                                                            <button
-                                                                type='button'
-                                                                onClick={() => setShowTermsModal(true)}
-                                                                className='text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors'
-                                                            >
-                                                                Terms & Conditions
-                                                            </button>
-                                                            .
-                                                        </p>
-                                                    </div>
-                                                    {errors.termsAccepted && (
-                                                        <p className='text-red-400 text-xs leading-tight'>{errors.termsAccepted.message}</p>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {isSignUp && (
-                                                <div className='space-y-1.5'>
-                                                    <div className='flex items-start gap-3 text-xs text-gray-300 leading-relaxed'>
-                                                        <input
-                                                            id='smsOptInConsent'
-                                                            type='checkbox'
-                                                            {...register('smsOptInConsent')}
-                                                            className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
-                                                        />
-
-                                                        <label htmlFor='smsOptInConsent' className='cursor-pointer'>
-                                                            I agree to receive SMS from BlackSnow on my phone number.
-                                                        </label>
-                                                    </div>
-                                                    {errors.smsOptInConsent && (
-                                                        <p className='text-red-400 text-xs leading-tight'>{errors.smsOptInConsent.message}</p>
-                                                    )}
-                                                </div>
-                                            )}
-
                                             <Button
                                                 type='submit'
                                                 disabled={isLoading}
@@ -1870,26 +1234,17 @@ function SignIn() {
                                                     </div>
                                                 ) : (
                                                     <>
-                                                        {isSignUp ? 'Create Account' : 'Dashboard'}
+                                                        Dashboard
                                                         <ArrowRight className='w-5 h-5 ml-2 opacity-70 group-hover:translate-x-1 transition-transform duration-300' />
                                                     </>
                                                 )}
                                             </Button>
 
                                             <div className='text-center'>
-                                                <button
-                                                    type='button'
-                                                    onClick={() => {
-                                                        setIsSignUp(!isSignUp);
-                                                        setAlert({ type: '', message: '' });
-                                                        reset();
-                                                        resetVerificationState();
-                                                    }}
-                                                    className='text-white text-sm font-semibold'
-                                                >
-                                                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                                                <button type='button' onClick={() => router.push('/signup')} className='text-white text-sm font-semibold'>
+                                                    Don&apos;t have an account?{' '}
                                                     <span className='cursor-pointer text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'>
-                                                        {isSignUp ? 'Sign In' : 'Sign Up'}
+                                                        Sign Up
                                                     </span>
                                                 </button>
                                             </div>

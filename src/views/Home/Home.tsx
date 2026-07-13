@@ -1,5 +1,4 @@
 import AuthModal from '@/components/AuthModal';
-import { HomeTourPopup } from '@/components/HomeTourPopup';
 import { PricingComponent } from '@/components/PricingComponent';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Button } from '@/components/ui/button';
@@ -804,9 +803,6 @@ function Home() {
             {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
             <DataAnalyticsSection />
 
-            {/* ─── BLACK SNOW MATHEMATICS BANNER ─── */}
-            {/* <BSMBanner /> */}
-
             {/* --- MODALS --- */}
 
             {/* 1) Checking Entitlement Loader */}
@@ -931,7 +927,7 @@ function Home() {
                 </DialogContent>
             </Dialog>
 
-            <HomeTourPopup />
+            {/* <HomeTourPopup /> */}
 
             {/* 4) Pricing Modal */}
             {!authOpen && <PricingComponent name='NewsLetter' asModal open={pricingOpen} onOpenChange={setPricingOpen} />}
