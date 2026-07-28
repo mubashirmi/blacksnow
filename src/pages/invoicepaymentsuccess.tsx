@@ -82,13 +82,24 @@ function InvoiceDeductionConfirmationContent() {
         setApiStatus('Verifying your invoice payment...');
 
         try {
-            const response = await fetch(`/api/v2/invoices/stripe-status?session_id=${encodeURIComponent(sessionId)}`, {
+            // eslint-disable-next-line
+            const requestOptions: RequestInit = {
                 method: 'GET',
                 headers: {
                     Accept: 'application/json',
                 },
                 cache: 'no-store',
-            });
+            };
+
+            let response = await fetch(`/api/v2/invoices/stripe-status?session_id=${encodeURIComponent(sessionId)}`, requestOptions);
+
+            // Some Stripe sessions belong to subscription invoices instead.
+            // Keep the loading state active and try the fallback endpoint only on 400.
+            if (response.status === 400) {
+                setApiStatus('Checking subscription invoice payment...');
+
+                response = await fetch(`/api/v2/subscriptionInv/stripe-status?session_id=${encodeURIComponent(sessionId)}`, requestOptions);
+            }
 
             let data: StripeInvoiceStatusResponse = {};
 

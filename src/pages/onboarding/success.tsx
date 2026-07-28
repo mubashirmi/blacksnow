@@ -75,7 +75,7 @@ export default function Page() {
         } else if (productLink === 'https://blacksnowholdings.com/lightningSilver') {
             router.push('/affiliate/dashboard/kpi');
         } else {
-            router.push('/affiliate/dashboard/links');
+            router.push('//invoicecontractdashboard/invoice');
         }
     };
 
