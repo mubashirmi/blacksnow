@@ -343,7 +343,7 @@ const InvoicesPage: NextPage = () => {
         setIsRefunding(true);
 
         try {
-            const res = await fetch('/api/v2/invoices/stripe-refund', {
+            const res = await fetch('/api/v2/subscriptionInv/stripe-refund', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
