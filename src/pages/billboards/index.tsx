@@ -197,7 +197,7 @@ export default function Page() {
                         Ready to <span className='bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] bg-clip-text text-transparent'>Showcase</span>?
                     </h2>
                     <div className='flex flex-col sm:flex-row gap-6 justify-center pt-8'>
-                        <Link href='/login?signup'>
+                        <Link href='/signup'>
                             <Button className='group bg-gradient-to-r from-[#259dd3] to-[#1e7ba8] hover:from-[#1e7ba8] hover:to-[#259dd3] text-white px-10 py-6 text-base font-bold shadow-2xl shadow-[#259dd3]/40 transition-all duration-300 transform hover:scale-[1.02] cursor-pointer w-full sm:w-[300px]'>
                                 <Monitor className='w-5 h-5 mr-3' />
                                 Get Featured

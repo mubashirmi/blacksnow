@@ -268,7 +268,7 @@ function Pricing() {
                     <div className='grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14'>
                         <div className='relative z-10 animate-slide-in-left'>
                             <h1
-                                className={`${michroma.className} max-w-3xl text-4xl leading-[1.15] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl xl:text-7xl`}
+                                className={`${michroma.className} max-w-3xl text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white`}
                             >
                                 <span className='block lg:whitespace-nowrap'>Simple Pricing.</span>
                                 <span className='block bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent lg:whitespace-nowrap'>

@@ -443,6 +443,7 @@ export default function AuthModal({
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
     const [pendingAuthFlow, setPendingAuthFlow] = useState<PendingAuthFlow | null>(null);
     const [verificationEmail, setVerificationEmail] = useState('');
+    const [verificationPhone, setVerificationPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
     const [otpSending, setOtpSending] = useState(false);
@@ -507,6 +508,7 @@ export default function AuthModal({
         setVerificationMethod('email');
         setPendingAuthFlow(null);
         setVerificationEmail('');
+        setVerificationPhone('');
         setOtp('');
         setOtpSent(false);
         setOtpSending(false);
@@ -709,6 +711,90 @@ export default function AuthModal({
         }
     };
 
+    const isValidE164Phone = (value: string) => /^\+[1-9]\d{7,14}$/.test(value.trim());
+
+    const handleSendSmsOtp = async () => {
+        const userEmail = verificationEmail.trim();
+        const userPhone = verificationPhone.trim();
+
+        if (!userEmail) {
+            setAlert({ type: 'error', message: 'Email is missing. Please start again.' });
+            return;
+        }
+
+        if (!isValidE164Phone(userPhone)) {
+            setAlert({
+                type: 'error',
+                message: 'Phone number must be in E.164 format, for example +923001234567.',
+            });
+            return;
+        }
+
+        setOtpSending(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-sms', {
+                userEmail,
+                userPhone,
+            });
+
+            setOtpSent(true);
+            setAlert({
+                type: 'success',
+                message: `OTP sent to ${userPhone}`,
+            });
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Unable to send SMS OTP. Please try again.',
+            });
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifySmsOtp = async () => {
+        const userEmail = verificationEmail.trim();
+        const trimmedOtp = otp.trim();
+
+        if (!trimmedOtp) {
+            setAlert({
+                type: 'error',
+                message: 'Please enter the OTP sent to your phone.',
+            });
+            return;
+        }
+
+        if (pendingAuthFlow?.kind !== 'signup') {
+            setAlert({
+                type: 'error',
+                message: 'Signup session expired. Please sign up again.',
+            });
+            resetVerificationState();
+            return;
+        }
+
+        setOtpVerifying(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-sms/verify', {
+                userEmail,
+                otp: trimmedOtp,
+            });
+
+            completeSignupFlow();
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Invalid SMS OTP. Please try again.',
+            });
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
     async function onSubmit(data: any) {
         setIsLoading(true);
         setAlert({ type: '', message: '' });
@@ -730,6 +816,7 @@ export default function AuthModal({
 
                 setPendingAuthFlow({ kind: 'signup', user: response.data.user, role: signupData.role });
                 setVerificationEmail(data.email);
+                setVerificationPhone(String(data.phoneNumber || ''));
                 setVerificationMethod('email');
                 setOtp('');
                 setOtpSent(false);
@@ -896,15 +983,19 @@ export default function AuthModal({
                                         </p>
                                         <h3 className='text-lg font-black text-white mb-2'>Choose a verification method</h3>
                                         <p className='text-xs text-white/50 leading-relaxed'>
-                                            Send an email OTP to <span className='font-semibold text-white/80'>{verificationEmail}</span>. SMS verification is
-                                            visible, but disabled for now.
+                                            Verify using an email OTP sent to <span className='font-semibold text-white/80'>{verificationEmail}</span>, or use
+                                            an SMS OTP with your E.164 phone number.
                                         </p>
                                     </div>
 
                                     <div className='grid grid-cols-2 gap-2'>
                                         <button
                                             type='button'
-                                            onClick={() => setVerificationMethod('email')}
+                                            onClick={() => {
+                                                setVerificationMethod('email');
+                                                setOtp('');
+                                                setOtpSent(false);
+                                            }}
                                             className='rounded-2xl border p-3 text-left transition-all duration-300 hover:scale-[1.01]'
                                             style={{
                                                 backgroundColor: verificationMethod === 'email' ? `${modalAccent}18` : 'rgba(0,0,0,0.25)',
@@ -920,26 +1011,55 @@ export default function AuthModal({
 
                                         <button
                                             type='button'
-                                            disabled
-                                            className='rounded-2xl border border-white/10 bg-black/20 p-3 text-left opacity-45 cursor-not-allowed'
+                                            onClick={() => {
+                                                setVerificationMethod('sms');
+                                                setOtp('');
+                                                setOtpSent(false);
+                                            }}
+                                            className='rounded-2xl border p-3 text-left transition-all duration-300 hover:scale-[1.01]'
+                                            style={{
+                                                backgroundColor: verificationMethod === 'sms' ? `${modalAccent}18` : 'rgba(0,0,0,0.25)',
+                                                borderColor: verificationMethod === 'sms' ? `${modalAccent}60` : 'rgba(255,255,255,0.10)',
+                                            }}
                                         >
-                                            <MessageSquare className='w-4 h-4 text-white/50 mb-2' />
+                                            <MessageSquare className='w-4 h-4 mb-2' style={{ color: modalAccent }} />
                                             <p className='text-white font-bold text-xs'>SMS</p>
-                                            <p className='text-white/40 text-[11px] mt-0.5'>Disabled</p>
+                                            <p className='text-[11px] mt-0.5' style={{ color: modalAccent }}>
+                                                OTP verification
+                                            </p>
                                         </button>
                                     </div>
 
+                                    {verificationMethod === 'sms' && (
+                                        <div className='space-y-1.5'>
+                                            <Input
+                                                id='smsPhone'
+                                                type='tel'
+                                                inputMode='tel'
+                                                placeholder='+923001234567'
+                                                value={verificationPhone}
+                                                onChange={(event) => {
+                                                    setVerificationPhone(event.target.value);
+                                                    setOtp('');
+                                                    setOtpSent(false);
+                                                }}
+                                                className='w-full rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                            />
+                                            <p className='text-[11px] text-white/45'>Use E.164 format, for example +923001234567.</p>
+                                        </div>
+                                    )}
+
                                     <Button
                                         type='button'
-                                        onClick={handleSendEmailOtp}
-                                        disabled={otpSending || otpVerifying || verificationMethod !== 'email'}
+                                        onClick={verificationMethod === 'sms' ? handleSendSmsOtp : handleSendEmailOtp}
+                                        disabled={otpSending || otpVerifying}
                                         className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
                                         style={{
                                             background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
                                             borderColor: 'rgba(255,255,255,0.09)',
                                             color: 'rgba(255,255,255,0.70)',
                                             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
-                                            opacity: otpSending || otpVerifying || verificationMethod !== 'email' ? 0.58 : 1,
+                                            opacity: otpSending || otpVerifying ? 0.58 : 1,
                                         }}
                                     >
                                         {otpSending ? (
@@ -961,7 +1081,7 @@ export default function AuthModal({
                                         <div className='space-y-3'>
                                             <div className='relative'>
                                                 <Input
-                                                    id='emailOtp'
+                                                    id={verificationMethod === 'sms' ? 'smsOtp' : 'emailOtp'}
                                                     inputMode='numeric'
                                                     placeholder='Enter OTP'
                                                     value={otp}
@@ -974,7 +1094,7 @@ export default function AuthModal({
 
                                             <Button
                                                 type='button'
-                                                onClick={handleVerifyEmailOtp}
+                                                onClick={verificationMethod === 'sms' ? handleVerifySmsOtp : handleVerifyEmailOtp}
                                                 disabled={otpVerifying || otpSending || !otp.trim()}
                                                 className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
                                                 style={{

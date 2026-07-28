@@ -94,6 +94,514 @@ function getRolesFromLocalStorage(): string[] {
     }
 }
 
+function normalizeStoredValue(value: string | null): string | null {
+    if (!value) return null;
+
+    try {
+        const parsed = JSON.parse(value);
+        if (typeof parsed === 'string' || typeof parsed === 'number') return String(parsed);
+    } catch {
+        // Keep the original value when it is not JSON.
+    }
+
+    return value.replace(/^["']+|["']+$/g, '').trim() || null;
+}
+
+function formatCanvasText(value: string, fallback = '—'): string {
+    const cleaned = value.trim();
+    return cleaned || fallback;
+}
+
+function wrapCanvasText(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const paragraphs = String(text || '').split(/\r?\n/);
+    const lines: string[] = [];
+
+    paragraphs.forEach((paragraph, paragraphIndex) => {
+        const words = paragraph.split(/\s+/).filter(Boolean);
+        if (words.length === 0) {
+            lines.push('');
+        } else {
+            let currentLine = words[0];
+            for (let index = 1; index < words.length; index += 1) {
+                const testLine = `${currentLine} ${words[index]}`;
+                if (context.measureText(testLine).width <= maxWidth) {
+                    currentLine = testLine;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[index];
+                }
+            }
+            lines.push(currentLine);
+        }
+
+        if (paragraphIndex < paragraphs.length - 1) lines.push('');
+    });
+
+    return lines;
+}
+
+function drawWrappedCanvasText(
+    context: CanvasRenderingContext2D,
+    text: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+    lineHeight: number,
+    maxLines = Number.POSITIVE_INFINITY
+): number {
+    const lines = wrapCanvasText(context, text, maxWidth).slice(0, maxLines);
+
+    lines.forEach((line, index) => {
+        const isLastVisibleLine = index === lines.length - 1;
+        const allLines = wrapCanvasText(context, text, maxWidth);
+        const visibleLine = isLastVisibleLine && allLines.length > maxLines ? `${line.replace(/[.,;:]?$/, '')}…` : line;
+        context.fillText(visibleLine, x, y + index * lineHeight);
+    });
+
+    return y + Math.max(lines.length, 1) * lineHeight;
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/jpeg', quality = 0.94): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error('Failed to generate invoice file.'));
+            },
+            type,
+            quality
+        );
+    });
+}
+
+function loadImage(source: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        const image = new window.Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('Failed to load an invoice image.'));
+        image.src = source;
+    });
+}
+
+function loadBlobImage(blob: Blob): Promise<HTMLImageElement> {
+    const objectUrl = URL.createObjectURL(blob);
+    return loadImage(objectUrl).finally(() => URL.revokeObjectURL(objectUrl));
+}
+
+async function createStampedInvoiceImage(invoice: InvoiceData, total: number, status: 'PAID' | 'UNPAID'): Promise<File> {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1240;
+    canvas.height = 1754;
+
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Your browser could not prepare the invoice image.');
+
+    const pagePadding = 76;
+    const contentWidth = canvas.width - pagePadding * 2;
+    const blue = '#2563EB';
+    const navy = '#0F172A';
+    const slate = '#475569';
+    const light = '#F8FAFC';
+    const border = '#CBD5E1';
+
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = navy;
+    context.fillRect(0, 0, canvas.width, 22);
+
+    if (invoice.logo) {
+        try {
+            const logo = await loadImage(invoice.logo);
+            const maxLogoWidth = 150;
+            const maxLogoHeight = 110;
+            const scale = Math.min(maxLogoWidth / logo.naturalWidth, maxLogoHeight / logo.naturalHeight, 1);
+            const logoWidth = logo.naturalWidth * scale;
+            const logoHeight = logo.naturalHeight * scale;
+            context.drawImage(logo, pagePadding, 74, logoWidth, logoHeight);
+        } catch {
+            // A logo failure should not prevent invoice creation.
+        }
+    }
+
+    context.textBaseline = 'top';
+    context.fillStyle = navy;
+    context.font = '700 56px Arial';
+    context.textAlign = 'right';
+    context.fillText('INVOICE', canvas.width - pagePadding, 68);
+
+    context.fillStyle = slate;
+    context.font = '600 25px Arial';
+    context.fillText(formatCanvasText(invoice.invoiceName, 'Invoice'), canvas.width - pagePadding, 137);
+    context.font = '500 21px Arial';
+    context.fillText(formatCanvasText(invoice.invoiceNumber, 'Invoice number unavailable'), canvas.width - pagePadding, 178);
+
+    context.textAlign = 'left';
+    context.fillStyle = navy;
+    context.font = '700 30px Arial';
+    context.fillText(formatCanvasText(invoice.senderName, 'Your Company'), pagePadding, 214);
+    context.fillStyle = slate;
+    context.font = '400 19px Arial';
+    drawWrappedCanvasText(context, formatCanvasText(invoice.senderContact), pagePadding, 257, 440, 27, 4);
+
+    context.strokeStyle = border;
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(pagePadding, 370);
+    context.lineTo(canvas.width - pagePadding, 370);
+    context.stroke();
+
+    const columnWidth = (contentWidth - 36) / 2;
+    const detailsTop = 414;
+
+    context.fillStyle = light;
+    context.fillRect(pagePadding, detailsTop, columnWidth, 248);
+    context.fillRect(pagePadding + columnWidth + 36, detailsTop, columnWidth, 248);
+    context.strokeStyle = border;
+    context.strokeRect(pagePadding, detailsTop, columnWidth, 248);
+    context.strokeRect(pagePadding + columnWidth + 36, detailsTop, columnWidth, 248);
+
+    context.fillStyle = blue;
+    context.font = '700 18px Arial';
+    context.fillText('BILL TO', pagePadding + 28, detailsTop + 26);
+    context.fillText('INVOICE DETAILS', pagePadding + columnWidth + 64, detailsTop + 26);
+
+    context.fillStyle = navy;
+    context.font = '700 27px Arial';
+    context.fillText(formatCanvasText(invoice.clientName, 'Client Name'), pagePadding + 28, detailsTop + 66);
+    context.font = '600 22px Arial';
+    context.fillText(formatCanvasText(invoice.businessName, 'Client Business'), pagePadding + 28, detailsTop + 108);
+    context.fillStyle = slate;
+    context.font = '400 18px Arial';
+    context.fillText(formatCanvasText(invoice.clientEmail, 'Client email unavailable'), pagePadding + 28, detailsTop + 148);
+    drawWrappedCanvasText(context, formatCanvasText(invoice.recipientContact), pagePadding + 28, detailsTop + 180, columnWidth - 56, 24, 2);
+
+    const detailsX = pagePadding + columnWidth + 64;
+    const labelX = detailsX;
+    const valueX = detailsX + 190;
+    const detailsRows: Array<[string, string]> = [
+        ['Invoice #', formatCanvasText(invoice.invoiceNumber)],
+        ['Issue date', formatCanvasText(invoice.issueDate)],
+        ['Due date', formatCanvasText(invoice.dueDate)],
+        ['Currency', formatCanvasText(invoice.currency)],
+    ];
+
+    detailsRows.forEach(([label, value], index) => {
+        const rowY = detailsTop + 72 + index * 40;
+        context.fillStyle = slate;
+        context.font = '600 18px Arial';
+        context.fillText(label, labelX, rowY);
+        context.fillStyle = navy;
+        context.font = '700 18px Arial';
+        context.fillText(value, valueX, rowY);
+    });
+
+    let currentY = 712;
+    if (invoice.description.trim()) {
+        context.fillStyle = '#EFF6FF';
+        context.fillRect(pagePadding, currentY, contentWidth, 110);
+        context.strokeStyle = '#93C5FD';
+        context.strokeRect(pagePadding, currentY, contentWidth, 110);
+        context.fillStyle = navy;
+        context.font = '700 18px Arial';
+        context.fillText('DESCRIPTION', pagePadding + 24, currentY + 18);
+        context.fillStyle = slate;
+        context.font = '400 17px Arial';
+        drawWrappedCanvasText(context, invoice.description, pagePadding + 24, currentY + 49, contentWidth - 48, 23, 2);
+        currentY += 140;
+    }
+
+    const tableTop = currentY;
+    context.fillStyle = navy;
+    context.fillRect(pagePadding, tableTop, contentWidth, 58);
+    context.fillStyle = '#FFFFFF';
+    context.font = '700 17px Arial';
+    context.fillText('DESCRIPTION', pagePadding + 22, tableTop + 19);
+    context.textAlign = 'center';
+    context.fillText('QTY', pagePadding + 710, tableTop + 19);
+    context.textAlign = 'right';
+    context.fillText('RATE', pagePadding + 890, tableTop + 19);
+    context.fillText('AMOUNT', canvas.width - pagePadding - 22, tableTop + 19);
+    context.textAlign = 'left';
+
+    const visibleItems = invoice.items.slice(0, 8);
+    const rows = visibleItems.length > 0 ? visibleItems : [{ id: 'empty', description: 'No invoice items added', quantity: 0, rate: 0, amount: 0 }];
+    const rowHeight = 62;
+
+    rows.forEach((item, index) => {
+        const rowTop = tableTop + 58 + index * rowHeight;
+        context.fillStyle = index % 2 === 0 ? '#FFFFFF' : light;
+        context.fillRect(pagePadding, rowTop, contentWidth, rowHeight);
+        context.strokeStyle = border;
+        context.beginPath();
+        context.moveTo(pagePadding, rowTop + rowHeight);
+        context.lineTo(canvas.width - pagePadding, rowTop + rowHeight);
+        context.stroke();
+
+        context.fillStyle = navy;
+        context.font = '500 18px Arial';
+        const description = item.description.trim() || 'Untitled item';
+        const descriptionLines = wrapCanvasText(context, description, 585).slice(0, 2);
+        descriptionLines.forEach((line, lineIndex) => context.fillText(line, pagePadding + 22, rowTop + 13 + lineIndex * 22));
+
+        context.textAlign = 'center';
+        context.fillText(String(item.quantity), pagePadding + 710, rowTop + 21);
+        context.textAlign = 'right';
+        context.fillText(`${invoice.currency} ${item.rate.toFixed(2)}`, pagePadding + 890, rowTop + 21);
+        context.font = '700 18px Arial';
+        context.fillText(`${invoice.currency} ${item.amount.toFixed(2)}`, canvas.width - pagePadding - 22, rowTop + 21);
+        context.textAlign = 'left';
+    });
+
+    currentY = tableTop + 58 + rows.length * rowHeight + 36;
+    const summaryX = canvas.width - pagePadding - 420;
+
+    context.fillStyle = light;
+    context.fillRect(summaryX, currentY, 420, 210);
+    context.strokeStyle = border;
+    context.strokeRect(summaryX, currentY, 420, 210);
+
+    const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0);
+    const summaryRows: Array<[string, string, boolean]> = [
+        ['Subtotal', `${invoice.currency} ${subtotal.toFixed(2)}`, false],
+        ['Tax', `${invoice.currency} ${invoice.tax.toFixed(2)}`, false],
+        ['Total', `${invoice.currency} ${total.toFixed(2)}`, true],
+    ];
+
+    summaryRows.forEach(([label, value, strong], index) => {
+        const rowY = currentY + 30 + index * 54;
+        context.fillStyle = strong ? navy : slate;
+        context.font = strong ? '700 25px Arial' : '600 18px Arial';
+        context.fillText(label, summaryX + 24, rowY);
+        context.textAlign = 'right';
+        context.fillStyle = strong ? blue : navy;
+        context.fillText(value, summaryX + 396, rowY);
+        context.textAlign = 'left';
+    });
+
+    const footerTop = Math.min(currentY + 250, 1490);
+    if (invoice.paymentInfo.trim()) {
+        context.fillStyle = navy;
+        context.font = '700 17px Arial';
+        context.fillText('PAYMENT INFORMATION', pagePadding, footerTop);
+        context.fillStyle = slate;
+        context.font = '400 16px Arial';
+        drawWrappedCanvasText(context, invoice.paymentInfo, pagePadding, footerTop + 30, 600, 22, 3);
+    }
+
+    if (invoice.terms.trim()) {
+        context.fillStyle = navy;
+        context.font = '700 17px Arial';
+        context.fillText('TERMS & CONDITIONS', pagePadding, footerTop + 112);
+        context.fillStyle = slate;
+        context.font = '400 15px Arial';
+        drawWrappedCanvasText(context, invoice.terms, pagePadding, footerTop + 141, contentWidth, 21, 3);
+    }
+
+    context.save();
+    context.translate(canvas.width - 260, 332);
+    context.rotate(-Math.PI / 12);
+    context.globalAlpha = 0.9;
+    context.strokeStyle = status === 'PAID' ? '#16A34A' : '#DC2626';
+    context.fillStyle = status === 'PAID' ? '#16A34A' : '#DC2626';
+    context.lineWidth = 8;
+    context.strokeRect(-150, -48, 300, 96);
+    context.font = '800 54px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(status, 0, 2);
+    context.restore();
+
+    context.fillStyle = '#94A3B8';
+    context.font = '400 14px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'alphabetic';
+    context.fillText('Generated electronically', canvas.width / 2, canvas.height - 34);
+
+    const blob = await canvasToBlob(canvas);
+    const safeInvoiceNumber = (invoice.invoiceNumber || 'invoice').replace(/[^a-zA-Z0-9_-]+/g, '-');
+    return new File([blob], `${safeInvoiceNumber}-${status.toLowerCase()}.jpg`, { type: 'image/jpeg' });
+}
+
+function latin1Bytes(value: string): Uint8Array {
+    const bytes = new Uint8Array(value.length);
+    for (let index = 0; index < value.length; index += 1) bytes[index] = value.charCodeAt(index) & 0xff;
+    return bytes;
+}
+
+function concatByteArrays(chunks: Uint8Array[]): Uint8Array {
+    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+    chunks.forEach((chunk) => {
+        result.set(chunk, offset);
+        offset += chunk.length;
+    });
+    return result;
+}
+
+function escapePdfString(value: string): string {
+    return value.replace(/([\\()])/g, '\\$1');
+}
+
+function buildSinglePagePdfFromJpeg(
+    jpegBytes: Uint8Array,
+    imageWidth: number,
+    imageHeight: number,
+    paymentLink: string,
+    linkRectangle: { x: number; y: number; width: number; height: number }
+): Blob {
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const scaleX = pageWidth / imageWidth;
+    const scaleY = pageHeight / imageHeight;
+    const linkX1 = linkRectangle.x * scaleX;
+    const linkX2 = (linkRectangle.x + linkRectangle.width) * scaleX;
+    const linkY1 = pageHeight - (linkRectangle.y + linkRectangle.height) * scaleY;
+    const linkY2 = pageHeight - linkRectangle.y * scaleY;
+
+    const objectOffsets: number[] = [0];
+    const chunks: Uint8Array[] = [];
+    let byteLength = 0;
+
+    const push = (chunk: Uint8Array) => {
+        chunks.push(chunk);
+        byteLength += chunk.length;
+    };
+
+    push(latin1Bytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+
+    const addTextObject = (objectNumber: number, body: string) => {
+        objectOffsets[objectNumber] = byteLength;
+        push(latin1Bytes(`${objectNumber} 0 obj\n${body}\nendobj\n`));
+    };
+
+    addTextObject(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    addTextObject(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    addTextObject(
+        3,
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R /Annots [6 0 R] >>'
+    );
+
+    objectOffsets[4] = byteLength;
+    push(
+        latin1Bytes(
+            `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+        )
+    );
+    push(jpegBytes);
+    push(latin1Bytes('\nendstream\nendobj\n'));
+
+    const contentStream = 'q\n595 0 0 842 0 0 cm\n/Im0 Do\nQ\n';
+    addTextObject(5, `<< /Length ${contentStream.length} >>\nstream\n${contentStream}endstream`);
+
+    addTextObject(
+        6,
+        `<< /Type /Annot /Subtype /Link /Rect [${linkX1.toFixed(2)} ${linkY1.toFixed(2)} ${linkX2.toFixed(2)} ${linkY2.toFixed(
+            2
+        )}] /Border [0 0 0] /A << /S /URI /URI (${escapePdfString(paymentLink)}) >> >>`
+    );
+
+    const crossReferenceOffset = byteLength;
+    let crossReference = 'xref\n0 7\n0000000000 65535 f \n';
+    for (let objectNumber = 1; objectNumber <= 6; objectNumber += 1) {
+        crossReference += `${String(objectOffsets[objectNumber]).padStart(10, '0')} 00000 n \n`;
+    }
+    crossReference += `trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n${crossReferenceOffset}\n%%EOF`;
+    push(latin1Bytes(crossReference));
+
+    return new Blob([concatByteArrays(chunks)], { type: 'application/pdf' });
+}
+
+async function createPaymentRequestPdf(paymentLink: string, unpaidInvoiceImage: File, invoiceNumber: string): Promise<File> {
+    const invoiceImage = await loadBlobImage(unpaidInvoiceImage);
+    const canvas = document.createElement('canvas');
+    canvas.width = 1240;
+    canvas.height = 1754;
+
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Your browser could not prepare the payment PDF.');
+
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#0F172A';
+    context.fillRect(0, 0, canvas.width, 28);
+
+    context.textBaseline = 'top';
+    context.textAlign = 'left';
+    context.fillStyle = '#0F172A';
+    context.font = '700 45px Arial';
+    context.fillText('Invoice Payment Request', 90, 72);
+
+    context.fillStyle = '#475569';
+    context.font = '400 22px Arial';
+    context.fillText('Open the payment link below to securely pay this invoice.', 90, 137);
+
+    const linkBox = { x: 90, y: 188, width: 1060, height: 92 };
+    context.fillStyle = '#EFF6FF';
+    context.fillRect(linkBox.x, linkBox.y, linkBox.width, linkBox.height);
+    context.strokeStyle = '#60A5FA';
+    context.lineWidth = 2;
+    context.strokeRect(linkBox.x, linkBox.y, linkBox.width, linkBox.height);
+    context.fillStyle = '#1D4ED8';
+    context.font = '600 20px Arial';
+    context.fillText(paymentLink, linkBox.x + 24, linkBox.y + 34);
+
+    const imageTop = 330;
+    const maxImageWidth = 1060;
+    const maxImageHeight = 1330;
+    const scale = Math.min(maxImageWidth / invoiceImage.naturalWidth, maxImageHeight / invoiceImage.naturalHeight);
+    const renderedWidth = invoiceImage.naturalWidth * scale;
+    const renderedHeight = invoiceImage.naturalHeight * scale;
+    const imageX = (canvas.width - renderedWidth) / 2;
+
+    context.shadowColor = 'rgba(15, 23, 42, 0.18)';
+    context.shadowBlur = 24;
+    context.shadowOffsetY = 8;
+    context.drawImage(invoiceImage, imageX, imageTop, renderedWidth, renderedHeight);
+    context.shadowColor = 'transparent';
+    context.strokeStyle = '#CBD5E1';
+    context.lineWidth = 2;
+    context.strokeRect(imageX, imageTop, renderedWidth, renderedHeight);
+
+    const pageJpeg = await canvasToBlob(canvas, 'image/jpeg', 0.95);
+    const jpegBytes = new Uint8Array(await pageJpeg.arrayBuffer());
+    const pdfBlob = buildSinglePagePdfFromJpeg(jpegBytes, canvas.width, canvas.height, paymentLink, linkBox);
+    const safeInvoiceNumber = (invoiceNumber || 'invoice').replace(/[^a-zA-Z0-9_-]+/g, '-');
+
+    return new File([pdfBlob], `${safeInvoiceNumber}-payment-request.pdf`, { type: 'application/pdf' });
+}
+
+async function readApiResponse(response: Response): Promise<any> {
+    const responseText = await response.text();
+    if (!responseText) return {};
+
+    try {
+        return JSON.parse(responseText);
+    } catch {
+        return { message: responseText };
+    }
+}
+
+function getCreatedInvoiceId(data: any): string | null {
+    const possibleIds = [
+        data?.invoice?.id,
+        data?.invoice?._id,
+        data?.data?.invoice?.id,
+        data?.data?.invoice?._id,
+        data?.data?.id,
+        data?.data?._id,
+        data?.newInvoice?.id,
+        data?.newInvoice?._id,
+        data?.invoiceId,
+        data?.id,
+        data?._id,
+    ];
+
+    const invoiceId = possibleIds.find((value) => value !== undefined && value !== null && String(value).trim() !== '');
+    return invoiceId === undefined ? null : String(invoiceId);
+}
+
 export default function InvoiceGenerator() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -110,7 +618,7 @@ export default function InvoiceGenerator() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        const storedUserId = window.localStorage.getItem('userId');
+        const storedUserId = normalizeStoredValue(window.localStorage.getItem('userId'));
         if (!storedUserId) {
             router.replace('/login');
             return;
@@ -174,6 +682,7 @@ export default function InvoiceGenerator() {
 
     const [isPrefilling, setIsPrefilling] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const [creationStatus, setCreationStatus] = useState('');
 
     // ✅ Prefill from contractId (only after auth check)
     useEffect(() => {
@@ -285,7 +794,7 @@ export default function InvoiceGenerator() {
 
     const downloadPDF = () => window.print();
 
-    // ✅ Create Invoice (POST /api/v2/invoices)
+    // ✅ Create the stamped files, create the invoice, then email the payment-request PDF.
     const createInvoice = async () => {
         try {
             if (!isAuthChecked || !userId) {
@@ -293,32 +802,75 @@ export default function InvoiceGenerator() {
                 return;
             }
 
+            if (!invoice.clientName.trim()) throw new Error('Please enter the client name.');
+            if (!invoice.clientEmail.trim()) throw new Error('Please enter the client email.');
+            if (!invoice.businessName.trim()) throw new Error('Please enter the client business name.');
+            if (calculateTotal() <= 0) throw new Error('Please add invoice items or enter a total greater than zero.');
+
             setIsCreating(true);
+            setCreationStatus('Preparing invoice images…');
 
-            const payload: any = {
-                name: invoice.invoiceName,
-                email: invoice.clientEmail,
-                businessName: invoice.businessName,
-                price: calculateTotal().toFixed(2),
-                authId: String(userId), // ✅ userId
-            };
+            const total = calculateTotal();
+            const [paidImage, unpaidImage] = await Promise.all([
+                createStampedInvoiceImage(invoice, total, 'PAID'),
+                createStampedInvoiceImage(invoice, total, 'UNPAID'),
+            ]);
 
-            if (contractId) payload.contractId = String(contractId);
+            setCreationStatus('Creating invoice…');
 
-            const res = await fetch('/api/v2/invoices', {
+            const invoiceFormData = new FormData();
+            invoiceFormData.append('name', invoice.clientName.trim());
+            invoiceFormData.append('email', invoice.clientEmail.trim());
+            invoiceFormData.append('businessName', invoice.businessName.trim());
+            invoiceFormData.append('price', total.toFixed(2));
+            invoiceFormData.append('authId', String(userId));
+            if (contractId) invoiceFormData.append('contractId', String(contractId));
+            invoiceFormData.append('paidImage', paidImage);
+            invoiceFormData.append('unpaidImage', unpaidImage);
+
+            const invoiceResponse = await fetch('/api/v2/invoices', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: invoiceFormData,
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data?.message || 'Failed to create invoice');
+            const invoiceResponseData = await readApiResponse(invoiceResponse);
+            if (!invoiceResponse.ok) throw new Error(invoiceResponseData?.message || 'Failed to create invoice.');
 
-            setModalState((s) => ({ ...s, created: true }));
-        } catch (e: any) {
-            alert(e?.message || 'Failed to create invoice.');
+            const createdInvoiceId = getCreatedInvoiceId(invoiceResponseData);
+            if (!createdInvoiceId) {
+                throw new Error('Invoice was created, but the API response did not include its ID, so the payment PDF could not be generated.');
+            }
+
+            const paymentLink = `${window.location.origin}/invoicepaymentrequest?id=${encodeURIComponent(createdInvoiceId)}&paymentType=invoice`;
+
+            setCreationStatus('Preparing payment PDF…');
+            const paymentPdf = await createPaymentRequestPdf(paymentLink, unpaidImage, invoice.invoiceNumber);
+
+            setCreationStatus('Emailing payment request…');
+            const emailFormData = new FormData();
+            emailFormData.append('to', invoice.clientEmail.trim());
+            emailFormData.append('subject', `Payment request for invoice ${invoice.invoiceNumber}`);
+            emailFormData.append(
+                'text',
+                `Hello ${invoice.clientName.trim()}, please find the invoice payment PDF attached. You can use the payment link inside the PDF to complete your payment.`
+            );
+            emailFormData.append('pdf', paymentPdf);
+
+            const emailResponse = await fetch('/api/v5/send-email-with-pdf', {
+                method: 'POST',
+                body: emailFormData,
+            });
+
+            const emailResponseData = await readApiResponse(emailResponse);
+            if (!emailResponse.ok) throw new Error(emailResponseData?.message || 'Invoice was created, but the payment email could not be sent.');
+
+            // Success is displayed only after both POST requests finish successfully.
+            setModalState((state) => ({ ...state, created: true }));
+        } catch (error: any) {
+            alert(error?.message || 'Failed to create and email the invoice.');
         } finally {
             setIsCreating(false);
+            setCreationStatus('');
         }
     };
 
@@ -405,7 +957,7 @@ export default function InvoiceGenerator() {
                     <div className='flex items-start gap-3'>
                         <CheckCircle2 className='w-6 h-6 text-green-600 mt-0.5' />
                         <div>
-                            <p className='text-slate-800 font-bold'>Invoice created successfully!</p>
+                            <p className='text-slate-800 font-bold'>Invoice created and emailed successfully!</p>
                             <p className='text-slate-600 text-sm mt-1'>What would you like to do next?</p>
                         </div>
                     </div>
@@ -970,7 +1522,7 @@ export default function InvoiceGenerator() {
                                 disabled={isCreating}
                                 className='w-full flex items-center justify-center gap-2 bg-green-600 text-white rounded-lg py-3 hover:bg-green-700 transition-all font-semibold shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed'
                             >
-                                {isCreating ? 'Creating…' : 'Create Invoice'}
+                                {isCreating ? creationStatus || 'Creating…' : 'Create Invoice'}
                             </button>
 
                             <button

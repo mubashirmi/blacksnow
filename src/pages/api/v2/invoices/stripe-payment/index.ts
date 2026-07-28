@@ -2,7 +2,26 @@ import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
-const stripe = require('stripe')(process.env.NEXT_PRIVATE_STRIPE_SECRET);
+type PaymentType = 'one_time' | 'subscription';
+type SubscriptionInterval = 'month';
+
+const DEFAULT_SERVICE_FEE_PERCENT = Number(process.env.INVOICE_SERVICE_FEE_PERCENT || 3);
+const DEFAULT_PLATFORM_FEE_PERCENT = Number(process.env.INVOICE_PLATFORM_FEE_PERCENT || 7);
+
+function getStripeClient() {
+    const stripeSecret = process.env.NEXT_PRIVATE_STRIPE_SECRET || process.env.STRIPE_SECRET_KEY;
+
+    if (!stripeSecret) {
+        throw new Error('Stripe secret key is missing');
+    }
+
+    return new Stripe(stripeSecret);
+}
+
+function getHeaderString(value: string | string[] | undefined): string | undefined {
+    if (Array.isArray(value)) return value[0];
+    return value;
+}
 
 function getBaseUrl(req: NextApiRequest): string {
     const envUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL;
@@ -11,7 +30,7 @@ function getBaseUrl(req: NextApiRequest): string {
         return envUrl.replace(/\/$/, '');
     }
 
-    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const protocol = getHeaderString(req.headers['x-forwarded-proto']) || 'http';
     const host = req.headers.host;
 
     return `${protocol}://${host}`;
@@ -57,6 +76,64 @@ function toStripeAmount(amount: number, currency: string): number {
     return Math.round(amount * 100);
 }
 
+function parsePaymentType(value: string | undefined): PaymentType | undefined {
+    if (value === undefined) return undefined;
+
+    const normalized = value.trim().toLowerCase();
+
+    if (['one_time', 'one-time', 'onetime', 'single', 'once', 'payment'].includes(normalized)) {
+        return 'one_time';
+    }
+
+    if (['subscription', 'monthly', 'recurring'].includes(normalized)) {
+        return 'subscription';
+    }
+
+    return undefined;
+}
+
+function parseSubscriptionInterval(value: string | undefined): SubscriptionInterval | undefined {
+    if (value === undefined) return undefined;
+
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized === 'month' || normalized === 'monthly') {
+        return 'month';
+    }
+
+    return undefined;
+}
+
+function safePercent(value: unknown, fallback: number): number {
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+        return fallback;
+    }
+
+    return parsed;
+}
+
+function calculateInvoiceFeeAmounts(params: { baseAmount: number; serviceFeePercent: number; platformFeePercent: number }) {
+    const serviceFeeAmount = Math.round((params.baseAmount * params.serviceFeePercent) / 100);
+    const platformFeeAmount = Math.round((params.baseAmount * params.platformFeePercent) / 100);
+    const applicationFeeAmount = serviceFeeAmount + platformFeeAmount;
+    const totalAmount = params.baseAmount + applicationFeeAmount;
+
+    return {
+        serviceFeeAmount,
+        platformFeeAmount,
+        applicationFeeAmount,
+        totalAmount,
+    };
+}
+
+function getSubscriptionApplicationFeePercent(applicationFeeAmount: number, totalAmount: number): number {
+    if (totalAmount <= 0) return 0;
+
+    return Number(((applicationFeeAmount / totalAmount) * 100).toFixed(2));
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         if (req.method !== 'POST') {
@@ -66,8 +143,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
+        const stripe = getStripeClient();
+
         const invoiceIdRaw = getStringValue(req.body?.invoiceId ?? req.query.invoiceId);
         const currencyRaw = getStringValue(req.body?.currency ?? req.query.currency);
+
+        // This is the user's actual payment choice.
+        const paymentTypeRaw = getStringValue(req.body?.paymentType ?? req.query.paymentType);
+        const subscriptionIntervalRaw = getStringValue(req.body?.subscriptionInterval ?? req.query.subscriptionInterval);
 
         if (!invoiceIdRaw) {
             return res.status(400).json({
@@ -97,13 +180,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
-        if (invoice.paid) {
+        const parsedPaymentType = parsePaymentType(paymentTypeRaw);
+
+        if (paymentTypeRaw !== undefined && parsedPaymentType === undefined) {
+            return res.status(400).json({
+                message: 'Invalid paymentType. Use one_time or subscription',
+            });
+        }
+
+        // Backward compatible:
+        // If frontend does not send paymentType, old behavior stays one_time.
+        const paymentType: PaymentType = parsedPaymentType || 'one_time';
+
+        if (invoice.paid && paymentType === 'one_time') {
             return res.status(400).json({
                 message: 'Invoice is already paid',
             });
         }
 
-        if (!invoice.authId) {
+        if (
+            paymentType === 'subscription' &&
+            invoice.stripeSubscriptionId &&
+            ['active', 'trialing', 'past_due'].includes(invoice.stripeSubscriptionStatus || '')
+        ) {
+            return res.status(400).json({
+                message: 'Invoice already has a Stripe subscription',
+                stripeSubscriptionId: invoice.stripeSubscriptionId,
+                stripeSubscriptionStatus: invoice.stripeSubscriptionStatus,
+            });
+        }
+
+        if (invoice.authId === null || invoice.authId === undefined) {
             return res.status(400).json({
                 message: 'Invoice does not have authId',
             });
@@ -133,78 +240,162 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
-        const currency = (currencyRaw || process.env.STRIPE_CURRENCY || 'usd').toLowerCase();
+        const parsedSubscriptionInterval = parseSubscriptionInterval(subscriptionIntervalRaw);
+
+        if (subscriptionIntervalRaw !== undefined && parsedSubscriptionInterval === undefined) {
+            return res.status(400).json({
+                message: 'Invalid subscriptionInterval. For now use month',
+            });
+        }
+
+        const subscriptionInterval = parsedSubscriptionInterval || 'month';
+
+        const currency = (currencyRaw || invoice.currency || process.env.STRIPE_CURRENCY || 'usd').toLowerCase();
 
         const amount = parseInvoicePrice(invoice.price);
-        const unitAmount = toStripeAmount(amount, currency);
+        const baseAmount = toStripeAmount(amount, currency);
 
-        if (!Number.isFinite(unitAmount) || unitAmount <= 0) {
+        const serviceFeePercent = safePercent(invoice.serviceFeePercent, DEFAULT_SERVICE_FEE_PERCENT);
+        const platformFeePercent = safePercent(invoice.platformFeePercent, DEFAULT_PLATFORM_FEE_PERCENT);
+
+        const { serviceFeeAmount, platformFeeAmount, applicationFeeAmount, totalAmount } = calculateInvoiceFeeAmounts({
+            baseAmount,
+            serviceFeePercent,
+            platformFeePercent,
+        });
+
+        if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
             return res.status(400).json({
-                message: 'Invalid invoice amount',
+                message: 'Invalid invoice total amount',
+            });
+        }
+
+        if (applicationFeeAmount >= totalAmount) {
+            return res.status(400).json({
+                message: 'Application fee must be less than total amount',
             });
         }
 
         const baseUrl = getBaseUrl(req);
 
-        const successUrl = `${baseUrl}/api/invoices/stripe-success?session_id={CHECKOUT_SESSION_ID}`;
+        const successUrl = `${baseUrl}/invoicepaymentsuccess?session_id={CHECKOUT_SESSION_ID}`;
         const cancelUrl = `${baseUrl}/invoice-payment-cancel?invoiceId=${invoice.id}`;
 
         const connectedAccountId = auth.adminStripeConnectId;
-
         const productName = invoice.businessName || invoice.name || invoice.Contract?.contractName || `Invoice #${invoice.id}`;
 
-        const paymentIntentData: Stripe.Checkout.SessionCreateParams.PaymentIntentData = {
-            transfer_data: {
-                destination: connectedAccountId,
-            },
-            metadata: {
-                invoiceId: String(invoice.id),
-                authId: String(invoice.authId),
-                type: 'invoice_payment',
-            },
+        const metadata = {
+            invoiceId: String(invoice.id),
+            authId: String(invoice.authId),
+            connectedAccountId,
+            type: 'invoice_payment',
+            paymentType,
+            currency,
+            baseAmount: String(baseAmount),
+            serviceFeePercent: String(serviceFeePercent),
+            platformFeePercent: String(platformFeePercent),
+            serviceFeeAmount: String(serviceFeeAmount),
+            platformFeeAmount: String(platformFeeAmount),
+            applicationFeeAmount: String(applicationFeeAmount),
+            totalAmount: String(totalAmount),
         };
 
-        if (process.env.STRIPE_USE_ON_BEHALF_OF === 'true') {
-            paymentIntentData.on_behalf_of = connectedAccountId;
-        }
+        const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = {
+            price_data: {
+                currency,
+                unit_amount: totalAmount,
+                product_data: {
+                    name: productName,
+                    description: `Invoice #${invoice.id}`,
+                },
+                ...(paymentType === 'subscription'
+                    ? {
+                          recurring: {
+                              interval: subscriptionInterval,
+                              interval_count: 1,
+                          },
+                      }
+                    : {}),
+            },
+            quantity: 1,
+        };
 
-        const session = await stripe.checkout.sessions.create({
-            mode: 'payment',
+        const sessionParams: Stripe.Checkout.SessionCreateParams = {
+            mode: paymentType === 'subscription' ? 'subscription' : 'payment',
             payment_method_types: ['card'],
             customer_email: invoice.email || undefined,
-            line_items: [
-                {
-                    price_data: {
-                        currency,
-                        unit_amount: unitAmount,
-                        product_data: {
-                            name: productName,
-                            description: `Invoice #${invoice.id}`,
-                        },
-                    },
-                    quantity: 1,
-                },
-            ],
-            payment_intent_data: paymentIntentData,
-            metadata: {
-                invoiceId: String(invoice.id),
-                authId: String(invoice.authId),
-                connectedAccountId,
-                type: 'invoice_payment',
-            },
+            line_items: [lineItem],
+            metadata,
             success_url: successUrl,
             cancel_url: cancelUrl,
+        };
+
+        if (paymentType === 'subscription') {
+            const subscriptionApplicationFeePercent = getSubscriptionApplicationFeePercent(applicationFeeAmount, totalAmount);
+
+            sessionParams.subscription_data = {
+                metadata,
+                description: `Invoice #${invoice.id}`,
+                application_fee_percent: subscriptionApplicationFeePercent,
+                transfer_data: {
+                    destination: connectedAccountId,
+                },
+            };
+
+            if (process.env.STRIPE_USE_ON_BEHALF_OF === 'true') {
+                sessionParams.subscription_data.on_behalf_of = connectedAccountId;
+            }
+        } else {
+            sessionParams.payment_intent_data = {
+                transfer_data: {
+                    destination: connectedAccountId,
+                },
+                application_fee_amount: applicationFeeAmount,
+                metadata,
+            };
+
+            if (process.env.STRIPE_USE_ON_BEHALF_OF === 'true') {
+                sessionParams.payment_intent_data.on_behalf_of = connectedAccountId;
+            }
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionParams);
+
+        const updatedInvoice = await prisma.invoice.update({
+            where: { id: invoice.id },
+            data: {
+                paymentType,
+                subscriptionInterval,
+                currency,
+                baseAmount,
+                serviceFeePercent,
+                platformFeePercent,
+                serviceFeeAmount,
+                platformFeeAmount,
+                applicationFeeAmount,
+                totalAmount,
+                stripeCheckoutSessionId: session.id,
+            },
         });
 
         return res.status(200).json({
-            message: 'Stripe checkout session created',
+            message: paymentType === 'subscription' ? 'Stripe subscription checkout session created' : 'Stripe one-time checkout session created',
             sessionId: session.id,
             url: session.url,
             invoiceId: invoice.id,
+            paymentType,
+            subscriptionInterval: paymentType === 'subscription' ? subscriptionInterval : undefined,
             amount,
-            unitAmount,
             currency,
+            baseAmount,
+            serviceFeePercent,
+            platformFeePercent,
+            serviceFeeAmount,
+            platformFeeAmount,
+            applicationFeeAmount,
+            totalAmount,
             connectedAccountId,
+            invoice: updatedInvoice,
         });
     } catch (e: any) {
         console.error('Error in /api/invoices/stripe-payment:', e);

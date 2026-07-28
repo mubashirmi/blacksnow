@@ -546,7 +546,7 @@ function CareersTitle() {
                             <div>
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
-                                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22] sm:leading-tight'>
+                                    <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
                                         Careers
                                     </h2>
                                 </div>

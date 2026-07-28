@@ -39,13 +39,14 @@ model Auth {
   otp                          Int                            @default(0)
   otpExpirationDate            DateTime?
   otpVerified                  Boolean                        @default(false)
+  status                       String                         @default("active")
 
-  // NEW: Newsletter relations
   newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
   newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
   contracts            Contract[]
   invoices             Invoice[]
   toolFeedbacks        ToolFeedback[]
+  subscriptionInvs     SubscriptionInv[]
 }
 
 enum Role {
@@ -339,12 +340,49 @@ model Checkout {
   AuthId            Int
   amount            Float
   paid              Boolean   @default(false)
-  period            String    @default("") // montly/yearly
+  period            String    @default("")
   auth              Auth      @relation(fields: [AuthId], references: [id])
   product           String?
   cancelSubscripton Boolean
+  pause             Boolean   @default(false)
   nextBillingDate   DateTime?
   startDate         DateTime?
+
+  refunds CheckoutRefund[]
+}
+
+model CheckoutRefund {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  checkoutId Int
+  checkout   Checkout @relation(fields: [checkoutId], references: [id], onDelete: Cascade)
+
+  currency String @default("usd")
+  amount   Int    @default(0)
+
+  chargeAmount        Int     @default(0)
+  amountRefundedTotal Int     @default(0)
+  remainingRefundable Int     @default(0)
+  fullyRefunded       Boolean @default(false)
+
+  stripeRefundId        String  @unique
+  stripePaymentIntentId String?
+  stripeChargeId        String
+  sourceTransactionId   String?
+
+  status        String?
+  reason        String?
+  failureReason String?
+
+  reverseTransfer      Boolean @default(false)
+  refundApplicationFee Boolean @default(false)
+
+  @@index([checkoutId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeChargeId])
+  @@index([status])
 }
 
 model FrequentQuestions {
@@ -564,9 +602,10 @@ model Contract {
   pdf          String
   signed       String @default("notSigned")
 
-  authId   Int?
-  Auth     Auth?     @relation(fields: [authId], references: [id])
-  invoices Invoice[]
+  authId           Int?
+  Auth             Auth?             @relation(fields: [authId], references: [id])
+  invoices         Invoice[]
+  subscriptionInvs SubscriptionInv[]
 }
 
 model Invoice {
@@ -578,15 +617,263 @@ model Invoice {
   businessName String   @default("")
   price        String   @default("")
 
-  image         String  @default("")
+  paidImage   String @default("")
+  unpaidImage String @default("")
+
   transactionId String?
   paid          Boolean @default(false)
+
+  paymentType          String @default("one_time")
+  subscriptionInterval String @default("month")
+
+  currency             String @default("usd")
+  baseAmount           Int    @default(0)
+  serviceFeePercent    Float  @default(3)
+  platformFeePercent   Float  @default(5)
+  serviceFeeAmount     Int    @default(0)
+  platformFeeAmount    Int    @default(0)
+  applicationFeeAmount Int    @default(0)
+  totalAmount          Int    @default(0)
+
+  stripeCheckoutSessionId  String?
+  stripePaymentIntentId    String?
+  stripeChargeId           String?
+  stripeSubscriptionId     String?
+  stripeCustomerId         String?
+  stripeLatestInvoiceId    String?
+  stripeSubscriptionStatus String?
+  stripeCurrentPeriodEnd   DateTime?
+  stripeCancelAtPeriodEnd  Boolean   @default(false)
+  subscriptionStartedAt    DateTime?
+  subscriptionCanceledAt   DateTime?
+
+  refunded             Boolean   @default(false)
+  refundedAmount       Int       @default(0)
+  stripeLatestRefundId String?
+  stripeRefundStatus   String?
+  refundedAt           DateTime?
 
   contractId Int?
   Contract   Contract? @relation(fields: [contractId], references: [id])
 
   authId Int?
   auth   Auth? @relation(fields: [authId], references: [id])
+
+  invoicePayments InvoicePayment[]
+  invoiceRefunds  InvoiceRefund[]
+
+  @@index([paymentType])
+  @@index([stripeCheckoutSessionId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeSubscriptionId])
+  @@index([stripeCustomerId])
+}
+
+model InvoicePayment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoiceId Int
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  paymentType String @default("one_time")
+  currency    String @default("usd")
+
+  baseAmount           Int @default(0)
+  serviceFeeAmount     Int @default(0)
+  platformFeeAmount    Int @default(0)
+  applicationFeeAmount Int @default(0)
+  amountPaid           Int @default(0)
+
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String? @unique
+  stripeChargeId          String?
+  stripeInvoiceId         String?
+  stripeSubscriptionId    String?
+  stripeCustomerId        String?
+
+  paymentStatus String?
+  paidAt        DateTime?
+
+  refunded       Boolean @default(false)
+  refundedAmount Int     @default(0)
+
+  refunds InvoiceRefund[]
+
+  @@index([invoiceId])
+  @@index([stripeSubscriptionId])
+  @@index([stripeInvoiceId])
+  @@index([stripeChargeId])
+}
+
+model InvoiceRefund {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoiceId Int
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  invoicePaymentId Int?
+  invoicePayment   InvoicePayment? @relation(fields: [invoicePaymentId], references: [id], onDelete: SetNull)
+
+  currency String @default("usd")
+  amount   Int    @default(0)
+
+  stripeRefundId        String? @unique
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  stripeSubscriptionId  String?
+
+  status String?
+  reason String?
+
+  reverseTransfer      Boolean @default(true)
+  refundApplicationFee Boolean @default(true)
+  cancelSubscription   Boolean @default(false)
+  cancelAtPeriodEnd    Boolean @default(false)
+
+  createdByAuthId Int?
+
+  @@index([invoiceId])
+  @@index([invoicePaymentId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeChargeId])
+}
+
+model SubscriptionInv {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String   @default("")
+  email        String   @default("")
+  businessName String   @default("")
+  price        String   @default("")
+
+  paidImage   String @default("")
+  unpaidImage String @default("")
+
+  transactionId String?
+  paid          Boolean @default(false)
+
+  paymentType          String @default("subscription")
+  subscriptionInterval String @default("month")
+
+  currency             String @default("usd")
+  baseAmount           Int    @default(0)
+  serviceFeePercent    Float  @default(3)
+  platformFeePercent   Float  @default(5)
+  serviceFeeAmount     Int    @default(0)
+  platformFeeAmount    Int    @default(0)
+  applicationFeeAmount Int    @default(0)
+  totalAmount          Int    @default(0)
+
+  stripeCheckoutSessionId  String?
+  stripePaymentIntentId    String?
+  stripeChargeId           String?
+  stripeSubscriptionId     String?
+  stripeCustomerId         String?
+  stripeLatestInvoiceId    String?
+  stripeSubscriptionStatus String?
+  stripeCurrentPeriodEnd   DateTime?
+  stripeCancelAtPeriodEnd  Boolean   @default(false)
+  subscriptionStartedAt    DateTime?
+  subscriptionCanceledAt   DateTime?
+
+  refunded             Boolean   @default(false)
+  refundedAmount       Int       @default(0)
+  stripeLatestRefundId String?
+  stripeRefundStatus   String?
+  refundedAt           DateTime?
+
+  contractId Int?
+  Contract   Contract? @relation(fields: [contractId], references: [id])
+
+  authId Int?
+  auth   Auth? @relation(fields: [authId], references: [id])
+
+  subscriptionInvPayments SubscriptionInvPayment[]
+  subscriptionInvRefunds  SubscriptionInvRefund[]
+
+  @@index([paymentType])
+  @@index([stripeCheckoutSessionId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeSubscriptionId])
+  @@index([stripeCustomerId])
+}
+
+model SubscriptionInvPayment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptionInvId Int
+  subscriptionInv   SubscriptionInv @relation(fields: [subscriptionInvId], references: [id], onDelete: Cascade)
+
+  paymentType String @default("one_time")
+  currency    String @default("usd")
+
+  baseAmount           Int @default(0)
+  serviceFeeAmount     Int @default(0)
+  platformFeeAmount    Int @default(0)
+  applicationFeeAmount Int @default(0)
+  amountPaid           Int @default(0)
+
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String? @unique
+  stripeChargeId          String?
+  stripeInvoiceId         String?
+  stripeSubscriptionId    String?
+  stripeCustomerId        String?
+
+  paymentStatus String?
+  paidAt        DateTime?
+
+  refunded       Boolean @default(false)
+  refundedAmount Int     @default(0)
+
+  refunds SubscriptionInvRefund[]
+
+  @@index([subscriptionInvId])
+  @@index([stripeSubscriptionId])
+  @@index([stripeInvoiceId])
+  @@index([stripeChargeId])
+}
+
+model SubscriptionInvRefund {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptionInvId Int
+  subscriptionInv   SubscriptionInv @relation(fields: [subscriptionInvId], references: [id], onDelete: Cascade)
+
+  subscriptionInvPaymentId Int?
+  subscriptionInvPayment   SubscriptionInvPayment? @relation(fields: [subscriptionInvPaymentId], references: [id], onDelete: SetNull)
+
+  currency String @default("usd")
+  amount   Int    @default(0)
+
+  stripeRefundId        String? @unique
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  stripeSubscriptionId  String?
+
+  status String?
+  reason String?
+
+  reverseTransfer      Boolean @default(true)
+  refundApplicationFee Boolean @default(true)
+  cancelSubscription   Boolean @default(false)
+  cancelAtPeriodEnd    Boolean @default(false)
+
+  createdByAuthId Int?
+
+  @@index([subscriptionInvId])
+  @@index([subscriptionInvPaymentId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeChargeId])
 }
 
 model ToolFeedback {

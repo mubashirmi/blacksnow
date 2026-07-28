@@ -157,7 +157,7 @@ function MobileDesktopSection() {
 
                     <div className='px-4 sm:px-8 pb-4 sm:pb-8 pt-2 sm:pt-5'>
                         <Button
-                            onClick={() => router.push('/login?signup')}
+                            onClick={() => router.push('/signup')}
                             size='lg'
                             className='w-full h-14 cursor-pointer sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
                         >

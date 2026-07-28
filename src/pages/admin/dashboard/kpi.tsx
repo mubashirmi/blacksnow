@@ -896,122 +896,6 @@ export default function KPIPage() {
                 </div>
 
                 {/* ============================================================ */}
-                {/* ✅ NEW CHART: Tool Feedback Analytics                         */}
-                {/* GET /api/v5/tool-feedback                                    */}
-                {/* ============================================================ */}
-                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
-                        <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Tool Feedback</h3>
-                            <p className='text-sm text-gray-500'>Choose tool + metric + timeframe (Week/Month/Year)</p>
-
-                            <div className='mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500'>
-                                <span>
-                                    Total: <span className='font-semibold text-gray-800'>{toolFeedbackStats.total}</span>
-                                </span>
-                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
-                                <span>
-                                    Avg Stars: <span className='font-semibold text-gray-800'>{toolFeedbackStats.averageStars}</span>
-                                </span>
-                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
-                                <span>
-                                    Top Tool: <span className='font-semibold text-gray-800'>{toolFeedbackStats.topTool}</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className='flex flex-col sm:flex-row gap-3'>
-                            <select
-                                value={toolFeedbackTool}
-                                onChange={(e) => setToolFeedbackTool(e.target.value)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                {toolFeedbackToolOptions.map((tool) => (
-                                    <option key={tool} value={tool}>
-                                        {tool === 'All' ? 'All Tools' : formatProductName(tool)}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={toolFeedbackMetricType}
-                                onChange={(e) => setToolFeedbackMetricType(e.target.value as ToolFeedbackMetricType)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                <option value='FeedbackCount'>Feedback Count</option>
-                                <option value='AverageStars'>Average Stars</option>
-                            </select>
-
-                            <select
-                                value={toolFeedbackMetricPeriod}
-                                onChange={(e) => setToolFeedbackMetricPeriod(e.target.value as MetricPeriod)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                <option value='Week'>Week</option>
-                                <option value='Month'>Month</option>
-                                <option value='Year'>Year</option>
-                            </select>
-
-                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
-                                <span className='text-gray-500 mr-2'>Selected:</span>
-                                <span className='font-semibold text-gray-900'>{toolFeedbackSelectedLabel}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {toolFeedbackError && <div className='mb-4 text-sm text-red-600'>{toolFeedbackError}</div>}
-
-                    {toolFeedbackLoading ? (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading feedback chart...</div>
-                    ) : toolFeedback.length > 0 ? (
-                        <ResponsiveContainer width='100%' height={240}>
-                            <LineChart data={toolFeedbackChartData as any}>
-                                <CartesianGrid strokeDasharray='3 3' />
-                                <XAxis dataKey='period' />
-                                <YAxis
-                                    domain={toolFeedbackMetricType === 'AverageStars' ? [0, 5] : undefined}
-                                    allowDecimals={toolFeedbackMetricType === 'AverageStars'}
-                                />
-                                <Tooltip
-                                    cursor={<HorizontalCursor />}
-                                    formatter={(value: any) => {
-                                        const v = safeNumber(value, 0);
-                                        if (toolFeedbackMetricType === 'AverageStars') return `${v.toFixed(1)} ★`;
-                                        return `${v}`;
-                                    }}
-                                />
-                                <Legend />
-                                <Line
-                                    type='monotone'
-                                    dataKey='value'
-                                    name={toolFeedbackMetricType === 'AverageStars' ? 'Average Stars' : 'Feedback Count'}
-                                    stroke='#8b5cf6'
-                                    strokeWidth={3}
-                                    dot={(props: any) => {
-                                        const { cx, cy, payload } = props || {};
-                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                        const active = Boolean(payload?.active);
-                                        return (
-                                            <circle
-                                                cx={cx}
-                                                cy={cy}
-                                                r={active ? 6 : 4}
-                                                fill={active ? '#8b5cf6' : 'rgba(139,92,246,0.35)'}
-                                                stroke='#8b5cf6'
-                                                strokeWidth={active ? 2 : 1}
-                                            />
-                                        );
-                                    }}
-                                    activeDot={{ r: 7 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    ) : (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>No feedback data available</div>
-                    )}
-                </div>
-
-                {/* ============================================================ */}
                 {/* ✅ NEW CHART A: Product Revenue — MRR & ARR                  */}
                 {/* GET /api/v4/product-revenue-chart                            */}
                 {/* ============================================================ */}
@@ -1572,6 +1456,124 @@ export default function KPIPage() {
                         </ResponsiveContainer>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No KPI totals available</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART: Tool Feedback Analytics                         */}
+                {/* GET /api/v5/tool-feedback                                    */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Feedback</h3>
+                            <p className='text-sm text-gray-500'>Choose tool + metric + timeframe (Week/Month/Year)</p>
+
+                            <div className='mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500'>
+                                <span>
+                                    Total: <span className='font-semibold text-gray-800'>{toolFeedbackStats.total}</span>
+                                </span>
+                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
+                                <span>
+                                    Avg Stars: <span className='font-semibold text-gray-800'>{toolFeedbackStats.averageStars}</span>
+                                </span>
+                                <span className='hidden h-3 w-px bg-gray-200 sm:inline-block'></span>
+                                <span>
+                                    Top Tool: <span className='font-semibold text-gray-800'>{toolFeedbackStats.topTool}</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            <select
+                                value={toolFeedbackTool}
+                                onChange={(e) => setToolFeedbackTool(e.target.value)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {toolFeedbackToolOptions.map((tool) => (
+                                    <option key={tool} value={tool}>
+                                        {tool === 'All' ? 'All Tools' : formatProductName(tool)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={toolFeedbackMetricType}
+                                onChange={(e) => setToolFeedbackMetricType(e.target.value as ToolFeedbackMetricType)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='FeedbackCount'>Feedback Count</option>
+                                <option value='AverageStars'>Average Stars</option>
+                            </select>
+
+                            <select
+                                value={toolFeedbackMetricPeriod}
+                                onChange={(e) => setToolFeedbackMetricPeriod(e.target.value as MetricPeriod)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+
+                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
+                                <span className='text-gray-500 mr-2'>Selected:</span>
+                                <span className='font-semibold text-gray-900'>{toolFeedbackSelectedLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {toolFeedbackError && <div className='mb-4 text-sm text-red-600'>{toolFeedbackError}</div>}
+
+                    {toolFeedbackLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading feedback chart...</div>
+                    ) : toolFeedback.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={240}>
+                            <LineChart data={toolFeedbackChartData as any}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='period' />
+                                <YAxis
+                                    domain={toolFeedbackMetricType === 'AverageStars' ? [1, 5] : undefined}
+                                    ticks={toolFeedbackMetricType === 'AverageStars' ? [1, 2, 3, 4, 5] : undefined}
+                                    allowDecimals={false}
+                                    interval={0}
+                                />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (toolFeedbackMetricType === 'AverageStars') return `${v.toFixed(1)} ★`;
+                                        return `${v}`;
+                                    }}
+                                />
+                                <Legend />
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name={toolFeedbackMetricType === 'AverageStars' ? 'Average Stars' : 'Feedback Count'}
+                                    stroke='#8b5cf6'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, payload } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const active = Boolean(payload?.active);
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={active ? 6 : 4}
+                                                fill={active ? '#8b5cf6' : 'rgba(139,92,246,0.35)'}
+                                                stroke='#8b5cf6'
+                                                strokeWidth={active ? 2 : 1}
+                                            />
+                                        );
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No feedback data available</div>
                     )}
                 </div>
             </div>

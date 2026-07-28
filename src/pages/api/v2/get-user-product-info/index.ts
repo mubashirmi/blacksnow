@@ -14,69 +14,77 @@ type ProductKey =
     | 'LightningSilver'
     | 'LightningGold';
 
-type ProductsStatus = Record<ProductKey, 'Purchased' | 'NotPurchased'>;
+type ProductStatus = 'Purchased' | 'Paused' | 'NotPurchased';
+
+type ProductsStatus = Record<ProductKey, ProductStatus>;
+
+const initialProducts: ProductsStatus = {
+    NewsLetter: 'NotPurchased',
+    DigitalBillboard: 'NotPurchased',
+    RSVP: 'NotPurchased',
+    Affiliate: 'NotPurchased',
+    Sales: 'NotPurchased',
+    Admin: 'NotPurchased',
+    EmailMarketing: 'NotPurchased',
+    InvoiceTool: 'NotPurchased',
+    SuperAffiliate: 'NotPurchased',
+    LightningSilver: 'NotPurchased',
+    LightningGold: 'NotPurchased',
+};
+
+function isProductKey(product: string): product is ProductKey {
+    return Object.prototype.hasOwnProperty.call(initialProducts, product);
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { method } = req;
+    if (req.method !== 'GET') {
+        res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
 
-    // read id from body or query
-    const raw = (req.body?.authId ?? req.query?.authId ?? req.query?.id) as string | string[] | undefined;
+    const raw = req.body?.authId ?? req.query.authId ?? req.query.id;
+    const id = Number(Array.isArray(raw) ? raw[0] : raw);
 
-    const id = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
-
-    if (!Number.isFinite(id)) {
-        return res.status(400).json({ message: 'Invalid or missing authId' });
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: 'Invalid or missing authId',
+        });
     }
 
     try {
-        if (method !== 'GET') {
-            return res.status(405).json({ message: 'Method not allowed' });
-        }
-
-        // Option A: filter out null product values at DB level
         const userProducts = await prisma.checkout.findMany({
             where: {
                 AuthId: id,
                 cancelSubscripton: false,
-                product: { not: null },
+                product: {
+                    not: null,
+                },
             },
             select: {
-                id: true,
-                product: true, // still typed by prisma, but runtime is safe now
+                product: true,
+                pause: true,
             },
         });
 
-        const products: ProductsStatus = {
-            NewsLetter: 'NotPurchased',
-            DigitalBillboard: 'NotPurchased',
-            RSVP: 'NotPurchased',
-            Affiliate: 'NotPurchased',
-            Sales: 'NotPurchased',
-            Admin: 'NotPurchased',
-            EmailMarketing: 'NotPurchased',
-            InvoiceTool: 'NotPurchased',
-            SuperAffiliate: 'NotPurchased',
-            LightningSilver: 'NotPurchased',
-            LightningGold: 'NotPurchased',
-        };
+        const products: ProductsStatus = { ...initialProducts };
 
-        // Mark purchased products
         for (const row of userProducts) {
-            const product = row.product; // could be string | null in types, but query excludes null
-
-            // double-guard keeps TS + runtime happy even if prisma types stay nullable
-            if (!product) continue;
-
-            if (Object.prototype.hasOwnProperty.call(products, product)) {
-                products[product as ProductKey] = 'Purchased';
+            if (!row.product || !isProductKey(row.product)) {
+                continue;
             }
+
+            products[row.product] = row.pause ? 'Paused' : 'Purchased';
         }
 
         return res.status(200).json({
-            message: 'Fetched by id successfully',
+            message: 'Products fetched successfully',
             data: products,
         });
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
+        console.error('Failed to fetch products:', error);
+
+        return res.status(500).json({
+            message: 'Internal server error',
+        });
     }
 }

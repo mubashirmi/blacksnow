@@ -1,7 +1,22 @@
 'use client';
-// Lightning Silver Sidebar
+// Invoice Contract Sidebar
 import axios from 'axios';
-import { AlertTriangle, BarChart3, BellOff, CheckCircle, ChevronDown, LinkIcon, Loader2, LogOut, MessageSquare, Star, StickyNote, X } from 'lucide-react';
+import {
+    AlertTriangle,
+    BarChart3,
+    BellOff,
+    CheckCircle,
+    ChevronDown,
+    CreditCard,
+    LinkIcon,
+    Loader2,
+    LogOut,
+    MessageSquare,
+    ReceiptText,
+    Star,
+    StickyNote,
+    X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -11,6 +26,8 @@ import * as React from 'react';
 const navigationItems = [
     { title: 'Invoices', url: '/invoicecontractdashboard/invoice', icon: StickyNote },
     { title: 'Contracts', url: '/invoicecontractdashboard/contract', icon: LinkIcon },
+    { title: 'Subscriptions', url: '/invoicecontractdashboard/subscription', icon: CreditCard },
+    { title: 'Receipts', url: '/invoicecontractdashboard/receipts', icon: ReceiptText },
     // { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
 ];
 
@@ -18,6 +35,9 @@ const UNSUBSCRIBE_PRODUCT = {
     id: 'InvoiceTool',
     label: 'Invoice Contract',
 };
+
+// TODO: Add the real pause-subscription API endpoint supplied by your backend.
+const PAUSE_SUBSCRIPTION_API = '/api/v2/pause-subscription';
 
 type ToolRole = 'EmailMarketing' | 'DigitalBillboard' | 'LightningGold' | 'LightningSilver' | 'InvoiceTool';
 
@@ -63,6 +83,17 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
     const [feedbackError, setFeedbackError] = React.useState<string | null>(null);
     const [feedbackSuccess, setFeedbackSuccess] = React.useState<string | null>(null);
     const [isSubmittingFeedback, setIsSubmittingFeedback] = React.useState(false);
+    const [showPauseConfirm, setShowPauseConfirm] = React.useState(false);
+    const [isLoadingPause, setIsLoadingPause] = React.useState(false);
+    const [pauseResult, setPauseResult] = React.useState<{
+        open: boolean;
+        type: 'success' | 'error';
+        message: string;
+    }>({
+        open: false,
+        type: 'success',
+        message: '',
+    });
 
     const [showUnsubscribeConfirm, setShowUnsubscribeConfirm] = React.useState(false);
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = React.useState(false);
@@ -267,6 +298,95 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
         doLogout();
     };
 
+    const readLocalStorageArray = (key: string): string[] => {
+        if (typeof window === 'undefined') return [];
+
+        try {
+            const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+            return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+        } catch {
+            return [];
+        }
+    };
+
+    const moveCurrentRoleToPausedRoles = () => {
+        const currentRole = UNSUBSCRIBE_PRODUCT.id;
+        const roles = readLocalStorageArray('roles');
+        const pausedRoles = readLocalStorageArray('pausedRoles');
+
+        const updatedRoles = roles.filter((role) => role !== currentRole);
+        const updatedPausedRoles = pausedRoles.includes(currentRole) ? pausedRoles : [...pausedRoles, currentRole];
+
+        localStorage.setItem('roles', JSON.stringify(updatedRoles));
+        localStorage.setItem('pausedRoles', JSON.stringify(updatedPausedRoles));
+
+        return updatedRoles;
+    };
+
+    const confirmPause = React.useCallback(async () => {
+        if (isLoadingPause) return;
+
+        const cookies = parseCookies();
+        const id = cookies.id;
+
+        if (!id) {
+            setShowPauseConfirm(false);
+            setPauseResult({
+                open: true,
+                type: 'error',
+                message: 'User session was not found. Please sign in again and try to pause this subscription.',
+            });
+            return;
+        }
+
+        if (!PAUSE_SUBSCRIPTION_API.trim()) {
+            setShowPauseConfirm(false);
+            setPauseResult({
+                open: true,
+                type: 'error',
+                message: 'Pause API endpoint is not configured. Add the endpoint in PAUSE_SUBSCRIPTION_API.',
+            });
+            return;
+        }
+
+        setIsLoadingPause(true);
+
+        try {
+            const response = await axios.patch(`${PAUSE_SUBSCRIPTION_API}?authId=${encodeURIComponent(id)}&product=${UNSUBSCRIBE_PRODUCT.id}`);
+
+            if (response.status >= 200 && response.status < 300) {
+                const remainingRoles = moveCurrentRoleToPausedRoles();
+                setShowPauseConfirm(false);
+                setPauseResult({
+                    open: true,
+                    type: 'success',
+                    message: response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription paused successfully.`,
+                });
+
+                const nextRole = remainingRoles.find(isDashboardRole);
+                if (nextRole) {
+                    router.replace(DASHBOARD_ROUTES[nextRole].url);
+                } else {
+                    router.replace('/');
+                }
+                return;
+            }
+
+            throw new Error(response.data?.message || 'Unable to pause subscription.');
+        } catch (error: any) {
+            console.error('Error pausing subscription:', error);
+            setShowPauseConfirm(false);
+            setPauseResult({
+                open: true,
+                type: 'error',
+                message: error?.response?.data?.message || error?.message || `Unable to pause ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
+            });
+        } finally {
+            setIsLoadingPause(false);
+        }
+        // eslint-disable-next-line
+    }, [isLoadingPause, router]);
+
     const confirmUnsubscribe = React.useCallback(async () => {
         if (isLoadingUnsubscribe) return;
 
@@ -445,6 +565,15 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
                     <div className='mb-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>{feedbackSuccess}</div>
                 )}
 
+                <button
+                    className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 bg-amber-200 border-[1px] border-amber-300  hover:bg-amber-400/70 hover:text-amber-700 transition-all duration-200 font-medium cursor-pointer'
+                    type='button'
+                    onClick={() => setShowPauseConfirm(true)}
+                >
+                    <BellOff className='w-4 h-4' />
+                    <span>Pause</span>
+                </button>
+
                 {showFeedbackButton && (
                     <div className='space-y-2'>
                         {showFeedbackButton && (
@@ -498,6 +627,85 @@ export default function InvoiceContractSidebar(props: React.HTMLAttributes<HTMLE
                                 Confirm
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Pause subscription confirmation modal */}
+            {showPauseConfirm && (
+                <div className='fixed inset-0 z-[60] flex items-center justify-center px-4'>
+                    <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isLoadingPause && setShowPauseConfirm(false)} />
+
+                    <div className='relative z-[61] w-full max-w-md overflow-hidden rounded-[32px] border border-amber-500/35 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] shadow-2xl shadow-amber-500/20'>
+                        <button
+                            type='button'
+                            disabled={isLoadingPause}
+                            onClick={() => setShowPauseConfirm(false)}
+                            className='absolute right-4 top-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center bg-black/45 border border-amber-500/35 hover:border-amber-500/70 hover:bg-amber-500/10 transition-all duration-300 disabled:opacity-50'
+                        >
+                            <X className='w-5 h-5 text-amber-400' />
+                        </button>
+
+                        <div className='px-7 py-8 text-center'>
+                            <div className='mx-auto h-16 w-16 rounded-2xl border border-amber-500/35 bg-amber-500/10 flex items-center justify-center mb-5'>
+                                <AlertTriangle className='h-8 w-8 text-amber-400' />
+                            </div>
+
+                            <h2 className='text-2xl font-black text-white mb-3'>Pause Subscription</h2>
+                            <p className='text-gray-300 text-sm leading-relaxed'>
+                                Are you sure you want to pause the subscription of{' '}
+                                <span className='font-black text-amber-300'>{UNSUBSCRIBE_PRODUCT.label}</span>?
+                            </p>
+
+                            <div className='mt-7 flex flex-col gap-3'>
+                                <button
+                                    type='button'
+                                    disabled={isLoadingPause}
+                                    onClick={confirmPause}
+                                    className='w-full rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    {isLoadingPause ? (
+                                        <span className='flex items-center justify-center gap-2'>
+                                            <Loader2 className='h-4 w-4 animate-spin' />
+                                            Pausing...
+                                        </span>
+                                    ) : (
+                                        'Yes, Pause Subscription'
+                                    )}
+                                </button>
+
+                                <button
+                                    type='button'
+                                    disabled={isLoadingPause}
+                                    onClick={() => setShowPauseConfirm(false)}
+                                    className='w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Pause result modal */}
+            {pauseResult.open && (
+                <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-md px-4'>
+                    <div className='w-full max-w-md rounded-[28px] border border-white/10 bg-[#08090c] p-7 text-center shadow-2xl'>
+                        {pauseResult.type === 'success' ? (
+                            <CheckCircle className='mx-auto h-14 w-14 text-emerald-400' />
+                        ) : (
+                            <AlertTriangle className='mx-auto h-14 w-14 text-red-400' />
+                        )}
+                        <h2 className='mt-4 text-2xl font-black text-white'>{pauseResult.type === 'success' ? 'Subscription Paused' : 'Pause Failed'}</h2>
+                        <p className='mt-3 text-sm leading-relaxed text-white/60'>{pauseResult.message}</p>
+                        <button
+                            type='button'
+                            onClick={() => setPauseResult((prev) => ({ ...prev, open: false }))}
+                            className='mt-6 w-full rounded-2xl bg-white py-4 font-black text-black hover:bg-white/90'
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
             )}

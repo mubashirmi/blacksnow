@@ -152,17 +152,24 @@ const SLIDES = [
     },
     {
         lottie: '/animations/stockscreenericon.json',
-        accent: '#F5A623',
+        accent: '#FACC15',
         label: 'Stock Screener',
         subtitle: 'Market Analysis Tool',
         desc: 'Filter thousands of stocks and find your next winning trade.',
     },
     {
         lottie: '/animations/watchlisticon.json',
-        accent: '#E74C3C',
+        accent: '#F97316',
         label: 'Watchlist',
         subtitle: 'Track Stock Performance',
         desc: 'Monitor your favourite stocks and never miss a move.',
+    },
+    {
+        lottie: '/animations/marketmover.json',
+        accent: '#EF4444',
+        label: 'Market Movers',
+        subtitle: 'Market at a Glance',
+        desc: 'Track major indices, capital rotation, and market sentiment ahead.',
     },
     {
         lottie: '/animations/globaleconomicindicatoricon.json',
@@ -170,6 +177,13 @@ const SLIDES = [
         label: 'Global Economic Indicators',
         subtitle: 'World Economic KPI Dashboard',
         desc: 'Stay informed on key economic metrics from across the globe.',
+    },
+    {
+        lottie: '/animations/economicsimulator.json',
+        accent: '#7C3AED',
+        label: 'Economic Simulator',
+        subtitle: 'Supply and Demand',
+        desc: 'Explore interactive economic models with dynamic charts and rigorous theory.',
     },
 ];
 
@@ -683,6 +697,7 @@ function SignIn() {
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'sms'>('email');
     const [pendingAuthFlow, setPendingAuthFlow] = useState<PendingAuthFlow | null>(null);
     const [verificationEmail, setVerificationEmail] = useState('');
+    const [verificationPhone, setVerificationPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
     const [otpSending, setOtpSending] = useState(false);
@@ -741,7 +756,8 @@ function SignIn() {
         if (user?.email != null) setCookie('email', String(user.email));
 
         saveVerifiedIdentityStorage(user);
-        localStorage.setItem('roles', JSON.stringify(user?.roles || []));
+        localStorage.setItem('roles', JSON.stringify(Array.isArray(user?.roles) ? user.roles : []));
+        localStorage.setItem('pausedRoles', JSON.stringify(Array.isArray(user?.pausedRoles) ? user.pausedRoles : []));
     };
 
     const resetVerificationState = () => {
@@ -749,6 +765,7 @@ function SignIn() {
         setVerificationMethod('email');
         setPendingAuthFlow(null);
         setVerificationEmail('');
+        setVerificationPhone('');
         setOtp('');
         setOtpSent(false);
         setOtpSending(false);
@@ -776,6 +793,7 @@ function SignIn() {
             }
 
             localStorage.setItem('roles', JSON.stringify(rawRoles));
+            localStorage.setItem('pausedRoles', JSON.stringify(Array.isArray(user?.pausedRoles) ? user.pausedRoles : []));
             setAlert({ type: 'success', message: 'Admin login successful!' });
             reset();
             resetVerificationState();
@@ -886,6 +904,81 @@ function SignIn() {
             setAlert({
                 type: 'error',
                 message: error?.response?.data?.message || 'Invalid OTP. Please try again.',
+            });
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
+    const isValidE164Phone = (value: string) => /^\+[1-9]\d{7,14}$/.test(value.trim());
+
+    const handleSendSmsOtp = async () => {
+        const userEmail = verificationEmail.trim();
+        const userPhone = verificationPhone.trim();
+
+        if (!userEmail) {
+            setAlert({ type: 'error', message: 'Email is missing. Please sign in again.' });
+            return;
+        }
+
+        if (!isValidE164Phone(userPhone)) {
+            setAlert({
+                type: 'error',
+                message: 'Phone number must be in E.164 format, for example +923001234567.',
+            });
+            return;
+        }
+
+        setOtpSending(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-sms', {
+                userEmail,
+                userPhone,
+            });
+
+            setOtpSent(true);
+            setAlert({ type: 'success', message: `OTP sent to ${userPhone}` });
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Unable to send SMS OTP. Please try again.',
+            });
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifySmsOtp = async () => {
+        const userEmail = verificationEmail.trim();
+        const trimmedOtp = otp.trim();
+
+        if (!trimmedOtp) {
+            setAlert({ type: 'error', message: 'Please enter the OTP sent to your phone.' });
+            return;
+        }
+
+        if (pendingAuthFlow?.kind !== 'login') {
+            setAlert({ type: 'error', message: 'Login session expired. Please sign in again.' });
+            resetVerificationState();
+            return;
+        }
+
+        setOtpVerifying(true);
+        setAlert({ type: '', message: '' });
+
+        try {
+            await axios.post('/api/auth/auth-sms/verify', {
+                userEmail,
+                otp: trimmedOtp,
+            });
+
+            completeLoginFlow(pendingAuthFlow.responseData);
+        } catch (error: any) {
+            setAlert({
+                type: 'error',
+                message: error?.response?.data?.message || 'Invalid SMS OTP. Please try again.',
             });
         } finally {
             setOtpVerifying(false);
@@ -1052,15 +1145,19 @@ function SignIn() {
                                                 <p className='text-[11px] font-bold uppercase tracking-[0.18em] text-[#4cc7e8] mb-1.5'>Verify your account</p>
                                                 <h3 className='text-base font-black text-white mb-1'>Choose a verification method</h3>
                                                 <p className='text-xs text-gray-400 leading-snug'>
-                                                    Send an email OTP to <span className='text-white font-semibold'>{verificationEmail}</span>. SMS verification
-                                                    is visible for the flow, but disabled for now.
+                                                    Verify using an email OTP sent to <span className='text-white font-semibold'>{verificationEmail}</span>, or
+                                                    use an SMS OTP with a phone number in E.164 format.
                                                 </p>
                                             </div>
 
                                             <div className='grid grid-cols-2 gap-2'>
                                                 <button
                                                     type='button'
-                                                    onClick={() => setVerificationMethod('email')}
+                                                    onClick={() => {
+                                                        setVerificationMethod('email');
+                                                        setOtp('');
+                                                        setOtpSent(false);
+                                                    }}
                                                     className='rounded-2xl border p-2.5 text-left transition-all duration-300 hover:scale-[1.01]'
                                                     style={{
                                                         backgroundColor: verificationMethod === 'email' ? 'rgba(76,199,232,0.13)' : 'rgba(5,6,8,0.45)',
@@ -1069,24 +1166,51 @@ function SignIn() {
                                                 >
                                                     <Mail className='w-4 h-4 text-[#4cc7e8] mb-1.5' />
                                                     <p className='text-white font-bold text-sm leading-tight'>Email</p>
-                                                    <p className='text-[#4cc7e8] text-xs mt-0.5'>Enabled</p>
+                                                    <p className='text-[#4cc7e8] text-xs mt-0.5'>OTP verification</p>
                                                 </button>
 
                                                 <button
                                                     type='button'
-                                                    disabled
-                                                    className='rounded-2xl border border-white/10 bg-[#050608]/30 p-2.5 text-left opacity-45 cursor-not-allowed'
+                                                    onClick={() => {
+                                                        setVerificationMethod('sms');
+                                                        setOtp('');
+                                                        setOtpSent(false);
+                                                    }}
+                                                    className='rounded-2xl border p-2.5 text-left transition-all duration-300 hover:scale-[1.01]'
+                                                    style={{
+                                                        backgroundColor: verificationMethod === 'sms' ? 'rgba(76,199,232,0.13)' : 'rgba(5,6,8,0.45)',
+                                                        borderColor: verificationMethod === 'sms' ? 'rgba(76,199,232,0.58)' : 'rgba(255,255,255,0.10)',
+                                                    }}
                                                 >
-                                                    <MessageSquare className='w-4 h-4 text-white/50 mb-1.5' />
+                                                    <MessageSquare className='w-4 h-4 text-[#4cc7e8] mb-1.5' />
                                                     <p className='text-white font-bold text-sm leading-tight'>SMS</p>
-                                                    <p className='text-white/45 text-xs mt-0.5'>Disabled</p>
+                                                    <p className='text-[#4cc7e8] text-xs mt-0.5'>OTP verification</p>
                                                 </button>
                                             </div>
 
+                                            {verificationMethod === 'sms' && (
+                                                <div className='space-y-1.5'>
+                                                    <Input
+                                                        id='smsPhone'
+                                                        type='tel'
+                                                        inputMode='tel'
+                                                        placeholder='+923001234567'
+                                                        value={verificationPhone}
+                                                        onChange={(event) => {
+                                                            setVerificationPhone(event.target.value);
+                                                            setOtp('');
+                                                            setOtpSent(false);
+                                                        }}
+                                                        className='h-11 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 px-4 rounded-2xl transition-all duration-300'
+                                                    />
+                                                    <p className='text-[11px] text-white/45'>Use E.164 format, for example +923001234567.</p>
+                                                </div>
+                                            )}
+
                                             <Button
                                                 type='button'
-                                                onClick={handleSendEmailOtp}
-                                                disabled={otpSending || otpVerifying || verificationMethod !== 'email'}
+                                                onClick={verificationMethod === 'sms' ? handleSendSmsOtp : handleSendEmailOtp}
+                                                disabled={otpSending || otpVerifying}
                                                 className='w-full cursor-pointer rounded-2xl border h-11 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                                 style={{
                                                     background:
@@ -1117,7 +1241,7 @@ function SignIn() {
                                                 <div className='space-y-2'>
                                                     <div className='relative'>
                                                         <Input
-                                                            id='emailOtp'
+                                                            id={verificationMethod === 'sms' ? 'smsOtp' : 'emailOtp'}
                                                             inputMode='numeric'
                                                             placeholder='Enter OTP'
                                                             value={otp}
@@ -1131,7 +1255,7 @@ function SignIn() {
 
                                                     <Button
                                                         type='button'
-                                                        onClick={handleVerifyEmailOtp}
+                                                        onClick={verificationMethod === 'sms' ? handleVerifySmsOtp : handleVerifyEmailOtp}
                                                         disabled={otpVerifying || otpSending || !otp.trim()}
                                                         className='w-full cursor-pointer rounded-2xl border h-11 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                                         style={{

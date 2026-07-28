@@ -761,7 +761,7 @@ function RSVP({ initialIsLoggedIn }) {
                         </div>
                     </DialogHeader>
                     <Button
-                        onClick={() => router.push('/login?signup')}
+                        onClick={() => router.push('/signup')}
                         className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-5 text-lg shadow-xl shadow-[#2c7bbe]/50 transition-all duration-500 transform hover:scale-105 rounded-2xl'
                     >
                         Signup

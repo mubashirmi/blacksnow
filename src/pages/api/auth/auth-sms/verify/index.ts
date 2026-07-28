@@ -1,4 +1,4 @@
-// app/api/auth/verify-phone-otp/route.ts
+// src/pages/api/auth/auth-sms/verify/index.ts
 
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';

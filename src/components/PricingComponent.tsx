@@ -719,7 +719,9 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
     if (!product) return null;
 
-    const isPurchased = purchasedProducts[product.apiName] === 'Purchased';
+    const productStatus = purchasedProducts[product.apiName];
+    const isPurchased = productStatus === 'Purchased';
+    const isPaused = productStatus === 'Paused';
     const savings = getSavingsPercentage(product);
     const displayPeriod = getProductPeriod(product).replace('/', '').trim();
 
@@ -732,7 +734,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
                 className={`relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-[7px] ${
-                    isPurchased ? 'border-emerald-400/25' : productAccent ? '' : 'border-white/10'
+                    isPurchased ? 'border-emerald-400/25' : isPaused ? 'border-amber-400/35' : productAccent ? '' : 'border-white/10'
                 } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
                 style={{
                     minHeight: UNIFIED_CARD_HEIGHT,
@@ -742,10 +744,18 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     backdropFilter: 'blur(8px) saturate(145%)',
                     boxShadow: isPurchased
                         ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)'
+                        : isPaused
+                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)'
                         : productAccent
                         ? `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${productAccent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`
                         : '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                    borderColor: isPurchased ? 'rgba(16,185,129,0.25)' : productAccent ? `${productAccent}30` : 'rgba(255,255,255,0.10)',
+                    borderColor: isPurchased
+                        ? 'rgba(16,185,129,0.25)'
+                        : isPaused
+                        ? 'rgba(245,158,11,0.42)'
+                        : productAccent
+                        ? `${productAccent}30`
+                        : 'rgba(255,255,255,0.10)',
                 }}
             >
                 {/* Top accent line */}
@@ -861,40 +871,61 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 isPurchased ? (
                                     <Button
                                         size='lg'
-                                        className='w-full rounded-xl border border-green-400/20 bg-green-500/15 hover:bg-green-500/25 text-green-200 py-6 font-bold transition'
-                                        // onClick={() => handleUnsubscribe(product)}
-                                        disabled={isLoadingUnsubscribe}
+                                        className='w-full rounded-xl border border-green-400/20 bg-green-500/15 text-green-200 py-6 font-bold transition cursor-not-allowed'
+                                        disabled
                                     >
                                         Already Subscribed
-                                        {/* <ArrowRight className='h-5 w-5 ml-3 opacity-80' /> */}
                                     </Button>
                                 ) : (
-                                    <Button
-                                        size='lg'
-                                        className='w-full cursor-pointer rounded-xl border py-6 font-bold transition disabled:opacity-40 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
-                                        style={{
-                                            background: `linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, ${btnFrom}22 0%, transparent 45%), radial-gradient(circle at bottom right, ${btnTo}18 0%, transparent 42%)`,
-                                            borderColor: 'rgba(255,255,255,0.10)',
-                                            WebkitBackdropFilter: 'blur(7px) saturate(145%)',
-                                            backdropFilter: 'blur(7px) saturate(145%)',
-                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
-                                        }}
-                                        onClick={() => handlePurchase(product)}
-                                        disabled={isPurchaseButtonLoading || !termsChecked}
-                                        title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
-                                    >
-                                        {isPurchaseButtonLoading ? (
-                                            <>
-                                                <Loader2 className='h-5 w-5 mr-2 opacity-80 animate-spin' />
-                                                Processing...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <DollarSign className='h-5 w-5 mr-2 opacity-70' />
-                                                Purchase
-                                            </>
+                                    <>
+                                        {isPaused && (
+                                            <div className='mb-3 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-center'>
+                                                <p className='text-sm font-semibold text-amber-200'>Your {product.name} subscription is currently paused.</p>
+                                                <p className='mt-1 text-xs text-amber-100/65'>Purchase it again to restore access.</p>
+                                            </div>
                                         )}
-                                    </Button>
+
+                                        <Button
+                                            size='lg'
+                                            className={`w-full cursor-pointer rounded-xl border py-6 font-bold transition disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] ${
+                                                isPaused ? 'text-amber-100' : 'text-white/75'
+                                            }`}
+                                            style={
+                                                isPaused
+                                                    ? {
+                                                          background: 'linear-gradient(180deg, rgba(245,158,11,0.24) 0%, rgba(120,53,15,0.32) 100%)',
+                                                          borderColor: 'rgba(251,191,36,0.55)',
+                                                          WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                                          backdropFilter: 'blur(7px) saturate(145%)',
+                                                          boxShadow:
+                                                              'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.30), 0 14px 34px rgba(245,158,11,0.16)',
+                                                      }
+                                                    : {
+                                                          background: `linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, ${btnFrom}22 0%, transparent 45%), radial-gradient(circle at bottom right, ${btnTo}18 0%, transparent 42%)`,
+                                                          borderColor: 'rgba(255,255,255,0.10)',
+                                                          WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+                                                          backdropFilter: 'blur(7px) saturate(145%)',
+                                                          boxShadow:
+                                                              'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
+                                                      }
+                                            }
+                                            onClick={() => handlePurchase(product)}
+                                            disabled={isPurchaseButtonLoading || !termsChecked}
+                                            title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
+                                        >
+                                            {isPurchaseButtonLoading ? (
+                                                <>
+                                                    <Loader2 className='h-5 w-5 mr-2 opacity-80 animate-spin' />
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <DollarSign className='h-5 w-5 mr-2 opacity-70' />
+                                                    {isPaused ? 'Purchase Again' : 'Purchase'}
+                                                </>
+                                            )}
+                                        </Button>
+                                    </>
                                 )
                             ) : (
                                 <div className='w-full py-2 text-center'>

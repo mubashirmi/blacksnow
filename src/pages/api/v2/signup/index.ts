@@ -3,20 +3,39 @@
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
 
 // mirror the Prisma enum to validate incoming payloads
-const AllowedRoles = new Set(['Affiliate', 'Sales', 'Admin', 'NewsLetter', 'Rsvp', 'DigitalBillboard']);
+const AllowedRoles = new Set([
+    'Affiliate',
+    'SuperAffiliate',
+    'Sales',
+    'Admin',
+    'NewsLetter',
+    'Rsvp',
+    'DigitalBillboard',
+    'EmailMarketing',
+    'InvoiceTool',
+    'LightningSilver',
+    'LightningGold',
+]);
+
+// allowed status values
+const AllowedStatuses = new Set(['active', 'inactive', 'suspended']);
 
 function normalizeRoles(input: unknown): string[] {
     // accept: roles: string[], or role: string (back-compat)
-    if (Array.isArray(input)) return input.map(String);
+    if (Array.isArray(input))
+        return input
+            .map(String)
+            .map((r) => r.trim())
+            .filter(Boolean);
     if (typeof input === 'string' && input.trim()) return [input.trim()];
     return [];
 }
 
 function validateRoles(roles: string[]) {
     const invalid = roles.filter((r) => !AllowedRoles.has(r));
+
     if (invalid.length) {
         throw new Error(`Invalid role(s): ${invalid.join(', ')}. Allowed: ${Array.from(AllowedRoles).join(', ')}`);
     }
@@ -30,51 +49,22 @@ function normalizeOptionalString(input: unknown): string | undefined {
     return value ? value : undefined;
 }
 
-function escapeHtml(input: string) {
-    return input.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+function normalizeStatus(input: unknown): string | undefined {
+    if (input === undefined || input === null) return undefined;
+    // eslint-disable-next-line
+    const value = String(input).trim().toLowerCase();
+    // eslint-disable-next-line
+    return value ? value : undefined;
 }
 
-async function sendSignupEmail(params: { to: string; roles: string[]; plainPassword: string }) {
-    const { to, roles, plainPassword } = params;
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'malikmubashir.3175709877@gmail.com',
-            pass: 'fhwd vueu fbnl agao',
-        },
-    });
-
-    const rolesText = roles.length ? roles.join(', ') : '(none)';
-    const subject = 'Your account has been created';
-
-    const text = `Your account has been created successfully.
-
-Email: ${to}
-Roles: ${rolesText}
-Password: ${plainPassword}
-
-If you did not request this, please contact support.`;
-
-    const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-      <h2>Your account has been created successfully</h2>
-      <p><strong>Email:</strong> ${escapeHtml(to)}</p>
-      <p><strong>Roles:</strong> ${escapeHtml(rolesText)}</p>
-      <p><strong>Password:</strong> ${escapeHtml(plainPassword)}</p>
-      <p style="color:#666; font-size: 12px;">
-        If you did not request this, please contact support.
-      </p>
-    </div>
-  `;
-
-    await transporter.sendMail({
-        user: 'malikmubashir.3175709877@gmail.com',
-        to,
-        subject,
-        text,
-        html,
-    });
+function validateStatus(status: string) {
+    if (!AllowedStatuses.has(status)) {
+        throw new Error(`Invalid status: ${status}. Allowed: ${Array.from(AllowedStatuses).join(', ')}`);
+    }
+}
+// eslint-disable-next-line
+function escapeHtml(input: string) {
+    return input.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
@@ -83,30 +73,31 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
     try {
         if (req.method === 'POST') {
-            const { email, firstName, lastName, password, phone } = req.body;
+            const { email, firstName, lastName, password, phone, status } = req.body;
 
             // accept both `roles` and legacy `role`
             const rolesInput = 'roles' in req.body ? req.body.roles : req.body.role;
             const roles = normalizeRoles(rolesInput);
 
-            // phone is optional to avoid disturbing existing signup functionality
             const phoneNumber = normalizeOptionalString(phone);
+            const userStatus = normalizeStatus(status);
 
-            // basic required fields
             if (!email || !firstName || !lastName || !password) {
                 return res.status(400).json({
-                    message: 'Missing required fields (email, firstName, lastName, password, roles).',
+                    message: 'Missing required fields: email, firstName, lastName, password.',
                 });
             }
 
-            // validate roles
             try {
                 validateRoles(roles);
+
+                if (userStatus) {
+                    validateStatus(userStatus);
+                }
             } catch (e: any) {
                 return res.status(400).json({ message: e.message });
             }
 
-            // check existing email
             const existing = await prisma.auth.findUnique({
                 where: { email: String(email) },
             });
@@ -115,7 +106,6 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(409).json({ message: 'Email already exists.' });
             }
 
-            // check existing phone only if phone is provided
             if (phoneNumber) {
                 const existingPhone = await prisma.auth.findUnique({
                     where: { phone: phoneNumber },
@@ -126,8 +116,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 }
             }
 
-            const plainPassword = String(password);
-            const hashedPassword = await bcrypt.hash(plainPassword, 10);
+            const hashedPassword = await bcrypt.hash(String(password), 10);
 
             const user = await prisma.auth.create({
                 data: {
@@ -136,58 +125,95 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     firstName: String(firstName),
                     lastName: String(lastName),
                     password: hashedPassword,
-                    roles: roles as any, // Prisma accepts Role[]; strings must match enum
+                    roles: roles as any,
+
+                    // if not provided, Prisma default "active" will be used
+                    ...(userStatus ? { status: userStatus } : {}),
+
                     ...(referredBy
                         ? {
-                              referredById: parseInt(Array.isArray(referredBy) ? referredBy[0] : (referredBy as string), 10),
+                              referredById: parseInt(Array.isArray(referredBy) ? referredBy[0] : referredBy, 10),
                           }
                         : {}),
                 },
             });
 
-            // send email after successful signup (does NOT affect signup success if mail fails)
-            try {
-                await sendSignupEmail({
-                    to: String(email),
-                    roles,
-                    plainPassword,
-                });
-            } catch (mailErr) {
-                console.error('Signup email failed:', mailErr);
-            }
-
-            return res.status(201).json({ message: 'User created successfully', user });
+            return res.status(201).json({
+                message: 'User created successfully',
+                user,
+            });
         }
 
         if (req.method === 'GET') {
-            return res.status(200).json({ message: 'yes this is signup api' });
+            return res.status(200).json({
+                message: 'yes this is signup api',
+            });
         }
 
         if (req.method === 'PUT') {
             if (!userId || Number.isNaN(userId)) {
-                return res.status(400).json({ message: 'Invalid or missing user id in URL.' });
+                return res.status(400).json({
+                    message: 'Invalid or missing user id in URL.',
+                });
             }
 
-            // accept both `roles` and legacy `role`
-            const rolesInput = 'roles' in req.body ? req.body.roles : req.body.role;
-            const roles = normalizeRoles(rolesInput);
+            const updateData: any = {};
 
-            if (roles.length === 0) {
-                return res.status(400).json({ message: 'Provide at least one role to update.' });
+            const hasRolesPayload = 'roles' in req.body || 'role' in req.body;
+            const hasStatusPayload = 'status' in req.body;
+
+            if (hasRolesPayload) {
+                const rolesInput = 'roles' in req.body ? req.body.roles : req.body.role;
+                const roles = normalizeRoles(rolesInput);
+
+                if (roles.length === 0) {
+                    return res.status(400).json({
+                        message: 'Provide at least one role to update.',
+                    });
+                }
+
+                try {
+                    validateRoles(roles);
+                } catch (e: any) {
+                    return res.status(400).json({ message: e.message });
+                }
+
+                updateData.roles = roles as any;
             }
 
-            try {
-                validateRoles(roles);
-            } catch (e: any) {
-                return res.status(400).json({ message: e.message });
+            if (hasStatusPayload) {
+                const userStatus = normalizeStatus(req.body.status);
+
+                if (!userStatus) {
+                    return res.status(400).json({
+                        message: 'Provide a valid status to update.',
+                    });
+                }
+
+                try {
+                    validateStatus(userStatus);
+                } catch (e: any) {
+                    return res.status(400).json({ message: e.message });
+                }
+
+                updateData.status = userStatus;
+            }
+
+            if (Object.keys(updateData).length === 0) {
+                return res.status(400).json({
+                    message: 'Provide at least one field to update: roles or status.',
+                });
             }
 
             const user = await prisma.auth.update({
                 where: { id: userId },
-                data: { roles: roles as any }, // replace full roles array
+                data: updateData,
             });
 
-            return res.status(200).json({ message: 'Roles updated successfully', user });
+            return res.status(200).json({
+                message: 'User updated successfully',
+                user,
+            });
         }
 
         res.setHeader('Allow', ['POST', 'GET', 'PUT']);

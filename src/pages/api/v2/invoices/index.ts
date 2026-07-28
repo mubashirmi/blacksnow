@@ -1,7 +1,6 @@
 import prisma from '@/lib/prisma';
 import type { File as FormidableFile } from 'formidable';
 import formidable, { Fields, Files } from 'formidable';
-import fs from 'fs/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 import { getFileUrl, uploadFileToS3 } from '../../../../../bucket/bucketConfig';
@@ -12,16 +11,33 @@ export const config = {
     },
 };
 
-function parseForm(req: NextApiRequest): Promise<{ fields: Fields; files: Files }> {
+type PaymentType = 'one_time' | 'subscription';
+type SubscriptionInterval = 'month';
+
+const DEFAULT_SERVICE_FEE_PERCENT = Number(process.env.INVOICE_SERVICE_FEE_PERCENT || 3);
+
+const DEFAULT_PLATFORM_FEE_PERCENT = Number(process.env.INVOICE_PLATFORM_FEE_PERCENT || 7);
+
+function parseForm(req: NextApiRequest): Promise<{
+    fields: Fields;
+    files: Files;
+}> {
     const form = formidable({
         multiples: false,
         keepExtensions: true,
     });
 
     return new Promise((resolve, reject) => {
-        form.parse(req, (err, fields, files) => {
-            if (err) return reject(err);
-            resolve({ fields, files });
+        form.parse(req, (error, fields, files) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            resolve({
+                fields,
+                files,
+            });
         });
     });
 }
@@ -31,16 +47,20 @@ function getField(fields: Fields, key: string): string | undefined {
 
     if (Array.isArray(value)) {
         const first = value[0];
+
         return first === undefined || first === null ? undefined : String(first);
     }
 
-    if (value === undefined || value === null) return undefined;
+    if (value === undefined || value === null) {
+        return undefined;
+    }
 
     return String(value);
 }
 
 function getFile(files: Files, key: string): FormidableFile | undefined {
     const value = files[key];
+
     return Array.isArray(value) ? value[0] : value;
 }
 
@@ -48,26 +68,10 @@ function isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function sanitizeFileName(fileName: string): string {
-    return fileName.replace(/[^\w.\-() ]+/g, '_');
-}
-
-function getUploadedFileName(pdfFile: FormidableFile, invoiceName?: string): string {
-    const originalName = pdfFile.originalFilename;
-
-    if (originalName) {
-        return sanitizeFileName(originalName);
-    }
-
-    if (invoiceName) {
-        return `${sanitizeFileName(invoiceName)}.pdf`;
-    }
-
-    return 'invoice.pdf';
-}
-
 function parseBoolean(value: string | undefined): boolean | undefined {
-    if (value === undefined) return undefined;
+    if (value === undefined) {
+        return undefined;
+    }
 
     const normalized = value.trim().toLowerCase();
 
@@ -82,12 +86,73 @@ function parseBoolean(value: string | undefined): boolean | undefined {
     return undefined;
 }
 
+function parsePaymentType(value: string | undefined): PaymentType | undefined {
+    if (value === undefined) {
+        return undefined;
+    }
+
+    const normalized = value.trim().toLowerCase();
+
+    if (['one_time', 'one-time', 'onetime', 'single', 'once', 'payment'].includes(normalized)) {
+        return 'one_time';
+    }
+
+    if (['subscription', 'monthly', 'recurring'].includes(normalized)) {
+        return 'subscription';
+    }
+
+    return undefined;
+}
+
+function parseSubscriptionInterval(value: string | undefined): SubscriptionInterval | undefined {
+    if (value === undefined) {
+        return undefined;
+    }
+
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized === 'month' || normalized === 'monthly') {
+        return 'month';
+    }
+
+    return undefined;
+}
+
+function parsePercent(value: string | undefined, fallback: number): number | undefined {
+    if (value === undefined) {
+        return fallback;
+    }
+
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+        return undefined;
+    }
+
+    return parsed;
+}
+
+function parseRequiredId(value: string | undefined): number | undefined {
+    if (!value) {
+        return undefined;
+    }
+
+    const parsed = Number(value);
+
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+        return undefined;
+    }
+
+    return parsed;
+}
+
 function escapeHtml(value: string): string {
     return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
 function getSmtpTransporter() {
     const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+
     const port = Number(process.env.SMTP_PORT || 465);
 
     const secure = process.env.SMTP_SECURE !== undefined ? process.env.SMTP_SECURE === 'true' : port === 465;
@@ -113,35 +178,29 @@ function getSmtpTransporter() {
     });
 }
 
-async function sendInvoiceCreatedMail(params: {
-    to: string;
-    name?: string;
-    businessName?: string;
-    price?: string;
-    transactionId?: string;
-    paid?: boolean;
-    pdfFile: FormidableFile;
-    pdfBuffer: Buffer;
-}) {
-    const { to, name, businessName, price, transactionId, paid, pdfFile, pdfBuffer } = params;
+async function sendInvoiceCreatedMail(params: { to: string; name?: string; businessName?: string; price?: string; transactionId?: string; paid?: boolean }) {
+    const { to, name, businessName, price, transactionId, paid } = params;
 
     const transporter = getSmtpTransporter();
 
     await transporter.verify();
 
     const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'no-reply@example.com';
-    const fileName = getUploadedFileName(pdfFile, businessName || name);
 
     const displayName = name || 'there';
     const safeDisplayName = escapeHtml(displayName);
+
     const safeBusinessName = businessName ? escapeHtml(businessName) : '';
+
     const safePrice = price ? escapeHtml(price) : '';
+
     const safeTransactionId = transactionId ? escapeHtml(transactionId) : '';
 
     await transporter.sendMail({
         from,
         to,
         subject: 'Invoice created successfully',
+
         text: `Hi ${displayName},
 
 Your invoice has been created successfully.
@@ -151,9 +210,8 @@ ${price ? `Price: ${price}` : ''}
 ${transactionId ? `Transaction ID: ${transactionId}` : ''}
 Payment Status: ${paid ? 'Paid' : 'Unpaid'}
 
-Please find the attached PDF copy of your invoice.
-
 Thank you.`,
+
         html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6;">
                 <p>Hi ${safeDisplayName},</p>
@@ -166,32 +224,78 @@ Thank you.`,
 
                 ${transactionId ? `<p><strong>Transaction ID:</strong> ${safeTransactionId}</p>` : ''}
 
-                <p><strong>Payment Status:</strong> ${paid ? 'Paid' : 'Unpaid'}</p>
-
-                <p>Please find the attached PDF copy of your invoice.</p>
+                <p>
+                    <strong>Payment Status:</strong>
+                    ${paid ? 'Paid' : 'Unpaid'}
+                </p>
 
                 <p>Thank you.</p>
             </div>
         `,
-        attachments: [
-            {
-                filename: fileName,
-                content: pdfBuffer,
-                contentType: pdfFile.mimetype || 'application/pdf',
-            },
-        ],
     });
+}
+
+async function uploadImagePair(params: { paidImageFile: FormidableFile; unpaidImageFile: FormidableFile }): Promise<{
+    paidImage: string;
+    unpaidImage: string;
+}> {
+    const { paidImageFile, unpaidImageFile } = params;
+
+    if (paidImageFile === unpaidImageFile) {
+        const imageKey = await uploadFileToS3(paidImageFile, 'uploads');
+
+        return {
+            paidImage: imageKey,
+            unpaidImage: imageKey,
+        };
+    }
+
+    const [paidImage, unpaidImage] = await Promise.all([uploadFileToS3(paidImageFile, 'uploads'), uploadFileToS3(unpaidImageFile, 'uploads')]);
+
+    return {
+        paidImage,
+        unpaidImage,
+    };
+}
+
+function removeContractPdf(contract: any) {
+    if (!contract) {
+        return null;
+    }
+
+    const { pdf: _pdf, ...contractWithoutPdf } = contract;
+
+    return contractWithoutPdf;
+}
+
+async function serializeInvoice(invoice: any) {
+    const [paidImageUrl, unpaidImageUrl] = await Promise.all([
+        invoice.paidImage ? getFileUrl(invoice.paidImage) : Promise.resolve(null),
+
+        invoice.unpaidImage ? getFileUrl(invoice.unpaidImage) : Promise.resolve(null),
+    ]);
+
+    return {
+        ...invoice,
+        paidImage: paidImageUrl,
+        unpaidImage: unpaidImageUrl,
+        Contract: removeContractPdf(invoice.Contract),
+    };
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const idParam = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
+
     const contractIdParam = Array.isArray(req.query.contractId) ? req.query.contractId[0] : req.query.contractId;
+
     const authIdParam = Array.isArray(req.query.authId) ? req.query.authId[0] : req.query.authId;
 
     try {
         switch (req.method) {
             case 'GET': {
-                const providedFilters = [idParam, contractIdParam, authIdParam].filter(Boolean);
+                const providedFilters = [idParam, contractIdParam, authIdParam].filter(
+                    (value): value is string => typeof value === 'string' && value.trim() !== ''
+                );
 
                 if (providedFilters.length > 1) {
                     return res.status(400).json({
@@ -200,93 +304,90 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
                 if (idParam) {
-                    const id = Number(idParam);
+                    const id = parseRequiredId(idParam);
 
-                    if (!Number.isFinite(id)) {
-                        return res.status(400).json({ message: 'Invalid id' });
+                    if (id === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid id',
+                        });
                     }
 
                     const invoice = await prisma.invoice.findUnique({
-                        where: { id },
-                        include: { Contract: true },
+                        where: {
+                            id,
+                        },
+                        include: {
+                            Contract: true,
+                        },
                     });
 
                     if (!invoice) {
-                        return res.status(404).json({ message: 'Invoice not found' });
+                        return res.status(404).json({
+                            message: 'Invoice not found',
+                        });
                     }
 
-                    const signedPdfUrl = invoice.Contract?.pdf ? await getFileUrl(invoice.Contract.pdf) : null;
-                    const imageUrl = invoice.image ? await getFileUrl(invoice.image) : null;
+                    const result = await serializeInvoice(invoice);
 
-                    const modified = {
-                        ...invoice,
-                        image: imageUrl,
-                        Contract: invoice.Contract ? { ...invoice.Contract, pdf: signedPdfUrl } : null,
-                    };
-
-                    return res.status(200).json({ invoice: modified });
+                    return res.status(200).json({
+                        invoice: result,
+                    });
                 }
 
                 if (contractIdParam) {
-                    const contractId = Number(contractIdParam);
+                    const contractId = parseRequiredId(contractIdParam);
 
-                    if (!Number.isFinite(contractId)) {
-                        return res.status(400).json({ message: 'Invalid contractId' });
+                    if (contractId === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid contractId',
+                        });
                     }
 
                     const invoices = await prisma.invoice.findMany({
-                        where: { contractId },
-                        orderBy: { createdAt: 'desc' },
+                        where: {
+                            contractId,
+                        },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
                         include: {
                             Contract: true,
                         },
                     });
 
-                    const modified = await Promise.all(
-                        invoices.map(async (data) => {
-                            const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
-                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+                    const results = await Promise.all(invoices.map(serializeInvoice));
 
-                            return {
-                                ...data,
-                                image: imageUrl,
-                                Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
-                            };
-                        })
-                    );
-
-                    return res.status(200).json({ invoices: modified });
+                    return res.status(200).json({
+                        invoices: results,
+                    });
                 }
 
                 if (authIdParam) {
-                    const authId = Number(authIdParam);
+                    const authId = parseRequiredId(authIdParam);
 
-                    if (!Number.isFinite(authId)) {
-                        return res.status(400).json({ message: 'Invalid authId' });
+                    if (authId === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid authId',
+                        });
                     }
 
                     const invoices = await prisma.invoice.findMany({
-                        where: { authId },
-                        orderBy: { createdAt: 'desc' },
+                        where: {
+                            authId,
+                        },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
                         include: {
                             Contract: true,
                         },
                     });
 
-                    const modified = await Promise.all(
-                        invoices.map(async (data) => {
-                            const signedPdfUrl = data.Contract?.pdf ? await getFileUrl(data.Contract.pdf) : null;
-                            const imageUrl = data.image ? await getFileUrl(data.image) : null;
+                    const results = await Promise.all(invoices.map(serializeInvoice));
 
-                            return {
-                                ...data,
-                                image: imageUrl,
-                                Contract: data.Contract ? { ...data.Contract, pdf: signedPdfUrl } : null,
-                            };
-                        })
-                    );
-
-                    return res.status(200).json({ invoices: modified });
+                    return res.status(200).json({
+                        invoices: results,
+                    });
                 }
 
                 return res.status(400).json({
@@ -297,24 +398,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             case 'POST': {
                 const { fields, files } = await parseForm(req);
 
-                const imageFile = getFile(files, 'image');
-                const pdfFile = getFile(files, 'pdf');
+                const paidImageFile = getFile(files, 'paidImage');
+
+                const unpaidImageFile = getFile(files, 'unpaidImage');
+
+                /*
+                 * Backward compatibility for clients
+                 * still sending one "image" file.
+                 */
+                const legacyImageFile = getFile(files, 'image');
+
+                const finalPaidImageFile = paidImageFile || legacyImageFile;
+
+                const finalUnpaidImageFile = unpaidImageFile || legacyImageFile;
 
                 const contractId = getField(fields, 'contractId');
+
                 const name = getField(fields, 'name');
+
                 const email = getField(fields, 'email');
+
                 const businessName = getField(fields, 'businessName');
+
                 const price = getField(fields, 'price');
+
                 const authId = getField(fields, 'authId');
+
                 const transactionId = getField(fields, 'transactionId');
+
                 const paid = getField(fields, 'paid');
 
-                if (!imageFile) {
-                    return res.status(400).json({ message: 'Invalid image' });
+                const paymentTypeRaw = getField(fields, 'paymentType');
+
+                const subscriptionIntervalRaw = getField(fields, 'subscriptionInterval');
+
+                const serviceFeePercentRaw = getField(fields, 'serviceFeePercent');
+
+                const platformFeePercentRaw = getField(fields, 'platformFeePercent');
+
+                if (!finalPaidImageFile) {
+                    return res.status(400).json({
+                        message: 'Valid paidImage is required',
+                    });
                 }
 
-                if (!pdfFile) {
-                    return res.status(400).json({ message: 'Invalid pdf' });
+                if (!finalUnpaidImageFile) {
+                    return res.status(400).json({
+                        message: 'Valid unpaidImage is required',
+                    });
                 }
 
                 if (!email || !isValidEmail(email)) {
@@ -325,11 +456,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 let contractIdNumber: number | null = null;
 
-                if (contractId !== undefined && contractId !== null) {
+                if (contractId !== undefined) {
                     const parsed = Number(contractId);
 
-                    if (!Number.isFinite(parsed)) {
-                        return res.status(400).json({ message: 'Invalid contractId' });
+                    if (!Number.isInteger(parsed) || parsed <= 0) {
+                        return res.status(400).json({
+                            message: 'Invalid contractId',
+                        });
                     }
 
                     contractIdNumber = parsed;
@@ -337,11 +470,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 let authIdNumber: number | null = null;
 
-                if (authId !== undefined && authId !== null) {
+                if (authId !== undefined) {
                     const parsed = Number(authId);
 
-                    if (!Number.isFinite(parsed)) {
-                        return res.status(400).json({ message: 'Invalid authId' });
+                    if (!Number.isInteger(parsed) || parsed <= 0) {
+                        return res.status(400).json({
+                            message: 'Invalid authId',
+                        });
                     }
 
                     authIdNumber = parsed;
@@ -355,8 +490,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                 }
 
-                const pdfBuffer = await fs.readFile(pdfFile.filepath);
-                const s3Key = await uploadFileToS3(imageFile, 'uploads');
+                const parsedPaymentType = parsePaymentType(paymentTypeRaw);
+
+                if (paymentTypeRaw !== undefined && parsedPaymentType === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid paymentType. Use one_time or subscription',
+                    });
+                }
+
+                const parsedSubscriptionInterval = parseSubscriptionInterval(subscriptionIntervalRaw);
+
+                if (subscriptionIntervalRaw !== undefined && parsedSubscriptionInterval === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid subscriptionInterval. For now use month',
+                    });
+                }
+
+                const serviceFeePercent = parsePercent(serviceFeePercentRaw, DEFAULT_SERVICE_FEE_PERCENT);
+
+                if (serviceFeePercent === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid serviceFeePercent',
+                    });
+                }
+
+                const platformFeePercent = parsePercent(platformFeePercentRaw, DEFAULT_PLATFORM_FEE_PERCENT);
+
+                if (platformFeePercent === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid platformFeePercent',
+                    });
+                }
+
+                const uploadedImages = await uploadImagePair({
+                    paidImageFile: finalPaidImageFile,
+                    unpaidImageFile: finalUnpaidImageFile,
+                });
 
                 const invoice = await prisma.invoice.create({
                     data: {
@@ -364,11 +533,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         email,
                         businessName,
                         price,
+
+                        paidImage: uploadedImages.paidImage,
+
+                        unpaidImage: uploadedImages.unpaidImage,
+
                         authId: authIdNumber ?? undefined,
-                        image: s3Key,
+
                         contractId: contractIdNumber ?? undefined,
+
                         transactionId,
+
                         paid: paidBoolean ?? false,
+
+                        paymentType: parsedPaymentType || 'one_time',
+
+                        subscriptionInterval: parsedSubscriptionInterval || 'month',
+
+                        serviceFeePercent,
+                        platformFeePercent,
                     },
                 });
 
@@ -380,16 +563,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         price,
                         transactionId,
                         paid: invoice.paid,
-                        pdfFile,
-                        pdfBuffer,
                     });
-                } catch (mailError: any) {
+                } catch (mailError: unknown) {
                     console.error('Invoice created but email failed:', mailError);
+
+                    const mailErrorMessage = mailError instanceof Error ? mailError.message : 'Unknown mail error';
 
                     return res.status(201).json({
                         message: 'Created, but email failed to send',
                         mailSent: false,
-                        mailError: mailError?.message,
+                        mailError: mailErrorMessage,
                         invoice,
                     });
                 }
@@ -403,33 +586,70 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             case 'PUT': {
                 if (!idParam) {
-                    return res.status(400).json({ message: 'id query param is required' });
+                    return res.status(400).json({
+                        message: 'id query param is required',
+                    });
                 }
 
-                const id = Number(idParam);
+                const id = parseRequiredId(idParam);
 
-                if (!Number.isFinite(id)) {
-                    return res.status(400).json({ message: 'Invalid id' });
+                if (id === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid id',
+                    });
                 }
 
                 const { fields, files } = await parseForm(req);
 
-                const imageFile = getFile(files, 'image');
+                const paidImageFile = getFile(files, 'paidImage');
+
+                const unpaidImageFile = getFile(files, 'unpaidImage');
+
+                const legacyImageFile = getFile(files, 'image');
+
+                const finalPaidImageFile = paidImageFile || legacyImageFile;
+
+                const finalUnpaidImageFile = unpaidImageFile || legacyImageFile;
 
                 const name = getField(fields, 'name');
+
                 const email = getField(fields, 'email');
+
                 const businessName = getField(fields, 'businessName');
+
                 const price = getField(fields, 'price');
+
                 const contractId = getField(fields, 'contractId');
+
                 const authId = getField(fields, 'authId');
+
                 const transactionId = getField(fields, 'transactionId');
+
                 const paid = getField(fields, 'paid');
+
+                const paymentTypeRaw = getField(fields, 'paymentType');
+
+                const subscriptionIntervalRaw = getField(fields, 'subscriptionInterval');
+
+                const serviceFeePercentRaw = getField(fields, 'serviceFeePercent');
+
+                const platformFeePercentRaw = getField(fields, 'platformFeePercent');
 
                 const data: any = {};
 
-                if (imageFile) {
-                    const s3Key = await uploadFileToS3(imageFile, 'uploads');
-                    data.image = s3Key;
+                if (finalPaidImageFile && finalUnpaidImageFile && finalPaidImageFile === finalUnpaidImageFile) {
+                    const imageKey = await uploadFileToS3(finalPaidImageFile, 'uploads');
+
+                    data.paidImage = imageKey;
+                    data.unpaidImage = imageKey;
+                } else {
+                    if (finalPaidImageFile) {
+                        data.paidImage = await uploadFileToS3(finalPaidImageFile, 'uploads');
+                    }
+
+                    if (finalUnpaidImageFile) {
+                        data.unpaidImage = await uploadFileToS3(finalUnpaidImageFile, 'uploads');
+                    }
                 }
 
                 if (name !== undefined) {
@@ -438,7 +658,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 if (email !== undefined) {
                     if (!isValidEmail(email)) {
-                        return res.status(400).json({ message: 'Invalid email' });
+                        return res.status(400).json({
+                            message: 'Invalid email',
+                        });
                     }
 
                     data.email = email;
@@ -453,27 +675,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
                 if (contractId !== undefined) {
-                    const parsed = Number(contractId);
+                    if (contractId.trim() === '') {
+                        data.contractId = null;
+                    } else {
+                        const parsed = Number(contractId);
 
-                    if (!Number.isFinite(parsed)) {
-                        return res.status(400).json({ message: 'Invalid contractId' });
+                        if (!Number.isInteger(parsed) || parsed <= 0) {
+                            return res.status(400).json({
+                                message: 'Invalid contractId',
+                            });
+                        }
+
+                        data.contractId = parsed;
                     }
-
-                    data.contractId = parsed;
                 }
 
                 if (authId !== undefined) {
-                    const parsed = Number(authId);
+                    if (authId.trim() === '') {
+                        data.authId = null;
+                    } else {
+                        const parsed = Number(authId);
 
-                    if (!Number.isFinite(parsed)) {
-                        return res.status(400).json({ message: 'Invalid authId' });
+                        if (!Number.isInteger(parsed) || parsed <= 0) {
+                            return res.status(400).json({
+                                message: 'Invalid authId',
+                            });
+                        }
+
+                        data.authId = parsed;
                     }
-
-                    data.authId = parsed;
                 }
 
                 if (transactionId !== undefined) {
-                    data.transactionId = transactionId;
+                    data.transactionId = transactionId || null;
                 }
 
                 if (paid !== undefined) {
@@ -488,9 +722,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     data.paid = paidBoolean;
                 }
 
+                if (paymentTypeRaw !== undefined) {
+                    const parsedPaymentType = parsePaymentType(paymentTypeRaw);
+
+                    if (parsedPaymentType === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid paymentType. Use one_time or subscription',
+                        });
+                    }
+
+                    data.paymentType = parsedPaymentType;
+                }
+
+                if (subscriptionIntervalRaw !== undefined) {
+                    const parsedSubscriptionInterval = parseSubscriptionInterval(subscriptionIntervalRaw);
+
+                    if (parsedSubscriptionInterval === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid subscriptionInterval. For now use month',
+                        });
+                    }
+
+                    data.subscriptionInterval = parsedSubscriptionInterval;
+                }
+
+                if (serviceFeePercentRaw !== undefined) {
+                    const serviceFeePercent = parsePercent(serviceFeePercentRaw, DEFAULT_SERVICE_FEE_PERCENT);
+
+                    if (serviceFeePercent === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid serviceFeePercent',
+                        });
+                    }
+
+                    data.serviceFeePercent = serviceFeePercent;
+                }
+
+                if (platformFeePercentRaw !== undefined) {
+                    const platformFeePercent = parsePercent(platformFeePercentRaw, DEFAULT_PLATFORM_FEE_PERCENT);
+
+                    if (platformFeePercent === undefined) {
+                        return res.status(400).json({
+                            message: 'Invalid platformFeePercent',
+                        });
+                    }
+
+                    data.platformFeePercent = platformFeePercent;
+                }
+
                 try {
                     const updated = await prisma.invoice.update({
-                        where: { id },
+                        where: {
+                            id,
+                        },
                         data,
                     });
 
@@ -498,54 +782,70 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         message: 'Updated',
                         invoice: updated,
                     });
-                } catch (e: any) {
-                    if (e.code === 'P2025') {
-                        return res.status(404).json({ message: 'Invoice not found' });
+                } catch (error: unknown) {
+                    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2025') {
+                        return res.status(404).json({
+                            message: 'Invoice not found',
+                        });
                     }
 
-                    throw e;
+                    throw error;
                 }
             }
 
             case 'DELETE': {
                 if (!idParam) {
-                    return res.status(400).json({ message: 'id query param is required' });
+                    return res.status(400).json({
+                        message: 'id query param is required',
+                    });
                 }
 
-                const id = Number(idParam);
+                const id = parseRequiredId(idParam);
 
-                if (!Number.isFinite(id)) {
-                    return res.status(400).json({ message: 'Invalid id' });
+                if (id === undefined) {
+                    return res.status(400).json({
+                        message: 'Invalid id',
+                    });
                 }
 
                 try {
                     const deleted = await prisma.invoice.delete({
-                        where: { id },
+                        where: {
+                            id,
+                        },
                     });
 
                     return res.status(200).json({
                         message: 'Deleted',
                         invoice: deleted,
                     });
-                } catch (e: any) {
-                    if (e.code === 'P2025') {
-                        return res.status(404).json({ message: 'Invoice not found' });
+                } catch (error: unknown) {
+                    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2025') {
+                        return res.status(404).json({
+                            message: 'Invoice not found',
+                        });
                     }
 
-                    throw e;
+                    throw error;
                 }
             }
 
-            default:
+            default: {
                 res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-                return res.status(405).json({ message: 'Method not allowed' });
+
+                return res.status(405).json({
+                    message: 'Method not allowed',
+                });
+            }
         }
-    } catch (e: any) {
-        console.error('Error in /api/invoices:', e);
+    } catch (error: unknown) {
+        console.error('Error in /api/invoices:', error);
+
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
         return res.status(500).json({
             message: 'Internal server error',
-            error: e?.message,
+            error: errorMessage,
         });
     }
 }
