@@ -1,7 +1,8 @@
-// pages/dashboard/contracts.tsx
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
+
+type ContractStatus = boolean | 'notSigned' | 'signed' | 'rejected';
 
 type Invoice = {
     id: number;
@@ -12,7 +13,7 @@ type Invoice = {
     businessName: string | null;
     contractName: string | null;
     pdf: string;
-    signed: boolean;
+    signed: ContractStatus;
     authId: number;
 };
 
@@ -43,6 +44,21 @@ const formatDateTime = (isoString: string): string => {
     });
 };
 
+const isContractSigned = (status: ContractStatus): boolean => status === true || status === 'signed';
+
+const isContractUnsigned = (status: ContractStatus): boolean => status === false || status === 'notSigned';
+
+const getContractShareLink = (contractId: number): string => `https://www.blacksnowholdings.com/contractsignature?id=${contractId}`;
+
+const getPdfFileName = (contractName: string | null, contractId: number): string => {
+    const safeName = (contractName || `contract-${contractId}`)
+        .trim()
+        .replace(/[^a-zA-Z0-9-_ ]/g, '')
+        .replace(/\s+/g, '-');
+
+    return `${safeName || `contract-${contractId}`}.pdf`;
+};
+
 const ContractsPage: NextPage = () => {
     const router = useRouter();
 
@@ -62,6 +78,8 @@ const ContractsPage: NextPage = () => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
     const [invoicesError, setInvoicesError] = useState<string | null>(null);
+    const [downloadingContractId, setDownloadingContractId] = useState<number | null>(null);
+    const [pdfDownloadError, setPdfDownloadError] = useState<string | null>(null);
 
     // Share-link modal
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -166,6 +184,49 @@ const ContractsPage: NextPage = () => {
         setPdfFile(file);
     };
 
+    const handleOpenShareModal = (contractId: number) => {
+        setShareLink(getContractShareLink(contractId));
+        setCopyStatus('idle');
+        setIsShareModalOpen(true);
+    };
+
+    const handleDownloadPdf = async (invoice: Invoice) => {
+        if (!invoice.pdf || downloadingContractId !== null) return;
+
+        setPdfDownloadError(null);
+        setDownloadingContractId(invoice.id);
+
+        try {
+            const response = await fetch(invoice.pdf);
+            if (!response.ok) {
+                throw new Error('Failed to download the PDF.');
+            }
+
+            const blob = await response.blob();
+            const objectUrl = window.URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+
+            downloadLink.href = objectUrl;
+            downloadLink.download = getPdfFileName(invoice.contractName, invoice.id);
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            downloadLink.remove();
+            window.URL.revokeObjectURL(objectUrl);
+        } catch {
+            setPdfDownloadError('The PDF could not be downloaded automatically. It has been opened in a new tab instead.');
+
+            const fallbackLink = document.createElement('a');
+            fallbackLink.href = invoice.pdf;
+            fallbackLink.target = '_blank';
+            fallbackLink.rel = 'noopener noreferrer';
+            document.body.appendChild(fallbackLink);
+            fallbackLink.click();
+            fallbackLink.remove();
+        } finally {
+            setDownloadingContractId(null);
+        }
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setFormError(null);
@@ -218,9 +279,6 @@ const ContractsPage: NextPage = () => {
                 throw new Error('Contract id not returned from API.');
             }
 
-            const url = `https://www.blacksnowholdings.com/contractsignature?id=${contractId}`;
-            setShareLink(url);
-
             setContractName('');
             setEmail('');
             setPdfFile(null);
@@ -228,7 +286,7 @@ const ContractsPage: NextPage = () => {
             // eslint-disable-next-line
             void fetchInvoices();
 
-            setIsShareModalOpen(true);
+            handleOpenShareModal(contractId);
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Something went wrong while creating the contract.';
             setFormError(message);
@@ -258,8 +316,8 @@ const ContractsPage: NextPage = () => {
     };
 
     const totalInvoices = invoices.length;
-    const signedCount = invoices.filter((i) => i.signed).length;
-    const unsignedCount = totalInvoices - signedCount;
+    const signedCount = invoices.filter((invoice) => isContractSigned(invoice.signed)).length;
+    const unsignedCount = invoices.filter((invoice) => isContractUnsigned(invoice.signed)).length;
 
     // Optional: prevent UI flash before auth check finishes
     if (!isAuthChecked) {
@@ -324,20 +382,27 @@ const ContractsPage: NextPage = () => {
 
                     {invoicesError && <p className='text-[13px] text-red-700'>{invoicesError}</p>}
 
+                    {pdfDownloadError && <p className='mb-2 text-[13px] text-amber-700'>{pdfDownloadError}</p>}
+
                     {!isLoadingInvoices && !invoicesError && invoices.length === 0 && (
                         <p className='text-sm text-gray-500'>No invoices found yet. Create your first contract to see it here.</p>
                     )}
 
                     {!isLoadingInvoices && invoices.length > 0 && (
-                        <div className='mt-2 overflow-hidden rounded-xl border border-gray-200'>
-                            <table className='w-full border-collapse text-[13px]'>
+                        <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
+                            <table className='min-w-[1120px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
                                     <tr>
-                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Status'].map((header) => (
-                                            <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
-                                                {header}
-                                            </th>
-                                        ))}
+                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Share Link', 'Status'].map(
+                                            (header) => (
+                                                <th
+                                                    key={header}
+                                                    className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'
+                                                >
+                                                    {header}
+                                                </th>
+                                            )
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -345,7 +410,9 @@ const ContractsPage: NextPage = () => {
                                         const displayContractName = invoice.contractName && invoice.contractName.trim().length > 0 ? invoice.contractName : '—';
                                         const displayName = invoice.name && invoice.name.trim().length > 0 ? invoice.name : '—';
                                         const displayBusinessName = invoice.businessName && invoice.businessName.trim().length > 0 ? invoice.businessName : '—';
-                                        const isSigned = invoice.signed;
+                                        const contractIsSigned = isContractSigned(invoice.signed);
+                                        const contractIsUnsigned = isContractUnsigned(invoice.signed);
+                                        const isDownloading = downloadingContractId === invoice.id;
 
                                         return (
                                             <tr key={invoice.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
@@ -356,26 +423,50 @@ const ContractsPage: NextPage = () => {
                                                 <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayBusinessName}</td>
                                                 <td className='whitespace-nowrap px-3 py-2.5 text-[13px] text-gray-600'>{formatDateTime(invoice.createdAt)}</td>
                                                 <td className='px-3 py-2.5 text-[13px]'>
-                                                    <a
-                                                        href={invoice.pdf}
-                                                        target='_blank'
-                                                        rel='noopener noreferrer'
-                                                        className='text-[13px] text-blue-600 no-underline hover:underline'
-                                                    >
-                                                        View PDF
-                                                    </a>
+                                                    <div className='flex items-center gap-3 whitespace-nowrap'>
+                                                        <a
+                                                            href={invoice.pdf}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                            className='text-[13px] text-blue-600 no-underline hover:underline'
+                                                        >
+                                                            View
+                                                        </a>
+                                                        <button
+                                                            type='button'
+                                                            // eslint-disable-next-line
+                                                            onClick={() => void handleDownloadPdf(invoice)}
+                                                            disabled={downloadingContractId !== null}
+                                                            className='border-0 bg-transparent p-0 text-[13px] text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400'
+                                                        >
+                                                            {isDownloading ? 'Downloading…' : 'Download'}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    {contractIsUnsigned ? (
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => handleOpenShareModal(invoice.id)}
+                                                            className='whitespace-nowrap rounded-full bg-slate-900 px-3 py-1.5 text-[12px] font-medium text-white hover:bg-black'
+                                                        >
+                                                            Share Link
+                                                        </button>
+                                                    ) : (
+                                                        <span className='text-gray-400'>—</span>
+                                                    )}
                                                 </td>
                                                 <td className='px-3 py-2.5 text-[13px]'>
                                                     <span
                                                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[12px] font-medium ${
-                                                            isSigned === 'notSigned'
+                                                            contractIsUnsigned
                                                                 ? 'bg-amber-100 text-amber-800'
-                                                                : isSigned === 'signed'
+                                                                : contractIsSigned
                                                                 ? 'bg-green-100 text-green-800'
                                                                 : 'bg-red-200 text-red-700'
                                                         }`}
                                                     >
-                                                        {isSigned === 'notSigned' ? 'Not Signed' : isSigned === 'signed' ? 'Signed' : 'Rejected'}
+                                                        {contractIsUnsigned ? 'Not Signed' : contractIsSigned ? 'Signed' : 'Rejected'}
                                                     </span>
                                                 </td>
                                             </tr>

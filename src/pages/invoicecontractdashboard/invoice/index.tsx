@@ -1,4 +1,3 @@
-// pages/dashboard/invoices.tsx
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -117,6 +116,141 @@ const formatMoney = (amount: number, currency = 'usd'): string => {
     }
 };
 
+const sanitizeFileName = (value: string): string => {
+    const cleaned = value
+        .trim()
+        .replace(/[^a-zA-Z0-9_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return cleaned || 'invoice';
+};
+
+const triggerBlobDownload = (blob: Blob, fileName: string): void => {
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = fileName;
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+};
+
+const loadBlobImage = (blob: Blob): Promise<HTMLImageElement> => {
+    const objectUrl = URL.createObjectURL(blob);
+
+    return new Promise((resolve, reject) => {
+        const image = new window.Image();
+        image.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(image);
+        };
+        image.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('The invoice image could not be loaded.'));
+        };
+        image.src = objectUrl;
+    });
+};
+
+const latin1Bytes = (value: string): Uint8Array => {
+    const bytes = new Uint8Array(value.length);
+    for (let index = 0; index < value.length; index += 1) bytes[index] = value.charCodeAt(index) & 0xff;
+    return bytes;
+};
+
+const concatByteArrays = (chunks: Uint8Array[]): Uint8Array => {
+    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+
+    chunks.forEach((chunk) => {
+        result.set(chunk, offset);
+        offset += chunk.length;
+    });
+
+    return result;
+};
+
+const buildInvoicePdfFromJpeg = (jpegBytes: Uint8Array, imageWidth: number, imageHeight: number): Blob => {
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const scale = Math.min(pageWidth / imageWidth, pageHeight / imageHeight);
+    const renderedWidth = imageWidth * scale;
+    const renderedHeight = imageHeight * scale;
+    const x = (pageWidth - renderedWidth) / 2;
+    const y = (pageHeight - renderedHeight) / 2;
+
+    const objectOffsets: number[] = [0];
+    const chunks: Uint8Array[] = [];
+    let byteLength = 0;
+
+    const push = (chunk: Uint8Array) => {
+        chunks.push(chunk);
+        byteLength += chunk.length;
+    };
+
+    const addTextObject = (objectNumber: number, body: string) => {
+        objectOffsets[objectNumber] = byteLength;
+        push(latin1Bytes(`${objectNumber} 0 obj\n${body}\nendobj\n`));
+    };
+
+    push(latin1Bytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    addTextObject(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    addTextObject(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    addTextObject(
+        3,
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>'
+    );
+
+    objectOffsets[4] = byteLength;
+    push(
+        latin1Bytes(
+            `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+        )
+    );
+    push(jpegBytes);
+    push(latin1Bytes('\nendstream\nendobj\n'));
+
+    const contentStream = `q\n${renderedWidth.toFixed(2)} 0 0 ${renderedHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+    addTextObject(5, `<< /Length ${contentStream.length} >>\nstream\n${contentStream}endstream`);
+
+    const crossReferenceOffset = byteLength;
+    let crossReference = 'xref\n0 6\n0000000000 65535 f \n';
+    for (let objectNumber = 1; objectNumber <= 5; objectNumber += 1) {
+        crossReference += `${String(objectOffsets[objectNumber]).padStart(10, '0')} 00000 n \n`;
+    }
+    crossReference += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${crossReferenceOffset}\n%%EOF`;
+    push(latin1Bytes(crossReference));
+
+    return new Blob([concatByteArrays(chunks)], { type: 'application/pdf' });
+};
+
+const downloadImageAsPdf = async (imageUrl: string, fileName: string): Promise<void> => {
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error('The invoice file could not be downloaded.');
+
+    const imageBlob = await response.blob();
+    const image = await loadBlobImage(imageBlob);
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Your browser could not prepare the invoice PDF.');
+
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0);
+
+    const jpegBlob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('The invoice PDF could not be generated.'))), 'image/jpeg', 0.95);
+    });
+
+    const pdfBlob = buildInvoicePdfFromJpeg(new Uint8Array(await jpegBlob.arrayBuffer()), canvas.width, canvas.height);
+    triggerBlobDownload(pdfBlob, `${sanitizeFileName(fileName)}.pdf`);
+};
+
 const InvoicesPage: NextPage = () => {
     const router = useRouter();
 
@@ -141,6 +275,12 @@ const InvoicesPage: NextPage = () => {
     const [isRefunding, setIsRefunding] = useState(false);
     const [refundError, setRefundError] = useState<string | null>(null);
     const [refundMessage, setRefundMessage] = useState<string | null>(null);
+
+    // Download and payment-link state
+    const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<number | null>(null);
+    const [downloadError, setDownloadError] = useState<string | null>(null);
+    const [paymentLinkInvoice, setPaymentLinkInvoice] = useState<Invoice | null>(null);
+    const [copiedPaymentLink, setCopiedPaymentLink] = useState(false);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -252,6 +392,20 @@ const InvoicesPage: NextPage = () => {
         window.addEventListener('keydown', handleEscape);
         return () => window.removeEventListener('keydown', handleEscape);
     }, [isRefunding, selectedInvoice]);
+
+    useEffect(() => {
+        if (!paymentLinkInvoice) return;
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setPaymentLinkInvoice(null);
+                setCopiedPaymentLink(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleEscape);
+        return () => window.removeEventListener('keydown', handleEscape);
+    }, [paymentLinkInvoice]);
 
     const hasInvoice = (contractId: number): boolean => {
         return invoices.some((invoice) => invoice.contractId === contractId);
@@ -369,6 +523,57 @@ const InvoicesPage: NextPage = () => {
         }
     };
 
+    const selectedPaymentLink = useMemo(() => {
+        if (!paymentLinkInvoice || typeof window === 'undefined') return '';
+        return `${window.location.origin}/invoicepaymentrequest?id=${encodeURIComponent(paymentLinkInvoice.id)}&paymentType=invoice`;
+    }, [paymentLinkInvoice]);
+
+    const openPaymentLinkModal = (invoice: Invoice) => {
+        setPaymentLinkInvoice(invoice);
+        setCopiedPaymentLink(false);
+    };
+
+    const closePaymentLinkModal = () => {
+        setPaymentLinkInvoice(null);
+        setCopiedPaymentLink(false);
+    };
+
+    const copyPaymentLink = async () => {
+        if (!selectedPaymentLink) return;
+
+        try {
+            await navigator.clipboard.writeText(selectedPaymentLink);
+        } catch {
+            const textArea = document.createElement('textarea');
+            textArea.value = selectedPaymentLink;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            textArea.remove();
+        }
+
+        setCopiedPaymentLink(true);
+        window.setTimeout(() => setCopiedPaymentLink(false), 2000);
+    };
+
+    const handleDownloadInvoice = async (invoice: Invoice) => {
+        const imageUrl = invoice.paid ? invoice.paidImage : invoice.unpaidImage;
+        if (!imageUrl || downloadingInvoiceId !== null) return;
+
+        setDownloadingInvoiceId(invoice.id);
+        setDownloadError(null);
+
+        try {
+            await downloadImageAsPdf(imageUrl, `${invoice.name || 'invoice'}-${invoice.id}`);
+        } catch (error) {
+            setDownloadError(error instanceof Error ? error.message : 'The invoice could not be downloaded.');
+        } finally {
+            setDownloadingInvoiceId(null);
+        }
+    };
+
     const totalInvoices = invoices.length;
     const totalSignedContracts = contracts.length;
 
@@ -425,6 +630,10 @@ const InvoicesPage: NextPage = () => {
                         <h2 className='text-lg font-semibold text-slate-900'>All Invoices</h2>
                     </div>
 
+                    {downloadError && (
+                        <div className='mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-medium text-red-700'>{downloadError}</div>
+                    )}
+
                     {refundMessage && (
                         <div className='mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-[13px] font-medium text-green-800'>
                             {refundMessage}
@@ -441,7 +650,7 @@ const InvoicesPage: NextPage = () => {
 
                     {!isLoadingInvoices && !invoicesError && invoices.length > 0 && (
                         <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
-                            <table className='min-w-[1180px] w-full border-collapse text-[13px]'>
+                            <table className='min-w-[1420px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
                                     <tr>
                                         {[
@@ -454,6 +663,8 @@ const InvoicesPage: NextPage = () => {
                                             'Contract Name',
                                             'Created At',
                                             'Invoice',
+                                            'Download',
+                                            'Payment Link',
                                             'Action',
                                         ].map((header) => (
                                             <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
@@ -501,6 +712,34 @@ const InvoicesPage: NextPage = () => {
                                                         </a>
                                                     ) : (
                                                         <span className='text-[12px] text-gray-400'>No image</span>
+                                                    )}
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    <button
+                                                        type='button'
+                                                        // eslint-disable-next-line
+                                                        onClick={() => void handleDownloadInvoice(invoice)}
+                                                        disabled={!invoiceImage || downloadingInvoiceId !== null}
+                                                        className={`inline-flex items-center rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                                                            invoiceImage && downloadingInvoiceId === null
+                                                                ? 'cursor-pointer bg-slate-900 text-white hover:bg-slate-800'
+                                                                : 'cursor-not-allowed bg-gray-200 text-gray-500'
+                                                        }`}
+                                                    >
+                                                        {downloadingInvoiceId === invoice.id ? 'Downloading…' : 'Download PDF'}
+                                                    </button>
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    {!invoice.paid ? (
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => openPaymentLinkModal(invoice)}
+                                                            className='inline-flex cursor-pointer items-center rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[12px] font-medium text-emerald-700 transition-colors hover:bg-emerald-100'
+                                                        >
+                                                            Show link
+                                                        </button>
+                                                    ) : (
+                                                        <span className='text-[12px] text-gray-400'>—</span>
                                                     )}
                                                 </td>
                                                 <td className='px-3 py-2.5 text-[13px]'>
@@ -610,6 +849,64 @@ const InvoicesPage: NextPage = () => {
                     )}
                 </section>
             </div>
+
+            {/* Payment Link Modal */}
+            {paymentLinkInvoice && (
+                <div
+                    className='fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-md'
+                    onMouseDown={(event) => {
+                        if (event.currentTarget === event.target) closePaymentLinkModal();
+                    }}
+                    role='presentation'
+                >
+                    <div
+                        role='dialog'
+                        aria-modal='true'
+                        aria-labelledby='payment-link-modal-title'
+                        className='w-full max-w-lg overflow-hidden rounded-[24px] border border-white/60 bg-white/90 shadow-[0_30px_90px_rgba(15,23,42,0.35)] backdrop-blur-2xl'
+                    >
+                        <div className='flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5'>
+                            <div>
+                                <h3 id='payment-link-modal-title' className='text-xl font-semibold text-slate-900'>
+                                    Payment link
+                                </h3>
+                                <p className='mt-1 text-sm text-slate-600'>
+                                    Invoice #{paymentLinkInvoice.id} · {paymentLinkInvoice.name || paymentLinkInvoice.email}
+                                </p>
+                            </div>
+                            <button
+                                type='button'
+                                onClick={closePaymentLinkModal}
+                                aria-label='Close payment link modal'
+                                className='flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-xl leading-none text-slate-500 transition hover:bg-slate-50 hover:text-slate-900'
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className='space-y-4 px-6 py-5'>
+                            <p className='text-sm text-slate-600'>Copy this link and send it to the customer to complete payment.</p>
+                            <div className='flex flex-col gap-3 sm:flex-row'>
+                                <input
+                                    type='text'
+                                    readOnly
+                                    value={selectedPaymentLink}
+                                    onFocus={(event) => event.currentTarget.select()}
+                                    className='min-w-0 flex-1 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
+                                />
+                                <button
+                                    type='button'
+                                    // eslint-disable-next-line
+                                    onClick={() => void copyPaymentLink()}
+                                    className='rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700'
+                                >
+                                    {copiedPaymentLink ? 'Copied!' : 'Copy link'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Refund Modal */}
             {selectedInvoice && (

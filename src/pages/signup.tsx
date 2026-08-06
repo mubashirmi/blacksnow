@@ -55,7 +55,6 @@ type AuthFormValues = {
     phone?: string;
     password: string;
     termsAccepted?: boolean;
-    smsOptInConsent?: boolean;
 };
 
 type PendingAuthFlow = { kind: 'signup'; user: any; role: string } | { kind: 'login'; responseData: any };
@@ -1269,7 +1268,6 @@ function SignUp() {
                     lastName,
                     password: data.password,
                     phone: data.phone,
-                    smsOptInConsent: Boolean(data.smsOptInConsent),
                     role: '',
                 });
             } else {
@@ -1279,7 +1277,6 @@ function SignUp() {
                     lastName,
                     password: data.password,
                     phone: data.phone,
-                    smsOptInConsent: Boolean(data.smsOptInConsent),
                     role: '',
                 });
             }
@@ -1700,24 +1697,6 @@ function SignUp() {
                                                     </p>
                                                 </div>
                                                 {errors.termsAccepted && <p className='text-red-400 text-xs leading-tight'>{errors.termsAccepted.message}</p>}
-                                            </div>
-
-                                            <div className='space-y-1.5'>
-                                                <div className='flex items-start gap-3 text-xs text-gray-300 leading-relaxed'>
-                                                    <input
-                                                        id='smsOptInConsent'
-                                                        type='checkbox'
-                                                        {...register('smsOptInConsent')}
-                                                        className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
-                                                    />
-
-                                                    <label htmlFor='smsOptInConsent' className='cursor-pointer'>
-                                                        I agree to receive SMS from BlackSnow on my phone number.
-                                                    </label>
-                                                </div>
-                                                {errors.smsOptInConsent && (
-                                                    <p className='text-red-400 text-xs leading-tight'>{errors.smsOptInConsent.message}</p>
-                                                )}
                                             </div>
 
                                             <Button

@@ -109,7 +109,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+            <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
                 <DialogTitle className='sr-only'>{badge}</DialogTitle>
 
                 <div
@@ -866,7 +866,7 @@ export default function AuthModal({
                     if (!isLoading && !otpSending && !otpVerifying) onOpenChange(v);
                 }}
             >
-                <DialogContent className='max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
+                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
                     <div
                         className='relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-2xl'
                         style={{

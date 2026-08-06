@@ -436,7 +436,7 @@ const ContractSignPage: React.FC = () => {
 
         const allLines = [...lines1, ...lines2].filter((l) => l !== null && l !== undefined);
 
-        const baseY = margin + 8; // bottom-left area
+        const baseY = margin + 25; // bottom-left area
         const total = allLines.length;
 
         for (let i = 0; i < total; i++) {
@@ -487,7 +487,7 @@ const ContractSignPage: React.FC = () => {
 
         // ✅ Bottom-right placement (signature)
         const x = pageW - margin - dims.width;
-        const y = margin;
+        const y = margin + 17;
 
         lastPage.drawImage(image, {
             x,
@@ -583,7 +583,7 @@ const ContractSignPage: React.FC = () => {
 
         // ✅ Bottom-right placement (signature)
         const x = pageW - margin - sigDims.width;
-        const y = margin;
+        const y = margin + 17;
 
         lastOutPage.drawImage(sigImg, {
             x,

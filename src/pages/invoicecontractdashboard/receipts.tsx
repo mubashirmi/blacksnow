@@ -377,7 +377,9 @@ const ReceiptsPage: NextPage = () => {
         setIsRefunding(true);
 
         try {
-            const response = await fetch('/api/v2/invoices/stripe-refund', {
+            const refundEndpoint = selectedReceipt.receiptType === 'subscription' ? '/api/v2/subscriptionInv/stripe-refund' : '/api/v2/invoices/stripe-refund';
+
+            const response = await fetch(refundEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

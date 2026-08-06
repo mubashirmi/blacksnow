@@ -15,6 +15,7 @@ interface UserData {
     password: string;
     roles: string[];
     adminStripeConnectId: string | null;
+    adminStripeConnectIdStatus: boolean;
     referredById: number | null;
 }
 
@@ -97,12 +98,15 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
                         password: '',
                         roles,
                         adminStripeConnectId: null, // This will trigger the modal
+                        adminStripeConnectIdStatus: false,
                         referredById: null,
                     });
                 } else {
                     // Normal 200 response - user found and has data
-                    setUserData(response.data.data);
-                    setShowStripeModal(false);
+                    const fetchedUserData = response.data.data;
+
+                    setUserData(fetchedUserData);
+                    setShowStripeModal(fetchedUserData?.adminStripeConnectIdStatus !== true);
                 }
             } catch (apiError: any) {
                 console.error('API Error:', apiError);
@@ -222,8 +226,8 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
         return null; // This will be handled by the redirect in useEffect
     }
 
-    // Show Stripe Connect overlay if user doesn't have adminStripeConnectId OR if showStripeModal is true
-    const needsStripeConnection = !userData.adminStripeConnectId || showStripeModal;
+    // Show Stripe Connect overlay if Stripe status is not true OR if showStripeModal is true
+    const needsStripeConnection = userData.adminStripeConnectIdStatus !== true || showStripeModal;
 
     return (
         <div className='min-h-screen bg-gray-50 relative'>

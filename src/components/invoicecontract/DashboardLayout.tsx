@@ -7,6 +7,7 @@ import InvoiceContractSidebar from './InvoiceContractSidebar';
 interface UserData {
     id: number;
     adminStripeConnectId: string | null;
+    adminStripeConnectIdStatus: boolean;
     [key: string]: unknown;
 }
 
@@ -102,6 +103,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
                         setUserData({
                             id: userId,
                             adminStripeConnectId: null,
+                            adminStripeConnectIdStatus: false,
                         });
 
                         setShowStripeModal(true);
@@ -109,12 +111,12 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
                         return;
                     }
 
-                    // Store the user and check their Stripe Connect ID.
+                    // Store the user and check their Stripe Connect status.
                     const fetchedUserData = response.data.data;
 
                     setUserData(fetchedUserData);
 
-                    setShowStripeModal(!fetchedUserData?.adminStripeConnectId);
+                    setShowStripeModal(fetchedUserData?.adminStripeConnectIdStatus !== true);
                 } catch (apiError: any) {
                     if (!componentIsMounted) {
                         return;
@@ -258,7 +260,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
         return null;
     }
 
-    const needsStripeConnection = !userData.adminStripeConnectId || showStripeModal;
+    const needsStripeConnection = userData.adminStripeConnectIdStatus !== true || showStripeModal;
 
     return (
         <div className='relative min-h-screen bg-gray-50'>

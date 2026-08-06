@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
+const PLATFORM_FEE_RATE = 0.07;
+const SERVICE_FEE_RATE = 0.03;
+
 interface InvoiceItem {
     id: string;
     description: string;
@@ -356,22 +359,27 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
     currentY = tableTop + 58 + rows.length * rowHeight + 36;
     const summaryX = canvas.width - pagePadding - 420;
 
+    const summaryHeight = 286;
     context.fillStyle = light;
-    context.fillRect(summaryX, currentY, 420, 210);
+    context.fillRect(summaryX, currentY, 420, summaryHeight);
     context.strokeStyle = border;
-    context.strokeRect(summaryX, currentY, 420, 210);
+    context.strokeRect(summaryX, currentY, 420, summaryHeight);
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0);
+    const platformFee = subtotal * PLATFORM_FEE_RATE;
+    const serviceFee = subtotal * SERVICE_FEE_RATE;
     const summaryRows: Array<[string, string, boolean]> = [
         ['Subtotal', `${invoice.currency} ${subtotal.toFixed(2)}`, false],
         ['Tax', `${invoice.currency} ${invoice.tax.toFixed(2)}`, false],
+        ['Platform fee (7%)', `${invoice.currency} ${platformFee.toFixed(2)}`, false],
+        ['Service fee (3%)', `${invoice.currency} ${serviceFee.toFixed(2)}`, false],
         ['Total', `${invoice.currency} ${total.toFixed(2)}`, true],
     ];
 
     summaryRows.forEach(([label, value, strong], index) => {
-        const rowY = currentY + 30 + index * 54;
+        const rowY = currentY + 24 + index * 49;
         context.fillStyle = strong ? navy : slate;
-        context.font = strong ? '700 25px Arial' : '600 18px Arial';
+        context.font = strong ? '700 25px Arial' : '600 17px Arial';
         context.fillText(label, summaryX + 24, rowY);
         context.textAlign = 'right';
         context.fillStyle = strong ? blue : navy;
@@ -379,7 +387,7 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
         context.textAlign = 'left';
     });
 
-    const footerTop = Math.min(currentY + 250, 1490);
+    const footerTop = Math.min(currentY + summaryHeight + 40, 1490);
     if (invoice.paymentInfo.trim()) {
         context.fillStyle = navy;
         context.font = '700 17px Arial';
@@ -513,6 +521,81 @@ function buildSinglePagePdfFromJpeg(
     return new Blob([concatByteArrays(chunks)], { type: 'application/pdf' });
 }
 
+function buildInvoicePdfFromJpeg(jpegBytes: Uint8Array, imageWidth: number, imageHeight: number): Blob {
+    const pageWidth = 595;
+    const pageHeight = 842;
+    const scale = Math.min(pageWidth / imageWidth, pageHeight / imageHeight);
+    const renderedWidth = imageWidth * scale;
+    const renderedHeight = imageHeight * scale;
+    const x = (pageWidth - renderedWidth) / 2;
+    const y = (pageHeight - renderedHeight) / 2;
+
+    const objectOffsets: number[] = [0];
+    const chunks: Uint8Array[] = [];
+    let byteLength = 0;
+
+    const push = (chunk: Uint8Array) => {
+        chunks.push(chunk);
+        byteLength += chunk.length;
+    };
+
+    const addTextObject = (objectNumber: number, body: string) => {
+        objectOffsets[objectNumber] = byteLength;
+        push(latin1Bytes(`${objectNumber} 0 obj\n${body}\nendobj\n`));
+    };
+
+    push(latin1Bytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    addTextObject(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    addTextObject(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    addTextObject(
+        3,
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>'
+    );
+
+    objectOffsets[4] = byteLength;
+    push(
+        latin1Bytes(
+            `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+        )
+    );
+    push(jpegBytes);
+    push(latin1Bytes('\nendstream\nendobj\n'));
+
+    const contentStream = `q\n${renderedWidth.toFixed(2)} 0 0 ${renderedHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+    addTextObject(5, `<< /Length ${contentStream.length} >>\nstream\n${contentStream}endstream`);
+
+    const crossReferenceOffset = byteLength;
+    let crossReference = 'xref\n0 6\n0000000000 65535 f \n';
+    for (let objectNumber = 1; objectNumber <= 5; objectNumber += 1) {
+        crossReference += `${String(objectOffsets[objectNumber]).padStart(10, '0')} 00000 n \n`;
+    }
+    crossReference += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${crossReferenceOffset}\n%%EOF`;
+    push(latin1Bytes(crossReference));
+
+    return new Blob([concatByteArrays(chunks)], { type: 'application/pdf' });
+}
+
+async function createInvoiceDownloadPdf(invoiceImage: File, invoiceNumber: string): Promise<File> {
+    const image = await loadBlobImage(invoiceImage);
+    const jpegBytes = new Uint8Array(await invoiceImage.arrayBuffer());
+    const pdfBlob = buildInvoicePdfFromJpeg(jpegBytes, image.naturalWidth, image.naturalHeight);
+    const safeInvoiceNumber = (invoiceNumber || 'invoice').replace(/[^a-zA-Z0-9_-]+/g, '-');
+
+    return new File([pdfBlob], `${safeInvoiceNumber}.pdf`, { type: 'application/pdf' });
+}
+
+function downloadFile(file: File): void {
+    const objectUrl = URL.createObjectURL(file);
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = file.name;
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
 async function createPaymentRequestPdf(paymentLink: string, unpaidInvoiceImage: File, invoiceNumber: string): Promise<File> {
     const invoiceImage = await loadBlobImage(unpaidInvoiceImage);
     const canvas = document.createElement('canvas');
@@ -527,46 +610,49 @@ async function createPaymentRequestPdf(paymentLink: string, unpaidInvoiceImage: 
     context.fillStyle = '#0F172A';
     context.fillRect(0, 0, canvas.width, 28);
 
-    context.textBaseline = 'top';
-    context.textAlign = 'left';
-    context.fillStyle = '#0F172A';
-    context.font = '700 45px Arial';
-    context.fillText('Invoice Payment Request', 90, 72);
-
-    context.fillStyle = '#475569';
-    context.font = '400 22px Arial';
-    context.fillText('Open the payment link below to securely pay this invoice.', 90, 137);
-
-    const linkBox = { x: 90, y: 188, width: 1060, height: 92 };
-    context.fillStyle = '#EFF6FF';
-    context.fillRect(linkBox.x, linkBox.y, linkBox.width, linkBox.height);
-    context.strokeStyle = '#60A5FA';
-    context.lineWidth = 2;
-    context.strokeRect(linkBox.x, linkBox.y, linkBox.width, linkBox.height);
-    context.fillStyle = '#1D4ED8';
-    context.font = '600 20px Arial';
-    context.fillText(paymentLink, linkBox.x + 24, linkBox.y + 34);
-
-    const imageTop = 330;
+    // Show the invoice/subscription image first.
+    const imageTop = 55;
     const maxImageWidth = 1060;
-    const maxImageHeight = 1330;
+    const maxImageHeight = 1480;
     const scale = Math.min(maxImageWidth / invoiceImage.naturalWidth, maxImageHeight / invoiceImage.naturalHeight);
     const renderedWidth = invoiceImage.naturalWidth * scale;
     const renderedHeight = invoiceImage.naturalHeight * scale;
     const imageX = (canvas.width - renderedWidth) / 2;
 
     context.shadowColor = 'rgba(15, 23, 42, 0.18)';
-    context.shadowBlur = 24;
-    context.shadowOffsetY = 8;
+    context.shadowBlur = 20;
+    context.shadowOffsetY = 7;
     context.drawImage(invoiceImage, imageX, imageTop, renderedWidth, renderedHeight);
     context.shadowColor = 'transparent';
     context.strokeStyle = '#CBD5E1';
     context.lineWidth = 2;
     context.strokeRect(imageX, imageTop, renderedWidth, renderedHeight);
 
+    // Draw a clear payment button below the image. The PDF annotation makes
+    // the entire button clickable without displaying the raw payment URL.
+    const buttonText = paymentLink.includes('paymentType=subscription') ? 'PAY SUBSCRIPTION' : 'PAY INVOICE';
+    const buttonBox = {
+        x: 270,
+        y: Math.min(imageTop + renderedHeight + 38, canvas.height - 142),
+        width: 700,
+        height: 92,
+    };
+
+    context.fillStyle = '#2563EB';
+    context.fillRect(buttonBox.x, buttonBox.y, buttonBox.width, buttonBox.height);
+    context.strokeStyle = '#1D4ED8';
+    context.lineWidth = 3;
+    context.strokeRect(buttonBox.x, buttonBox.y, buttonBox.width, buttonBox.height);
+
+    context.textBaseline = 'middle';
+    context.textAlign = 'center';
+    context.fillStyle = '#FFFFFF';
+    context.font = '700 27px Arial';
+    context.fillText(buttonText, buttonBox.x + buttonBox.width / 2, buttonBox.y + buttonBox.height / 2);
+
     const pageJpeg = await canvasToBlob(canvas, 'image/jpeg', 0.95);
     const jpegBytes = new Uint8Array(await pageJpeg.arrayBuffer());
-    const pdfBlob = buildSinglePagePdfFromJpeg(jpegBytes, canvas.width, canvas.height, paymentLink, linkBox);
+    const pdfBlob = buildSinglePagePdfFromJpeg(jpegBytes, canvas.width, canvas.height, paymentLink, buttonBox);
     const safeInvoiceNumber = (invoiceNumber || 'invoice').replace(/[^a-zA-Z0-9_-]+/g, '-');
 
     return new File([pdfBlob], `${safeInvoiceNumber}-payment-request.pdf`, { type: 'application/pdf' });
@@ -683,6 +769,8 @@ export default function InvoiceGenerator() {
     const [isPrefilling, setIsPrefilling] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [creationStatus, setCreationStatus] = useState('');
+    const [createdInvoicePdf, setCreatedInvoicePdf] = useState<File | null>(null);
+    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
     // ✅ Prefill from contractId (only after auth check)
     useEffect(() => {
@@ -733,7 +821,9 @@ export default function InvoiceGenerator() {
     };
 
     const calculateSubtotal = () => invoice.items.reduce((sum, item) => sum + item.amount, 0);
-    const calculateTotal = () => calculateSubtotal() + invoice.tax;
+    const calculatePlatformFee = () => calculateSubtotal() * PLATFORM_FEE_RATE;
+    const calculateServiceFee = () => calculateSubtotal() * SERVICE_FEE_RATE;
+    const calculateTotal = () => calculateSubtotal() + invoice.tax + calculatePlatformFee() + calculateServiceFee();
 
     const addItem = () => {
         const newItem: InvoiceItem = { id: Date.now().toString(), description: '', quantity: 1, rate: 0, amount: 0 };
@@ -792,7 +882,23 @@ export default function InvoiceGenerator() {
         reader.readAsDataURL(file);
     };
 
-    const downloadPDF = () => window.print();
+    const downloadPDF = async () => {
+        if (isDownloadingPdf) return;
+
+        try {
+            const total = calculateTotal();
+            if (total <= 0) throw new Error('Please add invoice items or enter a total greater than zero.');
+
+            setIsDownloadingPdf(true);
+            const unpaidImage = await createStampedInvoiceImage(invoice, total, 'UNPAID');
+            const pdf = await createInvoiceDownloadPdf(unpaidImage, invoice.invoiceNumber);
+            downloadFile(pdf);
+        } catch (error: any) {
+            alert(error?.message || 'Failed to download the invoice PDF.');
+        } finally {
+            setIsDownloadingPdf(false);
+        }
+    };
 
     // ✅ Create the stamped files, create the invoice, then email the payment-request PDF.
     const createInvoice = async () => {
@@ -808,6 +914,7 @@ export default function InvoiceGenerator() {
             if (calculateTotal() <= 0) throw new Error('Please add invoice items or enter a total greater than zero.');
 
             setIsCreating(true);
+            setCreatedInvoicePdf(null);
             setCreationStatus('Preparing invoice images…');
 
             const total = calculateTotal();
@@ -815,6 +922,8 @@ export default function InvoiceGenerator() {
                 createStampedInvoiceImage(invoice, total, 'PAID'),
                 createStampedInvoiceImage(invoice, total, 'UNPAID'),
             ]);
+            const invoicePdf = await createInvoiceDownloadPdf(unpaidImage, invoice.invoiceNumber);
+            setCreatedInvoicePdf(invoicePdf);
 
             setCreationStatus('Creating invoice…');
 
@@ -852,7 +961,7 @@ export default function InvoiceGenerator() {
             emailFormData.append('subject', `Payment request for invoice ${invoice.invoiceNumber}`);
             emailFormData.append(
                 'text',
-                `Hello ${invoice.clientName.trim()}, please find the invoice payment PDF attached. You can use the payment link inside the PDF to complete your payment.`
+                `Hello ${invoice.clientName.trim()}, please find the invoice payment PDF attached. Click the payment button below the invoice inside the PDF to complete your payment.`
             );
             emailFormData.append('pdf', paymentPdf);
 
@@ -915,8 +1024,13 @@ export default function InvoiceGenerator() {
     const goToInvoices = () => router.push('/invoicecontractdashboard/subscription');
 
     const downloadThenGo = () => {
-        window.print();
-        setTimeout(() => router.push('/invoicecontractdashboard/subscription'), 300);
+        if (!createdInvoicePdf) {
+            alert('The PDF is not ready. Please create the invoice again.');
+            return;
+        }
+
+        downloadFile(createdInvoicePdf);
+        router.push('/invoicecontractdashboard/subscription');
     };
 
     // ✅ Prevent UI flash before auth check finishes
@@ -952,7 +1066,7 @@ export default function InvoiceGenerator() {
             )}
 
             {/* ✅ Created modal (uncloseable) */}
-            <Modal isOpen={modalState.created} title='Invoice Created' closable={false}>
+            <Modal isOpen={modalState.created} title='Subscription Created' closable={false}>
                 <div className='space-y-4'>
                     <div className='flex items-start gap-3'>
                         <CheckCircle2 className='w-6 h-6 text-green-600 mt-0.5' />
@@ -1426,6 +1540,20 @@ export default function InvoiceGenerator() {
                                         </div>
                                     </div>
 
+                                    <div className='flex justify-between text-slate-700'>
+                                        <span className='font-medium'>Platform fee (7%)</span>
+                                        <span className='font-bold'>
+                                            {invoice.currency} {calculatePlatformFee().toFixed(2)}
+                                        </span>
+                                    </div>
+
+                                    <div className='flex justify-between text-slate-700'>
+                                        <span className='font-medium'>Service fee (3%)</span>
+                                        <span className='font-bold'>
+                                            {invoice.currency} {calculateServiceFee().toFixed(2)}
+                                        </span>
+                                    </div>
+
                                     <div className='flex justify-between text-slate-900 font-bold text-xl pt-4 border-t-2 border-slate-400'>
                                         <span>Total</span>
                                         <span className='text-blue-600'>
@@ -1526,11 +1654,13 @@ export default function InvoiceGenerator() {
                             </button>
 
                             <button
-                                onClick={downloadPDF}
-                                className='w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700 transition-all font-semibold shadow-md hover:shadow-lg'
+                                // eslint-disable-next-line
+                                onClick={() => void downloadPDF()}
+                                disabled={isDownloadingPdf}
+                                className='w-full flex items-center justify-center gap-2 bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700 transition-all font-semibold shadow-md hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60'
                             >
                                 <Download className='w-4 h-4' />
-                                Download / Print
+                                {isDownloadingPdf ? 'Preparing PDF…' : 'Download PDF'}
                             </button>
 
                             <button

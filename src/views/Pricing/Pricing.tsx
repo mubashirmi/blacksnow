@@ -59,8 +59,8 @@ function Pricing() {
             {
                 id: 'InvoiceTool',
                 name: 'Invoice & Contract',
-                monthlyPrice: 20,
-                yearlyPrice: 200,
+                monthlyPrice: 25,
+                yearlyPrice: 250,
                 description: 'All-in-one contracts, signatures, and invoices—made simple',
                 features: [
                     'Instant Invoice Builder',
