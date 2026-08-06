@@ -65,7 +65,15 @@ const roleDashboardMap: Record<
     },
 };
 
-const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Admin', 'Sales', 'LightningSilver', 'DigitalBillboard', 'LightningGold', 'EmailMarketing'];
+const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = [
+    'Admin',
+    'Sales',
+    'InvoiceTool',
+    'LightningSilver',
+    'DigitalBillboard',
+    'LightningGold',
+    'EmailMarketing',
+];
 
 // Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {
