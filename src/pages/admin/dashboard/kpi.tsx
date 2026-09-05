@@ -174,6 +174,19 @@ type ContractStatsResponseItem = {
 
 type ContractStatsResponse = ContractStatsResponseItem[];
 
+type SubscriptionRevenueValue = {
+    invoiceRevenue: number;
+    subscriptionInvRevenue: number;
+    totalRevenue: number;
+};
+
+type SubscriptionRevenueResponse = {
+    today: SubscriptionRevenueValue;
+    weekly: SubscriptionRevenueValue;
+    monthly: SubscriptionRevenueValue;
+    total: SubscriptionRevenueValue;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -203,6 +216,24 @@ type MetricPeriod = 'Week' | 'Month' | 'Year';
 type ProductRevenuePeriod = 'Week' | 'Month' | 'Year';
 type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
 type ToolFeedbackMetricType = 'FeedbackCount' | 'AverageStars';
+type ContractStatsPeriod = keyof ContractStatsValue;
+type RevenueStatsPeriod = Exclude<ContractStatsPeriod, 'yearly'>;
+type InvoiceContractEntity = 'contract' | 'invoice' | 'subscriptionInv';
+type InvoiceContractMetric = 'count' | 'revenue';
+
+const CONTRACT_STATS_PERIOD_OPTIONS: { label: string; value: ContractStatsPeriod }[] = [
+    { label: 'Today', value: 'today' },
+    { label: 'Weekly', value: 'weekly' },
+    { label: 'Monthly', value: 'monthly' },
+    { label: 'Yearly', value: 'yearly' },
+    { label: 'Total', value: 'total' },
+];
+
+const INVOICE_CONTRACT_ENTITY_OPTIONS: { label: string; value: InvoiceContractEntity }[] = [
+    { label: 'Contract', value: 'contract' },
+    { label: 'Invoice', value: 'invoice' },
+    { label: 'Subscription Invoice', value: 'subscriptionInv' },
+];
 
 function safeNumber(n: any, fallback = 0) {
     const x = typeof n === 'number' ? n : Number(n);
@@ -215,6 +246,16 @@ function currency(n?: number | null) {
         style: 'currency',
         currency: 'USD',
         maximumFractionDigits: 0,
+    });
+}
+
+function currencyWithCents(n?: number | null) {
+    const v = typeof n === 'number' && Number.isFinite(n) ? n : 0;
+    return v.toLocaleString(undefined, {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
 }
 
@@ -417,6 +458,12 @@ export default function KPIPage() {
     const [contractStats, setContractStats] = useState<ContractStatsResponse>([]);
     const [contractStatsLoading, setContractStatsLoading] = useState(false);
     const [contractStatsError, setContractStatsError] = useState<string | null>(null);
+    const [subscriptionRevenue, setSubscriptionRevenue] = useState<SubscriptionRevenueResponse | null>(null);
+    const [subscriptionRevenueLoading, setSubscriptionRevenueLoading] = useState(false);
+    const [subscriptionRevenueError, setSubscriptionRevenueError] = useState<string | null>(null);
+    const [contractStatsPeriod, setContractStatsPeriod] = useState<ContractStatsPeriod>('monthly');
+    const [invoiceContractEntity, setInvoiceContractEntity] = useState<InvoiceContractEntity>('contract');
+    const [invoiceContractMetric, setInvoiceContractMetric] = useState<InvoiceContractMetric>('count');
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -642,6 +689,42 @@ export default function KPIPage() {
             cancelled = true;
         };
     }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setSubscriptionRevenueLoading(true);
+                setSubscriptionRevenueError(null);
+                const json = await fetchJSON<SubscriptionRevenueResponse>('/api/v5/admin/subscription-revenue?currency=usd');
+
+                if (cancelled) return;
+                setSubscriptionRevenue(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setSubscriptionRevenueError(e?.message || 'Failed to load invoice subscription revenue');
+                setSubscriptionRevenue(null);
+            } finally {
+                if (!cancelled) setSubscriptionRevenueLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (invoiceContractEntity === 'contract' && invoiceContractMetric === 'revenue') {
+            setInvoiceContractMetric('count');
+        }
+    }, [invoiceContractEntity, invoiceContractMetric]);
+
+    useEffect(() => {
+        if (invoiceContractMetric === 'revenue' && contractStatsPeriod === 'yearly') {
+            setContractStatsPeriod('monthly');
+        }
+    }, [invoiceContractMetric, contractStatsPeriod]);
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -905,40 +988,57 @@ export default function KPIPage() {
         };
     }, [contractStats]);
 
-    const invoiceContractChartData = useMemo(
-        () => [
-            {
-                period: 'Today',
-                contracts: safeNumber(contractStatsByType.contract.today),
-                invoices: safeNumber(contractStatsByType.invoice.today),
-                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.today),
-            },
-            {
-                period: 'Weekly',
-                contracts: safeNumber(contractStatsByType.contract.weekly),
-                invoices: safeNumber(contractStatsByType.invoice.weekly),
-                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.weekly),
-            },
-            {
-                period: 'Monthly',
-                contracts: safeNumber(contractStatsByType.contract.monthly),
-                invoices: safeNumber(contractStatsByType.invoice.monthly),
-                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.monthly),
-            },
-            {
-                period: 'Yearly',
-                contracts: safeNumber(contractStatsByType.contract.yearly),
-                invoices: safeNumber(contractStatsByType.invoice.yearly),
-                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.yearly),
-            },
-            {
-                period: 'Total',
-                contracts: safeNumber(contractStatsByType.contract.total),
-                invoices: safeNumber(contractStatsByType.invoice.total),
-                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.total),
-            },
-        ],
-        [contractStatsByType]
+    const invoiceContractPeriodOptions = useMemo(
+        () =>
+            invoiceContractMetric === 'revenue' ? CONTRACT_STATS_PERIOD_OPTIONS.filter((option) => option.value !== 'yearly') : CONTRACT_STATS_PERIOD_OPTIONS,
+        [invoiceContractMetric]
+    );
+
+    const contractStatsPeriodLabel = useMemo(
+        () => CONTRACT_STATS_PERIOD_OPTIONS.find((option) => option.value === contractStatsPeriod)?.label ?? 'Monthly',
+        [contractStatsPeriod]
+    );
+
+    const invoiceContractEntityLabel = useMemo(
+        () => INVOICE_CONTRACT_ENTITY_OPTIONS.find((option) => option.value === invoiceContractEntity)?.label ?? 'Contract',
+        [invoiceContractEntity]
+    );
+
+    const selectedInvoiceContractCount = useMemo(
+        () => safeNumber(contractStatsByType[invoiceContractEntity][contractStatsPeriod]),
+        [contractStatsByType, invoiceContractEntity, contractStatsPeriod]
+    );
+
+    const selectedInvoiceContractRevenue = useMemo(() => {
+        if (invoiceContractEntity === 'contract' || contractStatsPeriod === 'yearly' || !subscriptionRevenue) return 0;
+
+        const revenuePeriod = contractStatsPeriod as RevenueStatsPeriod;
+        const revenue = subscriptionRevenue[revenuePeriod];
+        return invoiceContractEntity === 'invoice' ? safeNumber(revenue?.invoiceRevenue) : safeNumber(revenue?.subscriptionInvRevenue);
+    }, [invoiceContractEntity, contractStatsPeriod, subscriptionRevenue]);
+
+    const invoiceContractChartData = useMemo(() => {
+        return invoiceContractPeriodOptions.map((option) => {
+            let value = 0;
+
+            if (invoiceContractMetric === 'count') {
+                value = safeNumber(contractStatsByType[invoiceContractEntity][option.value]);
+            } else if (invoiceContractEntity !== 'contract' && option.value !== 'yearly' && subscriptionRevenue) {
+                const revenue = subscriptionRevenue[option.value as RevenueStatsPeriod];
+                value = invoiceContractEntity === 'invoice' ? safeNumber(revenue?.invoiceRevenue) : safeNumber(revenue?.subscriptionInvRevenue);
+            }
+
+            return {
+                period: option.label,
+                value,
+                active: option.value === contractStatsPeriod,
+            };
+        });
+    }, [invoiceContractPeriodOptions, invoiceContractMetric, invoiceContractEntity, contractStatsByType, subscriptionRevenue, contractStatsPeriod]);
+
+    const invoiceContractSelectedValueLabel = useMemo(
+        () => (invoiceContractMetric === 'revenue' ? currencyWithCents(selectedInvoiceContractRevenue) : `${selectedInvoiceContractCount} created`),
+        [invoiceContractMetric, selectedInvoiceContractRevenue, selectedInvoiceContractCount]
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1450,78 +1550,132 @@ export default function KPIPage() {
                 {/* ============================================================ */}
                 {/* ✅ NEW CHART E: Invoice Contract KPI                           */}
                 {/* GET /api/v2/get-contract-stats                                */}
+                {/* GET /api/v5/admin/subscription-revenue?currency=usd           */}
                 {/* ============================================================ */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
                         <div>
                             <h3 className='text-lg font-semibold text-gray-800'>Invoice Contract KPI</h3>
-                            <p className='text-sm text-gray-500 mt-0.5'>Contracts, invoices, and subscription invoices created by reporting period</p>
+                            <p className='text-sm text-gray-500 mt-0.5'>
+                                View created counts for contracts, invoices, and subscription invoices, plus revenue for invoice types
+                            </p>
                         </div>
 
-                        <div className='flex flex-wrap gap-2'>
+                        <div className='flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3'>
+                            <select
+                                value={invoiceContractEntity}
+                                onChange={(e) => setInvoiceContractEntity(e.target.value as InvoiceContractEntity)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                                aria-label='Invoice Contract KPI type'
+                            >
+                                {INVOICE_CONTRACT_ENTITY_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={invoiceContractMetric}
+                                onChange={(e) => setInvoiceContractMetric(e.target.value as InvoiceContractMetric)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                                aria-label='Invoice Contract KPI metric'
+                            >
+                                <option value='count'>Created Count</option>
+                                {invoiceContractEntity !== 'contract' && <option value='revenue'>Revenue</option>}
+                            </select>
+
+                            <select
+                                value={contractStatsPeriod}
+                                onChange={(e) => setContractStatsPeriod(e.target.value as ContractStatsPeriod)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                                aria-label='Invoice Contract KPI period'
+                            >
+                                {invoiceContractPeriodOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+
                             <StatPill
-                                label='Total Contracts'
-                                value={String(contractStatsByType.contract.total)}
+                                label={`${invoiceContractEntityLabel} ${contractStatsPeriodLabel}`}
+                                value={invoiceContractSelectedValueLabel}
                                 color='border-blue-200 bg-blue-50 text-blue-800'
-                            />
-                            <StatPill
-                                label='Total Invoices'
-                                value={String(contractStatsByType.invoice.total)}
-                                color='border-emerald-200 bg-emerald-50 text-emerald-800'
-                            />
-                            <StatPill
-                                label='Subscription Invoices'
-                                value={String(contractStatsByType.subscriptionInv.total)}
-                                color='border-violet-200 bg-violet-50 text-violet-800'
                             />
                         </div>
                     </div>
 
                     {contractStatsError && <div className='mb-4 text-sm text-red-600'>{contractStatsError}</div>}
+                    {invoiceContractMetric === 'revenue' && subscriptionRevenueError && (
+                        <div className='mb-4 text-sm text-red-600'>{subscriptionRevenueError}</div>
+                    )}
 
-                    {contractStatsLoading ? (
+                    {contractStatsLoading || (invoiceContractMetric === 'revenue' && subscriptionRevenueLoading) ? (
                         <div className='h-64 flex items-center justify-center text-gray-400'>Loading invoice contract KPI...</div>
                     ) : contractStats.length > 0 ? (
-                        <ResponsiveContainer width='100%' height={300}>
-                            <LineChart data={invoiceContractChartData}>
-                                <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
-                                <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
-                                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                                <Tooltip
-                                    cursor={<HorizontalCursor />}
-                                    formatter={(value: any, name: any) => [`${safeNumber(value)} created`, String(name)]}
-                                    labelFormatter={(label) => `Period: ${label}`}
-                                />
-                                <Legend />
-                                <Line
-                                    type='linear'
-                                    dataKey='contracts'
-                                    name='Contracts'
-                                    stroke='#3b82f6'
-                                    strokeWidth={3}
-                                    dot={{ r: 4, fill: '#3b82f6', stroke: '#3b82f6', strokeWidth: 2 }}
-                                    activeDot={{ r: 7 }}
-                                />
-                                <Line
-                                    type='linear'
-                                    dataKey='invoices'
-                                    name='Invoices'
-                                    stroke='#10b981'
-                                    strokeWidth={3}
-                                    dot={{ r: 4, fill: '#10b981', stroke: '#10b981', strokeWidth: 2 }}
-                                    activeDot={{ r: 7 }}
-                                />
-                                <Line
-                                    type='linear'
-                                    dataKey='subscriptionInvoices'
-                                    name='Subscription Invoices'
-                                    stroke='#8b5cf6'
-                                    strokeWidth={3}
-                                    dot={{ r: 4, fill: '#8b5cf6', stroke: '#8b5cf6', strokeWidth: 2 }}
-                                    activeDot={{ r: 7 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        <>
+                            <div className='mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500'>
+                                <span>
+                                    Type: <span className='font-semibold text-gray-800'>{invoiceContractEntityLabel}</span>
+                                </span>
+                                <span>
+                                    Metric:{' '}
+                                    <span className='font-semibold text-gray-800'>{invoiceContractMetric === 'revenue' ? 'Revenue' : 'Created Count'}</span>
+                                </span>
+                                <span>
+                                    Selected period: <span className='font-semibold text-gray-800'>{contractStatsPeriodLabel}</span>
+                                </span>
+                                {invoiceContractMetric === 'revenue' && (
+                                    <span className='text-xs text-gray-400'>Yearly revenue is unavailable from the revenue API.</span>
+                                )}
+                            </div>
+
+                            <ResponsiveContainer width='100%' height={300}>
+                                <LineChart data={invoiceContractChartData}>
+                                    <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                    <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <YAxis
+                                        allowDecimals={invoiceContractMetric === 'revenue'}
+                                        tick={{ fontSize: 12, fill: '#64748b' }}
+                                        tickFormatter={(value) =>
+                                            invoiceContractMetric === 'revenue' ? currencyWithCents(safeNumber(value)) : String(safeNumber(value))
+                                        }
+                                    />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any) => [
+                                            invoiceContractMetric === 'revenue' ? currencyWithCents(safeNumber(value)) : `${safeNumber(value)} created`,
+                                            invoiceContractMetric === 'revenue' ? 'Revenue' : 'Created Count',
+                                        ]}
+                                    />
+                                    <Legend />
+                                    <Line
+                                        type='linear'
+                                        dataKey='value'
+                                        name={`${invoiceContractEntityLabel} ${invoiceContractMetric === 'revenue' ? 'Revenue' : 'Created Count'}`}
+                                        stroke='#3b82f6'
+                                        strokeWidth={3}
+                                        dot={(props: any) => {
+                                            const { cx, cy, payload } = props || {};
+                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                            const active = Boolean(payload?.active);
+                                            return (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={active ? 6 : 4}
+                                                    fill={active ? '#3b82f6' : 'rgba(59,130,246,0.35)'}
+                                                    stroke='#3b82f6'
+                                                    strokeWidth={active ? 2 : 1}
+                                                />
+                                            );
+                                        }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </>
                     ) : (
                         <div className='h-64 flex items-center justify-center text-gray-400'>No invoice contract KPI data available</div>
                     )}
