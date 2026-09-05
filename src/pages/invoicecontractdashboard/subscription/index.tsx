@@ -448,7 +448,6 @@ const InvoicesPage: NextPage = () => {
     const customRequestedAmount = parseMoney(customRefundAmount);
     const customFeeAmount = customRequestedAmount * (totalFeePercent / 100);
     const customNetRefundAmount = Math.max(0, customRequestedAmount - customFeeAmount);
-    const estimatedFullRefund = Math.max(0, invoiceAmount - invoiceAmount * (totalFeePercent / 100));
 
     const handleRefund = async () => {
         if (!selectedInvoice || isRefunding) return;
@@ -483,7 +482,7 @@ const InvoicesPage: NextPage = () => {
             }
 
             if (customNetRefundAmount <= 0) {
-                setRefundError('The refund amount is too small after fee deduction.');
+                setRefundError('The refund amount is too small. Enter a larger amount and try again.');
                 return;
             }
 
@@ -951,12 +950,6 @@ const InvoicesPage: NextPage = () => {
                                     <span className='text-slate-500'>Invoice amount</span>
                                     <span className='font-semibold text-slate-900'>{formatMoney(invoiceAmount, selectedInvoice.currency)}</span>
                                 </div>
-                                <div className='mt-2 flex items-center justify-between gap-3 text-sm'>
-                                    <span className='text-slate-500'>Fee deduction</span>
-                                    <span className='font-medium text-red-600'>
-                                        -{totalFeePercent}% ({serviceFeePercent}% service + {platformFeePercent}% platform)
-                                    </span>
-                                </div>
                             </div>
 
                             <div className='grid gap-3 sm:grid-cols-2'>
@@ -989,26 +982,11 @@ const InvoicesPage: NextPage = () => {
                                     }`}
                                 >
                                     <span className='block text-sm font-semibold text-slate-900'>Custom refund</span>
-                                    <span className='mt-1 block text-[12px] leading-5 text-slate-500'>
-                                        Enter a specific amount before the 10% fee deduction.
-                                    </span>
+                                    <span className='mt-1 block text-[12px] leading-5 text-slate-500'>Enter the specific amount you want to refund.</span>
                                 </button>
                             </div>
 
-                            {refundType === 'full' ? (
-                                <div className='rounded-2xl border border-amber-200 bg-amber-50/80 p-4'>
-                                    <div className='flex items-center justify-between gap-3'>
-                                        <span className='text-sm font-medium text-amber-900'>Estimated customer refund</span>
-                                        <span className='text-base font-semibold text-amber-900'>
-                                            {formatMoney(estimatedFullRefund, selectedInvoice.currency)}
-                                        </span>
-                                    </div>
-                                    <p className='mt-2 text-[12px] leading-5 text-amber-800'>
-                                        The full-refund request is sent without an amount, exactly as required by the API. The backend must apply the final
-                                        Stripe refund calculation.
-                                    </p>
-                                </div>
-                            ) : (
+                            {refundType === 'custom' && (
                                 <div className='space-y-3'>
                                     <label htmlFor='custom-refund-amount' className='block text-sm font-medium text-slate-800'>
                                         Requested refund amount
@@ -1030,23 +1008,6 @@ const InvoicesPage: NextPage = () => {
                                             placeholder='25.00'
                                             className='w-full rounded-xl border border-slate-300 bg-white/80 py-3 pl-8 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
                                         />
-                                    </div>
-
-                                    <div className='rounded-2xl border border-slate-200 bg-white/65 p-4 text-sm'>
-                                        <div className='flex items-center justify-between gap-3'>
-                                            <span className='text-slate-500'>Requested amount</span>
-                                            <span className='font-medium text-slate-900'>{formatMoney(customRequestedAmount, selectedInvoice.currency)}</span>
-                                        </div>
-                                        <div className='mt-2 flex items-center justify-between gap-3'>
-                                            <span className='text-slate-500'>Total fee ({totalFeePercent}%)</span>
-                                            <span className='font-medium text-red-600'>-{formatMoney(customFeeAmount, selectedInvoice.currency)}</span>
-                                        </div>
-                                        <div className='mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3'>
-                                            <span className='font-semibold text-slate-900'>Amount sent to refund API</span>
-                                            <span className='text-base font-semibold text-green-700'>
-                                                {formatMoney(customNetRefundAmount, selectedInvoice.currency)}
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
                             )}

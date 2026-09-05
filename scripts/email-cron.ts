@@ -4,6 +4,8 @@ import crypto from 'crypto';
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
 
+import { recordEmailUsage } from '../src/lib/emailUsage';
+
 const prisma = new PrismaClient();
 
 // Optional: cache one transporter per admin email
@@ -338,6 +340,27 @@ const task = cron.schedule(
                     // ✅ ensure html is actually sent
                     html: final.html && final.html.trim().length > 0 ? final.html : undefined,
                 });
+
+                await prisma.emailSentHistory.create({
+                    data: {
+                        subject: job.subject,
+                        text: final.text,
+                        html: final.html,
+                        sentAt: new Date(),
+                        status: 'sent',
+                        messageId: null,
+                        authId: job.authId,
+                        emailUserId: isNewsletter ? null : job.emailUserId,
+                        newsletterAuthId: isNewsletter ? recipientId : null,
+                        jobResultId: job.id,
+                    },
+                });
+
+                try {
+                    await recordEmailUsage(job.authId, 1);
+                } catch (usageError) {
+                    console.error(`[email-cron] Failed to record usage for job ${job.id}:`, usageError);
+                }
 
                 if (job.repeated && job.timeInterval && job.timeInterval > 0) {
                     const nextRunAt = new Date(now.getTime() + job.timeInterval * 1000);

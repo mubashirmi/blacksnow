@@ -1,8 +1,8 @@
 import prisma from '@/lib/prisma';
+import sgMail from '@sendgrid/mail';
 import type { File as FormidableFile } from 'formidable';
 import formidable, { Fields, Files } from 'formidable';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
 import { getFileUrl, uploadFileToS3 } from '../../../../../bucket/bucketConfig';
 
 export const config = {
@@ -14,9 +14,36 @@ export const config = {
 type PaymentType = 'one_time' | 'subscription';
 type SubscriptionInterval = 'month';
 
-const DEFAULT_SERVICE_FEE_PERCENT = Number(process.env.INVOICE_SERVICE_FEE_PERCENT || 3);
+const DEFAULT_SERVICE_FEE_PERCENT = Number(process.env.INVOICE_SERVICE_FEE_PERCENT || 0);
 
-const DEFAULT_PLATFORM_FEE_PERCENT = Number(process.env.INVOICE_PLATFORM_FEE_PERCENT || 7);
+const DEFAULT_PLATFORM_FEE_PERCENT = Number(process.env.INVOICE_PLATFORM_FEE_PERCENT || 8);
+
+/**
+ * ---------------------------------------------------------
+ * SENDGRID CONFIGURATION
+ * ---------------------------------------------------------
+ *
+ * SendGrid is configured lazily.
+ *
+ * This means GET / PUT / DELETE do not depend on SendGrid
+ * configuration.
+ */
+let sendGridConfigured = false;
+
+function getSendGridClient() {
+    const apiKey = process.env.SENDGRID_API_KEY;
+
+    if (!apiKey) {
+        throw new Error('SENDGRID_API_KEY is not configured');
+    }
+
+    if (!sendGridConfigured) {
+        sgMail.setApiKey(apiKey);
+        sendGridConfigured = true;
+    }
+
+    return sgMail;
+}
 
 function parseForm(req: NextApiRequest): Promise<{
     fields: Fields;
@@ -146,92 +173,531 @@ function parseRequiredId(value: string | undefined): number | undefined {
     return parsed;
 }
 
-function escapeHtml(value: string): string {
+/**
+ * Escapes user/database supplied values before putting
+ * them inside email HTML.
+ */
+function escapeHtml(value?: string | null): string {
+    if (!value) {
+        return '';
+    }
+
     return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function getSmtpTransporter() {
-    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+/**
+ * ---------------------------------------------------------
+ * SEND INVOICE CREATED EMAIL
+ * ---------------------------------------------------------
+ *
+ * This is executed only after the invoice has successfully
+ * been inserted into the database.
+ *
+ * Failure to send this email DOES NOT undo invoice creation.
+ */
+async function sendInvoiceCreatedMail(params: {
+    to: string;
+    name?: string;
+    businessName?: string;
+    price?: string;
+    transactionId?: string;
+    paid?: boolean;
+    invoiceId?: number;
+}) {
+    const { to, name, businessName, price, transactionId, paid, invoiceId } = params;
 
-    const port = Number(process.env.SMTP_PORT || 465);
+    const sendGrid = getSendGridClient();
 
-    const secure = process.env.SMTP_SECURE !== undefined ? process.env.SMTP_SECURE === 'true' : port === 465;
+    const fromEmail = process.env.SENDGRID_FROM_EMAIL;
 
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
+    const fromName = process.env.SENDGRID_FROM_NAME || 'Black Snow Holdings';
 
-    if (!user || !pass) {
-        throw new Error('SMTP_USER or SMTP_PASS is missing');
+    if (!fromEmail) {
+        throw new Error('SENDGRID_FROM_EMAIL is not configured');
     }
 
-    return nodemailer.createTransport({
-        host,
-        port,
-        secure,
-        auth: {
-            user,
-            pass,
-        },
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
-        socketTimeout: 60000,
-    });
-}
+    if (!isValidEmail(fromEmail)) {
+        throw new Error('SENDGRID_FROM_EMAIL is invalid');
+    }
 
-async function sendInvoiceCreatedMail(params: { to: string; name?: string; businessName?: string; price?: string; transactionId?: string; paid?: boolean }) {
-    const { to, name, businessName, price, transactionId, paid } = params;
+    if (!isValidEmail(to)) {
+        throw new Error('Invoice recipient email is invalid');
+    }
 
-    const transporter = getSmtpTransporter();
+    const displayName = name?.trim() || 'there';
 
-    await transporter.verify();
-
-    const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'no-reply@example.com';
-
-    const displayName = name || 'there';
     const safeDisplayName = escapeHtml(displayName);
 
-    const safeBusinessName = businessName ? escapeHtml(businessName) : '';
+    const safeBusinessName = escapeHtml(businessName);
 
-    const safePrice = price ? escapeHtml(price) : '';
+    const safePrice = escapeHtml(price);
 
-    const safeTransactionId = transactionId ? escapeHtml(transactionId) : '';
+    const safeTransactionId = escapeHtml(transactionId);
 
-    await transporter.sendMail({
-        from,
+    const safeInvoiceId = invoiceId !== undefined ? escapeHtml(String(invoiceId)) : '';
+
+    const paymentStatus = paid ? 'Paid' : 'Unpaid';
+
+    /**
+     * Plain-text fallback.
+     */
+    const textLines = [
+        'Black Snow Holdings',
+        'Invoice Notification',
+        '',
+        `Hi ${displayName},`,
+        '',
+        'Your invoice has been created successfully.',
+        '',
+        invoiceId !== undefined ? `Invoice ID: ${invoiceId}` : '',
+        businessName ? `Business Name: ${businessName}` : '',
+        price ? `Price: ${price}` : '',
+        transactionId ? `Transaction ID: ${transactionId}` : '',
+        `Payment Status: ${paymentStatus}`,
+        '',
+        'Thank you.',
+        '',
+        'This is an automated invoice notification from Black Snow Holdings.',
+    ]
+        .filter(Boolean)
+        .join('\n');
+
+    /**
+     * SendGrid-safe HTML email.
+     */
+    const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0"
+                />
+
+                <title>
+                    Invoice created successfully
+                </title>
+            </head>
+
+            <body
+                style="
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f1f5f9;
+                    font-family: Arial, Helvetica, sans-serif;
+                    color: #172033;
+                "
+            >
+                <table
+                    role="presentation"
+                    width="100%"
+                    cellspacing="0"
+                    cellpadding="0"
+                    border="0"
+                    style="
+                        width: 100%;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f1f5f9;
+                    "
+                >
+                    <tr>
+                        <td
+                            align="center"
+                            style="
+                                padding: 32px 12px;
+                            "
+                        >
+                            <table
+                                role="presentation"
+                                width="100%"
+                                cellspacing="0"
+                                cellpadding="0"
+                                border="0"
+                                style="
+                                    width: 100%;
+                                    max-width: 560px;
+                                    background-color: #ffffff;
+                                    border-radius: 16px;
+                                    overflow: hidden;
+                                    border-collapse: separate;
+                                "
+                            >
+                                <!-- HEADER -->
+                                <tr>
+                                    <td
+                                        align="center"
+                                        bgcolor="#000000"
+                                        style="
+                                            background-color: #000000;
+                                            padding: 34px 25px 30px 25px;
+                                            border-radius: 16px 16px 0 0;
+                                        "
+                                    >
+                                        <table
+                                            role="presentation"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            style="
+                                                margin: 0 auto 15px auto;
+                                            "
+                                        >
+                                            <tr>
+                                                <td
+                                                    align="center"
+                                                    valign="middle"
+                                                    style="
+                                                        width: 54px;
+                                                        height: 54px;
+                                                        border: 2px solid #2563eb;
+                                                        border-radius: 14px;
+                                                        color: #2563eb;
+                                                        font-size: 17px;
+                                                        line-height: 54px;
+                                                        font-weight: 800;
+                                                        background-color: #ffffff;
+                                                    "
+                                                >
+                                                    BS
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div
+                                            style="
+                                                color: #ffffff;
+                                                font-size: 21px;
+                                                line-height: 28px;
+                                                font-weight: 700;
+                                            "
+                                        >
+                                            Black Snow Holdings
+                                        </div>
+
+                                        <div
+                                            style="
+                                                padding-top: 7px;
+                                                color: #c7d2fe;
+                                                font-size: 12px;
+                                                line-height: 18px;
+                                            "
+                                        >
+                                            Invoice Notification
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- BODY -->
+                                <tr>
+                                    <td
+                                        style="
+                                            padding: 35px 28px 30px 28px;
+                                        "
+                                    >
+                                        <div
+                                            style="
+                                                color: #172033;
+                                                font-size: 25px;
+                                                line-height: 34px;
+                                                font-weight: 800;
+                                                letter-spacing: -0.2px;
+                                                margin-bottom: 20px;
+                                            "
+                                        >
+                                            Your invoice has been created
+                                        </div>
+
+                                        <div
+                                            style="
+                                                color: #334155;
+                                                font-size: 14px;
+                                                line-height: 22px;
+                                                margin-bottom: 18px;
+                                            "
+                                        >
+                                            Hi ${safeDisplayName},
+                                        </div>
+
+                                        <div
+                                            style="
+                                                color: #334155;
+                                                font-size: 14px;
+                                                line-height: 23px;
+                                                margin-bottom: 25px;
+                                            "
+                                        >
+                                            Your invoice has been created
+                                            successfully through
+
+                                            <strong>
+                                                Black Snow Holdings
+                                            </strong>.
+                                        </div>
+
+                                        <!-- INVOICE DETAILS -->
+                                        <table
+                                            role="presentation"
+                                            width="100%"
+                                            cellspacing="0"
+                                            cellpadding="0"
+                                            border="0"
+                                            style="
+                                                width: 100%;
+                                                background-color: #f8faff;
+                                                border: 1px solid #2563eb;
+                                                border-radius: 12px;
+                                                margin-bottom: 26px;
+                                            "
+                                        >
+                                            <tr>
+                                                <td
+                                                    style="
+                                                        padding: 18px 20px;
+                                                    "
+                                                >
+                                                    <div
+                                                        style="
+                                                            color: #2563eb;
+                                                            font-size: 12px;
+                                                            line-height: 18px;
+                                                            font-weight: 700;
+                                                            text-transform: uppercase;
+                                                            letter-spacing: 0.6px;
+                                                            margin-bottom: 10px;
+                                                        "
+                                                    >
+                                                        Invoice Details
+                                                    </div>
+
+                                                    <table
+                                                        role="presentation"
+                                                        width="100%"
+                                                        cellspacing="0"
+                                                        cellpadding="0"
+                                                        border="0"
+                                                    >
+                                                        ${
+                                                            invoiceId !== undefined
+                                                                ? `
+                                                                    <tr>
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #64748b;
+                                                                                font-size: 14px;
+                                                                                width: 130px;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            Invoice ID
+                                                                        </td>
+
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #111827;
+                                                                                font-size: 14px;
+                                                                                font-weight: 600;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            ${safeInvoiceId}
+                                                                        </td>
+                                                                    </tr>
+                                                                `
+                                                                : ''
+                                                        }
+
+                                                        ${
+                                                            businessName
+                                                                ? `
+                                                                    <tr>
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #64748b;
+                                                                                font-size: 14px;
+                                                                                width: 130px;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            Business
+                                                                        </td>
+
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #111827;
+                                                                                font-size: 14px;
+                                                                                font-weight: 600;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            ${safeBusinessName}
+                                                                        </td>
+                                                                    </tr>
+                                                                `
+                                                                : ''
+                                                        }
+
+                                                        ${
+                                                            price
+                                                                ? `
+                                                                    <tr>
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #64748b;
+                                                                                font-size: 14px;
+                                                                                width: 130px;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            Price
+                                                                        </td>
+
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #111827;
+                                                                                font-size: 14px;
+                                                                                font-weight: 600;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            ${safePrice}
+                                                                        </td>
+                                                                    </tr>
+                                                                `
+                                                                : ''
+                                                        }
+
+                                                        ${
+                                                            transactionId
+                                                                ? `
+                                                                    <tr>
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #64748b;
+                                                                                font-size: 14px;
+                                                                                width: 130px;
+                                                                                vertical-align: top;
+                                                                            "
+                                                                        >
+                                                                            Transaction ID
+                                                                        </td>
+
+                                                                        <td
+                                                                            style="
+                                                                                padding: 8px 0;
+                                                                                color: #111827;
+                                                                                font-size: 14px;
+                                                                                font-weight: 600;
+                                                                                vertical-align: top;
+                                                                                word-break: break-word;
+                                                                            "
+                                                                        >
+                                                                            ${safeTransactionId}
+                                                                        </td>
+                                                                    </tr>
+                                                                `
+                                                                : ''
+                                                        }
+
+                                                        <tr>
+                                                            <td
+                                                                style="
+                                                                    padding: 8px 0;
+                                                                    color: #64748b;
+                                                                    font-size: 14px;
+                                                                    width: 130px;
+                                                                    vertical-align: top;
+                                                                "
+                                                            >
+                                                                Payment Status
+                                                            </td>
+
+                                                            <td
+                                                                style="
+                                                                    padding: 8px 0;
+                                                                    color: ${paid ? '#16a34a' : '#dc2626'};
+                                                                    font-size: 14px;
+                                                                    font-weight: 700;
+                                                                    vertical-align: top;
+                                                                "
+                                                            >
+                                                                ${paymentStatus}
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div
+                                            style="
+                                                color: #334155;
+                                                font-size: 14px;
+                                                line-height: 22px;
+                                            "
+                                        >
+                                            Thank you.
+                                        </div>
+
+                                        <div
+                                            style="
+                                                height: 1px;
+                                                background-color: #e2e8f0;
+                                                margin: 30px 0 20px 0;
+                                            "
+                                        ></div>
+
+                                        <div
+                                            style="
+                                                text-align: center;
+                                                color: #64748b;
+                                                font-size: 11px;
+                                                line-height: 18px;
+                                            "
+                                        >
+                                            This is an automated invoice
+                                            notification from
+
+                                            <strong
+                                                style="
+                                                    color: #172033;
+                                                "
+                                            >
+                                                Black Snow Holdings
+                                            </strong>.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+    `;
+
+    await sendGrid.send({
         to,
+
+        from: {
+            email: fromEmail,
+            name: fromName,
+        },
+
         subject: 'Invoice created successfully',
 
-        text: `Hi ${displayName},
+        text: textLines,
 
-Your invoice has been created successfully.
-
-${businessName ? `Business Name: ${businessName}` : ''}
-${price ? `Price: ${price}` : ''}
-${transactionId ? `Transaction ID: ${transactionId}` : ''}
-Payment Status: ${paid ? 'Paid' : 'Unpaid'}
-
-Thank you.`,
-
-        html: `
-            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                <p>Hi ${safeDisplayName},</p>
-
-                <p>Your invoice has been created successfully.</p>
-
-                ${businessName ? `<p><strong>Business Name:</strong> ${safeBusinessName}</p>` : ''}
-
-                ${price ? `<p><strong>Price:</strong> ${safePrice}</p>` : ''}
-
-                ${transactionId ? `<p><strong>Transaction ID:</strong> ${safeTransactionId}</p>` : ''}
-
-                <p>
-                    <strong>Payment Status:</strong>
-                    ${paid ? 'Paid' : 'Unpaid'}
-                </p>
-
-                <p>Thank you.</p>
-            </div>
-        `,
+        html,
     });
 }
 
@@ -277,8 +743,11 @@ async function serializeInvoice(invoice: any) {
 
     return {
         ...invoice,
+
         paidImage: paidImageUrl,
+
         unpaidImage: unpaidImageUrl,
+
         Contract: removeContractPdf(invoice.Contract),
     };
 }
@@ -292,17 +761,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         switch (req.method) {
+            /**
+             * ---------------------------------------------------------
+             * GET
+             * ---------------------------------------------------------
+             */
             case 'GET': {
-                const providedFilters = [idParam, contractIdParam, authIdParam].filter(
-                    (value): value is string => typeof value === 'string' && value.trim() !== ''
-                );
-
-                if (providedFilters.length > 1) {
-                    return res.status(400).json({
-                        message: 'Provide only one of id, contractId, or authId',
-                    });
-                }
-
+                /**
+                 * GET ONE INVOICE
+                 *
+                 * /api/invoices?id=1
+                 */
                 if (idParam) {
                     const id = parseRequiredId(idParam);
 
@@ -316,6 +785,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         where: {
                             id,
                         },
+
                         include: {
                             Contract: true,
                         },
@@ -334,6 +804,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                 }
 
+                /**
+                 * GET INVOICES BY CONTRACT
+                 *
+                 * /api/invoices?contractId=1
+                 */
                 if (contractIdParam) {
                     const contractId = parseRequiredId(contractIdParam);
 
@@ -347,9 +822,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         where: {
                             contractId,
                         },
+
                         orderBy: {
                             createdAt: 'desc',
                         },
+
                         include: {
                             Contract: true,
                         },
@@ -362,6 +839,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                 }
 
+                /**
+                 * GET INVOICES BY AUTH USER
+                 *
+                 * /api/invoices?authId=1
+                 */
                 if (authIdParam) {
                     const authId = parseRequiredId(authIdParam);
 
@@ -375,9 +857,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         where: {
                             authId,
                         },
+
                         orderBy: {
                             createdAt: 'desc',
                         },
+
                         include: {
                             Contract: true,
                         },
@@ -390,11 +874,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                 }
 
-                return res.status(400).json({
-                    message: 'id, contractId, or authId query param is required',
+                /**
+                 * GET ALL INVOICES
+                 */
+                const invoice = await prisma.invoice.findMany({
+                    include: {
+                        Contract: true,
+                        auth: true,
+                    },
+                });
+
+                return res.status(200).json({
+                    invoices: invoice,
                 });
             }
 
+            /**
+             * ---------------------------------------------------------
+             * POST
+             * ---------------------------------------------------------
+             *
+             * CREATE INVOICE
+             */
             case 'POST': {
                 const { fields, files } = await parseForm(req);
 
@@ -522,11 +1023,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                 }
 
+                /**
+                 * Upload invoice images.
+                 */
                 const uploadedImages = await uploadImagePair({
                     paidImageFile: finalPaidImageFile,
+
                     unpaidImageFile: finalUnpaidImageFile,
                 });
 
+                /**
+                 * ------------------------------------------------
+                 * CREATE INVOICE
+                 * ------------------------------------------------
+                 */
                 const invoice = await prisma.invoice.create({
                     data: {
                         name,
@@ -551,39 +1061,77 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         subscriptionInterval: parsedSubscriptionInterval || 'month',
 
                         serviceFeePercent,
+
                         platformFeePercent,
                     },
                 });
 
+                /**
+                 * ------------------------------------------------
+                 * SEND SENDGRID EMAIL
+                 * ------------------------------------------------
+                 *
+                 * Invoice creation already succeeded.
+                 *
+                 * Therefore a SendGrid failure does NOT delete
+                 * or rollback the invoice.
+                 */
                 try {
                     await sendInvoiceCreatedMail({
+                        /**
+                         * Email directly from POST body.
+                         */
                         to: email,
+
                         name,
+
                         businessName,
+
                         price,
+
                         transactionId,
+
                         paid: invoice.paid,
+
+                        invoiceId: invoice.id,
                     });
+
+                    console.log(`Invoice created email successfully sent through SendGrid to ${email} for invoice ${invoice.id}`);
                 } catch (mailError: unknown) {
-                    console.error('Invoice created but email failed:', mailError);
+                    console.error('Invoice created successfully, but SendGrid email failed:', mailError);
 
                     const mailErrorMessage = mailError instanceof Error ? mailError.message : 'Unknown mail error';
 
+                    /**
+                     * Preserve existing behavior:
+                     *
+                     * Invoice exists, therefore still return 201.
+                     */
                     return res.status(201).json({
                         message: 'Created, but email failed to send',
+
                         mailSent: false,
+
                         mailError: mailErrorMessage,
+
                         invoice,
                     });
                 }
 
                 return res.status(201).json({
                     message: 'Created and email sent',
+
                     mailSent: true,
+
                     invoice,
                 });
             }
 
+            /**
+             * ---------------------------------------------------------
+             * PUT
+             * ---------------------------------------------------------
+             */
             case 'PUT': {
                 if (!idParam) {
                     return res.status(400).json({
@@ -637,10 +1185,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 const data: any = {};
 
+                /**
+                 * Image update behavior remains unchanged.
+                 */
                 if (finalPaidImageFile && finalUnpaidImageFile && finalPaidImageFile === finalUnpaidImageFile) {
                     const imageKey = await uploadFileToS3(finalPaidImageFile, 'uploads');
 
                     data.paidImage = imageKey;
+
                     data.unpaidImage = imageKey;
                 } else {
                     if (finalPaidImageFile) {
@@ -775,11 +1327,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         where: {
                             id,
                         },
+
                         data,
                     });
 
                     return res.status(200).json({
                         message: 'Updated',
+
                         invoice: updated,
                     });
                 } catch (error: unknown) {
@@ -793,6 +1347,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             }
 
+            /**
+             * ---------------------------------------------------------
+             * DELETE
+             * ---------------------------------------------------------
+             */
             case 'DELETE': {
                 if (!idParam) {
                     return res.status(400).json({
@@ -817,6 +1376,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     return res.status(200).json({
                         message: 'Deleted',
+
                         invoice: deleted,
                     });
                 } catch (error: unknown) {
@@ -830,6 +1390,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             }
 
+            /**
+             * ---------------------------------------------------------
+             * UNSUPPORTED METHOD
+             * ---------------------------------------------------------
+             */
             default: {
                 res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
 
@@ -845,6 +1410,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         return res.status(500).json({
             message: 'Internal server error',
+
             error: errorMessage,
         });
     }

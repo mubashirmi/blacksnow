@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
-const PLATFORM_FEE_RATE = 0.07;
-const SERVICE_FEE_RATE = 0.03;
+const PLATFORM_FEE_RATE = 0.08;
+const SERVICE_FEE_RATE = 0;
 
 interface InvoiceItem {
     id: string;
@@ -371,8 +371,8 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
     const summaryRows: Array<[string, string, boolean]> = [
         ['Subtotal', `${invoice.currency} ${subtotal.toFixed(2)}`, false],
         ['Tax', `${invoice.currency} ${invoice.tax.toFixed(2)}`, false],
-        ['Platform fee (7%)', `${invoice.currency} ${platformFee.toFixed(2)}`, false],
-        ['Service fee (3%)', `${invoice.currency} ${serviceFee.toFixed(2)}`, false],
+        [`Platform fee (${(PLATFORM_FEE_RATE * 100).toFixed(0)}%)`, `${invoice.currency} ${platformFee.toFixed(2)}`, false],
+        [`Service fee (${(SERVICE_FEE_RATE * 100).toFixed(0)}%)`, `${invoice.currency} ${serviceFee.toFixed(2)}`, false],
         ['Total', `${invoice.currency} ${total.toFixed(2)}`, true],
     ];
 
@@ -1541,16 +1541,9 @@ export default function InvoiceGenerator() {
                                     </div>
 
                                     <div className='flex justify-between text-slate-700'>
-                                        <span className='font-medium'>Platform fee (7%)</span>
+                                        <span className='font-medium'>Platform fee ({(PLATFORM_FEE_RATE * 100).toFixed(0)}%)</span>
                                         <span className='font-bold'>
                                             {invoice.currency} {calculatePlatformFee().toFixed(2)}
-                                        </span>
-                                    </div>
-
-                                    <div className='flex justify-between text-slate-700'>
-                                        <span className='font-medium'>Service fee (3%)</span>
-                                        <span className='font-bold'>
-                                            {invoice.currency} {calculateServiceFee().toFixed(2)}
                                         </span>
                                     </div>
 

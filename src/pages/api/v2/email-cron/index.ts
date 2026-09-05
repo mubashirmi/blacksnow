@@ -1,4 +1,5 @@
 // scripts/email-cron.ts (or wherever you run cron)
+import { recordEmailUsage } from '@/lib/emailUsage';
 import prisma from '@/lib/prisma';
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
@@ -81,6 +82,12 @@ cron.schedule('* * * * *', async () => {
                     jobResultId: job.id,
                 },
             });
+
+            try {
+                await recordEmailUsage(job.authId, 1);
+            } catch (usageError) {
+                console.error(`Failed to record email usage for job ${job.id}:`, usageError);
+            }
 
             // Decide next step
             let nextStatus: 'sent' | 'pending' = 'sent';

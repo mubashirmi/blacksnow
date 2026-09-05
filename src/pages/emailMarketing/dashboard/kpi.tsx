@@ -1,15 +1,46 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Calendar, CheckCircle, Clock, Mail, TrendingUp, Users, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
+
+function EmailUsageHorizontalCursor(props) {
+    const { points, width } = props || {};
+    if (!points || !points.length || typeof width !== 'number') return null;
+
+    const y = points[0]?.y;
+    if (typeof y !== 'number') return null;
+
+    return <line x1={0} x2={width} y1={y} y2={y} stroke='rgba(17, 24, 39, 0.35)' strokeDasharray='4 4' />;
+}
 
 export default function SalesKPIPage() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [emailUsage, setEmailUsage] = useState({ weekly: null, monthly: null });
+    const [emailUsageLoading, setEmailUsageLoading] = useState(true);
+    const [emailUsageError, setEmailUsageError] = useState(null);
+    const [emailUsagePeriod, setEmailUsagePeriod] = useState('Weekly');
 
     useEffect(() => {
         fetchKPIData();
+        fetchEmailUsageData();
     }, []);
 
     const fetchKPIData = async () => {
@@ -29,6 +60,67 @@ export default function SalesKPIPage() {
             console.error('Error fetching KPI data:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchEmailUsageData = async () => {
+        setEmailUsageLoading(true);
+        setEmailUsageError(null);
+
+        const authId = Number(localStorage.getItem('userId'));
+
+        if (!Number.isFinite(authId) || authId <= 0) {
+            setEmailUsage({ weekly: null, monthly: null });
+            setEmailUsageError('Email usage is unavailable because the user ID is missing.');
+            setEmailUsageLoading(false);
+            return;
+        }
+
+        const fetchUsageByPeriod = async (period) => {
+            try {
+                const response = await fetch(`/api/v5/email-billing/usage/${period}?authId=${encodeURIComponent(authId)}`);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${period} email usage`);
+                }
+
+                const result = await response.json();
+                const totalEmailsSent = Number(result?.data?.totalEmailsSent);
+
+                if (result?.success !== true || !Number.isFinite(totalEmailsSent) || totalEmailsSent < 0) {
+                    throw new Error(`Invalid ${period} email usage response`);
+                }
+
+                return { period, totalEmailsSent, error: null };
+            } catch (err) {
+                console.error(`Error fetching ${period} email usage:`, err);
+                return {
+                    period,
+                    totalEmailsSent: null,
+                    error: err instanceof Error ? err.message : `Failed to fetch ${period} email usage`,
+                };
+            }
+        };
+
+        try {
+            const [weeklyResult, monthlyResult] = await Promise.all([fetchUsageByPeriod('weekly'), fetchUsageByPeriod('monthly')]);
+
+            setEmailUsage({
+                weekly: weeklyResult.totalEmailsSent,
+                monthly: monthlyResult.totalEmailsSent,
+            });
+
+            const failedPeriods = [weeklyResult, monthlyResult].filter((result) => result.error).map((result) => result.period);
+
+            if (failedPeriods.length > 0) {
+                setEmailUsageError(`Could not load ${failedPeriods.join(' and ')} email usage.`);
+            }
+        } catch (err) {
+            console.error('Unexpected error fetching email usage:', err);
+            setEmailUsage({ weekly: null, monthly: null });
+            setEmailUsageError('Email usage is temporarily unavailable.');
+        } finally {
+            setEmailUsageLoading(false);
         }
     };
 
@@ -136,6 +228,120 @@ export default function SalesKPIPage() {
 
     const monthlyData = processMonthlyData();
 
+    const emailUsageChartData = [
+        { period: 'Weekly', emails: emailUsage.weekly, active: emailUsagePeriod === 'Weekly' },
+        { period: 'Monthly', emails: emailUsage.monthly, active: emailUsagePeriod === 'Monthly' },
+    ];
+
+    const hasEmailUsageData = emailUsage.weekly !== null || emailUsage.monthly !== null;
+    const formatEmailUsageValue = (value) => (value === null ? '—' : String(value));
+    const selectedEmailUsageValue = emailUsagePeriod === 'Weekly' ? emailUsage.weekly : emailUsage.monthly;
+
+    const renderEmailUsageChart = () => (
+        <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+            <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                <div>
+                    <h3 className='text-lg font-semibold text-gray-800'>Email Billing Usage</h3>
+                    <p className='text-sm text-gray-500'>Weekly and monthly email send volume for the current user</p>
+                </div>
+
+                <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
+                    <select
+                        value={emailUsagePeriod}
+                        onChange={(event) => setEmailUsagePeriod(event.target.value)}
+                        className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white text-gray-700 outline-none focus:ring-2 focus:ring-cyan-100 focus:border-cyan-300'
+                    >
+                        <option value='Weekly'>Weekly</option>
+                        <option value='Monthly'>Monthly</option>
+                    </select>
+
+                    <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm whitespace-nowrap'>
+                        <span className='text-gray-500 mr-2'>Selected:</span>
+                        <span className='font-semibold text-gray-900'>{formatEmailUsageValue(selectedEmailUsageValue)} emails</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className='flex flex-wrap gap-2 mb-5'>
+                <div className='flex flex-col items-center min-w-[120px] px-4 py-2 rounded-xl border border-cyan-200 bg-cyan-50 text-cyan-800'>
+                    <span className='text-xs font-medium uppercase tracking-wide opacity-70'>This Week</span>
+                    <span className='text-base font-bold mt-0.5'>{formatEmailUsageValue(emailUsage.weekly)}</span>
+                </div>
+                <div className='flex flex-col items-center min-w-[120px] px-4 py-2 rounded-xl border border-sky-200 bg-sky-50 text-sky-800'>
+                    <span className='text-xs font-medium uppercase tracking-wide opacity-70'>This Month</span>
+                    <span className='text-base font-bold mt-0.5'>{formatEmailUsageValue(emailUsage.monthly)}</span>
+                </div>
+            </div>
+
+            {emailUsageError && (
+                <div className='mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-red-600'>
+                    <div className='flex items-center gap-2'>
+                        <AlertCircle className='h-4 w-4 shrink-0' />
+                        <span>{emailUsageError} Other dashboard data is unaffected.</span>
+                    </div>
+                    <button type='button' onClick={fetchEmailUsageData} className='font-medium text-red-600 underline underline-offset-2 hover:text-red-700'>
+                        Retry
+                    </button>
+                </div>
+            )}
+
+            {emailUsageLoading ? (
+                <div className='h-64 flex items-center justify-center text-gray-400'>Loading email usage...</div>
+            ) : hasEmailUsageData ? (
+                <ResponsiveContainer width='100%' height={260}>
+                    <LineChart data={emailUsageChartData} margin={{ top: 10, right: 18, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                        <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+                        <YAxis
+                            tick={{ fontSize: 12, fill: '#64748b' }}
+                            axisLine={false}
+                            tickLine={false}
+                            allowDecimals={false}
+                            tickFormatter={(value) => String(value)}
+                        />
+                        <Tooltip
+                            cursor={<EmailUsageHorizontalCursor />}
+                            formatter={(value) => [`${Number.isFinite(Number(value)) ? Number(value) : 0} emails`, 'Emails Sent']}
+                            labelFormatter={(label) => `${label} usage`}
+                            contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)' }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+                        <Line
+                            type='monotone'
+                            dataKey='emails'
+                            name='Emails Sent'
+                            stroke='#06b6d4'
+                            strokeWidth={3}
+                            connectNulls={false}
+                            dot={(props) => {
+                                const { cx, cy, payload } = props || {};
+                                if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+
+                                const value = Number(payload?.emails);
+                                const hasValue = Number.isFinite(value) && payload?.emails !== null;
+                                const active = Boolean(payload?.active);
+
+                                return (
+                                    <circle
+                                        cx={cx}
+                                        cy={cy}
+                                        r={active ? 6 : hasValue && value > 0 ? 5 : 3}
+                                        fill={active ? '#06b6d4' : hasValue && value > 0 ? '#67e8f9' : 'rgba(6,182,212,0.25)'}
+                                        stroke='#06b6d4'
+                                        strokeWidth={active ? 2 : 1.5}
+                                    />
+                                );
+                            }}
+                            activeDot={{ r: 7 }}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            ) : (
+                <div className='h-64 flex items-center justify-center text-gray-400'>No email usage data</div>
+            )}
+        </div>
+    );
+
     // Email status distribution
     const statusData = [
         { name: 'Sent', value: emailMetrics.delivered, color: '#10b981' },
@@ -197,6 +403,7 @@ export default function SalesKPIPage() {
                         </div>
                     </CardContent>
                 </Card>
+                {renderEmailUsageChart()}
             </div>
         );
     }
@@ -277,6 +484,9 @@ export default function SalesKPIPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Email Billing Usage */}
+            {renderEmailUsageChart()}
 
             {/* Charts Row 1 */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>

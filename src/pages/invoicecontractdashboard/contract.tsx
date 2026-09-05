@@ -59,6 +59,8 @@ const getPdfFileName = (contractName: string | null, contractId: number): string
     return `${safeName || `contract-${contractId}`}.pdf`;
 };
 
+type CreateContractMode = 'choose' | 'upload';
+
 const ContractsPage: NextPage = () => {
     const router = useRouter();
 
@@ -71,6 +73,7 @@ const ContractsPage: NextPage = () => {
     const [contractName, setContractName] = useState('');
     const [email, setEmail] = useState('');
     const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [createMode, setCreateMode] = useState<CreateContractMode>('choose');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -164,12 +167,14 @@ const ContractsPage: NextPage = () => {
         setContractName('');
         setEmail('');
         setPdfFile(null);
+        setCreateMode('choose');
         setIsCreateModalOpen(true);
     };
 
     const handleCloseCreateModal = () => {
         if (isSubmitting) return;
         setIsCreateModalOpen(false);
+        setCreateMode('choose');
         setFormError(null);
     };
 
@@ -242,6 +247,11 @@ const ContractsPage: NextPage = () => {
             return;
         }
 
+        if (createMode !== 'upload') {
+            setFormError('Choose Upload PDF, or open the professional editor to design a contract.');
+            return;
+        }
+
         if (!pdfFile) {
             setFormError('Please upload a PDF file.');
             return;
@@ -282,6 +292,7 @@ const ContractsPage: NextPage = () => {
             setContractName('');
             setEmail('');
             setPdfFile(null);
+            setCreateMode('choose');
             setIsCreateModalOpen(false);
             // eslint-disable-next-line
             void fetchInvoices();
@@ -481,12 +492,18 @@ const ContractsPage: NextPage = () => {
 
             {/* Create Contract Modal */}
             {isCreateModalOpen && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60'>
-                    <div className='w-full max-w-md rounded-[18px] bg-white px-6 py-5 shadow-[0_24px_70px_rgba(15,23,42,0.4)]'>
-                        <div className='mb-3 flex items-start justify-between'>
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-3 py-6'>
+                    <div className='w-full max-w-xl rounded-[18px] bg-white px-6 py-5 shadow-[0_24px_70px_rgba(15,23,42,0.4)]'>
+                        <div className='mb-4 flex items-start justify-between gap-4'>
                             <div>
-                                <h2 className='text-lg font-semibold text-slate-900'>Start a Contract</h2>
-                                <p className='text-[13px] text-gray-500'>Enter contract details and upload the PDF.</p>
+                                <h2 className='text-lg font-semibold text-slate-900'>
+                                    {createMode === 'choose' ? 'How would you like to create the contract?' : 'Upload a Contract'}
+                                </h2>
+                                <p className='mt-1 text-[13px] text-gray-500'>
+                                    {createMode === 'choose'
+                                        ? 'Upload a finished PDF, or build one from scratch in the professional contract studio.'
+                                        : 'Enter the contract details and upload the finished PDF.'}
+                                </p>
                             </div>
                             <button
                                 type='button'
@@ -498,71 +515,114 @@ const ContractsPage: NextPage = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className='space-y-3'>
-                            <div>
-                                <label htmlFor='contractName' className='mb-1 block text-[13px] font-medium text-slate-700'>
-                                    Contract Name
-                                </label>
-                                <input
-                                    id='contractName'
-                                    type='text'
-                                    required
-                                    value={contractName}
-                                    onChange={(e) => setContractName(e.target.value)}
-                                    placeholder='e.g., Service Agreement 2024'
-                                    className='w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor='email' className='mb-1 block text-[13px] font-medium text-slate-700'>
-                                    Recipient Email
-                                </label>
-                                <input
-                                    id='email'
-                                    type='email'
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder='client@example.com'
-                                    className='w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor='pdf' className='mb-1 block text-[13px] font-medium text-slate-700'>
-                                    Contract PDF
-                                </label>
-                                <input
-                                    id='pdf'
-                                    type='file'
-                                    accept='application/pdf'
-                                    onChange={handleFileChange}
-                                    className='block w-full text-[13px] file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-[13px] file:font-medium file:text-blue-700 hover:file:bg-blue-100'
-                                />
-                                {pdfFile && <p className='mt-1 text-[12px] text-gray-500'>Selected: {pdfFile.name}</p>}
-                            </div>
-
-                            {formError && <p className='text-[13px] text-red-700'>{formError}</p>}
-
-                            <div className='mt-4 flex justify-end gap-2'>
+                        {createMode === 'choose' ? (
+                            <div className='grid gap-4 sm:grid-cols-2'>
                                 <button
                                     type='button'
-                                    onClick={handleCloseCreateModal}
-                                    disabled={isSubmitting}
-                                    className='rounded-[12px] border border-gray-300 px-3.5 py-2 text-[13px] text-slate-700 hover:bg-gray-50 disabled:cursor-not-allowed'
+                                    onClick={() => setCreateMode('upload')}
+                                    className='group rounded-[16px] border border-gray-200 p-5 text-left transition hover:border-blue-300 hover:bg-blue-50/50'
                                 >
-                                    Cancel
+                                    <div className='mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-2xl text-blue-700'>↑</div>
+                                    <div className='text-base font-semibold text-slate-900'>Upload PDF</div>
+                                    <p className='mt-1 text-[13px] leading-5 text-gray-500'>Use a contract PDF that is already complete.</p>
+                                    <div className='mt-4 text-[13px] font-medium text-blue-700 group-hover:underline'>Choose a file →</div>
                                 </button>
+
                                 <button
-                                    type='submit'
-                                    disabled={isSubmitting}
-                                    className='rounded-[12px] border-none bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300'
+                                    type='button'
+                                    // eslint-disable-next-line
+                                    onClick={() => void router.push('/invoicecontractdashboard/editor')}
+                                    className='group rounded-[16px] border border-gray-200 p-5 text-left transition hover:border-blue-300 hover:bg-blue-50/50'
                                 >
-                                    {isSubmitting ? 'Creating…' : 'Create Contract'}
+                                    <div className='mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-xl text-white'>✦</div>
+                                    <div className='text-base font-semibold text-slate-900'>Professional Editor</div>
+                                    <p className='mt-1 text-[13px] leading-5 text-gray-500'>
+                                        Create a polished multi-page PDF with drag-and-drop layout, typography, images, tables, signature blocks and reusable
+                                        clauses.
+                                    </p>
+                                    <div className='mt-4 text-[13px] font-medium text-blue-700 group-hover:underline'>Open contract studio →</div>
                                 </button>
                             </div>
-                        </form>
+                        ) : (
+                            <form onSubmit={handleSubmit} className='space-y-3'>
+                                <button
+                                    type='button'
+                                    onClick={() => {
+                                        setFormError(null);
+                                        setPdfFile(null);
+                                        setCreateMode('choose');
+                                    }}
+                                    disabled={isSubmitting}
+                                    className='text-[13px] font-medium text-blue-700 hover:underline disabled:cursor-not-allowed'
+                                >
+                                    ← Back to options
+                                </button>
+
+                                <div>
+                                    <label htmlFor='contractName' className='mb-1 block text-[13px] font-medium text-slate-700'>
+                                        Contract Name
+                                    </label>
+                                    <input
+                                        id='contractName'
+                                        type='text'
+                                        required
+                                        value={contractName}
+                                        onChange={(e) => setContractName(e.target.value)}
+                                        placeholder='e.g., Service Agreement 2026'
+                                        className='w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor='email' className='mb-1 block text-[13px] font-medium text-slate-700'>
+                                        Recipient Email
+                                    </label>
+                                    <input
+                                        id='email'
+                                        type='email'
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder='client@example.com'
+                                        className='w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                                    />
+                                </div>
+
+                                <div className='rounded-[14px] border border-dashed border-gray-300 bg-gray-50 p-4'>
+                                    <label htmlFor='pdf' className='mb-2 block text-[13px] font-medium text-slate-700'>
+                                        Contract PDF
+                                    </label>
+                                    <input
+                                        id='pdf'
+                                        type='file'
+                                        accept='application/pdf'
+                                        onChange={handleFileChange}
+                                        className='block w-full text-[13px] file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-[13px] file:font-medium file:text-blue-700 hover:file:bg-blue-100'
+                                    />
+                                    {pdfFile && <p className='mt-2 text-[12px] text-gray-500'>Selected: {pdfFile.name}</p>}
+                                </div>
+
+                                {formError && <p className='text-[13px] text-red-700'>{formError}</p>}
+
+                                <div className='mt-4 flex justify-end gap-2'>
+                                    <button
+                                        type='button'
+                                        onClick={handleCloseCreateModal}
+                                        disabled={isSubmitting}
+                                        className='rounded-[12px] border border-gray-300 px-3.5 py-2 text-[13px] text-slate-700 hover:bg-gray-50 disabled:cursor-not-allowed'
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type='submit'
+                                        disabled={isSubmitting}
+                                        className='rounded-[12px] border-none bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300'
+                                    >
+                                        {isSubmitting ? 'Creating…' : 'Create Contract'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             )}

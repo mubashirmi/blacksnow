@@ -1,9 +1,10 @@
-import { AffiliateSidebar } from '@/components/affiliate-sidebar';
+// import AffiliateSidebar from '@/components/affiliate-sidebar';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { LightningSilverTourPopup } from './Lightningsilvertourpopup';
+import { AffiliateSidebar } from './affiliate-sidebar';
 
 interface UserData {
     id: number;
@@ -233,7 +234,7 @@ export default function AffiliateLayout({ children }: { children: React.ReactNod
         <div className='min-h-screen bg-gray-50 relative'>
             <LightningSilverTourPopup onComplete={() => console.log('Tour complete')} />
             {/* Fixed Sidebar */}
-            <AffiliateSidebar />
+            <AffiliateSidebar stripeConnected={userData.adminStripeConnectIdStatus === true} stripeUserId={userData.id} />
 
             {/* Page content (also shifted right by the sidebar width) */}
             <main className='pl-64'>

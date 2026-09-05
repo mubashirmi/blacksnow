@@ -1,7 +1,20 @@
-'use client';
 // Lightning Gold Sidebar
 import axios from 'axios';
-import { AlertTriangle, BarChart3, BellOff, CheckCircle, ChevronDown, LinkIcon, Loader2, LogOut, MessageSquare, Star, StickyNote, X } from 'lucide-react';
+import {
+    AlertTriangle,
+    BarChart3,
+    BellOff,
+    CheckCircle,
+    ChevronDown,
+    LinkIcon,
+    Loader2,
+    LogOut,
+    MessageSquare,
+    Scale,
+    Star,
+    StickyNote,
+    X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -51,15 +64,26 @@ const isDashboardRole = (role: string): role is ToolRole => Object.prototype.has
 const hasToolName = (list: string[] | undefined, toolName: string) =>
     Array.isArray(list) && list.some((item) => String(item).toLowerCase() === toolName.toLowerCase());
 
-export function SuperAffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) {
+type StripeSidebarProps = React.HTMLAttributes<HTMLElement> & {
+    stripeConnected?: boolean;
+    stripeUserId?: number;
+};
+
+export function SuperAffiliateSidebar({ stripeConnected = false, stripeUserId, ...props }: StripeSidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
 
     const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+    const [showStripeConnectedModal, setShowStripeConnectedModal] = React.useState(false);
+    const [isDeletingStripe, setIsDeletingStripe] = React.useState(false);
+    const [isChangingStripe, setIsChangingStripe] = React.useState(false);
+    const [stripeActionError, setStripeActionError] = React.useState<string | null>(null);
+
     const [feedbackStatus, setFeedbackStatus] = React.useState<FeedbackStatusResponse | null>(null);
     const [isStatusLoading, setIsStatusLoading] = React.useState(false);
     const [dashboardDropdownOpen, setDashboardDropdownOpen] = React.useState(false);
+    const [legalDropdownOpen, setLegalDropdownOpen] = React.useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = React.useState(false);
     const [feedbackReview, setFeedbackReview] = React.useState('');
     const [feedbackStars, setFeedbackStars] = React.useState('5');
@@ -432,6 +456,102 @@ export function SuperAffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) 
         }
     }, [doLogout, isLoadingUnsubscribe]);
 
+    const getStripeUserId = React.useCallback(() => {
+        if (stripeUserId && Number.isInteger(stripeUserId) && stripeUserId > 0) {
+            return stripeUserId;
+        }
+
+        const cookies = parseCookies();
+        const storedUserId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+        const rawUserId = storedUserId || cookies.id;
+
+        if (!rawUserId) {
+            return null;
+        }
+        // eslint-disable-next-line
+        const userId = Number(String(rawUserId).replace(/^\"|\"$/g, ''));
+        return Number.isInteger(userId) && userId > 0 ? userId : null;
+    }, [stripeUserId]);
+
+    const handleDeleteStripeConnect = React.useCallback(async () => {
+        if (isDeletingStripe || isChangingStripe) return;
+
+        const userId = getStripeUserId();
+        if (!userId) {
+            setStripeActionError('User ID was not found. Please sign in again and try again.');
+            return;
+        }
+
+        const confirmed = window.confirm('Are you sure you want to delete your Stripe Connect account?');
+        if (!confirmed) return;
+
+        setIsDeletingStripe(true);
+        setStripeActionError(null);
+
+        try {
+            await axios.delete('/api/v2/stripe-connect', {
+                data: { id: userId },
+                timeout: 15000,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Re-run the dashboard Stripe status check from a fresh page load.
+            window.location.reload();
+        } catch (error: any) {
+            console.error('Error deleting Stripe Connect account:', error);
+            setStripeActionError(error?.response?.data?.message || 'Unable to delete your Stripe Connect account. Please try again.');
+        } finally {
+            setIsDeletingStripe(false);
+        }
+    }, [getStripeUserId, isChangingStripe, isDeletingStripe]);
+
+    const handleChangeStripeConnect = React.useCallback(async () => {
+        if (isDeletingStripe || isChangingStripe) return;
+
+        const userId = getStripeUserId();
+        if (!userId) {
+            setStripeActionError('User ID was not found. Please sign in again and try again.');
+            return;
+        }
+
+        setIsChangingStripe(true);
+        setStripeActionError(null);
+
+        try {
+            const response = await axios.patch(
+                '/api/v2/stripe-connect',
+                {
+                    id: userId,
+                    action: 'onboarding',
+                },
+                {
+                    timeout: 15000,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            const onboardingUrl = response.data?.onboardingUrl || response.data?.data?.onboardingUrl;
+
+            if (onboardingUrl) {
+                window.location.href = onboardingUrl;
+                return;
+            }
+
+            // If the backend completes the change without returning a URL,
+            // reload so the dashboard re-checks the latest Stripe status.
+            window.location.reload();
+        } catch (error: any) {
+            console.error('Error changing Stripe Connect account:', error);
+            setStripeActionError(error?.response?.data?.message || 'Unable to change your Stripe Connect account. Please try again.');
+        } finally {
+            setIsChangingStripe(false);
+        }
+    }, [getStripeUserId, isChangingStripe, isDeletingStripe]);
+
     const closeResultModal = () => {
         if (unsubscribeResult.type === 'success') {
             doLogout();
@@ -536,42 +656,82 @@ export function SuperAffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) 
 
             {/* Footer */}
             <div className='p-4 border-t border-gray-100 space-y-2'>
-                <button
-                    className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
-                    type='button'
-                    onClick={() => setShowUnsubscribeConfirm(true)}
-                >
-                    <BellOff className='w-4 h-4' />
-                    <span>Unsubscribe</span>
-                </button>
-
-                <button
-                    className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 bg-amber-200 border-[1px] border-amber-300  hover:bg-amber-400/70 hover:text-amber-700 transition-all duration-200 font-medium cursor-pointer'
-                    type='button'
-                    onClick={() => setShowPauseConfirm(true)}
-                >
-                    <BellOff className='w-4 h-4' />
-                    <span>Pause</span>
-                </button>
+                {stripeConnected && (
+                    <button
+                        type='button'
+                        onClick={() => {
+                            setStripeActionError(null);
+                            setShowStripeConnectedModal(true);
+                        }}
+                        className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium cursor-pointer'
+                    >
+                        <CheckCircle className='w-4 h-4' />
+                        <span>Stripe Connected</span>
+                    </button>
+                )}
 
                 {feedbackSuccess && (
                     <div className='mb-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>{feedbackSuccess}</div>
                 )}
 
-                {showFeedbackButton && (
-                    <div className='space-y-2'>
-                        {showFeedbackButton && (
+                <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50/80'>
+                    <button
+                        type='button'
+                        onClick={() => setLegalDropdownOpen((open) => !open)}
+                        aria-expanded={legalDropdownOpen}
+                        aria-controls='super-affiliate-legal-actions'
+                        className='flex w-full items-center gap-3 px-4 py-3 text-left font-medium text-gray-700 transition-colors hover:bg-gray-100'
+                    >
+                        <Scale className='h-4 w-4' />
+                        <span className='flex-1'>Legal</span>
+                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${legalDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {legalDropdownOpen && (
+                        <div
+                            id='super-affiliate-legal-actions'
+                            className='space-y-1 border-t border-gray-200 bg-white p-1.5'
+                            role='group'
+                            aria-label='Legal actions'
+                        >
+                            {showFeedbackButton && (
+                                <button
+                                    type='button'
+                                    onClick={() => {
+                                        setLegalDropdownOpen(false);
+                                        openFeedbackModal();
+                                    }}
+                                    className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-700'
+                                >
+                                    <MessageSquare className='w-4 h-4' />
+                                    <span>Feedback</span>
+                                </button>
+                            )}
                             <button
                                 type='button'
-                                onClick={openFeedbackModal}
-                                className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 font-medium cursor-pointer'
+                                onClick={() => {
+                                    setLegalDropdownOpen(false);
+                                    setShowPauseConfirm(true);
+                                }}
+                                className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-amber-50 hover:text-amber-700'
                             >
-                                <MessageSquare className='w-4 h-4' />
-                                <span>Feedback</span>
+                                <BellOff className='h-4 w-4' />
+                                <span>Pause</span>
                             </button>
-                        )}
-                    </div>
-                )}
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    setLegalDropdownOpen(false);
+                                    setShowUnsubscribeConfirm(true);
+                                }}
+                                className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-red-50 hover:text-red-700'
+                            >
+                                <AlertTriangle className='h-4 w-4' />
+                                <span>Unsubscribe</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 <button
                     className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
@@ -582,6 +742,57 @@ export function SuperAffiliateSidebar(props: React.HTMLAttributes<HTMLElement>) 
                     <span>Logout</span>
                 </button>
             </div>
+
+            {/* Stripe Connected Modal */}
+            {showStripeConnectedModal && stripeConnected && (
+                <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-[2px] px-4'>
+                    <div className='w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl'>
+                        <div className='px-6 pt-6 pb-5 text-center'>
+                            <div className='mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100'>
+                                <CheckCircle className='h-7 w-7 text-green-600' />
+                            </div>
+
+                            <h2 className='text-xl font-semibold text-gray-900'>Stripe Connected</h2>
+                            <p className='mt-2 text-sm text-gray-600'>Stripe is connected successfully.</p>
+
+                            {stripeActionError && (
+                                <div className='mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>{stripeActionError}</div>
+                            )}
+                        </div>
+
+                        <div className='space-y-3 border-t border-gray-100 px-6 py-5'>
+                            <button
+                                type='button'
+                                onClick={handleChangeStripeConnect}
+                                disabled={isChangingStripe || isDeletingStripe}
+                                className='flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60'
+                            >
+                                {isChangingStripe && <Loader2 className='h-4 w-4 animate-spin' />}
+                                <span>{isChangingStripe ? 'Opening Stripe...' : 'Change Stripe Connect Account'}</span>
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={handleDeleteStripeConnect}
+                                disabled={isDeletingStripe || isChangingStripe}
+                                className='flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 font-medium text-red-600 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60'
+                            >
+                                {isDeletingStripe && <Loader2 className='h-4 w-4 animate-spin' />}
+                                <span>{isDeletingStripe ? 'Deleting...' : 'Delete Stripe Connect Account'}</span>
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={() => !isDeletingStripe && !isChangingStripe && setShowStripeConnectedModal(false)}
+                                disabled={isDeletingStripe || isChangingStripe}
+                                className='w-full rounded-lg px-4 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60'
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Logout Modal */}
             {isModalOpen && (

@@ -89,6 +89,13 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router]);
 
+    const normalizeAppPassword = (value: string) => value.replace(/\s/g, '').slice(0, 16);
+
+    const formatAppPassword = (value: string) => {
+        const normalized = normalizeAppPassword(value);
+        return normalized.match(/.{1,4}/g)?.join(' ') || '';
+    };
+
     const validateCredentialsForm = () => {
         const errors: { email?: string; appPassword?: string } = {};
 
@@ -98,10 +105,12 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
             errors.email = 'Invalid email format';
         }
 
-        if (!credentialsData.appPassword.trim()) {
+        const normalizedAppPassword = normalizeAppPassword(credentialsData.appPassword);
+
+        if (!normalizedAppPassword) {
             errors.appPassword = 'App password is required';
-        } else if (credentialsData.appPassword.trim().length < 10) {
-            errors.appPassword = 'App password must be at least 10 characters';
+        } else if (normalizedAppPassword.length !== 16) {
+            errors.appPassword = 'App password must be exactly 16 characters';
         }
 
         setCredentialsErrors(errors);
@@ -128,7 +137,7 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
                 },
                 body: JSON.stringify({
                     email: credentialsData.email.trim(),
-                    appPassword: credentialsData.appPassword.trim(),
+                    appPassword: normalizeAppPassword(credentialsData.appPassword),
                     id: parseInt(userId),
                 }),
             });
@@ -138,10 +147,8 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
                 throw new Error(errorData.message || 'Failed to save credentials');
             }
 
-            // Success - close modal and reload
-            setShowCredentialsModal(false);
-            setCredentialsData({ email: '', appPassword: '' });
-            setIsLoading(false);
+            // Success - reload so the credentials check runs again with the saved values.
+            window.location.reload();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
@@ -151,7 +158,11 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
 
     const handleCredentialsInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setCredentialsData((prev) => ({ ...prev, [name]: value }));
+
+        const nextValue = name === 'appPassword' ? formatAppPassword(value) : value;
+
+        setCredentialsData((prev) => ({ ...prev, [name]: nextValue }));
+
         if (credentialsErrors[name as keyof typeof credentialsErrors]) {
             setCredentialsErrors((prev) => ({ ...prev, [name]: '' }));
         }
@@ -257,11 +268,19 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
                                     className={`w-full px-4 py-3 rounded-lg border ${
                                         credentialsErrors.appPassword ? 'border-red-300 bg-red-50' : 'border-slate-300'
                                     } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono`}
-                                    placeholder='xbsr gbiv sizp twwe'
+                                    placeholder='xxxx xxxx xxxx xxxx'
+                                    maxLength={19}
+                                    autoComplete='off'
+                                    spellCheck={false}
                                     disabled={submitting}
                                 />
                                 {credentialsErrors.appPassword && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.appPassword}</p>}
-                                <p className='text-slate-500 text-xs mt-1'>Enter the app password exactly as provided by your email provider</p>
+                                <div className='mt-1 flex items-center justify-between gap-3 text-xs'>
+                                    <p className='text-slate-500'>Enter the 16-character app password. Spaces are added automatically.</p>
+                                    <span className='flex-shrink-0 font-mono text-slate-500'>
+                                        {normalizeAppPassword(credentialsData.appPassword).length}/16
+                                    </span>
+                                </div>
                             </div>
 
                             <div className='pt-4'>

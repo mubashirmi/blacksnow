@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { AlertTriangle, BellOff, CheckCircle, ChevronDown, List, Loader2, LogOut, MessageSquare, Monitor, PlusSquare, Star, X } from 'lucide-react';
+import { AlertTriangle, BellOff, CheckCircle, ChevronDown, List, Loader2, LogOut, MessageSquare, Monitor, PlusSquare, Scale, Star, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,7 @@ const UNSUBSCRIBE_PRODUCT = {
 const PAUSE_SUBSCRIPTION_API = '/api/v2/pause-subscription';
 
 type ToolRole = 'EmailMarketing' | 'DigitalBillboard' | 'LightningGold' | 'LightningSilver' | 'InvoiceTool';
-
+// ["EmailMarketing","DigitalBillboard","LightningGold","LightningSilver","InvoiceTool"]
 type FeedbackStatusResponse = {
     user?: {
         id?: number | string;
@@ -71,6 +71,7 @@ export function DigitalBillboardSidebar({
     const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatusResponse | null>(null);
     const [isStatusLoading, setIsStatusLoading] = useState(false);
     const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
+    const [legalDropdownOpen, setLegalDropdownOpen] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [feedbackReview, setFeedbackReview] = useState('');
     const [feedbackStars, setFeedbackStars] = useState('5');
@@ -546,41 +547,68 @@ export function DigitalBillboardSidebar({
 
             {/* Footer */}
             <div className='p-4 border-t border-gray-100 space-y-2'>
-                <button
-                    onClick={() => setShowUnsubscribeConfirm(true)}
-                    className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
-                >
-                    <BellOff className='w-4 h-4' />
-                    <span>Unsubscribe</span>
-                </button>
-
-                <button
-                    className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 bg-amber-200 border-[1px] border-amber-300  hover:bg-amber-400/70 hover:text-amber-700 transition-all duration-200 font-medium cursor-pointer'
-                    type='button'
-                    onClick={() => setShowPauseConfirm(true)}
-                >
-                    <BellOff className='w-4 h-4' />
-                    <span>Pause</span>
-                </button>
-
                 {feedbackSuccess && (
                     <div className='mb-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>{feedbackSuccess}</div>
                 )}
 
-                {showFeedbackButton && (
-                    <div className='space-y-2'>
-                        {showFeedbackButton && (
+                <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50/80'>
+                    <button
+                        type='button'
+                        onClick={() => setLegalDropdownOpen((open) => !open)}
+                        aria-expanded={legalDropdownOpen}
+                        aria-controls='digital-billboard-legal-actions'
+                        className='flex w-full items-center gap-3 px-4 py-3 text-left font-medium text-gray-700 transition-colors hover:bg-gray-100'
+                    >
+                        <Scale className='h-4 w-4' />
+                        <span className='flex-1'>Legal</span>
+                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${legalDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {legalDropdownOpen && (
+                        <div
+                            id='digital-billboard-legal-actions'
+                            className='space-y-1 border-t border-gray-200 bg-white p-1.5'
+                            role='group'
+                            aria-label='Legal actions'
+                        >
+                            {showFeedbackButton && (
+                                <button
+                                    type='button'
+                                    onClick={() => {
+                                        setLegalDropdownOpen(false);
+                                        openFeedbackModal();
+                                    }}
+                                    className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-700'
+                                >
+                                    <MessageSquare className='w-4 h-4' />
+                                    <span>Feedback</span>
+                                </button>
+                            )}
                             <button
                                 type='button'
-                                onClick={openFeedbackModal}
-                                className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 font-medium cursor-pointer'
+                                onClick={() => {
+                                    setLegalDropdownOpen(false);
+                                    setShowPauseConfirm(true);
+                                }}
+                                className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-amber-50 hover:text-amber-700'
                             >
-                                <MessageSquare className='w-4 h-4' />
-                                <span>Feedback</span>
+                                <BellOff className='h-4 w-4' />
+                                <span>Pause</span>
                             </button>
-                        )}
-                    </div>
-                )}
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    setLegalDropdownOpen(false);
+                                    setShowUnsubscribeConfirm(true);
+                                }}
+                                className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-red-50 hover:text-red-700'
+                            >
+                                <AlertTriangle className='h-4 w-4' />
+                                <span>Unsubscribe</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 <button
                     onClick={() => setShowLogoutConfirm(true)}

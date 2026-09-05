@@ -1,3 +1,5 @@
+import { recordEmailUsage } from '@/lib/emailUsage';
+import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]';
@@ -69,24 +71,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     const session = await getServerSession(req, res, authOptions);
+    const authenticatedSession = session as {
+        authId?: number;
+        accessToken?: string;
+        error?: string;
+        provider?: string;
+    } | null;
 
-    if (!session?.accessToken) return res.status(401).json({ error: 'Not authenticated' });
-    if (session.error === 'RefreshAccessTokenError') {
+    if (!authenticatedSession?.accessToken) return res.status(401).json({ error: 'Not authenticated' });
+    if (authenticatedSession.error === 'RefreshAccessTokenError') {
         return res.status(401).json({ error: 'Token refresh failed. Please sign in again.' });
     }
 
     const { to, subject, text } = req.body as { to: string; subject: string; text: string };
     if (!to || !subject || !text) return res.status(400).json({ error: 'Missing to/subject/text' });
 
-    if (session.provider === 'google') {
-        const r = await sendWithGmail(session.accessToken, to, subject, text);
+    const authId = Number(authenticatedSession.authId);
+    if (!Number.isInteger(authId) || authId <= 0) return res.status(401).json({ error: 'Invalid authenticated user' });
+
+    const saveSuccessfulSend = async (messageId: string | null) => {
+        await prisma.emailSentHistory.create({
+            data: {
+                subject,
+                text,
+                status: 'sent',
+                messageId,
+                sentAt: new Date(),
+                authId,
+            },
+        });
+
+        try {
+            await recordEmailUsage(authId, 1);
+        } catch (usageError) {
+            console.error('Failed to record connected-account email usage:', usageError);
+        }
+    };
+
+    if (authenticatedSession.provider === 'google') {
+        const r = await sendWithGmail(authenticatedSession.accessToken, to, subject, text);
         if (!r.ok) return res.status(r.status).json({ error: 'Gmail send failed', details: r.data });
+        await saveSuccessfulSend(typeof r.data?.id === 'string' ? r.data.id : null);
         return res.status(200).json({ ok: true, provider: 'google', result: r.data });
     }
 
-    if (session.provider === 'azure-ad') {
-        const r = await sendWithOutlook(session.accessToken, to, subject, text);
+    if (authenticatedSession.provider === 'azure-ad') {
+        const r = await sendWithOutlook(authenticatedSession.accessToken, to, subject, text);
         if (!r.ok) return res.status(r.status).json({ error: 'Outlook send failed', details: r.data });
+        await saveSuccessfulSend(null);
         return res.status(200).json({ ok: true, provider: 'azure-ad', result: r.data });
     }
 

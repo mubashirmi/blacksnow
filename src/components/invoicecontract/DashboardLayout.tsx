@@ -267,7 +267,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
             {/* <EmailMarketingTourPopup onComplete={() => console.log('Tour complete')} /> */}
 
             <div className='flex pl-64'>
-                <InvoiceContractSidebar />
+                <InvoiceContractSidebar stripeConnected={userData.adminStripeConnectIdStatus === true} stripeUserId={userData.id} />
 
                 <main className='flex-1 p-8'>
                     <div className='mx-auto max-w-6xl'>

@@ -41,12 +41,111 @@ model Auth {
   otpVerified                  Boolean                        @default(false)
   status                       String                         @default("active")
 
+  // Stripe customer that owns the user's payment methods
+  stripeCustomerId String? @unique
+
+  // Monthly included emails
+  emailUsageLimit Int @default(100000)
+
+  // Dollars per overage email.
+  // $0.005 = half a cent.
+  emailOverageRate Float @default(0.005)
+
   newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
   newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
   contracts            Contract[]
   invoices             Invoice[]
   toolFeedbacks        ToolFeedback[]
   subscriptionInvs     SubscriptionInv[]
+
+  emailUsages         EmailUsage[]
+  emailOverageCharges EmailOverageCharge[]
+}
+
+model EmailUsage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authId Int
+  auth   Auth @relation(fields: [authId], references: [id], onDelete: Cascade)
+
+  // Calendar month, e.g. "2026-08"
+  month String
+
+  // Successfully sent emails during this month
+  count Int @default(0)
+
+  // Snapshot when this monthly record was created.
+  // This stops changing a user's limit later from altering old bills.
+  includedLimit Int @default(100000)
+
+  // $0.005 = 5,000 micro-dollars.
+  //
+  // $1.00 = 1,000,000 micro-dollars
+  // $0.01 =    10,000 micro-dollars
+  // $0.005 =    5,000 micro-dollars
+  overageRateMicros Int @default(5000)
+
+  // Exact monetary amount already successfully charged against
+  // this monthly usage record.
+  overageBilledMicros BigInt @default(0)
+
+  // Legacy field. Keep temporarily if you already have it.
+  // New billing code does NOT use this field.
+  overageBilled Int @default(0)
+
+  @@unique([authId, month])
+  @@index([authId])
+}
+
+enum EmailOverageChargeStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REQUIRES_ACTION
+}
+
+model EmailOverageCharge {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authId Int
+  auth   Auth @relation(fields: [authId], references: [id], onDelete: Cascade)
+
+  // UTC date, e.g. "2026-08-31"
+  billingDate String
+
+  // Stripe works in integer cents.
+  // Example:
+  // 100 overage emails * $0.005 = 50 cents
+  amountCents Int
+
+  // Exact amount from EmailUsage that this charge covers.
+  coveredMicros BigInt
+
+  status EmailOverageChargeStatus @default(PENDING)
+
+  stripePaymentIntentId String? @unique
+  stripePaymentMethodId String?
+
+  // Base idempotency key for the daily billing record.
+  idempotencyKey String @unique
+
+  failureCode    String?
+  failureMessage String?
+
+  chargedAt DateTime?
+
+  // Set in same DB transaction that applies coveredMicros
+  // to EmailUsage rows.
+  usageAppliedAt DateTime?
+
+  @@unique([authId, billingDate])
+  @@index([authId])
+  @@index([status])
 }
 
 enum Role {

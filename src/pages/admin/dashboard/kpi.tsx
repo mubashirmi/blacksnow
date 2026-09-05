@@ -26,6 +26,7 @@ type TotalKPIResponse = {
 
 type ProductRevenueEntry = {
     product: string;
+    weekly?: number;
     monthly: number;
     yearly: number;
 };
@@ -157,6 +158,22 @@ type FeedbackApiItem = {
     } | null;
 };
 
+type ContractStatsValue = {
+    today: number;
+    weekly: number;
+    monthly: number;
+    yearly: number;
+    total: number;
+};
+
+type ContractStatsResponseItem = {
+    contract?: ContractStatsValue;
+    invoice?: ContractStatsValue;
+    subscriptionInv?: ContractStatsValue;
+};
+
+type ContractStatsResponse = ContractStatsResponseItem[];
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -183,6 +200,7 @@ const LIGHTNING_SILVER_PRODUCT_OPTIONS: { label: string; value: AffiliateMetricP
 
 type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
 type MetricPeriod = 'Week' | 'Month' | 'Year';
+type ProductRevenuePeriod = 'Week' | 'Month' | 'Year';
 type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
 type ToolFeedbackMetricType = 'FeedbackCount' | 'AverageStars';
 
@@ -367,6 +385,7 @@ export default function KPIPage() {
     const [productRevenueLoading, setProductRevenueLoading] = useState(false);
     const [productRevenueError, setProductRevenueError] = useState<string | null>(null);
     const [selectedRevenueProduct, setSelectedRevenueProduct] = useState<string>('All');
+    const [productRevenuePeriod, setProductRevenuePeriod] = useState<ProductRevenuePeriod>('Month');
 
     // Chart C: Lightning Billing Cycle
     // eslint-disable-next-line
@@ -393,6 +412,11 @@ export default function KPIPage() {
     const [toolFeedbackTool, setToolFeedbackTool] = useState<string>('All');
     const [toolFeedbackMetricType, setToolFeedbackMetricType] = useState<ToolFeedbackMetricType>('FeedbackCount');
     const [toolFeedbackMetricPeriod, setToolFeedbackMetricPeriod] = useState<MetricPeriod>('Week');
+
+    // Chart F: Invoice Contract KPI
+    const [contractStats, setContractStats] = useState<ContractStatsResponse>([]);
+    const [contractStatsLoading, setContractStatsLoading] = useState(false);
+    const [contractStatsError, setContractStatsError] = useState<string | null>(null);
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -595,21 +619,61 @@ export default function KPIPage() {
         };
     }, []);
 
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setContractStatsLoading(true);
+                setContractStatsError(null);
+                const json = await fetchJSON<ContractStatsResponse>('/api/v2/get-contract-stats');
+
+                if (cancelled) return;
+                setContractStats(Array.isArray(json) ? json : []);
+            } catch (e: any) {
+                if (cancelled) return;
+                setContractStatsError(e?.message || 'Failed to load invoice contract KPI');
+                setContractStats([]);
+            } finally {
+                if (!cancelled) setContractStatsLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     // ─────────────────────────────────────────────────────────────────────────
 
     // ─── v4 derived data ──────────────────────────────────────────────────────
 
-    /** Product Revenue: build line chart data from /api/v4/product-revenue-chart */
+    /** Product Revenue: build chart data for the selected Week/Month/Year period */
     const productRevenueChartData = useMemo(() => {
         const entries = Object.values(productRevenue?.revenueData ?? {});
         const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((e) => e.product === selectedRevenueProduct);
-        return filtered.map((e) => ({
-            product: formatProductName(e.product),
-            productKey: e.product,
-            MRR: safeNumber(e.monthly),
-            ARR: safeNumber(e.yearly),
-        }));
-    }, [productRevenue, selectedRevenueProduct]);
+
+        return filtered.map((e) => {
+            const monthly = safeNumber(e.monthly);
+            const yearly = safeNumber(e.yearly);
+
+            // Prefer a weekly value from the API when available.
+            // The current v4 response only guarantees monthly/yearly, so weekly
+            // falls back to an MRR-derived weekly equivalent.
+            const weekly = e.weekly != null ? safeNumber(e.weekly) : monthly / 4.345;
+
+            const revenue = productRevenuePeriod === 'Week' ? weekly : productRevenuePeriod === 'Month' ? monthly : yearly;
+
+            return {
+                product: formatProductName(e.product),
+                productKey: e.product,
+                Revenue: revenue,
+                MRR: monthly,
+                ARR: yearly,
+            };
+        });
+    }, [productRevenue, selectedRevenueProduct, productRevenuePeriod]);
+
+    const productRevenueSeriesLabel = productRevenuePeriod === 'Week' ? 'Weekly Revenue' : productRevenuePeriod === 'Month' ? 'MRR (Monthly)' : 'ARR (Yearly)';
 
     const productRevenueOptions = useMemo(() => {
         const keys = Object.keys(productRevenue?.revenueData ?? {});
@@ -831,6 +895,52 @@ export default function KPIPage() {
         return `${toolFeedbackSelectedValue} feedbacks`;
     }, [toolFeedbackMetricType, toolFeedbackSelectedValue]);
 
+    const contractStatsByType = useMemo(() => {
+        const empty: ContractStatsValue = { today: 0, weekly: 0, monthly: 0, yearly: 0, total: 0 };
+
+        return {
+            contract: contractStats.find((item) => item.contract)?.contract ?? empty,
+            invoice: contractStats.find((item) => item.invoice)?.invoice ?? empty,
+            subscriptionInv: contractStats.find((item) => item.subscriptionInv)?.subscriptionInv ?? empty,
+        };
+    }, [contractStats]);
+
+    const invoiceContractChartData = useMemo(
+        () => [
+            {
+                period: 'Today',
+                contracts: safeNumber(contractStatsByType.contract.today),
+                invoices: safeNumber(contractStatsByType.invoice.today),
+                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.today),
+            },
+            {
+                period: 'Weekly',
+                contracts: safeNumber(contractStatsByType.contract.weekly),
+                invoices: safeNumber(contractStatsByType.invoice.weekly),
+                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.weekly),
+            },
+            {
+                period: 'Monthly',
+                contracts: safeNumber(contractStatsByType.contract.monthly),
+                invoices: safeNumber(contractStatsByType.invoice.monthly),
+                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.monthly),
+            },
+            {
+                period: 'Yearly',
+                contracts: safeNumber(contractStatsByType.contract.yearly),
+                invoices: safeNumber(contractStatsByType.invoice.yearly),
+                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.yearly),
+            },
+            {
+                period: 'Total',
+                contracts: safeNumber(contractStatsByType.contract.total),
+                invoices: safeNumber(contractStatsByType.invoice.total),
+                subscriptionInvoices: safeNumber(contractStatsByType.subscriptionInv.total),
+            },
+        ],
+        [contractStatsByType]
+    );
+
     // ─────────────────────────────────────────────────────────────────────────
 
     const salesSeries = useMemo(
@@ -918,6 +1028,18 @@ export default function KPIPage() {
                                     </option>
                                 ))}
                             </select>
+
+                            {/* Revenue timeframe filter */}
+                            <select
+                                value={productRevenuePeriod}
+                                onChange={(e) => setProductRevenuePeriod(e.target.value as ProductRevenuePeriod)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+
                             {/* Summary pills */}
                             <div className='flex gap-2'>
                                 <StatPill label='Total MRR' value={currency(productRevenueTotals.totalMRR)} color='border-blue-200 bg-blue-50 text-blue-800' />
@@ -940,7 +1062,7 @@ export default function KPIPage() {
                                 <LineChart data={productRevenueChartData}>
                                     <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
                                     <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
-                                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => currency(safeNumber(v))} />
                                     <Tooltip
                                         cursor={<HorizontalCursor />}
                                         formatter={(value: any) => currency(safeNumber(value))}
@@ -949,28 +1071,14 @@ export default function KPIPage() {
                                     <Legend />
                                     <Line
                                         type='monotone'
-                                        dataKey='MRR'
-                                        name='MRR (Monthly)'
+                                        dataKey='Revenue'
+                                        name={productRevenueSeriesLabel}
                                         stroke='#3b82f6'
                                         strokeWidth={3}
                                         dot={{
                                             r: 4,
                                             fill: '#3b82f6',
                                             stroke: '#3b82f6',
-                                            strokeWidth: 2,
-                                        }}
-                                        activeDot={{ r: 7 }}
-                                    />
-                                    <Line
-                                        type='monotone'
-                                        dataKey='ARR'
-                                        name='ARR (Yearly)'
-                                        stroke='#6366f1'
-                                        strokeWidth={3}
-                                        dot={{
-                                            r: 4,
-                                            fill: '#6366f1',
-                                            stroke: '#6366f1',
                                             strokeWidth: 2,
                                         }}
                                         activeDot={{ r: 7 }}
@@ -1069,7 +1177,14 @@ export default function KPIPage() {
                             <LineChart data={lightningGoldSeries as any}>
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='period' />
-                                <YAxis />
+                                <YAxis
+                                    tickFormatter={(value) => {
+                                        const v = safeNumber(value, 0);
+                                        if (lightningGoldMetricType === 'Revenue') return currency(v);
+                                        if (lightningGoldMetricType === 'ChurnRate') return percent(v);
+                                        return String(v);
+                                    }}
+                                />
                                 <Tooltip
                                     cursor={<HorizontalCursor />}
                                     formatter={(value: any) => {
@@ -1172,7 +1287,14 @@ export default function KPIPage() {
                             <LineChart data={lightningSilverSeries as any}>
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='period' />
-                                <YAxis />
+                                <YAxis
+                                    tickFormatter={(value) => {
+                                        const v = safeNumber(value, 0);
+                                        if (lightningSilverMetricType === 'Revenue') return currency(v);
+                                        if (lightningSilverMetricType === 'ChurnRate') return percent(v);
+                                        return String(v);
+                                    }}
+                                />
                                 <Tooltip
                                     cursor={<HorizontalCursor />}
                                     formatter={(value: any) => {
@@ -1322,6 +1444,86 @@ export default function KPIPage() {
                         </>
                     ) : (
                         <div className='h-64 flex items-center justify-center text-gray-400'>No email sent data</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* ✅ NEW CHART E: Invoice Contract KPI                           */}
+                {/* GET /api/v2/get-contract-stats                                */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Invoice Contract KPI</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Contracts, invoices, and subscription invoices created by reporting period</p>
+                        </div>
+
+                        <div className='flex flex-wrap gap-2'>
+                            <StatPill
+                                label='Total Contracts'
+                                value={String(contractStatsByType.contract.total)}
+                                color='border-blue-200 bg-blue-50 text-blue-800'
+                            />
+                            <StatPill
+                                label='Total Invoices'
+                                value={String(contractStatsByType.invoice.total)}
+                                color='border-emerald-200 bg-emerald-50 text-emerald-800'
+                            />
+                            <StatPill
+                                label='Subscription Invoices'
+                                value={String(contractStatsByType.subscriptionInv.total)}
+                                color='border-violet-200 bg-violet-50 text-violet-800'
+                            />
+                        </div>
+                    </div>
+
+                    {contractStatsError && <div className='mb-4 text-sm text-red-600'>{contractStatsError}</div>}
+
+                    {contractStatsLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading invoice contract KPI...</div>
+                    ) : contractStats.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={300}>
+                            <LineChart data={invoiceContractChartData}>
+                                <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any, name: any) => [`${safeNumber(value)} created`, String(name)]}
+                                    labelFormatter={(label) => `Period: ${label}`}
+                                />
+                                <Legend />
+                                <Line
+                                    type='linear'
+                                    dataKey='contracts'
+                                    name='Contracts'
+                                    stroke='#3b82f6'
+                                    strokeWidth={3}
+                                    dot={{ r: 4, fill: '#3b82f6', stroke: '#3b82f6', strokeWidth: 2 }}
+                                    activeDot={{ r: 7 }}
+                                />
+                                <Line
+                                    type='linear'
+                                    dataKey='invoices'
+                                    name='Invoices'
+                                    stroke='#10b981'
+                                    strokeWidth={3}
+                                    dot={{ r: 4, fill: '#10b981', stroke: '#10b981', strokeWidth: 2 }}
+                                    activeDot={{ r: 7 }}
+                                />
+                                <Line
+                                    type='linear'
+                                    dataKey='subscriptionInvoices'
+                                    name='Subscription Invoices'
+                                    stroke='#8b5cf6'
+                                    strokeWidth={3}
+                                    dot={{ r: 4, fill: '#8b5cf6', stroke: '#8b5cf6', strokeWidth: 2 }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No invoice contract KPI data available</div>
                     )}
                 </div>
 

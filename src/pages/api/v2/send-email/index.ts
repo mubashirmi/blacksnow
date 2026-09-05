@@ -1,4 +1,5 @@
 // pages/api/send-email.ts
+import { recordEmailUsage } from '@/lib/emailUsage';
 import { signOptToken } from '@/lib/optToken';
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -346,6 +347,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             transporter.close();
+            const successfulEmailCount = results.filter((result) => result.status === 'sent').length;
+            if (successfulEmailCount > 0) {
+                try {
+                    await recordEmailUsage(Number(adminId), successfulEmailCount);
+                } catch (usageError) {
+                    console.error('Failed to record email usage after successful sends:', usageError);
+                }
+            }
             const anySent = results.some((r) => r.status === 'sent');
             return res.status(anySent ? 200 : 500).json({
                 message: anySent ? 'Processed' : 'Failed to send',
@@ -456,6 +465,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             );
 
             transporter.close();
+            const successfulEmailCount = results.filter((result) => result.status === 'sent').length;
+            if (successfulEmailCount > 0) {
+                try {
+                    await recordEmailUsage(Number(adminId), successfulEmailCount);
+                } catch (usageError) {
+                    console.error('Failed to record email usage after successful sends:', usageError);
+                }
+            }
             const anySent = results.some((r) => r.status === 'sent');
             return res.status(anySent ? 200 : 500).json({
                 message: anySent ? 'Processed' : 'Failed to send',

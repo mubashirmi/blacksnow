@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -65,15 +64,7 @@ const roleDashboardMap: Record<
     },
 };
 
-const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = [
-    'Admin',
-    'Sales',
-    'InvoiceTool',
-    'LightningSilver',
-    'DigitalBillboard',
-    'LightningGold',
-    'EmailMarketing',
-];
+const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Sales', 'DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningSilver', 'LightningGold'];
 
 // Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {
@@ -85,7 +76,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     const [lastName, setLastName] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
     const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
-    const [showDashboardMenu, setShowDashboardMenu] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const router = useRouter();
@@ -146,7 +136,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
-            setShowDashboardMenu(false);
         }
 
         return () => {
@@ -160,7 +149,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
             if (e.key === 'Escape') {
                 setIsOpen(false);
                 setShowLogoutModal(false);
-                setShowDashboardMenu(false);
             }
         };
 
@@ -196,7 +184,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         setAdminid(null);
         setAdminId(null);
         setDashboards([]);
-        setShowDashboardMenu(false);
         router.push('/');
     };
 
@@ -207,18 +194,13 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     const handleDashboardClick = () => {
         if (!userid || dashboards.length === 0) return;
 
-        // If only one dashboard, go directly
-        if (dashboards.length === 1) {
-            setIsOpen(false);
-            router.push(dashboards[0].path);
-        } else {
-            // If multiple, toggle the small dashboard menu
-            setShowDashboardMenu((prev) => !prev);
-        }
+        // dashboards are already sorted by ROLE_PRIORITY,
+        // so always navigate to the highest-priority dashboard.
+        setIsOpen(false);
+        router.push(dashboards[0].path);
     };
 
     const goToDashboard = (path: string) => {
-        setShowDashboardMenu(false);
         setIsOpen(false);
         router.push(path);
     };
@@ -256,7 +238,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     onClick={() => {
                         setIsOpen(false);
                         setShowLogoutModal(false);
-                        setShowDashboardMenu(false);
                     }}
                 />
 
@@ -340,43 +321,14 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                             {/* Dashboards section + Admin Dashboard validation */}
                             {((userid && dashboards.length > 0) || adminId) && (
                                 <div className='space-y-2'>
-                                    {/* Existing Dashboard button + selector (role based) */}
+                                    {/* Dashboard button (role based) */}
                                     {userid && dashboards.length > 0 && (
-                                        <div className='space-y-2'>
-                                            <Button
-                                                onClick={handleDashboardClick}
-                                                aria-expanded={dashboards.length > 1 ? showDashboardMenu : undefined}
-                                                aria-haspopup={dashboards.length > 1 ? 'menu' : undefined}
-                                                className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2'
-                                            >
-                                                <span>Dashboard</span>
-
-                                                {dashboards.length > 1 && (
-                                                    <ChevronDown
-                                                        size={18}
-                                                        strokeWidth={2.5}
-                                                        className={`transition-transform duration-300 ${showDashboardMenu ? 'rotate-180' : 'rotate-0'}`}
-                                                        aria-hidden='true'
-                                                    />
-                                                )}
-                                            </Button>
-
-                                            {/* If multiple dashboards, show a small selector under the same button */}
-                                            {dashboards.length > 1 && showDashboardMenu && (
-                                                <div className='mt-2 space-y-2'>
-                                                    {dashboards.map((dash) => (
-                                                        <Button
-                                                            key={dash.path}
-                                                            variant='outline'
-                                                            onClick={() => goToDashboard(dash.path)}
-                                                            className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
-                                                        >
-                                                            {dash.label}
-                                                        </Button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
+                                        <Button
+                                            onClick={handleDashboardClick}
+                                            className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                        >
+                                            Dashboard
+                                        </Button>
                                     )}
 
                                     {/* Admin Dashboard button (ONLY if adminId is present) - shown below dashboards */}

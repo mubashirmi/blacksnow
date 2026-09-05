@@ -264,7 +264,7 @@ export default function KPI() {
             {/* Header */}
             <div className='flex items-center justify-between'>
                 <div>
-                    <h2 className='text-3xl font-bold text-gray-900'>Lightning Silver Dashboard</h2>
+                    <h2 className='text-3xl font-bold text-gray-900'>Lightning Gold Dashboard</h2>
                     <p className='text-gray-600 mt-1'>Track your performance and earnings</p>
                 </div>
                 <button

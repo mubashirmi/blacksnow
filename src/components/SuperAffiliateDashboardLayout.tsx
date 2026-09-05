@@ -233,7 +233,7 @@ export default function SuperAffiliateLayout({ children }: { children: React.Rea
         <div className='min-h-screen bg-gray-50 relative'>
             <LightningGoldTourPopup onComplete={() => console.log('Gold tour complete')} />
             {/* Fixed Sidebar */}
-            <SuperAffiliateSidebar />
+            <SuperAffiliateSidebar stripeConnected={userData.adminStripeConnectIdStatus === true} stripeUserId={userData.id} />
 
             {/* Page content (also shifted right by the sidebar width) */}
             <main className='pl-64'>

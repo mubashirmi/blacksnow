@@ -98,10 +98,12 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
             errors.email = 'Invalid email format';
         }
 
-        if (!credentialsData.appPassword.trim()) {
+        const cleanAppPassword = credentialsData.appPassword.replace(/\s/g, '');
+
+        if (!cleanAppPassword) {
             errors.appPassword = 'App password is required';
-        } else if (credentialsData.appPassword.trim().length < 10) {
-            errors.appPassword = 'App password must be at least 10 characters';
+        } else if (cleanAppPassword.length !== 16) {
+            errors.appPassword = 'App password must be exactly 16 characters';
         }
 
         setCredentialsErrors(errors);
@@ -168,7 +170,7 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: credentialsData.email.trim(),
-                    appPassword: credentialsData.appPassword.trim(),
+                    appPassword: credentialsData.appPassword.replace(/\s/g, ''),
                     id: parseInt(userId, 10),
                 }),
             });
@@ -186,6 +188,9 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
             setCredentialsData({ email: '', appPassword: '' });
             setIsLoading(false);
 
+            // Refresh the page after successful credentials submission
+            window.location.reload();
+
             // (Optional) Do Stripe connect AFTER saving, and don't block closing the modal
             // void handleStripeConnect(); // fire-and-forget, or await inside its own try/catch
         } catch (err) {
@@ -197,7 +202,16 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
 
     const handleCredentialsInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setCredentialsData((prev) => ({ ...prev, [name]: value }));
+
+        if (name === 'appPassword') {
+            const cleanValue = value.replace(/\s/g, '').slice(0, 16);
+            const formattedValue = cleanValue.match(/.{1,4}/g)?.join(' ') || '';
+
+            setCredentialsData((prev) => ({ ...prev, appPassword: formattedValue }));
+        } else {
+            setCredentialsData((prev) => ({ ...prev, [name]: value }));
+        }
+
         if (credentialsErrors[name as keyof typeof credentialsErrors]) {
             setCredentialsErrors((prev) => ({ ...prev, [name]: '' }));
         }
@@ -303,10 +317,14 @@ export default function SalesDashboardLayout({ children }: { children: React.Rea
                                         credentialsErrors.appPassword ? 'border-red-300 bg-red-50' : 'border-slate-300'
                                     } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-mono`}
                                     placeholder='xbsr gbiv sizp twwe'
+                                    maxLength={19}
                                     disabled={submitting}
                                 />
                                 {credentialsErrors.appPassword && <p className='text-red-600 text-sm mt-1'>{credentialsErrors.appPassword}</p>}
-                                <p className='text-slate-500 text-xs mt-1'>Enter the app password exactly as provided by your email provider</p>
+                                <div className='flex items-center justify-between mt-1'>
+                                    <p className='text-slate-500 text-xs'>Enter the 16-character app password exactly as provided by your email provider</p>
+                                    <span className='text-slate-400 text-xs font-mono'>{credentialsData.appPassword.replace(/\s/g, '').length}/16</span>
+                                </div>
                             </div>
 
                             <div className='pt-4'>

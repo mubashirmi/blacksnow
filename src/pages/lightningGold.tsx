@@ -214,7 +214,7 @@ function LightningGold() {
                                             Monthly and annual commissions in one clear view.
                                         </div>
                                     </div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] hidden sm:block'>250$ per month</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] hidden sm:block'>$250 / month</div>
                                 </div>
                                 {/* <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge> */}
                             </div>
