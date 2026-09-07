@@ -32,7 +32,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// ── Snowflake config ──────────────────────────────────────────
+// ── Snowflake config ──────────────
 const SNOWFLAKE_COUNT = 45;
 
 const UNIFIED_CARD_HEIGHT = 580;
