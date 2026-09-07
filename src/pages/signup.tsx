@@ -32,7 +32,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// ── Snowflake config ──────────────
+// ── Snowflake config ──────────────────────────────────────────
 const SNOWFLAKE_COUNT = 45;
 
 const UNIFIED_CARD_HEIGHT = 580;
@@ -861,11 +861,11 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='w-[calc(100vw-2rem)] sm:max-w-[540px] max-h-[calc(100vh-2rem)] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+            <DialogContent className='w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-[540px] max-h-[calc(100dvh-1rem)] p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
                 <DialogTitle className='sr-only'>{badge}</DialogTitle>
 
                 <div
-                    className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#07090d]'
+                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#07090d] sm:rounded-[32px]'
                     style={{
                         minHeight: 'min(560px, calc(100vh - 32px))',
                         height: 'min(620px, calc(100vh - 32px))',
@@ -894,7 +894,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                         <X className='w-4 h-4 text-white/60' />
                     </button>
 
-                    <div className='relative z-10 flex h-full min-h-0 flex-1 flex-col px-7 pt-8 pb-6' style={slideAnim}>
+                    <div className='relative z-10 flex h-full min-h-0 flex-1 flex-col px-4 pt-6 pb-4 sm:px-7 sm:pt-8 sm:pb-6' style={slideAnim}>
                         {/* <div
                             className='inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase mb-5'
                             style={{ backgroundColor: `${accent}18`, border: `1px solid ${accent}40`, color: accent }}
@@ -903,7 +903,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             {badge}
                         </div> */}
 
-                        <h2 className='text-[28px] font-black text-white leading-tight mb-3'>
+                        <h2 className='pr-10 text-[24px] font-black leading-tight text-white sm:text-[28px] mb-3'>
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
@@ -931,10 +931,10 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             )}
                         </h2>
 
-                        <div className='h-px rounded-full mb-5 w-full bg-white/10' />
+                        <div className='mb-4 h-px w-full rounded-full bg-white/10 sm:mb-5' />
 
                         <div
-                            className='rounded-2xl p-4 mb-5 border'
+                            className='mb-4 flex-shrink-0 rounded-2xl border p-4 sm:mb-5'
                             style={{
                                 backgroundColor: `${accent}08`,
                                 borderColor: `${accent}25`,
@@ -944,7 +944,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                                 Summary
                             </p>
 
-                            <p className='text-white/65 text-sm leading-relaxed'>{summary}</p>
+                            <p className='text-[13px] leading-relaxed text-white/65 sm:text-sm'>{summary}</p>
 
                             <a
                                 href={link}
@@ -957,7 +957,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             </a>
                         </div>
 
-                        <div className='terms-body-scroll flex-1 min-h-0 overflow-y-scroll rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 pr-4 glassy-scrollbar'>
+                        <div className='terms-body-scroll legal-slide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-2xl border border-white/5 bg-white/[0.02] px-3 py-3 pr-4'>
                             {content ? (
                                 <div className='space-y-4'>
                                     {content.map((block, blockIndex) => (
@@ -995,59 +995,61 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             )}
                         </div>
 
-                        <div className='pt-5 flex-shrink-0 flex items-center justify-between gap-2'>
-                            <div className='flex items-center justify-between gap-1.5'>
-                                {TERMS_SLIDES.map((_, i) => (
+                        <div className='grid flex-shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 pt-4 sm:pt-6'>
+                            <div
+                                className='flex flex-shrink-0 items-center gap-1.5 justify-self-start'
+                                aria-label={`Slide ${current + 1} of ${TERMS_SLIDES.length}`}
+                            >
+                                {current > 0 && (
                                     <div
-                                        key={i}
-                                        className='rounded-full transition-all duration-300'
-                                        style={{
-                                            width: i === current ? 20 : 6,
-                                            height: 6,
-                                            backgroundColor: i === current ? accent : i < current ? `${accent}55` : 'rgba(255,255,255,0.12)',
-                                        }}
+                                        className='h-1.5 w-1.5 flex-shrink-0 rounded-full transition-all duration-300'
+                                        style={{ backgroundColor: `${accent}55` }}
                                     />
-                                ))}
-                            </div>
-                            <div>
-                                <span
-                                    className='rounded-xl px-3 py-1 text-xs font-bold text-white/70'
-                                    style={{
-                                        backgroundColor: `${accent}14`,
-                                        border: `1px solid ${accent}35`,
-                                    }}
-                                >
-                                    Slide {current + 1}/{TERMS_SLIDES.length}
-                                </span>
+                                )}
+
+                                <div className='h-1.5 w-5 flex-shrink-0 rounded-full transition-all duration-300' style={{ backgroundColor: accent }} />
+
+                                {current < TERMS_SLIDES.length - 1 && (
+                                    <div
+                                        className='h-1.5 w-1.5 flex-shrink-0 rounded-full transition-all duration-300'
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
+                                    />
+                                )}
                             </div>
 
-                            <div className='flex items-center gap-2'>
+                            <span
+                                className='justify-self-center whitespace-nowrap rounded-xl px-2 py-1 text-[10px] font-bold text-white/70 sm:px-3 sm:text-xs'
+                                style={{ backgroundColor: `${accent}14`, border: `1px solid ${accent}35` }}
+                            >
+                                Slide {current + 1}/{TERMS_SLIDES.length}
+                            </span>
+
+                            <div className='flex flex-shrink-0 items-center gap-1.5 justify-self-end sm:gap-2'>
                                 <button
                                     type='button'
                                     onClick={handlePrev}
                                     disabled={current === 0}
-                                    className='w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
-                                    style={{
-                                        backgroundColor: 'rgba(255,255,255,0.06)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                    }}
+                                    className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all disabled:opacity-20 hover:scale-105'
+                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                                     aria-label='Previous terms slide'
                                 >
-                                    <ChevronLeft className='w-4 h-4 text-white' />
+                                    <ChevronLeft className='h-4 w-4 text-white' />
                                 </button>
 
                                 <button
                                     type='button'
                                     onClick={handleNext}
-                                    className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
+                                    className={`flex h-9 flex-shrink-0 items-center justify-center gap-1 rounded-xl font-bold text-white transition-all hover:scale-[1.01] sm:hover:scale-105 ${
+                                        isLast ? 'min-w-[112px] px-3 text-[10px] sm:min-w-[120px] sm:text-xs' : 'min-w-[70px] px-3 text-xs'
+                                    }`}
                                     style={{
                                         background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
                                         border: `1px solid ${accent}60`,
                                         boxShadow: `0 2px 12px ${accent}30`,
                                     }}
                                 >
-                                    {isLast ? 'I Understand ✓' : 'Next'}
-                                    {!isLast && <ChevronRight className='w-3.5 h-3.5' />}
+                                    <span className='whitespace-nowrap'>{isLast ? 'I Understand ✓' : 'Next'}</span>
+                                    {!isLast && <ChevronRight className='h-3.5 w-3.5 flex-shrink-0' />}
                                 </button>
                             </div>
                         </div>
@@ -1401,6 +1403,29 @@ function SignUp() {
 
                 .glassy-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: linear-gradient(180deg, rgba(76,199,232,0.72), rgba(44,123,190,0.45));
+                }
+
+                .legal-slide-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(255,255,255,0.16) transparent;
+                }
+
+                .legal-slide-scrollbar::-webkit-scrollbar {
+                    width: 5px;
+                }
+
+                .legal-slide-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(0,0,0,0.10);
+                    border-radius: 999px;
+                }
+
+                .legal-slide-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255,255,255,0.14);
+                    border-radius: 999px;
+                }
+
+                .legal-slide-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255,255,255,0.22);
                 }
 
                 .auth-form-scroll {
