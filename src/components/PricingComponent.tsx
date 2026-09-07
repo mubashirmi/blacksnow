@@ -86,48 +86,119 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
         link: '/privacy',
         bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
     },
-];
-
-const LIGHTNING_ADDITIONAL_TERMS_SLIDES: TermsSlide[] = [
     {
-        id: 'legal-affiliate',
-        accent: '#4cc7e8',
-        Icon: FileText,
-        badge: 'Legal — Affiliate Agreement',
-        titleGrad: 'Affiliate',
-        titlePlain: ' Agreement',
+        id: 'risk-disclosure',
+        accent: '#2c7bbe',
+        Icon: AlertTriangle,
+        badge: 'Risk Disclosure',
+        titleGrad: 'Risk',
+        titlePlain: ' Disclosure',
         summary:
-            'You will promote Black Snow Holdings services honestly and in compliance with applicable laws. Commission rates and payout schedules are defined in your tier. We reserve the right to modify terms with 30 days notice. Misuse of the program may result in termination and forfeiture of pending commissions.',
-        link: '/affiliateagreement',
-        bullets: ['Honest, compliant promotion required', 'Commission rates fixed per tier at sign-up', '30-day notice for material term changes'],
+            'Black Snow provides educational content, market information, analytics, and simulated trading tools for learning and informational purposes only. Trading involves substantial risk, market data may be delayed or inaccurate, and simulated or past results do not guarantee future outcomes.',
+        link: '/riskdisclosure',
+        bullets: [
+            'No financial, investment, legal, tax, or accounting advice',
+            'Trading can result in substantial loss of capital',
+            'Simulated and past results do not guarantee future performance',
+        ],
     },
     {
-        id: 'legal-contractor',
+        id: 'cookie-policy',
         accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Cookie Policy',
+        titleGrad: 'Cookie',
+        titlePlain: ' Policy',
+        summary:
+            'Black Snow uses cookies and similar technologies to keep the site secure, remember preferences, understand performance and usage, and support marketing measurement where enabled. You can manage cookies through browser settings and available preference controls.',
+        link: '/cookies',
+        bullets: [
+            'Necessary cookies support security and core functionality',
+            'Analytics and functional cookies help improve the experience',
+            'Cookie choices can be managed through browser or preference controls',
+        ],
+    },
+    {
+        id: 'independent-contractor',
+        accent: '#2c7bbe',
         Icon: UserCheck,
-        badge: 'Legal — Independent Contractor',
+        badge: 'Independent Contractor',
         titleGrad: 'Independent',
         titlePlain: ' Contractor',
         summary:
-            'You are solely responsible for your own taxes, insurance, and business expenses. You have full flexibility to set your schedule and choose your promotional methods. Black Snow Holdings does not direct your day-to-day activities and provides no employee benefits.',
-        link: '/independentcontract',
-        bullets: ['You are self-employed — not a BSH employee', 'Responsible for your own taxes and expenses', 'Full autonomy over your promotional methods'],
+            'Black Snow works with experienced independent contractors on educational content, market analysis, and strategy-related projects. Contractors retain flexibility over their schedules and projects while being expected to bring relevant expertise, analytical skill, integrity, and professional standards.',
+        link: '/independentContract',
+        bullets: [
+            'Flexible, autonomous project-based collaboration',
+            'Relevant trading, market, or analytical experience is expected',
+            'Contractors are responsible for delivering professional, high-quality work',
+        ],
     },
     {
-        id: 'legal-earnings',
+        id: 'affiliate-agreement',
         accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Affiliate Agreement',
+        titleGrad: 'Affiliate',
+        titlePlain: ' Agreement',
+        summary:
+            'Affiliates must promote Black Snow professionally, ethically, and lawfully. Commissions apply only to qualifying sales under the Program terms, required disclosures must be clear, and prohibited conduct such as self-referrals, spam, misleading claims, cookie stuffing, or unauthorized brand use may result in termination.',
+        link: '/affiliateagreement',
+        bullets: [
+            'Promotions must be lawful, accurate, and properly disclosed',
+            'Commissions apply only to qualifying sales under Program terms',
+            'Spam, self-referrals, misleading claims, and other prohibited tactics are not allowed',
+        ],
+    },
+    {
+        id: 'no-financial-advice',
+        accent: '#2c7bbe',
         Icon: AlertTriangle,
-        badge: 'Legal — Earnings Disclosure',
+        badge: 'No Financial Advice',
+        titleGrad: 'No Financial',
+        titlePlain: ' Advice',
+        summary:
+            'Black Snow content, market analysis, trading strategies, simulations, newsletters, and related resources are provided for educational and informational purposes only. They are not personalized financial, investment, tax, legal, or other professional advice.',
+        link: '/nofinancialadvice',
+        bullets: [
+            'Educational and informational content only',
+            'No recommendations to buy, sell, hold, or trade securities',
+            'Users remain responsible for their own financial and trading decisions',
+        ],
+    },
+    {
+        id: 'subscription-policy',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Subscription Policy',
+        titleGrad: 'Subscription',
+        titlePlain: ' Policy',
+        summary:
+            'Paid subscriptions are billed in advance and automatically renew unless canceled before the renewal date. Cancellation stops future renewals while access generally continues through the current paid period, and refunds are normally not provided for partial periods unless required by law or granted at our discretion.',
+        link: '/subscriptionpolicy',
+        bullets: [
+            'Subscriptions renew automatically until canceled',
+            'Cancellation generally preserves access through the paid period',
+            'Failed payments or policy violations may suspend or terminate access',
+        ],
+    },
+    {
+        id: 'earnings-disclosure',
+        accent: '#2c7bbe',
+        Icon: AlertTriangle,
+        badge: 'Earnings Disclosure',
         titleGrad: 'Earnings',
         titlePlain: ' Disclosure',
         summary:
-            'Any income figures referenced are illustrative only and not guarantees. Most affiliates earn modest amounts. Past performance of other affiliates does not predict your results. Only risk capital and time you can afford to invest should be committed to affiliate promotion.',
+            'Any references to profits, past performance, testimonials, strategies, or simulated results are illustrative and educational only. Results are not guaranteed or necessarily typical, and hypothetical performance may not reflect real-world factors such as slippage, commissions, liquidity, or execution conditions.',
         link: '/earningsdisclosure',
-        bullets: ['No earnings are guaranteed', 'Results vary based on effort and audience', 'Illustrative figures are not typical results'],
+        bullets: [
+            'No earnings, profit, or performance guarantees',
+            'Past and simulated results are not indicative of future results',
+            'Trading involves substantial risk and outcomes vary by user and market conditions',
+        ],
     },
 ];
-
-const LIGHTNING_TERMS_SLIDES: TermsSlide[] = [...BASE_TERMS_SLIDES, ...LIGHTNING_ADDITIONAL_TERMS_SLIDES];
 
 // ─── Terms Slide Modal ────────────────────────────────────────────────────────
 function TermsSlideModal({
@@ -528,13 +599,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
         return null;
     }, [product]);
 
-    const selectedTermsSlides = useMemo(() => {
-        if (product?.id === 'LightningSilver' || product?.id === 'LightningGold') {
-            return LIGHTNING_TERMS_SLIDES;
-        }
-
-        return BASE_TERMS_SLIDES;
-    }, [product]);
+    const selectedTermsSlides = useMemo(() => BASE_TERMS_SLIDES, []);
 
     useEffect(() => {
         setShowTermsModal(false);

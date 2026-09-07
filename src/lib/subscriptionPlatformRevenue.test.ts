@@ -1,5 +1,7 @@
 import { ApiError } from './apiErrors';
 import {
+    ADMIN_REVENUE_MONTHS,
+    ADMIN_REVENUE_WEEK_DAYS,
     buildAdminRevenueReport,
     buildAdminSubscriptionRevenueReport,
     calculatePlatformFeeAmount,
@@ -44,6 +46,10 @@ describe('admin subscription invoice revenue', () => {
         expect(ranges.monthly.endDate).toBe('2026-09-30');
         expect(ranges.monthly.start.toISOString()).toBe('2026-09-01T00:00:00.000Z');
         expect(ranges.monthly.endExclusive.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+        expect(ranges.weeklyDays.map(({ day }) => day)).toEqual(ADMIN_REVENUE_WEEK_DAYS);
+        expect(ranges.monthlyMonths.map(({ month }) => month)).toEqual(ADMIN_REVENUE_MONTHS);
+        expect(ranges.monthlyMonths[0].range.start.toISOString()).toBe('2026-01-01T00:00:00.000Z');
+        expect(ranges.monthlyMonths[11].range.endExclusive.toISOString()).toBe('2027-01-01T00:00:00.000Z');
     });
 
     test('calculates boundaries in the configured timezone before converting them to UTC', () => {
@@ -74,7 +80,7 @@ describe('admin subscription invoice revenue', () => {
         expect(report.periods.total.revenue.amountMinor).toBe(480);
     });
 
-    test('separates invoice and subscription invoice platform revenue', () => {
+    test('returns chart-ready daily and monthly revenue split by source', () => {
         const report = buildAdminRevenueReport(
             [
                 { baseAmount: 1_000, paymentDate: new Date('2026-09-05T10:00:00.000Z') },
@@ -87,11 +93,49 @@ describe('admin subscription invoice revenue', () => {
             'UTC'
         );
 
-        expect(report).toEqual({
-            today: { invoiceRevenue: 0.8, subscriptionInvRevenue: 0, totalRevenue: 0.8 },
-            weekly: { invoiceRevenue: 0.8, subscriptionInvRevenue: 1.6, totalRevenue: 2.4 },
-            monthly: { invoiceRevenue: 0.8, subscriptionInvRevenue: 1.6, totalRevenue: 2.4 },
-            total: { invoiceRevenue: 3.2, subscriptionInvRevenue: 1.6, totalRevenue: 4.8 },
+        expect(report.today).toEqual({ invoiceRevenue: 0.8, subscriptionInvRevenue: 0, totalRevenue: 0.8 });
+        expect(report.total).toEqual({ invoiceRevenue: 3.2, subscriptionInvRevenue: 1.6, totalRevenue: 4.8 });
+
+        expect(report.weekly).toHaveLength(7);
+        expect(report.weekly.map(({ day }) => day)).toEqual(ADMIN_REVENUE_WEEK_DAYS);
+        expect(report.weekly.find(({ day }) => day === 'Tuesday')).toEqual({
+            day: 'Tuesday',
+            invoiceRevenue: 0,
+            subscriptionInvRevenue: 1.6,
+            totalRevenue: 1.6,
+        });
+        expect(report.weekly.find(({ day }) => day === 'Saturday')).toEqual({
+            day: 'Saturday',
+            invoiceRevenue: 0.8,
+            subscriptionInvRevenue: 0,
+            totalRevenue: 0.8,
+        });
+        expect(report.weekly.find(({ day }) => day === 'Sunday')).toEqual({
+            day: 'Sunday',
+            invoiceRevenue: 0,
+            subscriptionInvRevenue: 0,
+            totalRevenue: 0,
+        });
+
+        expect(report.monthly).toHaveLength(12);
+        expect(report.monthly.map(({ month }) => month)).toEqual(ADMIN_REVENUE_MONTHS);
+        expect(report.monthly.find(({ month }) => month === 'August')).toEqual({
+            month: 'August',
+            invoiceRevenue: 2.4,
+            subscriptionInvRevenue: 0,
+            totalRevenue: 2.4,
+        });
+        expect(report.monthly.find(({ month }) => month === 'September')).toEqual({
+            month: 'September',
+            invoiceRevenue: 0.8,
+            subscriptionInvRevenue: 1.6,
+            totalRevenue: 2.4,
+        });
+        expect(report.monthly.find(({ month }) => month === 'December')).toEqual({
+            month: 'December',
+            invoiceRevenue: 0,
+            subscriptionInvRevenue: 0,
+            totalRevenue: 0,
         });
     });
 
@@ -106,7 +150,7 @@ describe('admin subscription invoice revenue', () => {
         );
 
         expect(report.today.totalRevenue).toBe(0);
-        expect(report.weekly.totalRevenue).toBe(0.8);
+        expect(report.weekly.find(({ day }) => day === 'Saturday')?.totalRevenue).toBe(0.8);
     });
 
     test('accepts successful payments and rejects cancelled or failed payments', () => {

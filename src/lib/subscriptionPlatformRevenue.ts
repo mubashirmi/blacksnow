@@ -4,6 +4,21 @@ import { DateTime } from 'luxon';
 
 export const DEFAULT_INVOICE_PLATFORM_FEE_PERCENT = 8;
 export const DEFAULT_ADMIN_REVENUE_TIME_ZONE = 'America/New_York';
+export const ADMIN_REVENUE_WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+export const ADMIN_REVENUE_MONTHS = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+] as const;
 
 type RefundRecord = {
     amount: number;
@@ -77,6 +92,7 @@ export function getAdminRevenueRanges(now = new Date(), timeZone = getConfigured
     const todayStart = zonedNow.startOf('day');
     const weekStart = zonedNow.startOf('week');
     const monthStart = zonedNow.startOf('month');
+    const yearStart = zonedNow.startOf('year');
 
     return {
         // Add one millisecond because range comparisons use an exclusive end.
@@ -85,6 +101,22 @@ export function getAdminRevenueRanges(now = new Date(), timeZone = getConfigured
         today: buildRange(todayStart, zonedNow.plus({ milliseconds: 1 }), zonedNow),
         weekly: buildRange(weekStart, weekStart.plus({ weeks: 1 })),
         monthly: buildRange(monthStart, monthStart.plus({ months: 1 })),
+        weeklyDays: ADMIN_REVENUE_WEEK_DAYS.map((day, index) => {
+            const dayStart = weekStart.plus({ days: index });
+
+            return {
+                day,
+                range: buildRange(dayStart, dayStart.plus({ days: 1 })),
+            };
+        }),
+        monthlyMonths: ADMIN_REVENUE_MONTHS.map((month, index) => {
+            const currentMonthStart = yearStart.plus({ months: index });
+
+            return {
+                month,
+                range: buildRange(currentMonthStart, currentMonthStart.plus({ months: 1 })),
+            };
+        }),
     };
 }
 
@@ -211,8 +243,14 @@ export function buildAdminRevenueReport(
 
     return {
         today: splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, ranges.today),
-        weekly: splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, ranges.weekly),
-        monthly: splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, ranges.monthly),
+        weekly: ranges.weeklyDays.map(({ day, range }) => ({
+            day,
+            ...splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, range),
+        })),
+        monthly: ranges.monthlyMonths.map(({ month, range }) => ({
+            month,
+            ...splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, range),
+        })),
         total: splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency),
     };
 }

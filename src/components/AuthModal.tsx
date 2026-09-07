@@ -52,6 +52,134 @@ const TERMS_SLIDES: TermsSlide[] = [
         link: '/privacy',
         bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
     },
+    {
+        id: 'gdpr',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Legal — GDPR',
+        titleGrad: 'GDPR',
+        titlePlain: ' & Privacy',
+        summary:
+            'Do not collect or store personal data without proper consent and a lawful basis. Personal data must be handled securely and in accordance with our Privacy Policy, applicable privacy laws, and GDPR requirements where they apply.',
+        link: '/gdpr',
+        bullets: [
+            'Use personal data only with proper consent and lawful basis',
+            'Protect personal information and respect user privacy rights',
+            'Follow GDPR and other applicable privacy requirements',
+        ],
+    },
+    {
+        id: 'risk-disclosure',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Risk Disclosure',
+        titleGrad: 'Risk',
+        titlePlain: ' Disclosure',
+        summary:
+            'Black Snow provides educational content, market information, analytics, and simulated trading tools for learning and informational purposes only. Trading involves substantial risk, market data may be delayed or inaccurate, and simulated or past results do not guarantee future outcomes.',
+        link: '/riskdisclosure',
+        bullets: [
+            'No financial, investment, legal, tax, or accounting advice',
+            'Trading can result in substantial loss of capital',
+            'Simulated and past results do not guarantee future performance',
+        ],
+    },
+    {
+        id: 'cookie-policy',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Cookie Policy',
+        titleGrad: 'Cookie',
+        titlePlain: ' Policy',
+        summary:
+            'Black Snow uses cookies and similar technologies to keep the site secure, remember preferences, understand performance and usage, and support marketing measurement where enabled. You can manage cookies through browser settings and available preference controls.',
+        link: '/cookies',
+        bullets: [
+            'Necessary cookies support security and core functionality',
+            'Analytics and functional cookies help improve the experience',
+            'Cookie choices can be managed through browser or preference controls',
+        ],
+    },
+    {
+        id: 'independent-contractor',
+        accent: '#2c7bbe',
+        Icon: FileText,
+        badge: 'Independent Contractor',
+        titleGrad: 'Independent',
+        titlePlain: ' Contractor',
+        summary:
+            'Black Snow works with experienced independent contractors on educational content, market analysis, and strategy-related projects. Contractors retain flexibility over their schedules and projects while being expected to bring relevant expertise, analytical skill, integrity, and professional standards.',
+        link: '/independentContract',
+        bullets: [
+            'Flexible, autonomous project-based collaboration',
+            'Relevant trading, market, or analytical experience is expected',
+            'Contractors are responsible for delivering professional, high-quality work',
+        ],
+    },
+    {
+        id: 'affiliate-agreement',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Affiliate Agreement',
+        titleGrad: 'Affiliate',
+        titlePlain: ' Agreement',
+        summary:
+            'Affiliates must promote Black Snow professionally, ethically, and lawfully. Commissions apply only to qualifying sales under the Program terms, required disclosures must be clear, and prohibited conduct such as self-referrals, spam, misleading claims, cookie stuffing, or unauthorized brand use may result in termination.',
+        link: '/affiliateagreement',
+        bullets: [
+            'Promotions must be lawful, accurate, and properly disclosed',
+            'Commissions apply only to qualifying sales under Program terms',
+            'Spam, self-referrals, misleading claims, and other prohibited tactics are not allowed',
+        ],
+    },
+    {
+        id: 'no-financial-advice',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'No Financial Advice',
+        titleGrad: 'No Financial',
+        titlePlain: ' Advice',
+        summary:
+            'Black Snow content, market analysis, trading strategies, simulations, newsletters, and related resources are provided for educational and informational purposes only. They are not personalized financial, investment, tax, legal, or other professional advice.',
+        link: '/nofinancialadvice',
+        bullets: [
+            'Educational and informational content only',
+            'No recommendations to buy, sell, hold, or trade securities',
+            'Users remain responsible for their own financial and trading decisions',
+        ],
+    },
+    {
+        id: 'subscription-policy',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Subscription Policy',
+        titleGrad: 'Subscription',
+        titlePlain: ' Policy',
+        summary:
+            'Paid subscriptions are billed in advance and automatically renew unless canceled before the renewal date. Cancellation stops future renewals while access generally continues through the current paid period, and refunds are normally not provided for partial periods unless required by law or granted at our discretion.',
+        link: '/subscriptionpolicy',
+        bullets: [
+            'Subscriptions renew automatically until canceled',
+            'Cancellation generally preserves access through the paid period',
+            'Failed payments or policy violations may suspend or terminate access',
+        ],
+    },
+    {
+        id: 'earnings-disclosure',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Earnings Disclosure',
+        titleGrad: 'Earnings',
+        titlePlain: ' Disclosure',
+        summary:
+            'Any references to profits, past performance, testimonials, strategies, or simulated results are illustrative and educational only. Results are not guaranteed or necessarily typical, and hypothetical performance may not reflect real-world factors such as slippage, commissions, liquidity, or execution conditions.',
+        link: '/earningsdisclosure',
+        bullets: [
+            'No earnings, profit, or performance guarantees',
+            'Past and simulated results are not indicative of future results',
+            'Trading involves substantial risk and outcomes vary by user and market conditions',
+        ],
+    },
 ];
 
 // ─── Terms Slide Modal ────────────────────────────────────────────────────────

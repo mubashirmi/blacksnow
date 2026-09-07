@@ -635,6 +635,134 @@ const TERMS_SLIDES: TermsSlide[] = [
         bullets: ['Data collected only to operate the service', 'Your data is never sold to third parties', 'Right to access, correct, or delete your data'],
     },
     {
+        id: 'gdpr',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Legal — GDPR',
+        titleGrad: 'GDPR',
+        titlePlain: ' & Privacy',
+        summary:
+            'Do not collect or store personal data without proper consent and a lawful basis. Personal data must be handled securely and in accordance with our Privacy Policy, applicable privacy laws, and GDPR requirements where they apply.',
+        link: '/gdpr',
+        bullets: [
+            'Use personal data only with proper consent and lawful basis',
+            'Protect personal information and respect user privacy rights',
+            'Follow GDPR and other applicable privacy requirements',
+        ],
+    },
+    {
+        id: 'risk-disclosure',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Risk Disclosure',
+        titleGrad: 'Risk',
+        titlePlain: ' Disclosure',
+        summary:
+            'Black Snow provides educational content, market information, analytics, and simulated trading tools for learning and informational purposes only. Trading involves substantial risk, market data may be delayed or inaccurate, and simulated or past results do not guarantee future outcomes.',
+        link: '/riskdisclosure',
+        bullets: [
+            'No financial, investment, legal, tax, or accounting advice',
+            'Trading can result in substantial loss of capital',
+            'Simulated and past results do not guarantee future performance',
+        ],
+    },
+    {
+        id: 'cookie-policy',
+        accent: '#4cc7e8',
+        Icon: Shield,
+        badge: 'Cookie Policy',
+        titleGrad: 'Cookie',
+        titlePlain: ' Policy',
+        summary:
+            'Black Snow uses cookies and similar technologies to keep the site secure, remember preferences, understand performance and usage, and support marketing measurement where enabled. You can manage cookies through browser settings and available preference controls.',
+        link: '/cookies',
+        bullets: [
+            'Necessary cookies support security and core functionality',
+            'Analytics and functional cookies help improve the experience',
+            'Cookie choices can be managed through browser or preference controls',
+        ],
+    },
+    {
+        id: 'independent-contractor',
+        accent: '#2c7bbe',
+        Icon: FileText,
+        badge: 'Independent Contractor',
+        titleGrad: 'Independent',
+        titlePlain: ' Contractor',
+        summary:
+            'Black Snow works with experienced independent contractors on educational content, market analysis, and strategy-related projects. Contractors retain flexibility over their schedules and projects while being expected to bring relevant expertise, analytical skill, integrity, and professional standards.',
+        link: '/independentContract',
+        bullets: [
+            'Flexible, autonomous project-based collaboration',
+            'Relevant trading, market, or analytical experience is expected',
+            'Contractors are responsible for delivering professional, high-quality work',
+        ],
+    },
+    {
+        id: 'affiliate-agreement',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Affiliate Agreement',
+        titleGrad: 'Affiliate',
+        titlePlain: ' Agreement',
+        summary:
+            'Affiliates must promote Black Snow professionally, ethically, and lawfully. Commissions apply only to qualifying sales under the Program terms, required disclosures must be clear, and prohibited conduct such as self-referrals, spam, misleading claims, cookie stuffing, or unauthorized brand use may result in termination.',
+        link: '/affiliateagreement',
+        bullets: [
+            'Promotions must be lawful, accurate, and properly disclosed',
+            'Commissions apply only to qualifying sales under Program terms',
+            'Spam, self-referrals, misleading claims, and other prohibited tactics are not allowed',
+        ],
+    },
+    {
+        id: 'no-financial-advice',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'No Financial Advice',
+        titleGrad: 'No Financial',
+        titlePlain: ' Advice',
+        summary:
+            'Black Snow content, market analysis, trading strategies, simulations, newsletters, and related resources are provided for educational and informational purposes only. They are not personalized financial, investment, tax, legal, or other professional advice.',
+        link: '/nofinancialadvice',
+        bullets: [
+            'Educational and informational content only',
+            'No recommendations to buy, sell, hold, or trade securities',
+            'Users remain responsible for their own financial and trading decisions',
+        ],
+    },
+    {
+        id: 'subscription-policy',
+        accent: '#4cc7e8',
+        Icon: FileText,
+        badge: 'Subscription Policy',
+        titleGrad: 'Subscription',
+        titlePlain: ' Policy',
+        summary:
+            'Paid subscriptions are billed in advance and automatically renew unless canceled before the renewal date. Cancellation stops future renewals while access generally continues through the current paid period, and refunds are normally not provided for partial periods unless required by law or granted at our discretion.',
+        link: '/subscriptionpolicy',
+        bullets: [
+            'Subscriptions renew automatically until canceled',
+            'Cancellation generally preserves access through the paid period',
+            'Failed payments or policy violations may suspend or terminate access',
+        ],
+    },
+    {
+        id: 'earnings-disclosure',
+        accent: '#2c7bbe',
+        Icon: Shield,
+        badge: 'Earnings Disclosure',
+        titleGrad: 'Earnings',
+        titlePlain: ' Disclosure',
+        summary:
+            'Any references to profits, past performance, testimonials, strategies, or simulated results are illustrative and educational only. Results are not guaranteed or necessarily typical, and hypothetical performance may not reflect real-world factors such as slippage, commissions, liquidity, or execution conditions.',
+        link: '/earningsdisclosure',
+        bullets: [
+            'No earnings, profit, or performance guarantees',
+            'Past and simulated results are not indicative of future results',
+            'Trading involves substantial risk and outcomes vary by user and market conditions',
+        ],
+    },
+    {
         id: 'sms-text-messaging-terms',
         accent: '#4cc7e8',
         Icon: MessageSquare,
@@ -672,68 +800,6 @@ const TERMS_SLIDES: TermsSlide[] = [
                     'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again. Please note that opting out of authentication SMS messages may affect your ability to receive login, verification, or account security codes by text message.',
                     'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
                     'SMS consent is not a condition of purchase. Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
-                    'Carriers are not liable for delayed or undelivered messages.',
-                ],
-            },
-        ],
-    },
-    {
-        id: 'acceptable-use',
-        accent: '#2c7bbe',
-        Icon: Shield,
-        badge: 'Acceptable Use',
-        titleGrad: 'Acceptable',
-        titlePlain: ' Use',
-        summary:
-            'You agree not to misuse the Services, interfere with normal operation, access unauthorized areas, or use the Services for unlawful, deceptive, or harmful purposes.',
-        link: '/terms',
-        bullets: ['No unauthorized access or interference', 'No malware, harmful automation, or unlawful use', 'Only contact people with required consent'],
-        content: [
-            {
-                paragraphs: [
-                    'You agree not to misuse the Services. This means you will not attempt to interfere with the normal operation of the Services, access areas you are not authorized to access, probe or scan for vulnerabilities, introduce malware, or use automated scraping in a way that harms the Services. You also agree not to use the Services for unlawful, deceptive, or harmful purposes, including harassment, fraud, or infringement of intellectual property rights.',
-                    'If the Services allow email or SMS communications, you agree that you will only contact people who have provided the required consent or permissions under applicable laws and industry standards, including (where applicable) CAN-SPAM, TCPA, and similar regulations. You agree not to send spam or unlawful messages and to honor opt-out requests. You are solely responsible for the content you send and the legality of your communications.',
-                    'We may suspend, restrict, or terminate your access if we believe you have violated these Terms, created risk for users, harmed the Services, or engaged in unlawful conduct.',
-                ],
-            },
-        ],
-    },
-    {
-        id: 'sms-opt-in-consent',
-        accent: '#4cc7e8',
-        Icon: MessageSquare,
-        badge: 'SMS Opt-In Consent',
-        titleGrad: 'SMS Opt-In',
-        titlePlain: ' Consent',
-        summary:
-            'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
-        link: '/terms',
-        bullets: ['Transactional and account-security messages only', 'Opt out by replying STOP', 'Mobile opt-in information will not be shared for marketing'],
-        content: [
-            {
-                paragraphs: [
-                    'By providing your mobile phone number to BlackSnow Holdings, you agree to receive SMS text messages related to account verification, login authentication, one-time passcodes, password reset, and account security.',
-                    'SMS messages from BlackSnow Holdings may include:',
-                ],
-                bullets: [
-                    'Account sign-up verification codes',
-                    'Login authentication codes',
-                    'One-time passcodes / OTP messages',
-                    'Two-factor authentication messages',
-                    'Password reset verification',
-                    'Account recovery verification',
-                    'Security-related account alerts',
-                    'Account or service-related updates requested by you',
-                ],
-            },
-            {
-                paragraphs: [
-                    'BlackSnow Holdings uses SMS messaging for transactional and account security purposes only. We do not use this SMS program to send marketing or promotional text messages.',
-                    'Message frequency may vary based on your account activity and authentication requests. Message and data rates may apply.',
-                    'You can opt out of SMS messages at any time by replying STOP. After you reply STOP, we may send one final confirmation message to confirm that you have been unsubscribed. After that, you will no longer receive SMS messages from us unless you opt in again.',
-                    'For help, reply HELP or contact BlackSnow Holdings at security@blacksnowholdings.com.',
-                    'SMS consent is not a condition of purchase. Please note that opting out of SMS messages may affect your ability to receive login, verification, password reset, or account security codes by text message.',
-                    'Mobile opt-in information and consent will not be shared with third parties for marketing or promotional purposes.',
                     'Carriers are not liable for delayed or undelivered messages.',
                 ],
             },

@@ -24,11 +24,20 @@ type TotalKPIResponse = {
 
 // ─── NEW: v4 API types ────────────────────────────────────────────────────────
 
+type ProductRevenueWeeklyPoint = {
+    day: string;
+    revenue: number;
+};
+
+type ProductRevenueMonthlyPoint = {
+    month: string;
+    revenue: number;
+};
+
 type ProductRevenueEntry = {
     product: string;
-    weekly?: number;
-    monthly: number;
-    yearly: number;
+    weekly: ProductRevenueWeeklyPoint[];
+    monthly: ProductRevenueMonthlyPoint[];
 };
 
 type ProductRevenueChartResponse = {
@@ -174,22 +183,43 @@ type ContractStatsResponseItem = {
 
 type ContractStatsResponse = ContractStatsResponseItem[];
 
-type SubscriptionRevenueValue = {
+type AdminRevenueValue = {
     invoiceRevenue: number;
     subscriptionInvRevenue: number;
     totalRevenue: number;
 };
 
-type SubscriptionRevenueResponse = {
-    today: SubscriptionRevenueValue;
-    weekly: SubscriptionRevenueValue;
-    monthly: SubscriptionRevenueValue;
-    total: SubscriptionRevenueValue;
+type AdminRevenueWeeklyPoint = AdminRevenueValue & {
+    day: string;
+};
+
+type AdminRevenueMonthlyPoint = AdminRevenueValue & {
+    month: string;
+};
+
+type AdminRevenueResponse = {
+    today: AdminRevenueValue;
+    weekly: AdminRevenueWeeklyPoint[];
+    monthly: AdminRevenueMonthlyPoint[];
+    total: AdminRevenueValue;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as const;
+
+function abbreviateDay(day?: string) {
+    if (!day) return '';
+    return day.slice(0, 3);
+}
+
+function abbreviateMonth(month?: string) {
+    if (!month) return '';
+    return month.slice(0, 3);
+}
 
 const METRIC_PRODUCTS = [
     { label: 'Email Marketing', value: 'EmailMarketing' },
@@ -213,11 +243,10 @@ const LIGHTNING_SILVER_PRODUCT_OPTIONS: { label: string; value: AffiliateMetricP
 
 type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
 type MetricPeriod = 'Week' | 'Month' | 'Year';
-type ProductRevenuePeriod = 'Week' | 'Month' | 'Year';
+type ProductRevenuePeriod = 'Week' | 'Month';
 type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
 type ToolFeedbackMetricType = 'FeedbackCount' | 'AverageStars';
 type ContractStatsPeriod = keyof ContractStatsValue;
-type RevenueStatsPeriod = Exclude<ContractStatsPeriod, 'yearly'>;
 type InvoiceContractEntity = 'contract' | 'invoice' | 'subscriptionInv';
 type InvoiceContractMetric = 'count' | 'revenue';
 
@@ -238,6 +267,11 @@ const INVOICE_CONTRACT_ENTITY_OPTIONS: { label: string; value: InvoiceContractEn
 function safeNumber(n: any, fallback = 0) {
     const x = typeof n === 'number' ? n : Number(n);
     return Number.isFinite(x) ? x : fallback;
+}
+
+function getAdminRevenueValue(entity: InvoiceContractEntity, value?: AdminRevenueValue | null) {
+    if (!value || entity === 'contract') return 0;
+    return entity === 'invoice' ? safeNumber(value.invoiceRevenue) : safeNumber(value.subscriptionInvRevenue);
 }
 
 function currency(n?: number | null) {
@@ -421,7 +455,7 @@ export default function KPIPage() {
 
     // ─── NEW v4 state ─────────────────────────────────────────────────────────
 
-    // Chart A: Product Revenue (MRR/ARR)
+    // Chart A: Product Revenue
     const [productRevenue, setProductRevenue] = useState<ProductRevenueChartResponse | null>(null);
     const [productRevenueLoading, setProductRevenueLoading] = useState(false);
     const [productRevenueError, setProductRevenueError] = useState<string | null>(null);
@@ -458,9 +492,9 @@ export default function KPIPage() {
     const [contractStats, setContractStats] = useState<ContractStatsResponse>([]);
     const [contractStatsLoading, setContractStatsLoading] = useState(false);
     const [contractStatsError, setContractStatsError] = useState<string | null>(null);
-    const [subscriptionRevenue, setSubscriptionRevenue] = useState<SubscriptionRevenueResponse | null>(null);
-    const [subscriptionRevenueLoading, setSubscriptionRevenueLoading] = useState(false);
-    const [subscriptionRevenueError, setSubscriptionRevenueError] = useState<string | null>(null);
+    const [adminRevenue, setAdminRevenue] = useState<AdminRevenueResponse | null>(null);
+    const [adminRevenueLoading, setAdminRevenueLoading] = useState(false);
+    const [adminRevenueError, setAdminRevenueError] = useState<string | null>(null);
     const [contractStatsPeriod, setContractStatsPeriod] = useState<ContractStatsPeriod>('monthly');
     const [invoiceContractEntity, setInvoiceContractEntity] = useState<InvoiceContractEntity>('contract');
     const [invoiceContractMetric, setInvoiceContractMetric] = useState<InvoiceContractMetric>('count');
@@ -694,18 +728,18 @@ export default function KPIPage() {
         let cancelled = false;
         const run = async () => {
             try {
-                setSubscriptionRevenueLoading(true);
-                setSubscriptionRevenueError(null);
-                const json = await fetchJSON<SubscriptionRevenueResponse>('/api/v5/admin/subscription-revenue?currency=usd');
+                setAdminRevenueLoading(true);
+                setAdminRevenueError(null);
+                const json = await fetchJSON<AdminRevenueResponse>('/api/v5/admin/revenue?currency=usd');
 
                 if (cancelled) return;
-                setSubscriptionRevenue(json);
+                setAdminRevenue(json);
             } catch (e: any) {
                 if (cancelled) return;
-                setSubscriptionRevenueError(e?.message || 'Failed to load invoice subscription revenue');
-                setSubscriptionRevenue(null);
+                setAdminRevenueError(e?.message || 'Failed to load invoice revenue');
+                setAdminRevenue(null);
             } finally {
-                if (!cancelled) setSubscriptionRevenueLoading(false);
+                if (!cancelled) setAdminRevenueLoading(false);
             }
         };
         run();
@@ -730,33 +764,31 @@ export default function KPIPage() {
 
     // ─── v4 derived data ──────────────────────────────────────────────────────
 
-    /** Product Revenue: build chart data for the selected Week/Month/Year period */
+    /** Product Revenue: build real day-by-day or month-by-month chart data. */
     const productRevenueChartData = useMemo(() => {
-        const entries = Object.values(productRevenue?.revenueData ?? {});
-        const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((e) => e.product === selectedRevenueProduct);
+        const entries = Object.values(productRevenue?.revenueData ?? {}) as ProductRevenueEntry[];
+        const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((entry) => entry.product === selectedRevenueProduct);
 
-        return filtered.map((e) => {
-            const monthly = safeNumber(e.monthly);
-            const yearly = safeNumber(e.yearly);
+        if (productRevenuePeriod === 'Week') {
+            return WEEK_DAYS.map((day) => ({
+                period: abbreviateDay(day),
+                Revenue: filtered.reduce((sum, entry) => {
+                    const point = entry.weekly?.find((item) => item.day === day);
+                    return sum + safeNumber(point?.revenue);
+                }, 0),
+            }));
+        }
 
-            // Prefer a weekly value from the API when available.
-            // The current v4 response only guarantees monthly/yearly, so weekly
-            // falls back to an MRR-derived weekly equivalent.
-            const weekly = e.weekly != null ? safeNumber(e.weekly) : monthly / 4.345;
-
-            const revenue = productRevenuePeriod === 'Week' ? weekly : productRevenuePeriod === 'Month' ? monthly : yearly;
-
-            return {
-                product: formatProductName(e.product),
-                productKey: e.product,
-                Revenue: revenue,
-                MRR: monthly,
-                ARR: yearly,
-            };
-        });
+        return MONTHS.map((month) => ({
+            period: abbreviateMonth(month),
+            Revenue: filtered.reduce((sum, entry) => {
+                const point = entry.monthly?.find((item) => item.month === month);
+                return sum + safeNumber(point?.revenue);
+            }, 0),
+        }));
     }, [productRevenue, selectedRevenueProduct, productRevenuePeriod]);
 
-    const productRevenueSeriesLabel = productRevenuePeriod === 'Week' ? 'Weekly Revenue' : productRevenuePeriod === 'Month' ? 'MRR (Monthly)' : 'ARR (Yearly)';
+    const productRevenueSeriesLabel = productRevenuePeriod === 'Week' ? 'Weekly Revenue' : 'Monthly Revenue';
 
     const productRevenueOptions = useMemo(() => {
         const keys = Object.keys(productRevenue?.revenueData ?? {});
@@ -764,10 +796,10 @@ export default function KPIPage() {
     }, [productRevenue]);
 
     const productRevenueTotals = useMemo(() => {
-        const all = Object.values(productRevenue?.revenueData ?? {});
+        const all = Object.values(productRevenue?.revenueData ?? {}) as ProductRevenueEntry[];
         return {
-            totalMRR: all.reduce((s, e) => s + safeNumber(e.monthly), 0),
-            totalARR: all.reduce((s, e) => s + safeNumber(e.yearly), 0),
+            totalWeekly: all.reduce((sum, entry) => sum + (entry.weekly ?? []).reduce((entrySum, point) => entrySum + safeNumber(point.revenue), 0), 0),
+            totalMonthly: all.reduce((sum, entry) => sum + (entry.monthly ?? []).reduce((entrySum, point) => entrySum + safeNumber(point.revenue), 0), 0),
         };
     }, [productRevenue]);
 
@@ -807,7 +839,7 @@ export default function KPIPage() {
         if (!emailSentHistory) return [];
         if (emailSentPeriod === 'Weekly') {
             return (emailSentHistory.weekly?.data ?? []).map((d) => ({
-                period: d.day,
+                period: abbreviateDay(d.day),
                 count: safeNumber(d.count),
             }));
         }
@@ -1010,36 +1042,59 @@ export default function KPIPage() {
     );
 
     const selectedInvoiceContractRevenue = useMemo(() => {
-        if (invoiceContractEntity === 'contract' || contractStatsPeriod === 'yearly' || !subscriptionRevenue) return 0;
+        if (invoiceContractEntity === 'contract' || contractStatsPeriod === 'yearly' || !adminRevenue) return 0;
 
-        const revenuePeriod = contractStatsPeriod as RevenueStatsPeriod;
-        const revenue = subscriptionRevenue[revenuePeriod];
-        return invoiceContractEntity === 'invoice' ? safeNumber(revenue?.invoiceRevenue) : safeNumber(revenue?.subscriptionInvRevenue);
-    }, [invoiceContractEntity, contractStatsPeriod, subscriptionRevenue]);
+        if (contractStatsPeriod === 'today') return getAdminRevenueValue(invoiceContractEntity, adminRevenue.today);
+        if (contractStatsPeriod === 'total') return getAdminRevenueValue(invoiceContractEntity, adminRevenue.total);
+        if (contractStatsPeriod === 'weekly') {
+            return (adminRevenue.weekly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
+        }
+        return (adminRevenue.monthly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
+    }, [invoiceContractEntity, contractStatsPeriod, adminRevenue]);
 
     const invoiceContractChartData = useMemo(() => {
-        return invoiceContractPeriodOptions.map((option) => {
-            let value = 0;
-
-            if (invoiceContractMetric === 'count') {
-                value = safeNumber(contractStatsByType[invoiceContractEntity][option.value]);
-            } else if (invoiceContractEntity !== 'contract' && option.value !== 'yearly' && subscriptionRevenue) {
-                const revenue = subscriptionRevenue[option.value as RevenueStatsPeriod];
-                value = invoiceContractEntity === 'invoice' ? safeNumber(revenue?.invoiceRevenue) : safeNumber(revenue?.subscriptionInvRevenue);
-            }
-
-            return {
+        if (invoiceContractMetric === 'count') {
+            return invoiceContractPeriodOptions.map((option) => ({
                 period: option.label,
-                value,
+                value: safeNumber(contractStatsByType[invoiceContractEntity][option.value]),
                 active: option.value === contractStatsPeriod,
-            };
-        });
-    }, [invoiceContractPeriodOptions, invoiceContractMetric, invoiceContractEntity, contractStatsByType, subscriptionRevenue, contractStatsPeriod]);
+            }));
+        }
+
+        if (invoiceContractEntity === 'contract' || !adminRevenue) return [];
+
+        if (contractStatsPeriod === 'today') {
+            return [{ period: 'Today', value: getAdminRevenueValue(invoiceContractEntity, adminRevenue.today), active: true }];
+        }
+
+        if (contractStatsPeriod === 'weekly') {
+            const currentDay = abbreviateDay(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
+            return (adminRevenue.weekly ?? []).map((point) => ({
+                period: abbreviateDay(point.day),
+                value: getAdminRevenueValue(invoiceContractEntity, point),
+                active: abbreviateDay(point.day) === currentDay,
+            }));
+        }
+
+        if (contractStatsPeriod === 'monthly') {
+            const currentMonth = new Date().getMonth();
+            return (adminRevenue.monthly ?? []).map((point, index) => ({
+                period: abbreviateMonth(point.month),
+                value: getAdminRevenueValue(invoiceContractEntity, point),
+                active: index === currentMonth,
+            }));
+        }
+
+        return [{ period: 'Total', value: getAdminRevenueValue(invoiceContractEntity, adminRevenue.total), active: true }];
+    }, [invoiceContractPeriodOptions, invoiceContractMetric, invoiceContractEntity, contractStatsByType, adminRevenue, contractStatsPeriod]);
 
     const invoiceContractSelectedValueLabel = useMemo(
         () => (invoiceContractMetric === 'revenue' ? currencyWithCents(selectedInvoiceContractRevenue) : `${selectedInvoiceContractCount} created`),
         [invoiceContractMetric, selectedInvoiceContractRevenue, selectedInvoiceContractCount]
     );
+
+    const invoiceContractLoading = invoiceContractMetric === 'revenue' ? adminRevenueLoading : contractStatsLoading;
+    const invoiceContractHasData = invoiceContractMetric === 'revenue' ? Boolean(adminRevenue) : contractStats.length > 0;
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -1106,14 +1161,14 @@ export default function KPIPage() {
                 </div>
 
                 {/* ============================================================ */}
-                {/* ✅ NEW CHART A: Product Revenue — MRR & ARR                  */}
+                {/* ✅ NEW CHART A: Product Revenue                              */}
                 {/* GET /api/v4/product-revenue-chart                            */}
                 {/* ============================================================ */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
                         <div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Product Revenue — MRR &amp; ARR</h3>
-                            <p className='text-sm text-gray-500 mt-0.5'>Monthly and annual recurring revenue per product</p>
+                            <h3 className='text-lg font-semibold text-gray-800'>Product Revenue</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>Day-by-day weekly and month-by-month revenue per product</p>
                         </div>
                         <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
                             {/* Product filter */}
@@ -1137,15 +1192,18 @@ export default function KPIPage() {
                             >
                                 <option value='Week'>Week</option>
                                 <option value='Month'>Month</option>
-                                <option value='Year'>Year</option>
                             </select>
 
                             {/* Summary pills */}
                             <div className='flex gap-2'>
-                                <StatPill label='Total MRR' value={currency(productRevenueTotals.totalMRR)} color='border-blue-200 bg-blue-50 text-blue-800' />
                                 <StatPill
-                                    label='Total ARR'
-                                    value={currency(productRevenueTotals.totalARR)}
+                                    label='Total Weekly'
+                                    value={currency(productRevenueTotals.totalWeekly)}
+                                    color='border-blue-200 bg-blue-50 text-blue-800'
+                                />
+                                <StatPill
+                                    label='Total Monthly'
+                                    value={currency(productRevenueTotals.totalMonthly)}
                                     color='border-indigo-200 bg-indigo-50 text-indigo-800'
                                 />
                             </div>
@@ -1161,12 +1219,12 @@ export default function KPIPage() {
                             <ResponsiveContainer width='100%' height={280}>
                                 <LineChart data={productRevenueChartData}>
                                     <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
-                                    <XAxis dataKey='product' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
                                     <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => currency(safeNumber(v))} />
                                     <Tooltip
                                         cursor={<HorizontalCursor />}
                                         formatter={(value: any) => currency(safeNumber(value))}
-                                        labelFormatter={(label) => `Product: ${label}`}
+                                        labelFormatter={(label) => `${productRevenuePeriod === 'Week' ? 'Day' : 'Month'}: ${label}`}
                                     />
                                     <Legend />
                                     <Line
@@ -1185,30 +1243,6 @@ export default function KPIPage() {
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
-
-                            {/* Breakdown table */}
-                            {/* <div className='mt-4 overflow-x-auto'>
-                                <table className='w-full text-sm'>
-                                    <thead>
-                                        <tr className='border-b border-gray-100'>
-                                            <th className='py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wide'>Product</th>
-                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>MRR</th>
-                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>ARR</th>
-                                            <th className='py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wide'>Combined</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className='divide-y divide-gray-50'>
-                                        {productRevenueChartData.map((row) => (
-                                            <tr key={row.productKey} className='hover:bg-gray-50'>
-                                                <td className='py-2 font-medium text-gray-800'>{row.product}</td>
-                                                <td className='py-2 text-right text-blue-700'>{currency(row.MRR)}</td>
-                                                <td className='py-2 text-right text-indigo-700'>{currency(row.ARR)}</td>
-                                                <td className='py-2 text-right font-semibold text-gray-900'>{currency(row.MRR + row.ARR)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div> */}
                         </>
                     ) : (
                         <div className='h-64 flex items-center justify-center text-gray-400'>No product revenue data</div>
@@ -1550,7 +1584,7 @@ export default function KPIPage() {
                 {/* ============================================================ */}
                 {/* ✅ NEW CHART E: Invoice Contract KPI                           */}
                 {/* GET /api/v2/get-contract-stats                                */}
-                {/* GET /api/v5/admin/subscription-revenue?currency=usd           */}
+                {/* GET /api/v5/admin/revenue?currency=usd                        */}
                 {/* ============================================================ */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
@@ -1606,14 +1640,12 @@ export default function KPIPage() {
                         </div>
                     </div>
 
-                    {contractStatsError && <div className='mb-4 text-sm text-red-600'>{contractStatsError}</div>}
-                    {invoiceContractMetric === 'revenue' && subscriptionRevenueError && (
-                        <div className='mb-4 text-sm text-red-600'>{subscriptionRevenueError}</div>
-                    )}
+                    {invoiceContractMetric === 'count' && contractStatsError && <div className='mb-4 text-sm text-red-600'>{contractStatsError}</div>}
+                    {invoiceContractMetric === 'revenue' && adminRevenueError && <div className='mb-4 text-sm text-red-600'>{adminRevenueError}</div>}
 
-                    {contractStatsLoading || (invoiceContractMetric === 'revenue' && subscriptionRevenueLoading) ? (
+                    {invoiceContractLoading ? (
                         <div className='h-64 flex items-center justify-center text-gray-400'>Loading invoice contract KPI...</div>
-                    ) : contractStats.length > 0 ? (
+                    ) : invoiceContractHasData ? (
                         <>
                             <div className='mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500'>
                                 <span>
@@ -1626,9 +1658,6 @@ export default function KPIPage() {
                                 <span>
                                     Selected period: <span className='font-semibold text-gray-800'>{contractStatsPeriodLabel}</span>
                                 </span>
-                                {invoiceContractMetric === 'revenue' && (
-                                    <span className='text-xs text-gray-400'>Yearly revenue is unavailable from the revenue API.</span>
-                                )}
                             </div>
 
                             <ResponsiveContainer width='100%' height={300}>

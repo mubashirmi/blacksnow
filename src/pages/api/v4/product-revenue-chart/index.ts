@@ -1,53 +1,63 @@
 import prisma from '@/lib/prisma';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { buildProductRevenueMap, getProductRevenueDateRange } from '@/lib/productRevenueChart';
+import type { Prisma } from '@prisma/client';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function api(req: NextApiRequest, res: NextApiResponse) {
-    const { method } = req;
+    if (req.method !== 'GET') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
 
     try {
-        if (method === 'GET') {
-            const revenueData = await prisma.checkout.groupBy({
-                by: ['product', 'period'],
+        const now = new Date();
+        const { queryStart, queryEndExclusive } = getProductRevenueDateRange(now);
+        const checkoutFilter: Prisma.CheckoutWhereInput = {
+            deleted: false,
+            paid: true,
+            product: {
+                not: null,
+            },
+            period: {
+                in: ['monthly', 'yearly'],
+            },
+        };
+
+        const [products, transactions] = await Promise.all([
+            prisma.checkout.findMany({
                 where: {
-                    deleted: false,
-                    paid: true,
-                    product: {
-                        not: null,
-                    },
-                    period: {
-                        in: ['monthly', 'yearly'],
+                    ...checkoutFilter,
+                },
+                distinct: ['product'],
+                select: {
+                    product: true,
+                },
+                orderBy: {
+                    product: 'asc',
+                },
+            }),
+            prisma.checkout.findMany({
+                where: {
+                    ...checkoutFilter,
+                    createdAt: {
+                        gte: queryStart,
+                        lt: queryEndExclusive,
                     },
                 },
-                _sum: {
+                select: {
+                    product: true,
                     amount: true,
+                    createdAt: true,
                 },
-                orderBy: [{ product: 'asc' }, { period: 'asc' }],
-            });
+                orderBy: {
+                    createdAt: 'asc',
+                },
+            }),
+        ]);
 
-            const revenueMap = revenueData.reduce((resultSoFar, currentRow) => {
-                const productName = currentRow.product ?? 'Unknown';
+        const productNames = products.flatMap(({ product }) => (product ? [product] : []));
+        const revenueMap = buildProductRevenueMap(productNames, transactions, now);
 
-                if (!resultSoFar[productName]) {
-                    resultSoFar[productName] = {
-                        product: productName,
-                        monthly: 0,
-                        yearly: 0,
-                    };
-                }
-
-                if (currentRow.period === 'monthly') {
-                    resultSoFar[productName].monthly = currentRow._sum.amount ?? 0;
-                }
-
-                if (currentRow.period === 'yearly') {
-                    resultSoFar[productName].yearly = currentRow._sum.amount ?? 0;
-                }
-
-                return resultSoFar;
-            }, {});
-
-            return res.status(200).json({ message: 'Affiliate Data', revenueData: revenueMap });
-        }
+        return res.status(200).json({ message: 'Affiliate Data', revenueData: revenueMap });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
     }
