@@ -94,7 +94,7 @@ export default function ConsultationPage() {
             }));
 
             setConsultationData(formattedData);
-            setSuccess('Consultations loaded successfully!');
+            // setSuccess('Consultations loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Failed to fetch consultations. Please try again later.');

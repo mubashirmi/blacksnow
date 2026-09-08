@@ -14,7 +14,28 @@ type CountSummary = {
     weekly: number;
     monthly: number;
     yearly: number;
+    yearlyData: Array<{
+        year: number;
+        count: number;
+    }>;
     total: number;
+};
+
+type CountRanges = {
+    todayStart: Date;
+    todayEnd: Date;
+
+    weekStart: Date;
+    weekEnd: Date;
+
+    monthStart: Date;
+    monthEnd: Date;
+
+    yearlyRanges: Array<{
+        year: number;
+        start: Date;
+        end: Date;
+    }>;
 };
 
 type SuccessResponse = Array<
@@ -52,23 +73,8 @@ type CountFunction = (args?: {
  * - current year
  * - all time
  */
-async function getCounts(
-    countFunction: CountFunction,
-    ranges: {
-        todayStart: Date;
-        todayEnd: Date;
-
-        weekStart: Date;
-        weekEnd: Date;
-
-        monthStart: Date;
-        monthEnd: Date;
-
-        yearStart: Date;
-        yearEnd: Date;
-    }
-): Promise<CountSummary> {
-    const [today, weekly, monthly, yearly, total] = await Promise.all([
+export async function getCounts(countFunction: CountFunction, ranges: CountRanges): Promise<CountSummary> {
+    const counts = await Promise.all([
         /**
          * TODAY
          */
@@ -106,16 +112,18 @@ async function getCounts(
         }),
 
         /**
-         * THIS YEAR
+         * PREVIOUS THREE YEARS, CURRENT YEAR, AND NEXT YEAR
          */
-        countFunction({
-            where: {
-                createdAt: {
-                    gte: ranges.yearStart,
-                    lt: ranges.yearEnd,
+        ...ranges.yearlyRanges.map(({ start, end }) =>
+            countFunction({
+                where: {
+                    createdAt: {
+                        gte: start,
+                        lt: end,
+                    },
                 },
-            },
-        }),
+            })
+        ),
 
         /**
          * ALL TIME
@@ -123,12 +131,46 @@ async function getCounts(
         countFunction(),
     ]);
 
+    const [today, weekly, monthly] = counts;
+    const yearlyData = ranges.yearlyRanges.map(({ year }, index) => ({
+        year,
+        count: counts[index + 3],
+    }));
+    const yearly = yearlyData[3].count;
+    const total = counts[counts.length - 1];
+
     return {
         today,
         weekly,
         monthly,
         yearly,
+        yearlyData,
         total,
+    };
+}
+
+export function getContractStatsRanges(now: DateTime): CountRanges {
+    const todayStart = now.startOf('day');
+    const weekStart = now.startOf('week');
+    const monthStart = now.startOf('month');
+    const yearStart = now.startOf('year');
+
+    return {
+        todayStart: todayStart.toJSDate(),
+        todayEnd: todayStart.plus({ days: 1 }).toJSDate(),
+        weekStart: weekStart.toJSDate(),
+        weekEnd: weekStart.plus({ weeks: 1 }).toJSDate(),
+        monthStart: monthStart.toJSDate(),
+        monthEnd: monthStart.plus({ months: 1 }).toJSDate(),
+        yearlyRanges: Array.from({ length: 5 }, (_, index) => {
+            const rangeStart = yearStart.plus({ years: index - 3 });
+
+            return {
+                year: rangeStart.year,
+                start: rangeStart.toJSDate(),
+                end: rangeStart.plus({ years: 1 }).toJSDate(),
+            };
+        }),
     };
 }
 
@@ -166,75 +208,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             });
         }
 
-        /**
-         * ---------------------------------------------------------
-         * TODAY
-         * ---------------------------------------------------------
-         *
-         * Today 00:00
-         * until
-         * tomorrow 00:00
-         */
-        const todayStart = now.startOf('day');
-
-        const todayEnd = todayStart.plus({
-            days: 1,
-        });
-
-        /**
-         * ---------------------------------------------------------
-         * CURRENT WEEK
-         * ---------------------------------------------------------
-         *
-         * Luxon uses ISO weeks.
-         *
-         * Monday -> Sunday
-         */
-        const weekStart = now.startOf('week');
-
-        const weekEnd = weekStart.plus({
-            weeks: 1,
-        });
-
-        /**
-         * ---------------------------------------------------------
-         * CURRENT MONTH
-         * ---------------------------------------------------------
-         */
-        const monthStart = now.startOf('month');
-
-        const monthEnd = monthStart.plus({
-            months: 1,
-        });
-
-        /**
-         * ---------------------------------------------------------
-         * CURRENT YEAR
-         * ---------------------------------------------------------
-         */
-        const yearStart = now.startOf('year');
-
-        const yearEnd = yearStart.plus({
-            years: 1,
-        });
-
-        /**
-         * Convert Luxon DateTimes into normal JS Dates
-         * for Prisma.
-         */
-        const ranges = {
-            todayStart: todayStart.toJSDate(),
-            todayEnd: todayEnd.toJSDate(),
-
-            weekStart: weekStart.toJSDate(),
-            weekEnd: weekEnd.toJSDate(),
-
-            monthStart: monthStart.toJSDate(),
-            monthEnd: monthEnd.toJSDate(),
-
-            yearStart: yearStart.toJSDate(),
-            yearEnd: yearEnd.toJSDate(),
-        };
+        const ranges = getContractStatsRanges(now);
 
         /**
          * ---------------------------------------------------------

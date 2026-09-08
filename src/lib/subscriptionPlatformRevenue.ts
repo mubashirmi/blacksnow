@@ -117,6 +117,14 @@ export function getAdminRevenueRanges(now = new Date(), timeZone = getConfigured
                 range: buildRange(currentMonthStart, currentMonthStart.plus({ months: 1 })),
             };
         }),
+        yearlyYears: Array.from({ length: 5 }, (_, index) => {
+            const currentYearStart = yearStart.plus({ years: index - 3 });
+
+            return {
+                year: currentYearStart.year,
+                range: buildRange(currentYearStart, currentYearStart.plus({ years: 1 })),
+            };
+        }),
     };
 }
 
@@ -249,6 +257,10 @@ export function buildAdminRevenueReport(
         })),
         monthly: ranges.monthlyMonths.map(({ month, range }) => ({
             month,
+            ...splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, range),
+        })),
+        yearly: ranges.yearlyYears.map(({ year, range }) => ({
+            year,
             ...splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency, range),
         })),
         total: splitRevenueForPeriod(invoiceRecords, subscriptionInvRecords, platformFeePercent, currency),

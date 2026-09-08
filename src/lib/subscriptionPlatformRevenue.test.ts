@@ -50,6 +50,9 @@ describe('admin subscription invoice revenue', () => {
         expect(ranges.monthlyMonths.map(({ month }) => month)).toEqual(ADMIN_REVENUE_MONTHS);
         expect(ranges.monthlyMonths[0].range.start.toISOString()).toBe('2026-01-01T00:00:00.000Z');
         expect(ranges.monthlyMonths[11].range.endExclusive.toISOString()).toBe('2027-01-01T00:00:00.000Z');
+        expect(ranges.yearlyYears.map(({ year }) => year)).toEqual([2023, 2024, 2025, 2026, 2027]);
+        expect(ranges.yearlyYears[0].range.start.toISOString()).toBe('2023-01-01T00:00:00.000Z');
+        expect(ranges.yearlyYears[4].range.endExclusive.toISOString()).toBe('2028-01-01T00:00:00.000Z');
     });
 
     test('calculates boundaries in the configured timezone before converting them to UTC', () => {
@@ -137,6 +140,38 @@ describe('admin subscription invoice revenue', () => {
             subscriptionInvRevenue: 0,
             totalRevenue: 0,
         });
+
+        expect(report.yearly).toHaveLength(5);
+        expect(report.yearly.map(({ year }) => year)).toEqual([2023, 2024, 2025, 2026, 2027]);
+        expect(report.yearly.find(({ year }) => year === 2026)).toEqual({
+            year: 2026,
+            invoiceRevenue: 3.2,
+            subscriptionInvRevenue: 1.6,
+            totalRevenue: 4.8,
+        });
+    });
+
+    test('calculates yearly revenue for the previous three years, current year, and next year', () => {
+        const report = buildAdminRevenueReport(
+            [
+                { baseAmount: 1_000, paymentDate: new Date('2023-06-01T10:00:00.000Z') },
+                { baseAmount: 2_000, paymentDate: new Date('2022-06-01T10:00:00.000Z') },
+            ],
+            [{ baseAmount: 3_000, paymentDate: new Date('2027-06-01T10:00:00.000Z') }],
+            8,
+            'usd',
+            new Date('2026-09-05T12:00:00.000Z'),
+            'UTC'
+        );
+
+        expect(report.yearly).toEqual([
+            { year: 2023, invoiceRevenue: 0.8, subscriptionInvRevenue: 0, totalRevenue: 0.8 },
+            { year: 2024, invoiceRevenue: 0, subscriptionInvRevenue: 0, totalRevenue: 0 },
+            { year: 2025, invoiceRevenue: 0, subscriptionInvRevenue: 0, totalRevenue: 0 },
+            { year: 2026, invoiceRevenue: 0, subscriptionInvRevenue: 0, totalRevenue: 0 },
+            { year: 2027, invoiceRevenue: 0, subscriptionInvRevenue: 2.4, totalRevenue: 2.4 },
+        ]);
+        expect(report.total).toEqual({ invoiceRevenue: 2.4, subscriptionInvRevenue: 2.4, totalRevenue: 4.8 });
     });
 
     test('does not include future-dated payments in today revenue', () => {

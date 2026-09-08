@@ -10,6 +10,9 @@ describe('product revenue chart', () => {
         expect([range.weekEndExclusive.getFullYear(), range.weekEndExclusive.getMonth(), range.weekEndExclusive.getDate()]).toEqual([2026, 8, 7]);
         expect([range.yearStart.getFullYear(), range.yearStart.getMonth(), range.yearStart.getDate()]).toEqual([2026, 0, 1]);
         expect([range.yearEndExclusive.getFullYear(), range.yearEndExclusive.getMonth(), range.yearEndExclusive.getDate()]).toEqual([2027, 0, 1]);
+        expect([range.yearlyStart.getFullYear(), range.yearlyStart.getMonth(), range.yearlyStart.getDate()]).toEqual([2023, 0, 1]);
+        expect([range.yearlyEndExclusive.getFullYear(), range.yearlyEndExclusive.getMonth(), range.yearlyEndExclusive.getDate()]).toEqual([2028, 0, 1]);
+        expect(range.yearlyYears).toEqual([2023, 2024, 2025, 2026, 2027]);
     });
 
     test('returns every day and month for every product and fills missing buckets with zero', () => {
@@ -20,6 +23,8 @@ describe('product revenue chart', () => {
                 { product: 'DigitalBillboard', amount: 25, createdAt: new Date('2026-09-06T10:00:00.000Z') },
                 { product: 'DigitalBillboard', amount: 15, createdAt: new Date('2026-09-06T11:00:00.000Z') },
                 { product: 'DigitalBillboard', amount: 50, createdAt: new Date('2026-01-15T10:00:00.000Z') },
+                { product: 'DigitalBillboard', amount: 100, createdAt: new Date('2023-04-15T10:00:00.000Z') },
+                { product: 'DigitalBillboard', amount: 200, createdAt: new Date('2027-04-15T10:00:00.000Z') },
             ],
             now
         );
@@ -35,11 +40,20 @@ describe('product revenue chart', () => {
         expect(revenue.DigitalBillboard.monthly[0].revenue).toBe(50);
         expect(revenue.DigitalBillboard.monthly[8].revenue).toBe(40);
 
+        expect(revenue.DigitalBillboard.yearly).toEqual([
+            { year: 2023, revenue: 100 },
+            { year: 2024, revenue: 0 },
+            { year: 2025, revenue: 0 },
+            { year: 2026, revenue: 100 },
+            { year: 2027, revenue: 200 },
+        ]);
+
         expect(revenue.EmailMarketing.weekly.every(({ revenue: amount }) => amount === 0)).toBe(true);
         expect(revenue.EmailMarketing.monthly.every(({ revenue: amount }) => amount === 0)).toBe(true);
+        expect(revenue.EmailMarketing.yearly.every(({ revenue: amount }) => amount === 0)).toBe(true);
     });
 
-    test('does not add transactions outside the active week or year', () => {
+    test('does not add older transactions to the active week or current-year months', () => {
         const revenue = buildProductRevenueMap(
             ['DigitalBillboard'],
             [
@@ -51,5 +65,6 @@ describe('product revenue chart', () => {
 
         expect(revenue.DigitalBillboard.weekly.every(({ revenue: amount }) => amount === 0)).toBe(true);
         expect(revenue.DigitalBillboard.monthly.every(({ revenue: amount }) => amount === 0)).toBe(true);
+        expect(revenue.DigitalBillboard.yearly.find(({ year }) => year === 2025)?.revenue).toBe(200);
     });
 });

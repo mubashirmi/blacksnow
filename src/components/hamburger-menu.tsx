@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { destroyCookie } from 'nookies';
+// import { destroyCookie } from 'nookies'; // Logout functionality disabled
 import { useEffect, useState } from 'react';
 
 const menuItems = [
@@ -76,7 +76,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     const [lastName, setLastName] = useState<string | null>(null);
     const [email, setEmail] = useState<string | null>(null);
     const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
-    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    // const [showLogoutModal, setShowLogoutModal] = useState(false); // Logout functionality disabled
 
     const router = useRouter();
 
@@ -148,19 +148,20 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 setIsOpen(false);
-                setShowLogoutModal(false);
+                // setShowLogoutModal(false); // Logout functionality disabled
             }
         };
 
-        if (isOpen || showLogoutModal) {
+        if (isOpen /* || showLogoutModal */) {
             document.addEventListener('keydown', handleEscape);
         }
 
         return () => {
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isOpen, showLogoutModal]);
+    }, [isOpen /*, showLogoutModal */]);
 
+    /* Logout functionality disabled
     const handleLogout = () => {
         setShowLogoutModal(true);
     };
@@ -190,6 +191,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
     const cancelLogout = () => {
         setShowLogoutModal(false);
     };
+    */
 
     const handleDashboardClick = () => {
         if (!userid || dashboards.length === 0) return;
@@ -237,7 +239,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-all duration-500 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0'}`}
                     onClick={() => {
                         setIsOpen(false);
-                        setShowLogoutModal(false);
+                        // setShowLogoutModal(false); // Logout functionality disabled
                     }}
                 />
 
@@ -350,6 +352,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     transitionDelay: isOpen ? `${500 + menuItems.length * 100}ms` : '0ms',
                                 }}
                             >
+                                {/* Logout button functionality disabled
                                 {userid || adminid ? (
                                     <Button
                                         onClick={handleLogout}
@@ -357,7 +360,10 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     >
                                         Logout
                                     </Button>
-                                ) : (
+                                ) : null}
+                                */}
+
+                                {!(userid || adminid) && (
                                     <Button
                                         asChild
                                         className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
@@ -373,7 +379,8 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 </div>
             </div>
 
-            {/* Logout Confirmation Modal */}
+            {/*
+            Logout Confirmation Modal functionality disabled
             {showLogoutModal && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center'>
                     <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
@@ -397,6 +404,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     </div>
                 </div>
             )}
+            */}
         </div>
     );
 }

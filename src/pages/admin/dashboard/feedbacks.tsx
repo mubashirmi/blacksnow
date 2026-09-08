@@ -77,7 +77,7 @@ export default function FeedbackPage() {
             }));
 
             setFeedbackData(formattedData);
-            setSuccess('Feedback loaded successfully!');
+            // setSuccess('Feedback loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Failed to fetch feedback. Please try again later.');

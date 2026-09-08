@@ -32,7 +32,7 @@ export default function MarketingSubscribersPage() {
                 status: 'Active',
             }));
             setSalesData(formattedData);
-            setSuccess('Data loaded successfully!');
+            // setSuccess('Data loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError('Failed to fetch user data. Please try again later.');

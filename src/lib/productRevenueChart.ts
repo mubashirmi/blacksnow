@@ -15,6 +15,7 @@ export type ProductRevenueEntry = {
     product: string;
     weekly: Array<{ day: WeekDay; revenue: number }>;
     monthly: Array<{ month: Month; revenue: number }>;
+    yearly: Array<{ year: number; revenue: number }>;
 };
 
 export type ProductRevenueMap = Record<string, ProductRevenueEntry>;
@@ -22,6 +23,8 @@ export type ProductRevenueMap = Record<string, ProductRevenueEntry>;
 export function getProductRevenueDateRange(now = new Date()) {
     const yearStart = new Date(now.getFullYear(), 0, 1);
     const yearEndExclusive = new Date(now.getFullYear() + 1, 0, 1);
+    const yearlyStart = new Date(now.getFullYear() - 3, 0, 1);
+    const yearlyEndExclusive = new Date(now.getFullYear() + 2, 0, 1);
     const daysSinceMonday = (now.getDay() + 6) % 7;
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysSinceMonday);
     const weekEndExclusive = new Date(weekStart);
@@ -32,16 +35,20 @@ export function getProductRevenueDateRange(now = new Date()) {
         weekEndExclusive,
         yearStart,
         yearEndExclusive,
-        queryStart: new Date(Math.min(weekStart.getTime(), yearStart.getTime())),
-        queryEndExclusive: new Date(Math.max(weekEndExclusive.getTime(), yearEndExclusive.getTime())),
+        yearlyStart,
+        yearlyEndExclusive,
+        yearlyYears: Array.from({ length: 5 }, (_, index) => now.getFullYear() + index - 3),
+        queryStart: new Date(Math.min(weekStart.getTime(), yearlyStart.getTime())),
+        queryEndExclusive: new Date(Math.max(weekEndExclusive.getTime(), yearlyEndExclusive.getTime())),
     };
 }
 
-function emptyProductRevenue(product: string): ProductRevenueEntry {
+function emptyProductRevenue(product: string, yearlyYears: number[]): ProductRevenueEntry {
     return {
         product,
         weekly: WEEK_DAYS.map((day) => ({ day, revenue: 0 })),
         monthly: MONTHS.map((month) => ({ month, revenue: 0 })),
+        yearly: yearlyYears.map((year) => ({ year, revenue: 0 })),
     };
 }
 
@@ -51,14 +58,14 @@ export function buildProductRevenueMap(productNames: string[], transactions: Pro
 
     for (const productName of productNames) {
         if (!revenueMap[productName]) {
-            revenueMap[productName] = emptyProductRevenue(productName);
+            revenueMap[productName] = emptyProductRevenue(productName, ranges.yearlyYears);
         }
     }
 
     for (const transaction of transactions) {
         if (!transaction.product || Number.isNaN(transaction.createdAt.getTime())) continue;
 
-        const productRevenue = revenueMap[transaction.product] ?? emptyProductRevenue(transaction.product);
+        const productRevenue = revenueMap[transaction.product] ?? emptyProductRevenue(transaction.product, ranges.yearlyYears);
         revenueMap[transaction.product] = productRevenue;
 
         if (transaction.createdAt >= ranges.weekStart && transaction.createdAt < ranges.weekEndExclusive) {
@@ -68,6 +75,11 @@ export function buildProductRevenueMap(productNames: string[], transactions: Pro
 
         if (transaction.createdAt >= ranges.yearStart && transaction.createdAt < ranges.yearEndExclusive) {
             productRevenue.monthly[transaction.createdAt.getMonth()].revenue += transaction.amount;
+        }
+
+        if (transaction.createdAt >= ranges.yearlyStart && transaction.createdAt < ranges.yearlyEndExclusive) {
+            const yearIndex = transaction.createdAt.getFullYear() - ranges.yearlyStart.getFullYear();
+            productRevenue.yearly[yearIndex].revenue += transaction.amount;
         }
     }
 

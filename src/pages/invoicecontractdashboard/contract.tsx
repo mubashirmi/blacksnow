@@ -370,16 +370,16 @@ const ContractsPage: NextPage = () => {
                 {/* Overview stats */}
                 <section className='mb-6 grid gap-4 sm:grid-cols-3'>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
-                        <div className='text-[12px] uppercase text-gray-500'>Total Contracts</div>
-                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalInvoices}</div>
+                        <div className='text-[12px] uppercase text-gray-500'>Pending Signature</div>
+                        <div className='mt-1 text-[22px] font-semibold text-amber-700'>{unsignedCount}</div>
                     </div>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
                         <div className='text-[12px] uppercase text-gray-500'>Signed</div>
                         <div className='mt-1 text-[22px] font-semibold text-green-700'>{signedCount}</div>
                     </div>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
-                        <div className='text-[12px] uppercase text-gray-500'>Pending Signature</div>
-                        <div className='mt-1 text-[22px] font-semibold text-amber-700'>{unsignedCount}</div>
+                        <div className='text-[12px] uppercase text-gray-500'>Total Contracts</div>
+                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalInvoices}</div>
                     </div>
                 </section>
 

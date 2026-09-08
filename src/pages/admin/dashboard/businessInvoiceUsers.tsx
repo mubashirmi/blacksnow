@@ -62,7 +62,7 @@ export default function SalesPage() {
                 id: user.id,
             }));
             setSalesData(formattedData);
-            setSuccess('Data loaded successfully!');
+            // setSuccess('Data loaded successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError('Failed to fetch user data. Please try again later.');

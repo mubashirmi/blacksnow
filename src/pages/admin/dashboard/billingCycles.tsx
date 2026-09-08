@@ -343,7 +343,7 @@ export default function BillingPage() {
                 setError('Some records could not be loaded. Please refresh again.');
                 setTimeout(() => setError(null), 5000);
             } else {
-                setSuccess('Billing data loaded successfully!');
+                // setSuccess('Billing data loaded successfully!');
                 setTimeout(() => setSuccess(null), 3000);
             }
         } catch {
