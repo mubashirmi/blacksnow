@@ -34,10 +34,16 @@ type ProductRevenueMonthlyPoint = {
     revenue: number;
 };
 
+type ProductRevenueYearlyPoint = {
+    year: number;
+    revenue: number;
+};
+
 type ProductRevenueEntry = {
     product: string;
     weekly: ProductRevenueWeeklyPoint[];
     monthly: ProductRevenueMonthlyPoint[];
+    yearly: ProductRevenueYearlyPoint[];
 };
 
 type ProductRevenueChartResponse = {
@@ -167,11 +173,29 @@ type FeedbackApiItem = {
     } | null;
 };
 
+type ContractStatsWeeklyPoint = {
+    day: string;
+    count: number;
+};
+
+type ContractStatsMonthlyPoint = {
+    month: string;
+    count: number;
+};
+
+type ContractStatsYearlyPoint = {
+    year: number;
+    count: number;
+};
+
 type ContractStatsValue = {
     today: number;
     weekly: number;
+    weeklyData: ContractStatsWeeklyPoint[];
     monthly: number;
+    monthlyData: ContractStatsMonthlyPoint[];
     yearly: number;
+    yearlyData: ContractStatsYearlyPoint[];
     total: number;
 };
 
@@ -197,10 +221,15 @@ type AdminRevenueMonthlyPoint = AdminRevenueValue & {
     month: string;
 };
 
+type AdminRevenueYearlyPoint = AdminRevenueValue & {
+    year: number;
+};
+
 type AdminRevenueResponse = {
     today: AdminRevenueValue;
     weekly: AdminRevenueWeeklyPoint[];
     monthly: AdminRevenueMonthlyPoint[];
+    yearly: AdminRevenueYearlyPoint[];
     total: AdminRevenueValue;
 };
 
@@ -243,19 +272,17 @@ const LIGHTNING_SILVER_PRODUCT_OPTIONS: { label: string; value: AffiliateMetricP
 
 type MetricType = 'Revenue' | 'Subscribers' | 'ChurnRate';
 type MetricPeriod = 'Week' | 'Month' | 'Year';
-type ProductRevenuePeriod = 'Week' | 'Month';
+type ProductRevenuePeriod = 'Week' | 'Month' | 'Year';
 type EmailSentPeriod = 'Weekly' | 'Monthly' | 'Yearly';
 type ToolFeedbackMetricType = 'FeedbackCount' | 'AverageStars';
-type ContractStatsPeriod = keyof ContractStatsValue;
+type ContractStatsPeriod = 'weekly' | 'monthly' | 'yearly';
 type InvoiceContractEntity = 'contract' | 'invoice' | 'subscriptionInv';
 type InvoiceContractMetric = 'count' | 'revenue';
 
 const CONTRACT_STATS_PERIOD_OPTIONS: { label: string; value: ContractStatsPeriod }[] = [
-    { label: 'Today', value: 'today' },
     { label: 'Weekly', value: 'weekly' },
     { label: 'Monthly', value: 'monthly' },
     { label: 'Yearly', value: 'yearly' },
-    { label: 'Total', value: 'total' },
 ];
 
 const INVOICE_CONTRACT_ENTITY_OPTIONS: { label: string; value: InvoiceContractEntity }[] = [
@@ -291,6 +318,23 @@ function currencyWithCents(n?: number | null) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
+}
+
+function getRevenueYAxisConfig(values: number[]) {
+    const maxValue = Math.max(0, ...values.map((value) => safeNumber(value, 0)));
+    const targetMax = Math.max(400, maxValue);
+    const roughStep = targetMax / 4;
+    const magnitude = 10 ** Math.floor(Math.log10(Math.max(roughStep, 1)));
+    const normalizedStep = roughStep / magnitude;
+    const niceMultiplier = normalizedStep <= 1 ? 1 : normalizedStep <= 2 ? 2 : normalizedStep <= 5 ? 5 : 10;
+    const step = Math.max(100, niceMultiplier * magnitude);
+    const axisMax = Math.ceil(targetMax / step) * step;
+    const ticks = Array.from({ length: Math.floor(axisMax / step) + 1 }, (_, index) => index * step);
+
+    return {
+        domain: [0, axisMax] as [number, number],
+        ticks,
+    };
 }
 
 function normalizePercent(rate: number) {
@@ -754,17 +798,11 @@ export default function KPIPage() {
         }
     }, [invoiceContractEntity, invoiceContractMetric]);
 
-    useEffect(() => {
-        if (invoiceContractMetric === 'revenue' && contractStatsPeriod === 'yearly') {
-            setContractStatsPeriod('monthly');
-        }
-    }, [invoiceContractMetric, contractStatsPeriod]);
-
     // ─────────────────────────────────────────────────────────────────────────
 
     // ─── v4 derived data ──────────────────────────────────────────────────────
 
-    /** Product Revenue: build real day-by-day or month-by-month chart data. */
+    /** Product Revenue: build real weekly, monthly, or yearly chart data. */
     const productRevenueChartData = useMemo(() => {
         const entries = Object.values(productRevenue?.revenueData ?? {}) as ProductRevenueEntry[];
         const filtered = selectedRevenueProduct === 'All' ? entries : entries.filter((entry) => entry.product === selectedRevenueProduct);
@@ -779,16 +817,28 @@ export default function KPIPage() {
             }));
         }
 
-        return MONTHS.map((month) => ({
-            period: abbreviateMonth(month),
+        if (productRevenuePeriod === 'Month') {
+            return MONTHS.map((month) => ({
+                period: abbreviateMonth(month),
+                Revenue: filtered.reduce((sum, entry) => {
+                    const point = entry.monthly?.find((item) => item.month === month);
+                    return sum + safeNumber(point?.revenue);
+                }, 0),
+            }));
+        }
+
+        const years = Array.from(new Set(filtered.flatMap((entry) => (entry.yearly ?? []).map((point) => point.year)))).sort((a, b) => a - b);
+        return years.map((year) => ({
+            period: String(year),
             Revenue: filtered.reduce((sum, entry) => {
-                const point = entry.monthly?.find((item) => item.month === month);
+                const point = entry.yearly?.find((item) => item.year === year);
                 return sum + safeNumber(point?.revenue);
             }, 0),
         }));
     }, [productRevenue, selectedRevenueProduct, productRevenuePeriod]);
 
-    const productRevenueSeriesLabel = productRevenuePeriod === 'Week' ? 'Weekly Revenue' : 'Monthly Revenue';
+    const productRevenueSeriesLabel =
+        productRevenuePeriod === 'Week' ? 'Weekly Revenue' : productRevenuePeriod === 'Month' ? 'Monthly Revenue' : 'Yearly Revenue';
 
     const productRevenueOptions = useMemo(() => {
         const keys = Object.keys(productRevenue?.revenueData ?? {});
@@ -800,6 +850,7 @@ export default function KPIPage() {
         return {
             totalWeekly: all.reduce((sum, entry) => sum + (entry.weekly ?? []).reduce((entrySum, point) => entrySum + safeNumber(point.revenue), 0), 0),
             totalMonthly: all.reduce((sum, entry) => sum + (entry.monthly ?? []).reduce((entrySum, point) => entrySum + safeNumber(point.revenue), 0), 0),
+            totalYearly: all.reduce((sum, entry) => sum + (entry.yearly ?? []).reduce((entrySum, point) => entrySum + safeNumber(point.revenue), 0), 0),
         };
     }, [productRevenue]);
 
@@ -1011,7 +1062,16 @@ export default function KPIPage() {
     }, [toolFeedbackMetricType, toolFeedbackSelectedValue]);
 
     const contractStatsByType = useMemo(() => {
-        const empty: ContractStatsValue = { today: 0, weekly: 0, monthly: 0, yearly: 0, total: 0 };
+        const empty: ContractStatsValue = {
+            today: 0,
+            weekly: 0,
+            weeklyData: [],
+            monthly: 0,
+            monthlyData: [],
+            yearly: 0,
+            yearlyData: [],
+            total: 0,
+        };
 
         return {
             contract: contractStats.find((item) => item.contract)?.contract ?? empty,
@@ -1020,11 +1080,7 @@ export default function KPIPage() {
         };
     }, [contractStats]);
 
-    const invoiceContractPeriodOptions = useMemo(
-        () =>
-            invoiceContractMetric === 'revenue' ? CONTRACT_STATS_PERIOD_OPTIONS.filter((option) => option.value !== 'yearly') : CONTRACT_STATS_PERIOD_OPTIONS,
-        [invoiceContractMetric]
-    );
+    const invoiceContractPeriodOptions = CONTRACT_STATS_PERIOD_OPTIONS;
 
     const contractStatsPeriodLabel = useMemo(
         () => CONTRACT_STATS_PERIOD_OPTIONS.find((option) => option.value === contractStatsPeriod)?.label ?? 'Monthly',
@@ -1042,33 +1098,51 @@ export default function KPIPage() {
     );
 
     const selectedInvoiceContractRevenue = useMemo(() => {
-        if (invoiceContractEntity === 'contract' || contractStatsPeriod === 'yearly' || !adminRevenue) return 0;
+        if (invoiceContractEntity === 'contract' || !adminRevenue) return 0;
 
-        if (contractStatsPeriod === 'today') return getAdminRevenueValue(invoiceContractEntity, adminRevenue.today);
-        if (contractStatsPeriod === 'total') return getAdminRevenueValue(invoiceContractEntity, adminRevenue.total);
         if (contractStatsPeriod === 'weekly') {
             return (adminRevenue.weekly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
         }
-        return (adminRevenue.monthly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
+        if (contractStatsPeriod === 'monthly') {
+            return (adminRevenue.monthly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
+        }
+        return (adminRevenue.yearly ?? []).reduce((sum, point) => sum + getAdminRevenueValue(invoiceContractEntity, point), 0);
     }, [invoiceContractEntity, contractStatsPeriod, adminRevenue]);
 
     const invoiceContractChartData = useMemo(() => {
+        const currentDay = abbreviateDay(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
         if (invoiceContractMetric === 'count') {
-            return invoiceContractPeriodOptions.map((option) => ({
-                period: option.label,
-                value: safeNumber(contractStatsByType[invoiceContractEntity][option.value]),
-                active: option.value === contractStatsPeriod,
+            const stats = contractStatsByType[invoiceContractEntity];
+
+            if (contractStatsPeriod === 'weekly') {
+                return (stats.weeklyData ?? []).map((point) => ({
+                    period: abbreviateDay(point.day),
+                    value: safeNumber(point.count),
+                    active: abbreviateDay(point.day) === currentDay,
+                }));
+            }
+
+            if (contractStatsPeriod === 'monthly') {
+                return (stats.monthlyData ?? []).map((point, index) => ({
+                    period: abbreviateMonth(point.month),
+                    value: safeNumber(point.count),
+                    active: index === currentMonth,
+                }));
+            }
+
+            return (stats.yearlyData ?? []).map((point) => ({
+                period: String(point.year),
+                value: safeNumber(point.count),
+                active: point.year === currentYear,
             }));
         }
 
         if (invoiceContractEntity === 'contract' || !adminRevenue) return [];
 
-        if (contractStatsPeriod === 'today') {
-            return [{ period: 'Today', value: getAdminRevenueValue(invoiceContractEntity, adminRevenue.today), active: true }];
-        }
-
         if (contractStatsPeriod === 'weekly') {
-            const currentDay = abbreviateDay(new Date().toLocaleDateString('en-US', { weekday: 'long' }));
             return (adminRevenue.weekly ?? []).map((point) => ({
                 period: abbreviateDay(point.day),
                 value: getAdminRevenueValue(invoiceContractEntity, point),
@@ -1077,7 +1151,6 @@ export default function KPIPage() {
         }
 
         if (contractStatsPeriod === 'monthly') {
-            const currentMonth = new Date().getMonth();
             return (adminRevenue.monthly ?? []).map((point, index) => ({
                 period: abbreviateMonth(point.month),
                 value: getAdminRevenueValue(invoiceContractEntity, point),
@@ -1085,8 +1158,12 @@ export default function KPIPage() {
             }));
         }
 
-        return [{ period: 'Total', value: getAdminRevenueValue(invoiceContractEntity, adminRevenue.total), active: true }];
-    }, [invoiceContractPeriodOptions, invoiceContractMetric, invoiceContractEntity, contractStatsByType, adminRevenue, contractStatsPeriod]);
+        return (adminRevenue.yearly ?? []).map((point) => ({
+            period: String(point.year),
+            value: getAdminRevenueValue(invoiceContractEntity, point),
+            active: point.year === currentYear,
+        }));
+    }, [invoiceContractMetric, invoiceContractEntity, contractStatsByType, adminRevenue, contractStatsPeriod]);
 
     const invoiceContractSelectedValueLabel = useMemo(
         () => (invoiceContractMetric === 'revenue' ? currencyWithCents(selectedInvoiceContractRevenue) : `${selectedInvoiceContractCount} created`),
@@ -1134,6 +1211,13 @@ export default function KPIPage() {
         [lightningSilverMetricType, lightningSilverSelectedValue]
     );
 
+    const salesRevenueYAxis = useMemo(() => getRevenueYAxisConfig(salesSeries.map((item) => safeNumber(item.value))), [salesSeries]);
+    const lightningGoldRevenueYAxis = useMemo(() => getRevenueYAxisConfig(lightningGoldSeries.map((item) => safeNumber(item.value))), [lightningGoldSeries]);
+    const lightningSilverRevenueYAxis = useMemo(
+        () => getRevenueYAxisConfig(lightningSilverSeries.map((item) => safeNumber(item.value))),
+        [lightningSilverSeries]
+    );
+
     const totalKpiChartData = useMemo(() => {
         const counts = totalKpi?.countsByRole ?? {};
         const entries = Object.entries(counts).map(([key, val]) => ({
@@ -1168,7 +1252,7 @@ export default function KPIPage() {
                     <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
                         <div>
                             <h3 className='text-lg font-semibold text-gray-800'>Product Revenue</h3>
-                            <p className='text-sm text-gray-500 mt-0.5'>Day-by-day weekly and month-by-month revenue per product</p>
+                            <p className='text-sm text-gray-500 mt-0.5'>Weekly, monthly, and yearly revenue per product</p>
                         </div>
                         <div className='flex flex-col sm:flex-row items-start sm:items-center gap-3'>
                             {/* Product filter */}
@@ -1192,6 +1276,7 @@ export default function KPIPage() {
                             >
                                 <option value='Week'>Week</option>
                                 <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
                             </select>
 
                             {/* Summary pills */}
@@ -1205,6 +1290,11 @@ export default function KPIPage() {
                                     label='Total Monthly'
                                     value={currency(productRevenueTotals.totalMonthly)}
                                     color='border-indigo-200 bg-indigo-50 text-indigo-800'
+                                />
+                                <StatPill
+                                    label='Total Yearly'
+                                    value={currency(productRevenueTotals.totalYearly)}
+                                    color='border-violet-200 bg-violet-50 text-violet-800'
                                 />
                             </div>
                         </div>
@@ -1224,7 +1314,9 @@ export default function KPIPage() {
                                     <Tooltip
                                         cursor={<HorizontalCursor />}
                                         formatter={(value: any) => currency(safeNumber(value))}
-                                        labelFormatter={(label) => `${productRevenuePeriod === 'Week' ? 'Day' : 'Month'}: ${label}`}
+                                        labelFormatter={(label) =>
+                                            `${productRevenuePeriod === 'Week' ? 'Day' : productRevenuePeriod === 'Month' ? 'Month' : 'Year'}: ${label}`
+                                        }
                                     />
                                     <Legend />
                                     <Line
@@ -1312,6 +1404,8 @@ export default function KPIPage() {
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='period' />
                                 <YAxis
+                                    domain={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.domain : undefined}
+                                    ticks={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.ticks : undefined}
                                     tickFormatter={(value) => {
                                         const v = safeNumber(value, 0);
                                         if (lightningGoldMetricType === 'Revenue') return currency(v);
@@ -1422,6 +1516,8 @@ export default function KPIPage() {
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='period' />
                                 <YAxis
+                                    domain={lightningSilverMetricType === 'Revenue' ? lightningSilverRevenueYAxis.domain : undefined}
+                                    ticks={lightningSilverMetricType === 'Revenue' ? lightningSilverRevenueYAxis.ticks : undefined}
                                     tickFormatter={(value) => {
                                         const v = safeNumber(value, 0);
                                         if (lightningSilverMetricType === 'Revenue') return currency(v);
@@ -1763,7 +1859,16 @@ export default function KPIPage() {
                             <LineChart data={salesSeries as any}>
                                 <CartesianGrid strokeDasharray='3 3' />
                                 <XAxis dataKey='period' />
-                                <YAxis />
+                                <YAxis
+                                    domain={salesMetricType === 'Revenue' ? salesRevenueYAxis.domain : undefined}
+                                    ticks={salesMetricType === 'Revenue' ? salesRevenueYAxis.ticks : undefined}
+                                    tickFormatter={(value) => {
+                                        const v = safeNumber(value, 0);
+                                        if (salesMetricType === 'Revenue') return currency(v);
+                                        if (salesMetricType === 'ChurnRate') return percent(v);
+                                        return String(v);
+                                    }}
+                                />
                                 <Tooltip
                                     cursor={<HorizontalCursor />}
                                     formatter={(value: any) => {
