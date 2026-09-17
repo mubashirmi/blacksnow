@@ -47,8 +47,8 @@ function CoreLayout({ children }: { children: ReactNode }) {
             {/* Footer */}
             <footer className='relative bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-t border-[#2c7bbe]/20 pt-12 pb-7 px-4 sm:px-6 md:px-8 overflow-hidden'>
                 <div className='container mx-auto max-w-7xl relative z-10'>
-                    <div className='grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-12'>
-                        <div className='space-y-8 lg:col-span-2'>
+                    <div className='grid grid-cols-1 lg:grid-cols-[2fr_1.05fr_1.05fr_1.5fr_1.15fr] gap-8 sm:gap-12'>
+                        <div className='space-y-8'>
                             <div className='flex items-center justify-between gap-4 lg:justify-start'>
                                 <div className='relative group'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
@@ -128,6 +128,34 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Email CRM', href: '/emailMarketing' },
                                     { name: 'Lightning Silver', href: '/lightningSilver' },
                                     { name: 'Lightning Gold', href: '/lightningGold' },
+                                ].map((link, index) => (
+                                    <Link
+                                        key={index}
+                                        href={link.href}
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                    >
+                                        <span className='flex min-w-0 items-center'>
+                                            <span className='min-w-0 break-words'>{link.name}</span>
+                                            <ArrowRight className='w-4 h-4 ml-2 shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className='space-y-5 min-w-0'>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8] whitespace-nowrap'>Trading Tool Kit</h4>
+                            <div className='space-y-3'>
+                                {[
+                                    { name: 'All tools', href: '/tools' },
+                                    { name: 'Market Movers', href: '/market-movers' },
+                                    { name: 'Paper Trading', href: '/paper-trading' },
+                                    { name: 'Market Moving Calendars', href: '/market-moving-calenders' },
+                                    { name: 'Research', href: '/research' },
+                                    { name: 'Watchlist', href: '/watchlist' },
+                                    { name: 'Economic Simulator', href: '/economic-simulator' },
+                                    { name: 'Global KPI', href: '/global-kpi' },
+                                    { name: 'Stock Screener', href: '/stock-screener' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}

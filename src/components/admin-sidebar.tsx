@@ -7,7 +7,6 @@ import {
     CalendarCheck,
     ChevronDown,
     CreditCard,
-    FilePenLine,
     FileSpreadsheet,
     FileText,
     HelpCircle,
@@ -164,8 +163,8 @@ export function AdminSidebar() {
             title: 'Invoice/Contract',
             icon: FileSpreadsheet,
             children: [
-                { title: 'Create Contract', url: '/admin/dashboard/invoicecontractdashboard/contract', icon: LinkIcon },
-                { title: 'Signed Contracts', url: '/admin/dashboard/invoicecontractdashboard/signedContracts', icon: FilePenLine },
+                { title: 'Contract', url: '/admin/dashboard/invoicecontractdashboard/contract', icon: LinkIcon },
+                // { title: 'Signed Contracts', url: '/admin/dashboard/invoicecontractdashboard/signedContracts', icon: FilePenLine },
                 { title: 'Invoices', url: '/admin/dashboard/invoicecontractdashboard/invoice', icon: StickyNote },
                 { title: 'Subscriptions', url: '/admin/dashboard/invoicecontractdashboard/subscription', icon: CreditCard },
                 { title: 'Receipts', url: '/admin/dashboard/invoicecontractdashboard/receipts', icon: ReceiptText },

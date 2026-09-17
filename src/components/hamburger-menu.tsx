@@ -25,7 +25,21 @@ const menuItems = [
             { name: 'Affiliate Program', href: '/affiliate' },
             { name: 'Business Invoice', href: '/InvoiceContract' },
             { name: 'Digital Billboard', href: '/advertising' },
-            { name: 'Email Marketing', href: '/emailMarketing' },
+            { name: 'Email CRM', href: '/emailMarketing' },
+        ],
+    },
+    {
+        category: 'Trading Tool Kit',
+        items: [
+            { name: 'All Tools', href: '/tools' },
+            { name: 'Market Movers', href: '/market-movers' },
+            { name: 'Paper Trading', href: '/paper-trading' },
+            { name: 'Market Moving Calendars', href: '/market-moving-calenders' },
+            { name: 'Research', href: '/research' },
+            { name: 'Watchlist', href: '/watchlist' },
+            { name: 'Economic Simulator', href: '/economic-simulator' },
+            { name: 'Global KPI', href: '/global-kpi' },
+            { name: 'Stock Screener', href: '/stock-screener' },
         ],
     },
 ];

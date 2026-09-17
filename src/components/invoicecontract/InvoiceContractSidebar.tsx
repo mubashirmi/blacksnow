@@ -8,7 +8,6 @@ import {
     CheckCircle,
     ChevronDown,
     CreditCard,
-    FilePenLine,
     LinkIcon,
     Loader2,
     LogOut,
@@ -26,8 +25,8 @@ import { destroyCookie, parseCookies } from 'nookies';
 import * as React from 'react';
 
 const navigationItems = [
-    { title: 'Create Contract', url: '/invoicecontractdashboard/contract', icon: LinkIcon },
-    { title: 'Signed Contracts', url: '/invoicecontractdashboard/signedContracts', icon: FilePenLine },
+    { title: 'Contract', url: '/invoicecontractdashboard/contract', icon: LinkIcon },
+    // { title: 'Signed Contracts', url: '/invoicecontractdashboard/signedContracts', icon: FilePenLine },
     { title: 'Invoices', url: '/invoicecontractdashboard/invoice', icon: StickyNote },
     { title: 'Subscriptions', url: '/invoicecontractdashboard/subscription', icon: CreditCard },
     { title: 'Receipts', url: '/invoicecontractdashboard/receipts', icon: ReceiptText },

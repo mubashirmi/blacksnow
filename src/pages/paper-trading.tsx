@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
@@ -17,11 +18,7 @@ import {
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type StrategyRow = {
     strategy: string;
@@ -476,9 +473,11 @@ function StrategyPanel() {
     );
 }
 
-const PaperTradingPage: StandalonePage = () => {
+const PaperTradingPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='paper-trading-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -726,7 +725,5 @@ const PaperTradingPage: StandalonePage = () => {
         </>
     );
 };
-
-PaperTradingPage.getLayout = (page: ReactElement) => page;
 
 export default PaperTradingPage;

@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
@@ -8,7 +9,6 @@ import {
     Grid2X2,
     LineChart,
     List,
-    Menu,
     MoreVertical,
     Search,
     SlidersHorizontal,
@@ -20,11 +20,7 @@ import {
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type WatchlistRow = {
     symbol: string;
@@ -261,16 +257,6 @@ const alertRows: AlertRow[] = [
         chart: [20, 22, 24, 23, 25, 27, 29, 30, 29, 32, 34],
     },
 ];
-
-function BrandIcon() {
-    return (
-        <div className='flex h-8 w-7 items-end gap-[3px]'>
-            <span className='h-[11px] w-[5px] rounded-[1px] bg-[#76584c]' />
-            <span className='h-[20px] w-[5px] rounded-[1px]' style={{ background: ORANGE }} />
-            <span className='h-[29px] w-[5px] rounded-[1px]' style={{ background: ORANGE_BRIGHT }} />
-        </div>
-    );
-}
 
 function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
     return (
@@ -654,9 +640,11 @@ function AlertsPanel() {
     );
 }
 
-const WatchlistPage: StandalonePage = () => {
+const WatchlistPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='watchlist-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -664,56 +652,6 @@ const WatchlistPage: StandalonePage = () => {
                         'radial-gradient(circle at 75% 9%,rgba(242,90,32,0.04),transparent 27%),linear-gradient(180deg,#040505 0%,#060707 52%,#040505 100%)',
                 }}
             >
-                {/* NAV */}
-                <header className='border-b border-white/[0.035]'>
-                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
-                        <Link href='/' className='flex items-center gap-4'>
-                            <BrandIcon />
-
-                            <span className='text-[17px] font-medium uppercase tracking-[0.035em] sm:text-[20px]' style={{ color: ORANGE_BRIGHT }}>
-                                Watchlist
-                            </span>
-                        </Link>
-
-                        <nav className='hidden items-center gap-9 lg:flex'>
-                            {[
-                                ['Overview', '#overview'],
-                                ['Features', '#features'],
-                                ['Alerts', '#alerts'],
-                                ['Pricing', '/pricing'],
-                                ['Docs', '#features'],
-                            ].map(([label, href]) => (
-                                <Link
-                                    key={label}
-                                    href={href}
-                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#ededE9] transition-colors hover:text-[#f25a20]'
-                                >
-                                    {label}
-                                </Link>
-                            ))}
-
-                            <Link
-                                href='/signup'
-                                className='rounded-[5px] border px-5 py-3 text-[10px] font-medium uppercase tracking-[0.03em]'
-                                style={{
-                                    color: ORANGE_LIGHT,
-                                    borderColor: ORANGE,
-                                }}
-                            >
-                                Get Started
-                            </Link>
-                        </nav>
-
-                        <button
-                            type='button'
-                            aria-label='Open navigation'
-                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#f25a20]/30 lg:hidden'
-                        >
-                            <Menu className='h-5 w-5' style={{ color: ORANGE_LIGHT }} />
-                        </button>
-                    </div>
-                </header>
-
                 {/* HERO */}
                 <section id='overview' className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.40fr_0.60fr] lg:gap-2 lg:px-9'>
@@ -993,7 +931,5 @@ const WatchlistPage: StandalonePage = () => {
         </>
     );
 };
-
-WatchlistPage.getLayout = (page: ReactElement) => page;
 
 export default WatchlistPage;

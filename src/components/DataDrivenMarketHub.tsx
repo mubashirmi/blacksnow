@@ -1,10 +1,12 @@
 import { BarChart2, Calendar, CheckCircle, DollarSign, Globe, List, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 // ─── Strategy Panels Data ───────────────────────────────────────────────────
 const strategyPanels = [
     {
         id: 'market-at-glance',
+        href: '/market-movers',
         label: 'Major Indexes',
         accent: '#5EDC7A',
         HeaderIcon: TrendingUp,
@@ -18,6 +20,7 @@ const strategyPanels = [
     },
     {
         id: 'paper-trading',
+        href: '/paper-trading',
         label: 'Paper Trading',
         accent: '#F5A623',
         HeaderIcon: DollarSign,
@@ -31,6 +34,7 @@ const strategyPanels = [
     },
     {
         id: 'stock-screener',
+        href: '/stock-screener',
         label: 'Stock Screener',
         accent: '#c45002',
         HeaderIcon: BarChart2,
@@ -44,6 +48,7 @@ const strategyPanels = [
     },
     {
         id: 'watchlist',
+        href: '/watchlist',
         label: 'Watchlist',
         accent: '#E74C3C',
         HeaderIcon: List,
@@ -57,6 +62,7 @@ const strategyPanels = [
     },
     {
         id: 'economic-kpis',
+        href: '/global-kpi',
         label: 'Global KPI',
         accent: '#4A90D9',
         HeaderIcon: Globe,
@@ -70,6 +76,7 @@ const strategyPanels = [
     },
     {
         id: 'economic-simulator',
+        href: '/economic-simulator',
         label: 'Economic Simulator',
         accent: '#5F32C8',
         HeaderIcon: BarChart2,
@@ -83,6 +90,7 @@ const strategyPanels = [
     },
     {
         id: 'market-calendars',
+        href: '/market-moving-calenders',
         label: 'Market Calendars',
         accent: '#D32F2F',
         HeaderIcon: Calendar,
@@ -100,6 +108,7 @@ const strategyPanels = [
     },
     {
         id: 'research',
+        href: '/research',
         label: 'Research',
         accent: '#1976D2',
         HeaderIcon: Globe,
@@ -291,8 +300,8 @@ export default function DataDrivenMarketHub() {
                                                 <BSBullets accent={accent} items={panel.bullets} large />
 
                                                 <div className='flex-shrink-0'>
-                                                    <button
-                                                        type='button'
+                                                    <Link
+                                                        href={panel.href}
                                                         className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                         style={{
                                                             background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
@@ -301,7 +310,7 @@ export default function DataDrivenMarketHub() {
                                                         }}
                                                     >
                                                         {panel.cta}
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -318,8 +327,8 @@ export default function DataDrivenMarketHub() {
                                             <p className='text-base sm:text-xl md:text-2xl text-white/70 leading-relaxed'>{panel.discoveryContent}</p>
 
                                             <div className='flex-shrink-0'>
-                                                <button
-                                                    type='button'
+                                                <Link
+                                                    href={panel.href}
                                                     className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                     style={{
                                                         background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
@@ -328,7 +337,7 @@ export default function DataDrivenMarketHub() {
                                                     }}
                                                 >
                                                     {panel.discoveryCta}
-                                                </button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>

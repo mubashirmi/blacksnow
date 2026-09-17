@@ -195,79 +195,81 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
         }
     }
 
+    // Branded heading. It stays in the top-right area but is left-aligned.
     context.textBaseline = 'top';
-    context.fillStyle = navy;
-    context.font = '700 56px Arial';
-    context.textAlign = 'right';
-    context.fillText('INVOICE', canvas.width - pagePadding, 68);
-
-    context.fillStyle = slate;
-    context.font = '600 25px Arial';
-    context.fillText(formatCanvasText(invoice.invoiceName, 'Invoice'), canvas.width - pagePadding, 137);
-    context.font = '500 21px Arial';
-    context.fillText(formatCanvasText(invoice.invoiceNumber, 'Invoice number unavailable'), canvas.width - pagePadding, 178);
-
     context.textAlign = 'left';
     context.fillStyle = navy;
-    context.font = '700 30px Arial';
-    context.fillText(formatCanvasText(invoice.senderName, 'Your Company'), pagePadding, 214);
-    context.fillStyle = slate;
-    context.font = '400 19px Arial';
-    drawWrappedCanvasText(context, formatCanvasText(invoice.senderContact), pagePadding, 257, 440, 27, 4);
+    context.font = '700 46px Arial';
+    const headingX = canvas.width - pagePadding - 500;
+    context.fillText('BLACKSNOW INVOICE', headingX, 78);
 
     context.strokeStyle = border;
     context.lineWidth = 2;
     context.beginPath();
-    context.moveTo(pagePadding, 370);
-    context.lineTo(canvas.width - pagePadding, 370);
+    context.moveTo(pagePadding, 236);
+    context.lineTo(canvas.width - pagePadding, 236);
     context.stroke();
 
-    const columnWidth = (contentWidth - 36) / 2;
-    const detailsTop = 414;
+    const columnGap = 36;
+    const columnWidth = (contentWidth - columnGap) / 2;
+    const rightColumnX = pagePadding + columnWidth + columnGap;
+
+    // Issue Date and Due Date sit directly above their matching billing boxes.
+    const dateTop = 278;
+    const dateHeight = 92;
 
     context.fillStyle = light;
-    context.fillRect(pagePadding, detailsTop, columnWidth, 248);
-    context.fillRect(pagePadding + columnWidth + 36, detailsTop, columnWidth, 248);
+    context.fillRect(pagePadding, dateTop, columnWidth, dateHeight);
+    context.fillRect(rightColumnX, dateTop, columnWidth, dateHeight);
     context.strokeStyle = border;
-    context.strokeRect(pagePadding, detailsTop, columnWidth, 248);
-    context.strokeRect(pagePadding + columnWidth + 36, detailsTop, columnWidth, 248);
+    context.strokeRect(pagePadding, dateTop, columnWidth, dateHeight);
+    context.strokeRect(rightColumnX, dateTop, columnWidth, dateHeight);
+
+    context.fillStyle = blue;
+    context.font = '700 17px Arial';
+    context.fillText('ISSUE DATE', pagePadding + 24, dateTop + 18);
+    context.fillText('DUE DATE', rightColumnX + 24, dateTop + 18);
+
+    context.fillStyle = navy;
+    context.font = '700 22px Arial';
+    context.fillText(formatCanvasText(invoice.issueDate), pagePadding + 24, dateTop + 50);
+    context.fillText(formatCanvasText(invoice.dueDate), rightColumnX + 24, dateTop + 50);
+
+    // Bill From / Bill To.
+    const detailsTop = dateTop + dateHeight + 24;
+    const detailsHeight = 252;
+
+    context.fillStyle = light;
+    context.fillRect(pagePadding, detailsTop, columnWidth, detailsHeight);
+    context.fillRect(rightColumnX, detailsTop, columnWidth, detailsHeight);
+    context.strokeStyle = border;
+    context.strokeRect(pagePadding, detailsTop, columnWidth, detailsHeight);
+    context.strokeRect(rightColumnX, detailsTop, columnWidth, detailsHeight);
 
     context.fillStyle = blue;
     context.font = '700 18px Arial';
-    context.fillText('BILL TO', pagePadding + 28, detailsTop + 26);
-    context.fillText('INVOICE DETAILS', pagePadding + columnWidth + 64, detailsTop + 26);
+    context.fillText('BILL FROM', pagePadding + 28, detailsTop + 24);
+    context.fillText('BILL TO', rightColumnX + 28, detailsTop + 24);
 
     context.fillStyle = navy;
     context.font = '700 27px Arial';
-    context.fillText(formatCanvasText(invoice.clientName, 'Client Name'), pagePadding + 28, detailsTop + 66);
-    context.font = '600 22px Arial';
-    context.fillText(formatCanvasText(invoice.businessName, 'Client Business'), pagePadding + 28, detailsTop + 108);
+    context.fillText(formatCanvasText(invoice.senderName, 'Your Company'), pagePadding + 28, detailsTop + 64);
+    context.fillText(formatCanvasText(invoice.clientName, 'Client Name'), rightColumnX + 28, detailsTop + 64);
+
     context.fillStyle = slate;
     context.font = '400 18px Arial';
-    context.fillText(formatCanvasText(invoice.clientEmail, 'Client email unavailable'), pagePadding + 28, detailsTop + 148);
-    drawWrappedCanvasText(context, formatCanvasText(invoice.recipientContact), pagePadding + 28, detailsTop + 180, columnWidth - 56, 24, 2);
+    drawWrappedCanvasText(context, formatCanvasText(invoice.senderContact), pagePadding + 28, detailsTop + 108, columnWidth - 56, 25, 5);
 
-    const detailsX = pagePadding + columnWidth + 64;
-    const labelX = detailsX;
-    const valueX = detailsX + 190;
-    const detailsRows: Array<[string, string]> = [
-        ['Invoice #', formatCanvasText(invoice.invoiceNumber)],
-        ['Issue date', formatCanvasText(invoice.issueDate)],
-        ['Due date', formatCanvasText(invoice.dueDate)],
-        ['Currency', formatCanvasText(invoice.currency)],
-    ];
+    context.fillStyle = navy;
+    context.font = '600 22px Arial';
+    context.fillText(formatCanvasText(invoice.businessName, 'Client Business'), rightColumnX + 28, detailsTop + 106);
+    context.fillStyle = slate;
+    context.font = '400 18px Arial';
+    context.fillText(formatCanvasText(invoice.clientEmail, 'Client email unavailable'), rightColumnX + 28, detailsTop + 146);
+    drawWrappedCanvasText(context, formatCanvasText(invoice.recipientContact), rightColumnX + 28, detailsTop + 180, columnWidth - 56, 24, 2);
 
-    detailsRows.forEach(([label, value], index) => {
-        const rowY = detailsTop + 72 + index * 40;
-        context.fillStyle = slate;
-        context.font = '600 18px Arial';
-        context.fillText(label, labelX, rowY);
-        context.fillStyle = navy;
-        context.font = '700 18px Arial';
-        context.fillText(value, valueX, rowY);
-    });
+    let currentY = detailsTop + detailsHeight + 50;
 
-    let currentY = 712;
     if (invoice.description.trim()) {
         context.fillStyle = '#EFF6FF';
         context.fillRect(pagePadding, currentY, contentWidth, 110);
@@ -325,35 +327,55 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
     });
 
     currentY = tableTop + 58 + rows.length * rowHeight + 36;
-    const summaryX = canvas.width - pagePadding - 420;
-
-    const summaryHeight = 286;
-    context.fillStyle = light;
-    context.fillRect(summaryX, currentY, 420, summaryHeight);
-    context.strokeStyle = border;
-    context.strokeRect(summaryX, currentY, 420, summaryHeight);
 
     const subtotal = invoice.items.reduce((sum, item) => sum + item.amount, 0);
     const platformFee = subtotal * PLATFORM_FEE_RATE;
     const summaryRows: Array<[string, string, boolean]> = [
         ['Subtotal', `${invoice.currency} ${subtotal.toFixed(2)}`, false],
         ['Tax', `${invoice.currency} ${invoice.tax.toFixed(2)}`, false],
-        ['Platform fee (8%)', `${invoice.currency} ${platformFee.toFixed(2)}`, false],
+        [`Platform fee (${(PLATFORM_FEE_RATE * 100).toFixed(0)}%)`, `${invoice.currency} ${platformFee.toFixed(2)}`, false],
         ['Total', `${invoice.currency} ${total.toFixed(2)}`, true],
     ];
 
+    // Status and summary use matching boxes on the same row.
+    const bottomBoxHeight = 270;
+    const statusX = pagePadding;
+    const summaryX = rightColumnX;
+
+    context.fillStyle = light;
+    context.fillRect(statusX, currentY, columnWidth, bottomBoxHeight);
+    context.fillRect(summaryX, currentY, columnWidth, bottomBoxHeight);
+    context.strokeStyle = border;
+    context.strokeRect(statusX, currentY, columnWidth, bottomBoxHeight);
+    context.strokeRect(summaryX, currentY, columnWidth, bottomBoxHeight);
+
+    context.fillStyle = blue;
+    context.font = '700 18px Arial';
+    context.fillText('PAYMENT STATUS', statusX + 28, currentY + 24);
+    context.fillText('SUMMARY', summaryX + 28, currentY + 24);
+
+    const statusColor = status === 'PAID' ? '#16A34A' : '#DC2626';
+    context.fillStyle = statusColor;
+    context.font = '800 48px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(status, statusX + columnWidth / 2, currentY + bottomBoxHeight / 2 + 16);
+    context.textAlign = 'left';
+    context.textBaseline = 'top';
+
     summaryRows.forEach(([label, value, strong], index) => {
-        const rowY = currentY + 24 + index * 49;
+        const rowY = currentY + 64 + index * 44;
         context.fillStyle = strong ? navy : slate;
-        context.font = strong ? '700 25px Arial' : '600 17px Arial';
-        context.fillText(label, summaryX + 24, rowY);
+        context.font = strong ? '700 24px Arial' : '600 17px Arial';
+        context.fillText(label, summaryX + 28, rowY);
         context.textAlign = 'right';
         context.fillStyle = strong ? blue : navy;
-        context.fillText(value, summaryX + 396, rowY);
+        context.fillText(value, summaryX + columnWidth - 28, rowY);
         context.textAlign = 'left';
     });
 
-    const footerTop = Math.min(currentY + summaryHeight + 40, 1490);
+    const footerTop = Math.min(currentY + bottomBoxHeight + 40, 1490);
+
     if (invoice.paymentInfo.trim()) {
         context.fillStyle = navy;
         context.font = '700 17px Arial';
@@ -371,20 +393,6 @@ async function createStampedInvoiceImage(invoice: InvoiceData, total: number, st
         context.font = '400 15px Arial';
         drawWrappedCanvasText(context, invoice.terms, pagePadding, footerTop + 141, contentWidth, 21, 3);
     }
-
-    context.save();
-    context.translate(canvas.width - 260, 332);
-    context.rotate(-Math.PI / 12);
-    context.globalAlpha = 0.9;
-    context.strokeStyle = status === 'PAID' ? '#16A34A' : '#DC2626';
-    context.fillStyle = status === 'PAID' ? '#16A34A' : '#DC2626';
-    context.lineWidth = 8;
-    context.strokeRect(-150, -48, 300, 96);
-    context.font = '800 54px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(status, 0, 2);
-    context.restore();
 
     context.fillStyle = '#94A3B8';
     context.font = '400 14px Arial';
@@ -1190,7 +1198,7 @@ export default function InvoiceGenerator() {
             <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6'>
                 {/* Main Invoice Section */}
                 <div id='invoice-print' className='lg:col-span-3 bg-white rounded-xl shadow-lg p-6 md:p-10 border border-slate-200'>
-                    {/* ✅ Header (reduced vertical spacing) */}
+                    {/* Branded Header */}
                     <div className='flex justify-between items-start mb-8 pb-6 border-b-2 border-slate-200'>
                         <div className='flex items-center gap-4'>
                             <label className='cursor-pointer no-print'>
@@ -1208,25 +1216,8 @@ export default function InvoiceGenerator() {
                             </label>
                         </div>
 
-                        <div className='text-right'>
-                            <h1 className='text-3xl font-bold text-slate-800 mb-2 tracking-tight'>INVOICE</h1>
-
-                            {/* ✅ Editable invoice name */}
-                            <input
-                                type='text'
-                                value={invoice.invoiceName}
-                                onChange={(e) => setInvoice((p) => ({ ...p, invoiceName: e.target.value }))}
-                                placeholder='Invoice name'
-                                className='text-right text-lg font-semibold text-slate-700 border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none transition-colors px-2 bg-transparent w-full'
-                            />
-
-                            {/* ✅ Editable invoice number */}
-                            <input
-                                type='text'
-                                value={invoice.invoiceNumber}
-                                onChange={(e) => setInvoice((p) => ({ ...p, invoiceNumber: e.target.value }))}
-                                className='text-right text-base font-semibold text-slate-600 border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none transition-colors px-2 bg-transparent mt-1'
-                            />
+                        <div className='min-w-[280px] text-left'>
+                            <h1 className='text-3xl font-bold text-slate-800 tracking-tight'>BLACKSNOW INVOICE</h1>
                         </div>
                     </div>
 
@@ -1243,30 +1234,114 @@ export default function InvoiceGenerator() {
                         </div>
                     )}
 
-                    {/* ✅ Dates and Custom Fields (reduced spacing) */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mb-7'>
+                    {/* Dates and Billing Section */}
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-7'>
                         <div className='space-y-3'>
-                            <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-lg'>
-                                <label className='text-slate-700 font-semibold w-28'>Issue Date:</label>
+                            <div className='bg-slate-50 p-4 rounded-xl border border-slate-200'>
+                                <label className='block text-xs font-bold text-blue-600 uppercase tracking-wider mb-2'>Issue Date</label>
                                 <input
                                     type='date'
                                     value={invoice.issueDate}
                                     onChange={(e) => setInvoice((p) => ({ ...p, issueDate: e.target.value }))}
-                                    className='border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 bg-white'
+                                    className='w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white'
                                 />
                             </div>
-                            <div className='flex items-center gap-3 bg-slate-50 p-3 rounded-lg'>
-                                <label className='text-slate-700 font-semibold w-28'>Due Date:</label>
+
+                            <div className='bg-slate-50 p-6 rounded-xl border border-slate-200'>
+                                <div className='flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-300'>
+                                    <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
+                                        <Building2 className='w-5 h-5 text-white' />
+                                    </div>
+                                    <h3 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>Bill From</h3>
+                                </div>
+
                                 <input
-                                    type='date'
-                                    value={invoice.dueDate}
-                                    onChange={(e) => setInvoice((p) => ({ ...p, dueDate: e.target.value }))}
-                                    className='border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 bg-white'
+                                    type='text'
+                                    value={invoice.senderName}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, senderName: e.target.value }))}
+                                    className='font-bold text-lg text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
+                                    placeholder='Your Company Name'
                                 />
+                                <textarea
+                                    value={invoice.senderContact}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, senderContact: e.target.value }))}
+                                    className='text-sm text-slate-600 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none resize-none bg-transparent leading-relaxed'
+                                    placeholder='Your contact details'
+                                    rows={3}
+                                />
+
+                                {invoice.companyInfo && (
+                                    <div className='mt-4 pt-4 border-t border-slate-200'>
+                                        <p className='text-xs text-slate-500 font-semibold mb-2'>ADDITIONAL INFO</p>
+                                        <p className='text-sm text-slate-600 leading-relaxed whitespace-pre-wrap'>{invoice.companyInfo}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className='space-y-3'>
+                            <div className='bg-slate-50 p-4 rounded-xl border border-slate-200'>
+                                <label className='block text-xs font-bold text-blue-600 uppercase tracking-wider mb-2'>Due Date</label>
+                                <input
+                                    type='date'
+                                    value={invoice.dueDate}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, dueDate: e.target.value }))}
+                                    className='w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white'
+                                />
+                            </div>
+
+                            <div className='bg-slate-50 p-6 rounded-xl border border-slate-200'>
+                                <div className='flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-300'>
+                                    <div className='w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center'>
+                                        <User className='w-5 h-5 text-white' />
+                                    </div>
+                                    <h3 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>Bill To</h3>
+                                </div>
+
+                                <input
+                                    type='text'
+                                    value={invoice.clientName}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, clientName: e.target.value }))}
+                                    className='font-semibold text-base text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
+                                    placeholder='Client Name'
+                                />
+
+                                <input
+                                    type='text'
+                                    value={invoice.businessName}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, businessName: e.target.value }))}
+                                    className='font-bold text-lg text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
+                                    placeholder='Client Business Name'
+                                />
+
+                                <input
+                                    type='email'
+                                    value={invoice.clientEmail}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, clientEmail: e.target.value }))}
+                                    className='text-sm text-slate-700 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent mb-2'
+                                    placeholder='client@email.com'
+                                />
+
+                                <textarea
+                                    value={invoice.recipientContact}
+                                    onChange={(e) => setInvoice((p) => ({ ...p, recipientContact: e.target.value }))}
+                                    className='text-sm text-slate-600 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none resize-none bg-transparent leading-relaxed'
+                                    placeholder='Client address / details'
+                                    rows={3}
+                                />
+
+                                {invoice.clientInfo && (
+                                    <div className='mt-4 pt-4 border-t border-slate-200'>
+                                        <p className='text-xs text-slate-500 font-semibold mb-2'>ADDITIONAL INFO</p>
+                                        <p className='text-sm text-slate-600 leading-relaxed whitespace-pre-wrap'>{invoice.clientInfo}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {invoice.customFields.length > 0 && (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-7'>
                             {invoice.customFields.map((field) => (
                                 <div key={field.id} className='flex items-center gap-3 bg-blue-50 p-3 rounded-lg border border-blue-200 group'>
                                     <label className='text-slate-700 font-semibold w-28'>{field.label}:</label>
@@ -1280,92 +1355,7 @@ export default function InvoiceGenerator() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-
-                    {/* From/To Section */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-10'>
-                        <div className='bg-slate-50 p-6 rounded-xl border border-slate-200'>
-                            <div className='flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-300'>
-                                <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
-                                    <Building2 className='w-5 h-5 text-white' />
-                                </div>
-                                <h3 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>From</h3>
-                            </div>
-
-                            <input
-                                type='text'
-                                value={invoice.senderName}
-                                onChange={(e) => setInvoice((p) => ({ ...p, senderName: e.target.value }))}
-                                className='font-bold text-lg text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
-                                placeholder='Your Company Name'
-                            />
-                            <textarea
-                                value={invoice.senderContact}
-                                onChange={(e) => setInvoice((p) => ({ ...p, senderContact: e.target.value }))}
-                                className='text-sm text-slate-600 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none resize-none bg-transparent leading-relaxed'
-                                placeholder='Your contact details'
-                                rows={3}
-                            />
-
-                            {invoice.companyInfo && (
-                                <div className='mt-4 pt-4 border-t border-slate-200'>
-                                    <p className='text-xs text-slate-500 font-semibold mb-2'>ADDITIONAL INFO</p>
-                                    <p className='text-sm text-slate-600 leading-relaxed whitespace-pre-wrap'>{invoice.companyInfo}</p>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className='bg-slate-50 p-6 rounded-xl border border-slate-200'>
-                            <div className='flex items-center gap-3 mb-4 pb-3 border-b-2 border-slate-300'>
-                                <div className='w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center'>
-                                    <User className='w-5 h-5 text-white' />
-                                </div>
-                                <h3 className='text-sm font-bold text-slate-700 uppercase tracking-wider'>Bill To</h3>
-                            </div>
-
-                            {/* ✅ contract "name" */}
-                            <input
-                                type='text'
-                                value={invoice.clientName}
-                                onChange={(e) => setInvoice((p) => ({ ...p, clientName: e.target.value }))}
-                                className='font-semibold text-base text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
-                                placeholder='Client Name'
-                            />
-
-                            {/* ✅ contract "businessName" */}
-                            <input
-                                type='text'
-                                value={invoice.businessName}
-                                onChange={(e) => setInvoice((p) => ({ ...p, businessName: e.target.value }))}
-                                className='font-bold text-lg text-slate-800 mb-2 w-full border-b-2 border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent'
-                                placeholder='Client Business Name'
-                            />
-
-                            {/* ✅ contract "email" */}
-                            <input
-                                type='email'
-                                value={invoice.clientEmail}
-                                onChange={(e) => setInvoice((p) => ({ ...p, clientEmail: e.target.value }))}
-                                className='text-sm text-slate-700 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none bg-transparent mb-2'
-                                placeholder='client@email.com'
-                            />
-
-                            <textarea
-                                value={invoice.recipientContact}
-                                onChange={(e) => setInvoice((p) => ({ ...p, recipientContact: e.target.value }))}
-                                className='text-sm text-slate-600 w-full border-b border-transparent hover:border-slate-300 focus:border-blue-500 outline-none resize-none bg-transparent leading-relaxed'
-                                placeholder='Client address / details'
-                                rows={3}
-                            />
-
-                            {invoice.clientInfo && (
-                                <div className='mt-4 pt-4 border-t border-slate-200'>
-                                    <p className='text-xs text-slate-500 font-semibold mb-2'>ADDITIONAL INFO</p>
-                                    <p className='text-sm text-slate-600 leading-relaxed whitespace-pre-wrap'>{invoice.clientInfo}</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    )}
 
                     {/* Items Table */}
                     <div className='mb-8'>
@@ -1432,18 +1422,8 @@ export default function InvoiceGenerator() {
                     <div className='flex justify-end mb-10'>
                         <div className='w-full md:w-96'>
                             <div className='bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 shadow-md border border-slate-200'>
-                                <div className='flex items-center justify-between mb-5 pb-3 border-b border-slate-300'>
+                                <div className='mb-5 pb-3 border-b border-slate-300'>
                                     <h3 className='font-bold text-slate-800 text-lg'>Summary</h3>
-                                    <select
-                                        value={invoice.currency}
-                                        onChange={(e) => setInvoice((p) => ({ ...p, currency: e.target.value }))}
-                                        className='border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm font-semibold'
-                                    >
-                                        <option>USD</option>
-                                        <option>EUR</option>
-                                        <option>GBP</option>
-                                        <option>PKR</option>
-                                    </select>
                                 </div>
 
                                 <div className='space-y-4'>

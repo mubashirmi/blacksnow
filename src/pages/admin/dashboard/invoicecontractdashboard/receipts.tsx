@@ -54,6 +54,8 @@ type Invoice = {
 
 type ReceiptType = 'invoice' | 'subscription';
 
+type ReceiptFilter = 'all' | ReceiptType;
+
 type Receipt = Invoice & {
     receiptType: ReceiptType;
 };
@@ -153,6 +155,8 @@ const ReceiptsPage: NextPage = () => {
     const [receipts, setReceipts] = useState<Receipt[]>([]);
     const [isLoadingReceipts, setIsLoadingReceipts] = useState(false);
     const [receiptsError, setReceiptsError] = useState<string | null>(null);
+    const [receiptFilter, setReceiptFilter] = useState<ReceiptFilter>('all');
+    const [receiptSearch, setReceiptSearch] = useState('');
 
     // Refund modal state
     const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
@@ -361,6 +365,20 @@ const ReceiptsPage: NextPage = () => {
     const invoiceReceipts = receipts.filter((receipt) => receipt.receiptType === 'invoice').length;
     const subscriptionReceipts = receipts.filter((receipt) => receipt.receiptType === 'subscription').length;
 
+    const filteredReceipts = useMemo(() => {
+        const normalizedSearch = receiptSearch.trim().toLowerCase();
+
+        return receipts.filter((receipt) => {
+            const matchesType = receiptFilter === 'all' || receipt.receiptType === receiptFilter;
+            if (!matchesType) return false;
+            if (!normalizedSearch) return true;
+
+            return [receipt.name, receipt.email, receipt.businessName, receipt.Contract?.contractName, receipt.transactionId, String(receipt.id)]
+                .filter((value): value is string => typeof value === 'string')
+                .some((value) => value.toLowerCase().includes(normalizedSearch));
+        });
+    }, [receiptFilter, receiptSearch, receipts]);
+
     return (
         <div className='min-h-screen p-[7px]'>
             <div className='mx-auto max-w-7xl'>
@@ -410,11 +428,6 @@ const ReceiptsPage: NextPage = () => {
                 {/* Overview stats */}
                 <section className='mb-6 grid gap-4 sm:grid-cols-3'>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
-                        <div className='text-[12px] uppercase text-gray-500'>Total Receipts</div>
-                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalReceipts}</div>
-                    </div>
-
-                    <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
                         <div className='text-[12px] uppercase text-gray-500'>Invoice Receipts</div>
                         <div className='mt-1 text-[22px] font-semibold text-blue-700'>{invoiceReceipts}</div>
                     </div>
@@ -423,12 +436,37 @@ const ReceiptsPage: NextPage = () => {
                         <div className='text-[12px] uppercase text-gray-500'>Subscription Receipts</div>
                         <div className='mt-1 text-[22px] font-semibold text-violet-700'>{subscriptionReceipts}</div>
                     </div>
+
+                    <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
+                        <div className='text-[12px] uppercase text-gray-500'>Total Receipts</div>
+                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalReceipts}</div>
+                    </div>
                 </section>
 
                 {/* Paid Receipts Table */}
                 <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex items-center justify-between gap-2'>
+                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Receipts' : 'All Receipts'}</h2>
+                        <div className='flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center'>
+                            <select
+                                value={receiptFilter}
+                                onChange={(event) => setReceiptFilter(event.target.value as ReceiptFilter)}
+                                className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                                aria-label='Filter receipts by type'
+                            >
+                                <option value='all'>All Receipts</option>
+                                <option value='invoice'>Invoice Receipts</option>
+                                <option value='subscription'>Subscription Receipts</option>
+                            </select>
+                            <input
+                                type='search'
+                                value={receiptSearch}
+                                onChange={(event) => setReceiptSearch(event.target.value)}
+                                placeholder='Search receipts...'
+                                className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-64'
+                                aria-label='Search receipts'
+                            />
+                        </div>
                     </div>
 
                     {refundMessage && (
@@ -445,7 +483,11 @@ const ReceiptsPage: NextPage = () => {
                         <p className='text-sm text-gray-500'>No paid invoice or subscription receipts found yet.</p>
                     )}
 
-                    {!isLoadingReceipts && receipts.length > 0 && (
+                    {!isLoadingReceipts && receipts.length > 0 && filteredReceipts.length === 0 && (
+                        <p className='text-sm text-gray-500'>No receipts match the selected type or search.</p>
+                    )}
+
+                    {!isLoadingReceipts && filteredReceipts.length > 0 && (
                         <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
                             <table className='min-w-[1260px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
@@ -471,7 +513,7 @@ const ReceiptsPage: NextPage = () => {
                                 </thead>
 
                                 <tbody>
-                                    {receipts.map((receipt, index) => {
+                                    {filteredReceipts.map((receipt, index) => {
                                         const displayName = receipt.name?.trim() || '—';
                                         const displayBusinessName = receipt.businessName?.trim() || '—';
                                         const displayContractName = receipt.Contract?.contractName?.trim() || '—';

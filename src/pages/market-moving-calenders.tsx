@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
@@ -14,11 +15,7 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type Impact = 'High' | 'Medium';
 
@@ -734,9 +731,11 @@ function EarningsPanel() {
     );
 }
 
-const MarketMovingCalendarsPage: StandalonePage = () => {
+const MarketMovingCalendarsPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='market-calendars-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -947,7 +946,5 @@ const MarketMovingCalendarsPage: StandalonePage = () => {
         </>
     );
 };
-
-MarketMovingCalendarsPage.getLayout = (page: ReactElement) => page;
 
 export default MarketMovingCalendarsPage;

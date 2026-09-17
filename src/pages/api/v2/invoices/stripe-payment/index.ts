@@ -278,7 +278,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const baseUrl = getBaseUrl(req);
 
-        const successUrl = `${baseUrl}/invoicepaymentsuccess?session_id={CHECKOUT_SESSION_ID}`;
+        const successUrl = `${baseUrl}/invoicepaymentsuccess?session_id={CHECKOUT_SESSION_ID}&invoiceId=${invoice.id}`;
         const cancelUrl = `${baseUrl}/invoice-payment-cancel?invoiceId=${invoice.id}`;
 
         const connectedAccountId = auth.adminStripeConnectId;

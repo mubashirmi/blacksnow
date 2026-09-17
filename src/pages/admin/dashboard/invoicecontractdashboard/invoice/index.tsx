@@ -68,6 +68,8 @@ type InvoicesResponse = {
     invoices: Invoice[];
 };
 
+type PaymentStatusFilter = 'all' | 'paid' | 'unpaid';
+
 type RefundType = 'full' | 'custom';
 
 type RefundPayload =
@@ -268,6 +270,7 @@ const InvoicesPage: NextPage = () => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
     const [invoicesError, setInvoicesError] = useState<string | null>(null);
+    const [paymentStatusFilter, setPaymentStatusFilter] = useState<PaymentStatusFilter>('all');
 
     // Refund modal state
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -534,7 +537,14 @@ const InvoicesPage: NextPage = () => {
     };
 
     const totalInvoices = invoices.length;
+    const pendingInvoices = invoices.filter((invoice) => !invoice.paid).length;
     const totalSignedContracts = contracts.length;
+
+    const filteredInvoices = useMemo(() => {
+        if (paymentStatusFilter === 'paid') return invoices.filter((invoice) => invoice.paid);
+        if (paymentStatusFilter === 'unpaid') return invoices.filter((invoice) => !invoice.paid);
+        return invoices;
+    }, [invoices, paymentStatusFilter]);
 
     return (
         <div className='min-h-screen p-[7px]'>
@@ -577,21 +587,112 @@ const InvoicesPage: NextPage = () => {
                 </header>
 
                 {/* Overview stats */}
-                <section className='mb-6 grid gap-4 sm:grid-cols-2'>
+                <section className='mb-6 grid gap-4 sm:grid-cols-3'>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
-                        <div className='text-[12px] uppercase text-gray-500'>Total Invoices</div>
-                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalInvoices}</div>
+                        <div className='text-[12px] uppercase text-gray-500'>Pending Invoices</div>
+                        <div className='mt-1 text-[22px] font-semibold text-amber-700'>{pendingInvoices}</div>
                     </div>
                     <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
                         <div className='text-[12px] uppercase text-gray-500'>Signed Contracts</div>
                         <div className='mt-1 text-[22px] font-semibold text-green-700'>{totalSignedContracts}</div>
                     </div>
+                    <div className='rounded-[16px] border border-gray-200 bg-white px-[18px] py-4 shadow-[0_8px_20px_rgba(15,23,42,0.06)]'>
+                        <div className='text-[12px] uppercase text-gray-500'>Total Invoices</div>
+                        <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalInvoices}</div>
+                    </div>
+                </section>
+
+                {/* Signed Contracts Table */}
+                <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
+                    <div className='mb-3 flex items-center justify-between gap-2'>
+                        <h2 className='text-lg font-semibold text-slate-900'>Signed Contracts</h2>
+                    </div>
+
+                    {isLoadingContracts && <p className='text-sm text-gray-500'>Loading signed contracts…</p>}
+
+                    {contractsError && <p className='text-[13px] text-red-700'>{contractsError}</p>}
+
+                    {!isLoadingContracts && !contractsError && contracts.length === 0 && (
+                        <p className='text-sm text-gray-500'>No signed contracts found yet.</p>
+                    )}
+
+                    {!isLoadingContracts && !contractsError && contracts.length > 0 && (
+                        <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
+                            <table className='min-w-[900px] w-full border-collapse text-[13px]'>
+                                <thead className='bg-gray-50'>
+                                    <tr>
+                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Action'].map((header) => (
+                                            <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
+                                                {header}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {contracts.map((contract, index) => {
+                                        const displayContractName = contract.contractName?.trim() || '—';
+                                        const displayName = contract.name?.trim() || '—';
+                                        const displayBusinessName = contract.businessName?.trim() || '—';
+                                        const invoiceCreated = hasInvoice(contract.id);
+
+                                        return (
+                                            <tr key={contract.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{index + 1}</td>
+                                                <td className='px-3 py-2.5 text-[13px] font-medium text-slate-900'>{displayContractName}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{contract.email || '—'}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayName}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayBusinessName}</td>
+                                                <td className='whitespace-nowrap px-3 py-2.5 text-[13px] text-gray-600'>
+                                                    {formatDateTime(contract.createdAt)}
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    <a
+                                                        href={contract.pdf}
+                                                        target='_blank'
+                                                        rel='noopener noreferrer'
+                                                        className='cursor-pointer text-[13px] text-blue-600 no-underline hover:underline'
+                                                    >
+                                                        View PDF
+                                                    </a>
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    {invoiceCreated ? (
+                                                        <span className='inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-[12px] font-medium text-green-800'>
+                                                            Invoice Created
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => handleCreateInvoiceForContract(contract.id)}
+                                                            className='inline-flex cursor-pointer items-center rounded-md bg-blue-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-blue-700'
+                                                        >
+                                                            Create Invoice
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </section>
 
                 {/* All Invoices Table */}
-                <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex items-center justify-between gap-2'>
+                <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
+                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Invoices' : 'All Invoices'}</h2>
+                        <select
+                            value={paymentStatusFilter}
+                            onChange={(event) => setPaymentStatusFilter(event.target.value as PaymentStatusFilter)}
+                            className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                            aria-label='Filter invoices by payment status'
+                        >
+                            <option value='all'>All Invoices</option>
+                            <option value='paid'>Paid</option>
+                            <option value='unpaid'>Pending</option>
+                        </select>
                     </div>
 
                     {downloadError && (
@@ -612,7 +713,11 @@ const InvoicesPage: NextPage = () => {
                         <p className='text-sm text-gray-500'>No invoices found yet. Create your first invoice to see it here.</p>
                     )}
 
-                    {!isLoadingInvoices && !invoicesError && invoices.length > 0 && (
+                    {!isLoadingInvoices && !invoicesError && invoices.length > 0 && filteredInvoices.length === 0 && (
+                        <p className='text-sm text-gray-500'>No invoices match the selected payment filter.</p>
+                    )}
+
+                    {!isLoadingInvoices && !invoicesError && filteredInvoices.length > 0 && (
                         <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
                             <table className='min-w-[1420px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
@@ -638,7 +743,7 @@ const InvoicesPage: NextPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {invoices.map((invoice, index) => {
+                                    {filteredInvoices.map((invoice, index) => {
                                         const displayName = invoice.name?.trim() || '—';
                                         const displayBusinessName = invoice.businessName?.trim() || '—';
                                         const displayContractName = invoice.Contract?.contractName?.trim() || '—';
@@ -659,7 +764,7 @@ const InvoicesPage: NextPage = () => {
                                                             invoice.paid ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
                                                         }`}
                                                     >
-                                                        {invoice.paid ? 'Paid' : 'Unpaid'}
+                                                        {invoice.paid ? 'Paid' : 'Pending'}
                                                     </span>
                                                 </td>
                                                 <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayContractName}</td>
@@ -724,83 +829,6 @@ const InvoicesPage: NextPage = () => {
                                                             }`}
                                                         >
                                                             Refund
-                                                        </button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </section>
-
-                {/* Signed Contracts Table */}
-                <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex items-center justify-between gap-2'>
-                        <h2 className='text-lg font-semibold text-slate-900'>Signed Contracts</h2>
-                    </div>
-
-                    {isLoadingContracts && <p className='text-sm text-gray-500'>Loading signed contracts…</p>}
-
-                    {contractsError && <p className='text-[13px] text-red-700'>{contractsError}</p>}
-
-                    {!isLoadingContracts && !contractsError && contracts.length === 0 && (
-                        <p className='text-sm text-gray-500'>No signed contracts found yet.</p>
-                    )}
-
-                    {!isLoadingContracts && !contractsError && contracts.length > 0 && (
-                        <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
-                            <table className='min-w-[900px] w-full border-collapse text-[13px]'>
-                                <thead className='bg-gray-50'>
-                                    <tr>
-                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Action'].map((header) => (
-                                            <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
-                                                {header}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {contracts.map((contract, index) => {
-                                        const displayContractName = contract.contractName?.trim() || '—';
-                                        const displayName = contract.name?.trim() || '—';
-                                        const displayBusinessName = contract.businessName?.trim() || '—';
-                                        const invoiceCreated = hasInvoice(contract.id);
-
-                                        return (
-                                            <tr key={contract.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{index + 1}</td>
-                                                <td className='px-3 py-2.5 text-[13px] font-medium text-slate-900'>{displayContractName}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{contract.email || '—'}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayName}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayBusinessName}</td>
-                                                <td className='whitespace-nowrap px-3 py-2.5 text-[13px] text-gray-600'>
-                                                    {formatDateTime(contract.createdAt)}
-                                                </td>
-                                                <td className='px-3 py-2.5 text-[13px]'>
-                                                    <a
-                                                        href={contract.pdf}
-                                                        target='_blank'
-                                                        rel='noopener noreferrer'
-                                                        className='cursor-pointer text-[13px] text-blue-600 no-underline hover:underline'
-                                                    >
-                                                        View PDF
-                                                    </a>
-                                                </td>
-                                                <td className='px-3 py-2.5 text-[13px]'>
-                                                    {invoiceCreated ? (
-                                                        <span className='inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-[12px] font-medium text-green-800'>
-                                                            Invoice Created
-                                                        </span>
-                                                    ) : (
-                                                        <button
-                                                            type='button'
-                                                            onClick={() => handleCreateInvoiceForContract(contract.id)}
-                                                            className='inline-flex cursor-pointer items-center rounded-md bg-blue-600 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-blue-700'
-                                                        >
-                                                            Create Invoice
                                                         </button>
                                                     )}
                                                 </td>

@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
@@ -11,7 +12,6 @@ import {
     FileText,
     Landmark,
     LineChart,
-    Menu,
     PieChart,
     RefreshCw,
     Scale,
@@ -25,11 +25,7 @@ import {
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type ResultRow = {
     symbol: string;
@@ -257,16 +253,6 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             }}
         >
             {children}
-        </div>
-    );
-}
-
-function BrandIcon() {
-    return (
-        <div className='flex h-7 w-7 items-end gap-[3px]'>
-            <span className='h-[10px] w-[5px] rounded-[1px] bg-[#7e7e78]' />
-            <span className='h-[19px] w-[5px] rounded-[1px]' style={{ background: GOLD }} />
-            <span className='h-[27px] w-[5px] rounded-[1px]' style={{ background: GOLD_LIGHT }} />
         </div>
     );
 }
@@ -634,9 +620,11 @@ function AnalysisPanel() {
     );
 }
 
-const StockScreenerPage: StandalonePage = () => {
+const StockScreenerPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='stock-screener-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -645,10 +633,10 @@ const StockScreenerPage: StandalonePage = () => {
                 }}
             >
                 {/* NAV */}
-                <header className='border-b border-white/[0.04]'>
+                {/* <header className='border-b border-white/[0.04]'>
                     <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
                         <Link href='/' className='flex items-center gap-4'>
-                            <BrandIcon />
+                            <BetweenVerticalEndIcon />
 
                             <span className='text-[16px] font-medium uppercase tracking-[0.025em] text-[#f2f2ed] sm:text-[19px]'>Stock Screener</span>
                         </Link>
@@ -684,7 +672,7 @@ const StockScreenerPage: StandalonePage = () => {
                             <Menu className='h-5 w-5' style={{ color: GOLD }} />
                         </button>
                     </div>
-                </header>
+                </header> */}
 
                 {/* HERO */}
                 <section className='relative overflow-hidden border-b border-white/[0.10]'>
@@ -881,7 +869,5 @@ const StockScreenerPage: StandalonePage = () => {
         </>
     );
 };
-
-StockScreenerPage.getLayout = (page: ReactElement) => page;
 
 export default StockScreenerPage;

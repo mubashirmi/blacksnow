@@ -313,7 +313,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const baseUrl = getBaseUrl(req);
 
-        const successUrl = `${baseUrl}/invoicepaymentsuccess` + '?session_id={CHECKOUT_SESSION_ID}';
+        const successUrl = `${baseUrl}/invoicepaymentsuccess` + '?session_id={CHECKOUT_SESSION_ID}' + `&subscriptionInvId=${subscriptionInv.id}`;
 
         const cancelUrl = `${baseUrl}/subscription-invoice-payment-cancel` + `?subscriptionInvId=${subscriptionInv.id}`;
 

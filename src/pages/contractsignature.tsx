@@ -1,12 +1,17 @@
-import { AlertTriangle, CheckCircle2, Download, FileText, Home, Loader2, PenLine, Trash2, Upload, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, FileText, Home, Loader2, PenLine, Trash2, Type, X } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 
-type SignMode = 'draw' | 'upload';
+type SignMode = 'draw' | 'write';
 
 const BG = '#050608';
 const ACCENT = '#2c7bbe';
 const DANGER = '#ef4444';
+const SUCCESS = '#22c55e';
+
+// Signature font used to turn a typed name into a handwritten-style signature.
+const SIGNATURE_FONT_FAMILY = 'Great Vibes';
+const SIGNATURE_FONT_HREF = 'https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap';
 
 function cx(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(' ');
@@ -85,7 +90,8 @@ const ContractSignPage: React.FC = () => {
     const [contract, setContract] = useState<Contract | null>(null);
 
     const [mode, setMode] = useState<SignMode>('draw');
-    const [signatureFile, setSignatureFile] = useState<File | null>(null);
+    // ✅ NEW: typed name that becomes the signature (replaces image upload)
+    const [typedName, setTypedName] = useState('');
 
     const [isSigning, setIsSigning] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
@@ -116,6 +122,18 @@ const ContractSignPage: React.FC = () => {
     const cachedSigPngBytesRef = useRef<ArrayBuffer | null>(null);
     const cachedPdfBytesRef = useRef<ArrayBuffer | null>(null);
     const cachedPdfUrlRef = useRef<string>('');
+
+    // Load the signature webfont once (used both for the on-screen preview and the canvas render).
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        if (document.querySelector('link[data-signature-font="1"]')) return;
+
+        const link = document.createElement('link');
+        link.dataset.signatureFont = '1';
+        link.rel = 'stylesheet';
+        link.href = SIGNATURE_FONT_HREF;
+        document.head.appendChild(link);
+    }, []);
 
     // Get contract ID from URL query
     useEffect(() => {
@@ -160,6 +178,9 @@ const ContractSignPage: React.FC = () => {
                     businessName: data.contract.businessName ?? '',
                 });
 
+                // Pre-fill the typed signature with the contract name (only if the user hasn't typed yet)
+                setTypedName((prev) => prev || (data.contract.name ?? ''));
+
                 setIsPdfFrameLoading(true);
             } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : 'Something went wrong while loading the contract.';
@@ -200,6 +221,11 @@ const ContractSignPage: React.FC = () => {
         }
     }, [pdfUrl]);
 
+    // Any change to the typed name invalidates the cached signature image
+    useEffect(() => {
+        cachedSigPngBytesRef.current = null;
+    }, [typedName]);
+
     const accentStyle = useMemo(
         () =>
             ({
@@ -211,26 +237,6 @@ const ContractSignPage: React.FC = () => {
 
     const handleClearDrawing = () => {
         sigCanvasRef.current?.clear();
-        cachedSigPngBytesRef.current = null;
-    };
-
-    const handleSignatureFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] ?? null;
-        if (!file) {
-            setSignatureFile(null);
-            cachedSigPngBytesRef.current = null;
-            return;
-        }
-
-        if (!file.type.startsWith('image/')) {
-            setError('Please upload an image file (PNG/JPEG) for your signature.');
-            setSignatureFile(null);
-            cachedSigPngBytesRef.current = null;
-            return;
-        }
-
-        setError(null);
-        setSignatureFile(file);
         cachedSigPngBytesRef.current = null;
     };
 
@@ -249,7 +255,7 @@ const ContractSignPage: React.FC = () => {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const d = imageData.data;
 
-        // Detect if the image likely has an opaque white background (common for uploaded signatures)
+        // Detect if the image likely has an opaque white background
         const samples: Array<[number, number]> = [
             [0, 0],
             [canvas.width - 1, 0],
@@ -304,30 +310,56 @@ const ContractSignPage: React.FC = () => {
         return await res.arrayBuffer();
     };
 
-    const imageBytesToBlackPngBytes = async (bytes: ArrayBuffer, mime: string): Promise<ArrayBuffer> => {
-        const blob = new Blob([bytes], { type: mime || 'image/png' });
-        const url = URL.createObjectURL(blob);
+    /**
+     * ✅ NEW: Render the typed name using the signature webfont into a transparent PNG (black ink).
+     */
+    const renderTypedSignatureToPngBytes = async (text: string): Promise<ArrayBuffer> => {
+        const fontSize = 120;
+        const paddingX = 40;
+        const paddingY = 30;
 
+        // Make sure the webfont is actually available before drawing to the canvas.
         try {
-            const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-                const el = new Image();
-                el.onload = () => resolve(el);
-                el.onerror = () => reject(new Error('Failed to load signature image.'));
-                el.src = url;
-            });
-
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            if (!ctx) throw new Error('Canvas not supported.');
-
-            ctx.drawImage(img, 0, 0);
-            return await canvasToBlackPngBytes(canvas);
-        } finally {
-            URL.revokeObjectURL(url);
+            const fonts = (document as any).fonts;
+            if (fonts?.load) {
+                await fonts.load(`${fontSize}px "${SIGNATURE_FONT_FAMILY}"`, text);
+            }
+            if (fonts?.ready) {
+                await fonts.ready;
+            }
+        } catch {
+            // Fall back to whatever font the browser can use.
         }
+
+        const fontSpec = `${fontSize}px "${SIGNATURE_FONT_FAMILY}", cursive`;
+
+        // Measure first so the canvas fits the signature nicely.
+        const measureCanvas = document.createElement('canvas');
+        const mctx = measureCanvas.getContext('2d');
+        if (!mctx) throw new Error('Canvas not supported.');
+        mctx.font = fontSpec;
+
+        const metrics = mctx.measureText(text);
+        const textWidth = Math.max(1, Math.ceil(metrics.width));
+        const ascent = Math.ceil(metrics.actualBoundingBoxAscent || fontSize * 0.85);
+        const descent = Math.ceil(metrics.actualBoundingBoxDescent || fontSize * 0.35);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = textWidth + paddingX * 2;
+        canvas.height = ascent + descent + paddingY * 2;
+
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) throw new Error('Canvas not supported.');
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = fontSpec;
+        ctx.fillStyle = '#000000';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(text, paddingX, paddingY + ascent);
+
+        const outDataUrl = canvas.toDataURL('image/png');
+        const res = await fetch(outDataUrl);
+        return await res.arrayBuffer();
     };
 
     const getSignatureBlackPngBytes = async (): Promise<ArrayBuffer | null> => {
@@ -341,13 +373,14 @@ const ContractSignPage: React.FC = () => {
             return await canvasToBlackPngBytes(canvas);
         }
 
-        if (!signatureFile) {
-            setError('Please upload your signature image first.');
+        // ✅ write mode: typed name → signature font
+        const name = typedName.trim();
+        if (!name) {
+            setError('Please type your name to generate your signature.');
             return null;
         }
 
-        const bytes = await signatureFile.arrayBuffer();
-        return await imageBytesToBlackPngBytes(bytes, signatureFile.type);
+        return await renderTypedSignatureToPngBytes(name);
     };
 
     const fetchPdfBytes = async (): Promise<ArrayBuffer> => {
@@ -761,6 +794,8 @@ const ContractSignPage: React.FC = () => {
         window.location.href = '/';
     };
 
+    const actionsDisabled = isSigning || isRejecting || isFetchingContract || !pdfUrl;
+
     return (
         <div className='min-h-screen px-4 py-8 sm:px-6 lg:px-8' style={{ backgroundColor: BG, ...accentStyle }}>
             <div
@@ -799,19 +834,6 @@ const ContractSignPage: React.FC = () => {
                                 )}
                             </div>
 
-                            <label className='block text-sm font-medium text-white/80'>PDF Document URL</label>
-                            <div className='mt-2'>
-                                <input
-                                    value={pdfUrl}
-                                    onChange={(e) => setPdfUrl(e.target.value)}
-                                    className='w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none ring-0 transition focus:border-white/20 focus:outline-none focus:ring-2'
-                                    style={{
-                                        fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-                                    }}
-                                />
-                                <p className='mt-2 text-xs text-white/50'>This URL is loaded from backend using the contract id in the query string.</p>
-                            </div>
-
                             <div className='mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20'>
                                 <div className='relative h-[55vh] min-h-[360px] w-full sm:h-[65vh] lg:h-[640px]'>
                                     {pdfUrl ? (
@@ -843,11 +865,13 @@ const ContractSignPage: React.FC = () => {
                                 <p className='mt-1 text-sm text-white/60'>Add your signature to finalize this agreement.</p>
                             </div>
 
+                            {/* ✅ Draw / Write toggle */}
                             <div className='mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-black/25 p-2'>
                                 <button
                                     type='button'
                                     onClick={() => {
                                         setMode('draw');
+                                        setError(null);
                                         cachedSigPngBytesRef.current = null;
                                     }}
                                     className={cx(
@@ -862,17 +886,18 @@ const ContractSignPage: React.FC = () => {
                                 <button
                                     type='button'
                                     onClick={() => {
-                                        setMode('upload');
+                                        setMode('write');
+                                        setError(null);
                                         cachedSigPngBytesRef.current = null;
                                     }}
                                     className={cx(
                                         'flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
-                                        mode === 'upload' ? 'text-white shadow' : 'text-white/60 hover:text-white'
+                                        mode === 'write' ? 'text-white shadow' : 'text-white/60 hover:text-white'
                                     )}
-                                    style={mode === 'upload' ? { backgroundColor: ACCENT, boxShadow: '0 10px 30px rgba(44,123,190,0.35)' } : undefined}
+                                    style={mode === 'write' ? { backgroundColor: ACCENT, boxShadow: '0 10px 30px rgba(44,123,190,0.35)' } : undefined}
                                 >
-                                    <Upload className='h-4 w-4' />
-                                    Upload
+                                    <Type className='h-4 w-4' />
+                                    Write
                                 </button>
                             </div>
 
@@ -910,27 +935,42 @@ const ContractSignPage: React.FC = () => {
                                 </div>
                             )}
 
-                            {mode === 'upload' && (
+                            {/* ✅ NEW: Write mode — type your name, it becomes a signature */}
+                            {mode === 'write' && (
                                 <div className='mb-5'>
-                                    <p className='mb-2 text-xs font-medium text-white/70'>Upload your signature (PNG/JPEG)</p>
+                                    <p className='mb-2 text-xs font-medium text-white/70'>Type your name — it becomes your signature</p>
 
-                                    <label
-                                        className='group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center transition hover:bg-black/30'
-                                        htmlFor='sig-upload'
+                                    <input
+                                        type='text'
+                                        value={typedName}
+                                        onChange={(e) => setTypedName(e.target.value)}
+                                        placeholder='John Doe'
+                                        autoComplete='name'
+                                        className='w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/20 focus:ring-2'
+                                    />
+
+                                    <div
+                                        className='mt-3 flex min-h-[130px] items-center justify-center overflow-hidden rounded-2xl border border-dashed border-white/15 px-4 py-6'
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.92)' }}
                                     >
-                                        <Upload className='h-6 w-6 text-white/70 transition group-hover:text-white' />
-                                        <div>
-                                            <p className='text-sm font-medium text-white/80'>Click to upload</p>
-                                            <p className='mt-1 text-xs text-white/50'>PNG, JPG up to 5MB</p>
-                                        </div>
-                                        <input id='sig-upload' type='file' accept='image/*' onChange={handleSignatureFileChange} className='hidden' />
-                                    </label>
+                                        {typedName.trim() ? (
+                                            <span
+                                                className='w-full truncate text-center'
+                                                style={{
+                                                    fontFamily: `"${SIGNATURE_FONT_FAMILY}", cursive`,
+                                                    color: '#000000',
+                                                    fontSize: 'clamp(30px, 7vw, 52px)',
+                                                    lineHeight: 1.25,
+                                                }}
+                                            >
+                                                {typedName.trim()}
+                                            </span>
+                                        ) : (
+                                            <span className='text-sm text-black/40'>Your signature preview</span>
+                                        )}
+                                    </div>
 
-                                    {signatureFile && (
-                                        <div className='mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/70'>
-                                            <span className='font-medium text-white'>{signatureFile.name}</span>
-                                        </div>
-                                    )}
+                                    <p className='mt-2 text-xs text-white/45'>This is how your signature will appear on the document.</p>
                                 </div>
                             )}
 
@@ -941,42 +981,40 @@ const ContractSignPage: React.FC = () => {
                                 </div>
                             )}
 
-                            <button
-                                type='button'
-                                onClick={handleSignClick}
-                                disabled={isSigning || isRejecting || isFetchingContract || !pdfUrl}
-                                className={cx(
-                                    'inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white transition',
-                                    isSigning || isRejecting || isFetchingContract || !pdfUrl ? 'cursor-not-allowed bg-white/15' : 'hover:opacity-95'
-                                )}
-                                style={
-                                    !isSigning && !isRejecting && !isFetchingContract && pdfUrl
-                                        ? { backgroundColor: ACCENT, boxShadow: '0 14px 40px rgba(44,123,190,0.35)' }
-                                        : undefined
-                                }
-                            >
-                                {isSigning ? <Loader2 className='h-4 w-4 animate-spin' /> : <PenLine className='h-4 w-4' />}
-                                {isSigning ? 'Processing…' : isFetchingContract ? 'Loading contract…' : 'Sign & Prepare Download'}
-                            </button>
+                            {/* ✅ Accept (green) + Reject (red) on one line */}
+                            <div className='mt-2 grid grid-cols-2 gap-2 rounded-2xl bg-black/25 p-2'>
+                                <button
+                                    type='button'
+                                    onClick={handleSignClick}
+                                    disabled={actionsDisabled}
+                                    className={cx(
+                                        'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
+                                        actionsDisabled ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
+                                    )}
+                                    style={!actionsDisabled ? { backgroundColor: SUCCESS, boxShadow: '0 10px 30px rgba(34,197,94,0.35)' } : undefined}
+                                >
+                                    {isSigning ? <Loader2 className='h-4 w-4 animate-spin' /> : <CheckCircle2 className='h-4 w-4' />}
+                                    {isSigning ? 'Processing…' : isFetchingContract ? 'Loading…' : 'Accept'}
+                                </button>
 
-                            {/* ✅ Reject button */}
-                            <button
-                                type='button'
-                                onClick={handleRejectClick}
-                                disabled={isSigning || isRejecting || isFetchingContract}
-                                className={cx(
-                                    'mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white transition',
-                                    isSigning || isRejecting || isFetchingContract ? 'cursor-not-allowed bg-white/10' : 'hover:opacity-95'
-                                )}
-                                style={
-                                    !isSigning && !isRejecting && !isFetchingContract
-                                        ? { backgroundColor: DANGER, boxShadow: '0 14px 40px rgba(239,68,68,0.30)' }
-                                        : undefined
-                                }
-                            >
-                                {isRejecting ? <Loader2 className='h-4 w-4 animate-spin' /> : <AlertTriangle className='h-4 w-4' />}
-                                {isRejecting ? 'Rejecting…' : 'Reject Contract'}
-                            </button>
+                                <button
+                                    type='button'
+                                    onClick={handleRejectClick}
+                                    disabled={isSigning || isRejecting || isFetchingContract}
+                                    className={cx(
+                                        'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
+                                        isSigning || isRejecting || isFetchingContract ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
+                                    )}
+                                    style={
+                                        !isSigning && !isRejecting && !isFetchingContract
+                                            ? { backgroundColor: DANGER, boxShadow: '0 10px 30px rgba(239,68,68,0.35)' }
+                                            : undefined
+                                    }
+                                >
+                                    {isRejecting ? <Loader2 className='h-4 w-4 animate-spin' /> : <X className='h-4 w-4' />}
+                                    {isRejecting ? 'Rejecting…' : 'Reject'}
+                                </button>
+                            </div>
 
                             <p className='mt-4 text-xs leading-relaxed text-white/45'>
                                 Your signature, name, and business name will be added to the last page of the document.
@@ -1054,7 +1092,7 @@ const ContractSignPage: React.FC = () => {
                                     'w-full rounded-2xl px-4 py-3 text-sm font-semibold text-white transition sm:w-1/2',
                                     isSigning ? 'cursor-not-allowed bg-white/15' : 'hover:opacity-95'
                                 )}
-                                style={!isSigning ? { backgroundColor: ACCENT, boxShadow: '0 14px 40px rgba(44,123,190,0.25)' } : undefined}
+                                style={!isSigning ? { backgroundColor: SUCCESS, boxShadow: '0 14px 40px rgba(34,197,94,0.25)' } : undefined}
                             >
                                 {isSigning ? (
                                     <span className='inline-flex items-center gap-2'>

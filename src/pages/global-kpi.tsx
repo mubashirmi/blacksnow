@@ -1,11 +1,8 @@
+import HeroSection from '@/components/MainHeroSection';
 import { ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Truck } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 const BLUE = '#1768ff';
 const BLUE_BRIGHT = '#2d7cff';
@@ -381,8 +378,11 @@ function GlobalKpiPageContent() {
     );
 }
 
-const GlobalKpiPage: StandalonePage = () => <GlobalKpiPageContent />;
-
-GlobalKpiPage.getLayout = (page: ReactElement) => page;
+const GlobalKpiPage: NextPage = () => (
+    <>
+        <HeroSection />
+        <GlobalKpiPageContent />
+    </>
+);
 
 export default GlobalKpiPage;

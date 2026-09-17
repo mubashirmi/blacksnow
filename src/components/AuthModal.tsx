@@ -1077,7 +1077,7 @@ export default function AuthModal({
                                         <Image
                                             width={120}
                                             height={120}
-                                            src='/logo.png'
+                                            src='/logocolored.png'
                                             alt='Logo'
                                             className='object-contain'
                                             style={{

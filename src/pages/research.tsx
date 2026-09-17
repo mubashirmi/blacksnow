@@ -1,11 +1,8 @@
+import HeroSection from '@/components/MainHeroSection';
 import { ArrowRight, BarChart3, Bell, Check, Download, Globe2, Lightbulb, LineChart, PieChart, Search, ShieldCheck, type LucideIcon } from 'lucide-react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 // const ACCENT = '#f2f2f0';
 // const GREEN = '#82b94b';
@@ -600,9 +597,11 @@ function EarningsPanel() {
     );
 }
 
-const ResearchPage: StandalonePage = () => {
+const ResearchPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='research-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -797,7 +796,5 @@ const ResearchPage: StandalonePage = () => {
         </>
     );
 };
-
-ResearchPage.getLayout = (page: ReactElement) => page;
 
 export default ResearchPage;

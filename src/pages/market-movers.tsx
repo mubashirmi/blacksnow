@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowDown,
     ArrowRight,
@@ -7,7 +8,6 @@ import {
     Check,
     ClipboardList,
     Flame,
-    Menu,
     Percent,
     Search,
     Target,
@@ -18,11 +18,7 @@ import {
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type MoverRow = {
     symbol: string;
@@ -277,16 +273,6 @@ const actionSteps: Array<{
         body: 'Act with confidence and stay ahead.',
     },
 ];
-
-function BrandIcon() {
-    return (
-        <div className='flex h-8 w-7 items-end gap-[3px]'>
-            <span className='h-[11px] w-[5px] rounded-[1px] bg-[#7c7060]' />
-            <span className='h-[20px] w-[5px] rounded-[1px]' style={{ background: ORANGE }} />
-            <span className='h-[29px] w-[5px] rounded-[1px]' style={{ background: ORANGE_LIGHT }} />
-        </div>
-    );
-}
 
 function SectionIntro({ number, title, description, children }: { number: string; title: string; description: string; children?: ReactNode }) {
     return (
@@ -635,9 +621,10 @@ function AlertsPanel() {
     );
 }
 
-const MarketMoversPage: StandalonePage = () => {
+const MarketMoversPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
             <main
                 className='market-movers-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -645,48 +632,6 @@ const MarketMoversPage: StandalonePage = () => {
                         'radial-gradient(circle at 77% 10%, rgba(180,27,27,0.045), transparent 27%), linear-gradient(180deg, #040505 0%, #060707 52%, #040505 100%)',
                 }}
             >
-                {/* NAVIGATION */}
-                <header className='border-b border-white/[0.035]'>
-                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
-                        <Link href='/' className='flex items-center gap-4'>
-                            <BrandIcon />
-
-                            <span className='text-[16px] font-medium uppercase tracking-[0.035em] text-[#efefec] sm:text-[19px]'>Market Movers</span>
-                        </Link>
-
-                        <nav className='hidden items-center gap-9 lg:flex'>
-                            {['Overview', 'Features', 'Screener', 'News', 'Docs'].map((item) => (
-                                <Link
-                                    key={item}
-                                    href='#'
-                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#ededE9] transition-colors hover:text-[#e54848]'
-                                >
-                                    {item}
-                                </Link>
-                            ))}
-
-                            <Link
-                                href='#'
-                                className='rounded-[5px] border px-5 py-3 text-[10px] uppercase tracking-[0.03em]'
-                                style={{
-                                    color: ORANGE_LIGHT,
-                                    borderColor: ORANGE,
-                                }}
-                            >
-                                Get Started
-                            </Link>
-                        </nav>
-
-                        <button
-                            type='button'
-                            aria-label='Open menu'
-                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#d69b51]/30 lg:hidden'
-                        >
-                            <Menu className='h-5 w-5' style={{ color: ORANGE_LIGHT }} />
-                        </button>
-                    </div>
-                </header>
-
                 {/* HERO */}
                 <section className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.42fr_0.58fr] lg:gap-2 lg:px-9'>
@@ -923,7 +868,5 @@ const MarketMoversPage: StandalonePage = () => {
         </>
     );
 };
-
-MarketMoversPage.getLayout = (page: ReactElement) => page;
 
 export default MarketMoversPage;

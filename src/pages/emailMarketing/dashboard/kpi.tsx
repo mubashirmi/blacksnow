@@ -488,8 +488,8 @@ export default function SalesKPIPage() {
             {/* Email Billing Usage */}
             {renderEmailUsageChart()}
 
-            {/* Charts Row 1 */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+            {/* Charts Grid - visible charts flow into the next available column */}
+            <div className='grid grid-cols-1 gap-6'>
                 {/* Monthly Trends */}
                 {monthlyData.length > 0 && (
                     <Card className='shadow-md'>
@@ -567,10 +567,7 @@ export default function SalesKPIPage() {
                         </CardContent>
                     </Card>
                 )}
-            </div>
 
-            {/* Charts Row 2 */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                 {/* Weekly Activity */}
                 {weeklyData.some((d) => d.emails > 0) && (
                     <Card className='shadow-md'>

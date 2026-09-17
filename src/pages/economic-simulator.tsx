@@ -1,3 +1,4 @@
+import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
@@ -10,7 +11,6 @@ import {
     Globe2,
     Landmark,
     LineChart,
-    Menu,
     PanelsTopLeft,
     Settings,
     ShieldCheck,
@@ -24,11 +24,7 @@ import {
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactElement, ReactNode } from 'react';
-
-type StandalonePage = NextPage & {
-    getLayout?: (page: ReactElement) => ReactNode;
-};
+import type { ReactNode } from 'react';
 
 type ModelNode = {
     icon: LucideIcon;
@@ -180,16 +176,6 @@ const scenarioRows: ScenarioRow[] = [
         debt: '75.3',
     },
 ];
-
-function BrandIcon() {
-    return (
-        <div className='flex h-8 w-7 items-end gap-[3px]'>
-            <span className='h-[12px] w-[5px] rounded-[1px] bg-[#69606f]' />
-            <span className='h-[21px] w-[5px] rounded-[1px]' style={{ background: PURPLE }} />
-            <span className='h-[29px] w-[5px] rounded-[1px]' style={{ background: GOLD }} />
-        </div>
-    );
-}
 
 function SectionIntro({ number, title, description, children }: { number: string; title: string; description: string; children?: ReactNode }) {
     return (
@@ -659,9 +645,11 @@ function ResultsPanel() {
     );
 }
 
-const EconomicSimulatorPage: StandalonePage = () => {
+const EconomicSimulatorPage: NextPage = () => {
     return (
         <>
+            <HeroSection />
+
             <main
                 className='economic-simulator-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -669,53 +657,6 @@ const EconomicSimulatorPage: StandalonePage = () => {
                         'radial-gradient(circle at 76% 9%,rgba(112,56,215,0.045),transparent 28%),linear-gradient(180deg,#040506 0%,#060609 52%,#040506 100%)',
                 }}
             >
-                {/* NAV */}
-                <header className='border-b border-white/[0.035]'>
-                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
-                        <Link href='/' className='flex items-center gap-4'>
-                            <BrandIcon />
-
-                            <span className='text-[16px] font-medium uppercase tracking-[0.035em] text-[#efedee] sm:text-[19px]'>Economic Simulator</span>
-                        </Link>
-
-                        <nav className='hidden items-center gap-10 lg:flex'>
-                            {[
-                                ['Overview', '#overview'],
-                                ['Features', '#features'],
-                                ['Scenarios', '#scenarios'],
-                                ['Docs', '#results'],
-                            ].map(([label, href]) => (
-                                <Link
-                                    key={label}
-                                    href={href}
-                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#ededee] transition-colors hover:text-[#a35ffc]'
-                                >
-                                    {label}
-                                </Link>
-                            ))}
-
-                            <Link
-                                href='/signup'
-                                className='rounded-[5px] px-6 py-3 text-[10px] font-medium uppercase tracking-[0.03em] text-white'
-                                style={{
-                                    background: 'linear-gradient(90deg,#5924ad,#7130c7)',
-                                    boxShadow: '0 0 18px rgba(112,56,215,0.18)',
-                                }}
-                            >
-                                Get Started
-                            </Link>
-                        </nav>
-
-                        <button
-                            type='button'
-                            aria-label='Open navigation'
-                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#7038d7]/35 lg:hidden'
-                        >
-                            <Menu className='h-5 w-5' style={{ color: PURPLE_SOFT }} />
-                        </button>
-                    </div>
-                </header>
-
                 {/* HERO */}
                 <section id='overview' className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.41fr_0.59fr] lg:gap-2 lg:px-9'>
@@ -965,7 +906,5 @@ const EconomicSimulatorPage: StandalonePage = () => {
         </>
     );
 };
-
-EconomicSimulatorPage.getLayout = (page: ReactElement) => page;
 
 export default EconomicSimulatorPage;

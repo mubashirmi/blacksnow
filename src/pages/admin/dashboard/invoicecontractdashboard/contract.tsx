@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 const ADMIN_AUTH_ID = 5;
 
@@ -63,6 +63,8 @@ const getPdfFileName = (contractName: string | null, contractId: number): string
 
 type CreateContractMode = 'choose' | 'upload';
 
+type ContractFilter = 'all' | 'pending' | 'signed';
+
 const ContractsPage: NextPage = () => {
     const router = useRouter();
 
@@ -82,6 +84,8 @@ const ContractsPage: NextPage = () => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [isLoadingInvoices, setIsLoadingInvoices] = useState(false);
     const [invoicesError, setInvoicesError] = useState<string | null>(null);
+    const [contractFilter, setContractFilter] = useState<ContractFilter>('all');
+    const [contractSearch, setContractSearch] = useState('');
     const [downloadingContractId, setDownloadingContractId] = useState<number | null>(null);
     const [pdfDownloadError, setPdfDownloadError] = useState<string | null>(null);
 
@@ -280,6 +284,25 @@ const ContractsPage: NextPage = () => {
     const totalInvoices = invoices.length;
     const signedCount = invoices.filter((invoice) => isContractSigned(invoice.signed)).length;
     const unsignedCount = invoices.filter((invoice) => isContractUnsigned(invoice.signed)).length;
+    const signedInvoices = useMemo(() => invoices.filter((invoice) => isContractSigned(invoice.signed)), [invoices]);
+
+    const filteredInvoices = useMemo(() => {
+        const normalizedSearch = contractSearch.trim().toLowerCase();
+
+        return invoices.filter((invoice) => {
+            const matchesStatus =
+                contractFilter === 'all' ||
+                (contractFilter === 'pending' && isContractUnsigned(invoice.signed)) ||
+                (contractFilter === 'signed' && isContractSigned(invoice.signed));
+
+            if (!matchesStatus) return false;
+            if (!normalizedSearch) return true;
+
+            return [invoice.contractName, invoice.email, invoice.name, invoice.businessName, String(invoice.id)]
+                .filter((value): value is string => typeof value === 'string')
+                .some((value) => value.toLowerCase().includes(normalizedSearch));
+        });
+    }, [contractFilter, contractSearch, invoices]);
 
     // Optional: prevent UI flash before auth check finishes
 
@@ -340,10 +363,106 @@ const ContractsPage: NextPage = () => {
                     </div>
                 </section>
 
-                {/* Invoices Table */}
-                <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
+                {/* Signed Contracts Table */}
+                <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
                     <div className='mb-3 flex items-center justify-between gap-2'>
+                        <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Signed Contracts' : 'Signed Contracts'}</h2>
+                    </div>
+
+                    {isLoadingInvoices && <p className='text-sm text-gray-500'>Loading signed contracts…</p>}
+
+                    {invoicesError && <p className='text-[13px] text-red-700'>{invoicesError}</p>}
+
+                    {!isLoadingInvoices && !invoicesError && signedInvoices.length === 0 && (
+                        <p className='text-sm text-gray-500'>No signed contracts found yet.</p>
+                    )}
+
+                    {!isLoadingInvoices && !invoicesError && signedInvoices.length > 0 && (
+                        <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
+                            <table className='min-w-[1000px] w-full border-collapse text-[13px]'>
+                                <thead className='bg-gray-50'>
+                                    <tr>
+                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Status'].map((header) => (
+                                            <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
+                                                {header}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {signedInvoices.map((invoice, index) => {
+                                        const displayContractName = invoice.contractName && invoice.contractName.trim().length > 0 ? invoice.contractName : '—';
+                                        const displayName = invoice.name && invoice.name.trim().length > 0 ? invoice.name : '—';
+                                        const displayBusinessName = invoice.businessName && invoice.businessName.trim().length > 0 ? invoice.businessName : '—';
+                                        const isDownloading = downloadingContractId === invoice.id;
+
+                                        return (
+                                            <tr key={invoice.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{index + 1}</td>
+                                                <td className='px-3 py-2.5 text-[13px] font-medium text-slate-900'>{displayContractName}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{invoice.email}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayName}</td>
+                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayBusinessName}</td>
+                                                <td className='whitespace-nowrap px-3 py-2.5 text-[13px] text-gray-600'>{formatDateTime(invoice.createdAt)}</td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    <div className='flex items-center gap-3 whitespace-nowrap'>
+                                                        <a
+                                                            href={invoice.pdf}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                            className='text-[13px] text-blue-600 no-underline hover:underline'
+                                                        >
+                                                            View
+                                                        </a>
+                                                        <button
+                                                            type='button'
+                                                            // eslint-disable-next-line
+                                                            onClick={() => void handleDownloadPdf(invoice)}
+                                                            disabled={downloadingContractId !== null}
+                                                            className='border-0 bg-transparent p-0 text-[13px] text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400'
+                                                        >
+                                                            {isDownloading ? 'Downloading…' : 'Download'}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    <span className='inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-[12px] font-medium text-green-800'>
+                                                        Signed
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </section>
+
+                {/* All Contracts Table */}
+                <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
+                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Contracts' : 'All Contracts'}</h2>
+                        <div className='flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center'>
+                            <select
+                                value={contractFilter}
+                                onChange={(event) => setContractFilter(event.target.value as ContractFilter)}
+                                className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                                aria-label='Filter contracts by status'
+                            >
+                                <option value='all'>All Contracts</option>
+                                <option value='pending'>Pending</option>
+                                <option value='signed'>Signed</option>
+                            </select>
+                            <input
+                                type='search'
+                                value={contractSearch}
+                                onChange={(event) => setContractSearch(event.target.value)}
+                                placeholder='Search contracts...'
+                                className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-64'
+                                aria-label='Search contracts'
+                            />
+                        </div>
                     </div>
 
                     {isLoadingInvoices && <p className='text-sm text-gray-500'>Loading invoices…</p>}
@@ -353,10 +472,14 @@ const ContractsPage: NextPage = () => {
                     {pdfDownloadError && <p className='mb-2 text-[13px] text-amber-700'>{pdfDownloadError}</p>}
 
                     {!isLoadingInvoices && !invoicesError && invoices.length === 0 && (
-                        <p className='text-sm text-gray-500'>No invoices found yet. Create your first contract to see it here.</p>
+                        <p className='text-sm text-gray-500'>No contracts found yet. Create your first contract to see it here.</p>
                     )}
 
-                    {!isLoadingInvoices && invoices.length > 0 && (
+                    {!isLoadingInvoices && !invoicesError && invoices.length > 0 && filteredInvoices.length === 0 && (
+                        <p className='text-sm text-gray-500'>No contracts match the selected filter or search.</p>
+                    )}
+
+                    {!isLoadingInvoices && filteredInvoices.length > 0 && (
                         <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
                             <table className='min-w-[1120px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
@@ -374,7 +497,7 @@ const ContractsPage: NextPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {invoices.map((invoice, index) => {
+                                    {filteredInvoices.map((invoice, index) => {
                                         const displayContractName = invoice.contractName && invoice.contractName.trim().length > 0 ? invoice.contractName : '—';
                                         const displayName = invoice.name && invoice.name.trim().length > 0 ? invoice.name : '—';
                                         const displayBusinessName = invoice.businessName && invoice.businessName.trim().length > 0 ? invoice.businessName : '—';
