@@ -899,19 +899,7 @@ const WatchlistPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .watchlist-page h1,
-                .watchlist-page h2,
-                .watchlist-page .watchlist-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
-                .watchlist-page h3,
-                .watchlist-page h4,
-                .watchlist-page h5,
-                .watchlist-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
                 .watchlist-page button,
                 .watchlist-page a {
@@ -926,6 +914,10 @@ const WatchlistPage: NextPage = () => {
                     .watchlist-page {
                         overflow-wrap: anywhere;
                     }
+
+                .watchlist-page .watchlist-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

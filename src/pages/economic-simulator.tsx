@@ -874,19 +874,7 @@ const EconomicSimulatorPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .economic-simulator-page h1,
-                .economic-simulator-page h2,
-                .economic-simulator-page .simulator-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
-                .economic-simulator-page h3,
-                .economic-simulator-page h4,
-                .economic-simulator-page h5,
-                .economic-simulator-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
                 .economic-simulator-page button,
                 .economic-simulator-page a {
@@ -901,6 +889,10 @@ const EconomicSimulatorPage: NextPage = () => {
                     .economic-simulator-page {
                         overflow-wrap: anywhere;
                     }
+
+                .economic-simulator-page .simulator-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

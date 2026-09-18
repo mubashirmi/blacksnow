@@ -1,5 +1,6 @@
 import AuthModal from '@/components/AuthModal';
 import { PricingComponent } from '@/components/PricingComponent';
+import TradingPlatformShowcase from '@/components/TradingPlatformShowcase';
 import { LottieAnimation } from '@/components/lottie-animation';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription as DialogDesc, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -795,10 +796,15 @@ function Home() {
             </section>
 
             {/* ─── MOBILE & DESKTOP COMPATIBLE ─── */}
-            <MobileDesktopSection />
-
+            <div className='hidden'>
+                <MobileDesktopSection />
+            </div>
             {/* ─── EXPLORE DATA-DRIVEN MARKET INTELLIGENCE HUB ─── */}
-            <StackedStrategiesSection />
+            <div className='hidden'>
+                <StackedStrategiesSection />
+            </div>
+
+            <TradingPlatformShowcase />
 
             {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
             <DataAnalyticsSection />

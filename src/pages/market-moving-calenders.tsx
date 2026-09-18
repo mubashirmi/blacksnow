@@ -918,18 +918,8 @@ const MarketMovingCalendarsPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .market-calendars-page h1,
-                .market-calendars-page h2,
                 .market-calendars-page .calendar-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
-
-                .market-calendars-page h3,
-                .market-calendars-page h4,
-                .market-calendars-page h5,
-                .market-calendars-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
+                    font-family: var(--font-michroma), sans-serif !important;
                 }
 
                 .market-calendars-page button,

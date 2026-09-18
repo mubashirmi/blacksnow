@@ -382,6 +382,14 @@ const GlobalKpiPage: NextPage = () => (
     <>
         <HeroSection />
         <GlobalKpiPageContent />
+
+        <style jsx global>{`
+            .global-kpi-page {
+                font-family: 'Roboto', Arial, Helvetica, sans-serif;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: geometricPrecision;
+            }
+        `}</style>
     </>
 );
 

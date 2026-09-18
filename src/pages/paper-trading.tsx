@@ -697,19 +697,7 @@ const PaperTradingPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .paper-trading-page h1,
-                .paper-trading-page h2,
-                .paper-trading-page .paper-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
-                .paper-trading-page h3,
-                .paper-trading-page h4,
-                .paper-trading-page h5,
-                .paper-trading-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
                 .paper-trading-page button,
                 .paper-trading-page a {
@@ -720,6 +708,10 @@ const PaperTradingPage: NextPage = () => {
                     .paper-trading-page {
                         overflow-wrap: anywhere;
                     }
+
+                .paper-trading-page .paper-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

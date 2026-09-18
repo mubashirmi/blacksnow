@@ -768,19 +768,7 @@ const ResearchPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .research-page h1,
-                .research-page h3,
-                .research-page h4,
-                .research-page h5,
-                .research-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
-                .research-page h2,
-                .research-page .research-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
                 .research-page button,
                 .research-page a {
@@ -791,6 +779,10 @@ const ResearchPage: NextPage = () => {
                     .research-page {
                         overflow-wrap: anywhere;
                     }
+
+                .research-page .research-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

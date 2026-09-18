@@ -739,11 +739,6 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
             }
 
             try {
-                const roleResponse = await axios.patch(`/api/v2/update-roles/?id=${userId}`, { rolesToAdd: role });
-                if (roleResponse?.data?.user?.roles) {
-                    localStorage.setItem('roles', JSON.stringify(roleResponse.data.user.roles));
-                }
-
                 localStorage.setItem('productLink', p.productLink);
                 localStorage.setItem('comission', p.productComission);
 
@@ -771,6 +766,17 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                 if (!checkoutUrl) {
                     throw new Error('Stripe checkout URL not found');
                 }
+
+                localStorage.setItem(
+                    'pendingPurchase',
+                    JSON.stringify({
+                        productId: p.id,
+                        apiName: productType,
+                        role,
+                        productLink: p.productLink,
+                        comission: p.productComission,
+                    })
+                );
 
                 window.location.href = checkoutUrl;
             } catch (error) {

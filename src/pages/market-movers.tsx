@@ -625,6 +625,7 @@ const MarketMoversPage: NextPage = () => {
     return (
         <>
             <HeroSection />
+
             <main
                 className='market-movers-page min-h-screen overflow-hidden text-white'
                 style={{
@@ -840,19 +841,7 @@ const MarketMoversPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .market-movers-page h1,
-                .market-movers-page h2,
-                .market-movers-page .movers-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
-                .market-movers-page h3,
-                .market-movers-page h4,
-                .market-movers-page h5,
-                .market-movers-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
                 .market-movers-page button,
                 .market-movers-page a {
@@ -863,6 +852,10 @@ const MarketMoversPage: NextPage = () => {
                     .market-movers-page {
                         overflow-wrap: anywhere;
                     }
+
+                .market-movers-page .movers-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

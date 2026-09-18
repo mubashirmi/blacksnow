@@ -632,48 +632,6 @@ const StockScreenerPage: NextPage = () => {
                         'radial-gradient(circle at 72% 7%, rgba(244,194,37,0.035), transparent 25%), linear-gradient(180deg, #040607 0%, #050708 52%, #040607 100%)',
                 }}
             >
-                {/* NAV */}
-                {/* <header className='border-b border-white/[0.04]'>
-                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
-                        <Link href='/' className='flex items-center gap-4'>
-                            <BetweenVerticalEndIcon />
-
-                            <span className='text-[16px] font-medium uppercase tracking-[0.025em] text-[#f2f2ed] sm:text-[19px]'>Stock Screener</span>
-                        </Link>
-
-                        <nav className='hidden items-center gap-9 lg:flex'>
-                            {['Overview', 'Features', 'Screens', 'Pricing', 'Docs'].map((item) => (
-                                <Link
-                                    key={item}
-                                    href='#'
-                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#eeeeea] transition-colors hover:text-[#f4c225]'
-                                >
-                                    {item}
-                                </Link>
-                            ))}
-
-                            <Link
-                                href='#'
-                                className='rounded-[5px] border px-5 py-3 text-[10px] font-medium uppercase tracking-[0.03em]'
-                                style={{
-                                    color: GOLD_LIGHT,
-                                    borderColor: GOLD,
-                                }}
-                            >
-                                Get Started
-                            </Link>
-                        </nav>
-
-                        <button
-                            type='button'
-                            aria-label='Open menu'
-                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#f4c225]/25 lg:hidden'
-                        >
-                            <Menu className='h-5 w-5' style={{ color: GOLD }} />
-                        </button>
-                    </div>
-                </header> */}
-
                 {/* HERO */}
                 <section className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-7 px-5 pb-7 pt-5 sm:px-8 sm:pb-10 sm:pt-8 lg:grid-cols-[0.43fr_0.57fr] lg:gap-3 lg:px-9'>
@@ -841,19 +799,7 @@ const StockScreenerPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
-                .stock-screener-page h1,
-                .stock-screener-page h2,
-                .stock-screener-page .screener-serif {
-                    font-family: Georgia, 'Times New Roman', serif !important;
-                    font-weight: 400 !important;
-                }
 
-                .stock-screener-page h3,
-                .stock-screener-page h4,
-                .stock-screener-page h5,
-                .stock-screener-page h6 {
-                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
-                }
 
                 .stock-screener-page button,
                 .stock-screener-page a {
@@ -864,6 +810,10 @@ const StockScreenerPage: NextPage = () => {
                     .stock-screener-page {
                         overflow-wrap: anywhere;
                     }
+
+                .stock-screener-page .screener-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                }}
                 }
             `}</style>
         </>

@@ -15,6 +15,100 @@ type ApiResult = {
     error?: string;
 };
 
+type PendingPurchase = {
+    productId: string;
+    apiName: string;
+    role: string;
+    productLink: string;
+    comission: string;
+};
+
+type PurchasedProducts = Record<string, string>;
+
+const PRODUCT_ROLE_BY_API_NAME: Record<string, string> = {
+    NewsLetter: 'NewsLetter',
+    InvoiceTool: 'InvoiceTool',
+    DigitalBillboard: 'DigitalBillboard',
+    EmailMarketing: 'EmailMarketing',
+    LightningGold: 'LightningGold',
+    LightningSilver: 'LightningSilver',
+};
+
+const getPendingPurchase = (): PendingPurchase | null => {
+    const storedPendingPurchase = localStorage.getItem('pendingPurchase');
+    if (!storedPendingPurchase) return null;
+
+    try {
+        const parsed = JSON.parse(storedPendingPurchase);
+        if (!parsed || typeof parsed !== 'object') return null;
+
+        return parsed as PendingPurchase;
+    } catch (error) {
+        console.error('Unable to read pending purchase information:', error);
+        return null;
+    }
+};
+
+const getStoredRoles = (): string[] => {
+    const storedRoles = localStorage.getItem('roles');
+    if (!storedRoles) return [];
+
+    try {
+        const parsed = JSON.parse(storedRoles);
+        return Array.isArray(parsed) ? parsed.filter((role): role is string => typeof role === 'string') : [];
+    } catch (error) {
+        console.error('Unable to read stored roles:', error);
+        return [];
+    }
+};
+
+const syncPurchasedProductRoles = async (userId: string): Promise<PurchasedProducts> => {
+    const response = await fetch(`/api/v2/get-user-product-info/?id=${encodeURIComponent(userId)}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data?.message || 'Unable to refresh purchased products');
+    }
+
+    const purchasedProducts: PurchasedProducts = data?.data || {};
+    const knownProductRoles = new Set(Object.values(PRODUCT_ROLE_BY_API_NAME));
+    const existingRoles = getStoredRoles();
+    const nonProductRoles = existingRoles.filter((role) => !knownProductRoles.has(role));
+    const purchasedRoles = Object.entries(PRODUCT_ROLE_BY_API_NAME)
+        .filter(([apiName]) => purchasedProducts[apiName] === 'Purchased')
+        .map(([, role]) => role);
+
+    localStorage.setItem('roles', JSON.stringify(Array.from(new Set([...nonProductRoles, ...purchasedRoles]))));
+
+    return purchasedProducts;
+};
+
+const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+const confirmAndSyncPurchasedAccess = async (userId: string, pendingPurchase: PendingPurchase | null) => {
+    let lastError: unknown;
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+            const purchasedProducts = await syncPurchasedProductRoles(userId);
+
+            if (!pendingPurchase || purchasedProducts[pendingPurchase.apiName] === 'Purchased') {
+                return;
+            }
+
+            lastError = new Error('Payment was confirmed, but the purchased product is not active yet.');
+        } catch (error) {
+            lastError = error;
+        }
+
+        if (attempt < 2) {
+            await wait(500 * (attempt + 1));
+        }
+    }
+
+    throw lastError instanceof Error ? lastError : new Error('Unable to refresh purchased access');
+};
+
 function SubscriptionConfirmation() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -26,7 +120,8 @@ function SubscriptionConfirmation() {
     const hasProcessedRef = useRef(false);
 
     useEffect(() => {
-        const storedProductLink = localStorage.getItem('productLink');
+        const pendingPurchase = getPendingPurchase();
+        const storedProductLink = localStorage.getItem('productLink') || pendingPurchase?.productLink || null;
         setProductLink(storedProductLink);
 
         const sessionId = searchParams.get('session_id') || new URLSearchParams(window.location.search).get('session_id');
@@ -139,7 +234,25 @@ function SubscriptionConfirmation() {
                 const paymentResult = results.find((result) => result.type === 'payment');
                 const commissionResult = results.find((result) => result.type === 'commission');
 
-                if (paymentResult?.success && (!commissionResult || commissionResult.success)) {
+                let accessSyncError: string | null = null;
+
+                if (paymentResult?.success) {
+                    const userId = localStorage.getItem('userId');
+
+                    if (!userId) {
+                        accessSyncError = 'User ID is missing, so purchased access could not be refreshed.';
+                    } else {
+                        try {
+                            await confirmAndSyncPurchasedAccess(userId, pendingPurchase);
+                            localStorage.removeItem('pendingPurchase');
+                        } catch (error) {
+                            console.error('Purchased access refresh failed:', error);
+                            accessSyncError = error instanceof Error ? error.message : 'Purchased access could not be refreshed';
+                        }
+                    }
+                }
+
+                if (paymentResult?.success && !accessSyncError && (!commissionResult || commissionResult.success)) {
                     setStatusType('success');
                     setApiStatus('Payment confirmed successfully!');
                 } else {
@@ -147,6 +260,10 @@ function SubscriptionConfirmation() {
 
                     if (!paymentResult?.success) {
                         errors.push(`Payment: ${paymentResult?.error || 'Failed'}`);
+                    }
+
+                    if (accessSyncError) {
+                        errors.push(`Access: ${accessSyncError}`);
                     }
 
                     if (commissionResult && !commissionResult.success) {
