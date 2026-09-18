@@ -217,12 +217,17 @@ export function AffiliateSidebar({ stripeConnected = false, stripeUserId, ...pro
         destroyCookie(null, 'admin_token');
         destroyCookie(null, 'firstName');
         destroyCookie(null, 'lastName');
+        destroyCookie(null, 'email');
         destroyCookie(null, 'adminId');
 
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
             localStorage.removeItem('id');
             localStorage.removeItem('adminId');
+            localStorage.removeItem('firstName');
+            localStorage.removeItem('lastName');
+            localStorage.removeItem('pausedRoles');
+            localStorage.removeItem('email');
             localStorage.removeItem('roles');
             localStorage.removeItem('referredby');
             localStorage.removeItem('affiliateId');

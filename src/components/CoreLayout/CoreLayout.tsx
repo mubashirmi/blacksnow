@@ -62,6 +62,18 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     </div>
                                 </div>
 
+                                <div className='relative group'>
+                                    <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
+                                        <Image
+                                            src='/BlacksnowHeadphoneIcon.png'
+                                            alt='Black Snow Headphone Logo'
+                                            width={170}
+                                            height={170}
+                                            className='object-contain drop-shadow-2xl'
+                                        />
+                                    </div>
+                                </div>
+
                                 {/* Mobile buttons - right side opposite logo */}
                                 {/* <div className='shrink-0 lg:hidden'>
                                     <FeedbackUnsubscribeButtons size='footer' />

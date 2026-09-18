@@ -9,14 +9,14 @@ const BLUE_BRIGHT = '#2d7cff';
 const GOLD = '#e6a91e';
 const GOLD_LIGHT = '#f2ba2e';
 // const GREEN = '#26a65b';
-// const PAGE_BG = '#040506';
+const PAGE_BG = '#040506';
 
 function SectionNumber({ number }: { number: string }) {
     return (
         <div>
             <div className='h-[3px] w-11 rounded-full bg-[#1768ff]' />
 
-            <p className='mt-2 text-[49px] font-light leading-none tracking-[-0.045em] text-[#1768ff] sm:text-[55px]'>{number}</p>
+            <p className='page-section-number mt-2 text-[49px] font-light leading-none tracking-[-0.045em] text-[#1768ff] sm:text-[55px]'>{number}</p>
         </div>
     );
 }
@@ -100,7 +100,7 @@ function RevenueChart() {
 function SatisfactionChart() {
     return (
         <div className='flex flex-col items-center gap-8 md:flex-row md:justify-center'>
-            <div className='relative h-[245px] w-[245px] sm:h-[275px] sm:w-[275px]'>
+            <div className='kpi-donut relative h-[220px] w-[220px] sm:h-[275px] sm:w-[275px]'>
                 <div
                     className='absolute inset-0 rounded-full'
                     style={{
@@ -184,7 +184,7 @@ function GlobalKpiPageContent() {
                             Performance Overview
                         </p>
 
-                        <h1 className='mt-3 text-[56px] font-semibold leading-[0.95] tracking-[-0.045em] text-[#f4f3ef] sm:text-[68px] lg:text-[71px]'>
+                        <h1 className='page-hero-title mt-3 text-[56px] font-semibold leading-[0.95] tracking-[-0.045em] text-[#f4f3ef] sm:text-[68px] lg:text-[71px]'>
                             GLOBAL <span style={{ color: BLUE }}>KPI</span>
                         </h1>
 
@@ -209,7 +209,7 @@ function GlobalKpiPageContent() {
                         </div>
                     </div>
 
-                    <div className='relative min-h-[270px] lg:min-h-[350px]'>
+                    <div className='page-hero-art relative min-h-[200px] sm:min-h-[270px] lg:min-h-[350px]'>
                         <div
                             className='pointer-events-none absolute inset-[8%] blur-3xl'
                             style={{
@@ -236,7 +236,9 @@ function GlobalKpiPageContent() {
                     <div>
                         <SectionNumber number='01' />
 
-                        <h2 className='mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[28px]'>Revenue Growth</h2>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[28px]'>
+                            Revenue Growth
+                        </h2>
 
                         <p className='mt-4 max-w-[340px] text-[15px] leading-[1.6] text-[#d1d1ce] sm:text-[16px]'>
                             Strong top-line performance
@@ -263,7 +265,9 @@ function GlobalKpiPageContent() {
                     <div>
                         <SectionNumber number='02' />
 
-                        <h2 className='mt-3 text-[25px] font-semibold uppercase tracking-[0.015em] text-[#f0f0ec] sm:text-[27px]'>Customer Satisfaction</h2>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.015em] text-[#f0f0ec] sm:text-[27px]'>
+                            Customer Satisfaction
+                        </h2>
 
                         <p className='mt-4 max-w-[345px] text-[15px] leading-[1.6] text-[#d1d1ce] sm:text-[16px]'>
                             Exceptional experiences delivered
@@ -290,7 +294,9 @@ function GlobalKpiPageContent() {
                     <div>
                         <SectionNumber number='03' />
 
-                        <h2 className='mt-3 text-[25px] font-semibold uppercase tracking-[0.018em] text-[#f0f0ec] sm:text-[27px]'>Operational Efficiency</h2>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.018em] text-[#f0f0ec] sm:text-[27px]'>
+                            Operational Efficiency
+                        </h2>
 
                         <p className='mt-4 max-w-[340px] text-[15px] leading-[1.6] text-[#d1d1ce] sm:text-[16px]'>
                             Optimizing processes to improve
@@ -331,7 +337,9 @@ function GlobalKpiPageContent() {
                     <div>
                         <SectionNumber number='04' />
 
-                        <h2 className='mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[27px]'>Market Expansion</h2>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[27px]'>
+                            Market Expansion
+                        </h2>
 
                         <p className='mt-4 max-w-[320px] text-[15px] leading-[1.6] text-[#d1d1ce] sm:text-[16px]'>
                             Expanding our global footprint
@@ -386,8 +394,123 @@ const GlobalKpiPage: NextPage = () => (
         <style jsx global>{`
             .global-kpi-page {
                 font-family: 'Roboto', Arial, Helvetica, sans-serif;
+                background-color: ${PAGE_BG};
                 -webkit-font-smoothing: antialiased;
                 text-rendering: geometricPrecision;
+            }
+
+            .global-kpi-page h1,
+            .global-kpi-page h2,
+            .global-kpi-page h3,
+            .global-kpi-page h4,
+            .global-kpi-page h5,
+            .global-kpi-page h6 {
+                font-family: var(--font-michroma), sans-serif !important;
+                font-weight: 400 !important;
+                overflow-wrap: normal;
+                word-break: normal;
+            }
+
+            .global-kpi-page button,
+            .global-kpi-page a {
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .global-kpi-page *,
+            .global-kpi-page *::before,
+            .global-kpi-page *::after {
+                box-sizing: border-box;
+                min-width: 0;
+            }
+
+            @media (max-width: 639px) {
+                .global-kpi-page {
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
+
+                .global-kpi-page .page-hero-title {
+                    font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                    line-height: 1.13 !important;
+                    letter-spacing: -0.02em !important;
+                }
+
+                .global-kpi-page .page-section-number {
+                    font-size: 1.95rem !important;
+                    line-height: 1 !important;
+                    letter-spacing: -0.02em !important;
+                }
+
+                .global-kpi-page .page-section-title {
+                    font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                    line-height: 1.3 !important;
+                    letter-spacing: -0.01em !important;
+                }
+
+                .global-kpi-page .page-hero-features {
+                    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                    gap: 0.85rem !important;
+                    margin-top: 1.35rem !important;
+                }
+
+                .global-kpi-page .page-hero-features > * {
+                    min-width: 0;
+                }
+
+                .global-kpi-page .page-hero-features > * > div:first-child {
+                    width: 2.75rem !important;
+                    height: 2.75rem !important;
+                }
+
+                .global-kpi-page .page-hero-features h3 {
+                    margin-top: 0.55rem !important;
+                    font-size: 0.64rem !important;
+                    line-height: 1.35 !important;
+                }
+
+                .global-kpi-page .page-hero-features p {
+                    margin-top: 0.35rem !important;
+                    font-size: 0.5rem !important;
+                    line-height: 1.35 !important;
+                }
+
+                .global-kpi-page .page-hero-art {
+                    min-height: 11.5rem !important;
+                    margin-top: 0.25rem !important;
+                }
+
+                .global-kpi-page .page-mobile-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                    gap: 0.75rem !important;
+                }
+
+                .global-kpi-page .page-mobile-grid > * {
+                    min-height: 0 !important;
+                    border-left: 0 !important;
+                    border-right: 0 !important;
+                    border-top: 0 !important;
+                    border-bottom: 0 !important;
+                }
+
+                .global-kpi-page .page-compact-card {
+                    min-height: 0 !important;
+                    padding: 0.9rem 0.65rem !important;
+                }
+
+                .global-kpi-page .kpi-donut {
+                    transform: scale(0.9);
+                    transform-origin: center;
+                }
+
+                .global-kpi-page p,
+                .global-kpi-page li,
+                .global-kpi-page td,
+                .global-kpi-page th,
+                .global-kpi-page dd,
+                .global-kpi-page dt {
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
             }
         `}</style>
     </>

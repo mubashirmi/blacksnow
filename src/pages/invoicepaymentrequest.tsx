@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, CircleAlert, CreditCard, Download, Loader2, Repeat2, ShieldCheck } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 
 type PagePaymentType = 'invoice' | 'subscription';
@@ -272,10 +271,11 @@ async function downloadImageAsPdf(imageUrl: string, fileName: string): Promise<v
 }
 
 function PaymentApplicationContent() {
-    const searchParams = useSearchParams();
+    const [resolvedUrlParams, setResolvedUrlParams] = useState<{ id: string | null; paymentType: string | null } | null>(null);
 
-    const rawInvoiceId = searchParams.get('id');
-    const rawPaymentType = searchParams.get('paymentType');
+    const rawInvoiceId = resolvedUrlParams?.id ?? null;
+    const rawPaymentType = resolvedUrlParams?.paymentType ?? null;
+    const areUrlParamsReady = resolvedUrlParams !== null;
 
     const invoiceId = rawInvoiceId ? Number(rawInvoiceId) : Number.NaN;
     const paymentType: PagePaymentType | null = rawPaymentType === 'invoice' || rawPaymentType === 'subscription' ? rawPaymentType : null;
@@ -311,8 +311,22 @@ function PaymentApplicationContent() {
         };
     }, [invoiceId, paymentType]);
 
+    useEffect(() => {
+        // Read the URL only after the client mounts. This prevents transient
+        // missing-ID/payment-type errors while the page is hydrating.
+        const params = new URLSearchParams(window.location.search);
+        setResolvedUrlParams({
+            id: params.get('id'),
+            paymentType: params.get('paymentType'),
+        });
+    }, []);
+
     const fetchPaymentRecord = useCallback(
         async (signal?: AbortSignal) => {
+            if (!areUrlParamsReady) {
+                return;
+            }
+
             setIsLoadingRecord(true);
             setRecordError(null);
             setPaymentRecord(null);
@@ -382,17 +396,21 @@ function PaymentApplicationContent() {
                 }
             }
         },
-        [invoiceId, paymentType, rawInvoiceId]
+        [areUrlParamsReady, invoiceId, paymentType, rawInvoiceId]
     );
 
     useEffect(() => {
+        if (!areUrlParamsReady) {
+            return;
+        }
+
         const controller = new AbortController();
 
         // eslint-disable-next-line
         void fetchPaymentRecord(controller.signal);
 
         return () => controller.abort();
-    }, [fetchPaymentRecord]);
+    }, [areUrlParamsReady, fetchPaymentRecord]);
 
     const handlePay = useCallback(async () => {
         if (!paymentRequest || !paymentType || !paymentRecord || isPaying) {
@@ -467,7 +485,7 @@ function PaymentApplicationContent() {
     }, [isDownloading, paymentRecord, paymentType]);
 
     const isSubscription = paymentType === 'subscription';
-    const hasPageError = Boolean(recordError || paymentError);
+    const hasPageError = areUrlParamsReady && Boolean(recordError || paymentError);
 
     const instructionText = isSubscription
         ? 'Click on Pay Subscription button to activate your monthly subscription.'
@@ -487,7 +505,13 @@ function PaymentApplicationContent() {
                         )}
 
                         <span className={`text-sm font-bold uppercase tracking-wider ${hasPageError ? 'text-red-400' : 'text-[#4cc7e8]'}`}>
-                            {hasPageError ? 'Payment Error' : isLoadingRecord ? 'Loading Invoice' : isPaying ? 'Redirecting' : 'Secure Payment'}
+                            {hasPageError
+                                ? 'Payment Error'
+                                : !areUrlParamsReady || isLoadingRecord
+                                ? 'Loading Invoice'
+                                : isPaying
+                                ? 'Redirecting'
+                                : 'Secure Payment'}
                         </span>
                     </div>
                 </div>
@@ -529,7 +553,7 @@ function PaymentApplicationContent() {
 
                     <CardContent className='p-8 pt-0 sm:p-12 sm:pt-0'>
                         <div className='mb-8 overflow-hidden rounded-2xl border border-[#4cc7e8]/20 bg-white/5'>
-                            {isLoadingRecord ? (
+                            {!areUrlParamsReady || isLoadingRecord ? (
                                 <div className='flex min-h-[360px] items-center justify-center text-[#4cc7e8]'>
                                     <Loader2 className='mr-3 h-6 w-6 animate-spin' />
                                     Loading invoice...
@@ -562,7 +586,7 @@ function PaymentApplicationContent() {
                         <div className='flex flex-col justify-center gap-4 sm:flex-row'>
                             <Button
                                 type='button'
-                                disabled={isLoadingRecord || isPaying || !paymentRecord}
+                                disabled={!areUrlParamsReady || isLoadingRecord || isPaying || !paymentRecord}
                                 onClick={() => {
                                     // eslint-disable-next-line
                                     void handlePay();
@@ -576,7 +600,7 @@ function PaymentApplicationContent() {
                             <Button
                                 type='button'
                                 variant='outline'
-                                disabled={isLoadingRecord || isDownloading || !paymentRecord?.unpaidImage}
+                                disabled={!areUrlParamsReady || isLoadingRecord || isDownloading || !paymentRecord?.unpaidImage}
                                 onClick={() => {
                                     // eslint-disable-next-line
                                     void handleDownloadPdf();

@@ -277,7 +277,7 @@ function SectionIntro({ number, title, description, children }: { number: string
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='watchlist-serif text-[43px] leading-none tracking-[-0.04em]' style={{ color: ORANGE_LIGHT }}>
+                <span className='watchlist-serif page-section-number text-[43px] leading-none tracking-[-0.04em]' style={{ color: ORANGE_LIGHT }}>
                     {number}
                 </span>
 
@@ -289,7 +289,7 @@ function SectionIntro({ number, title, description, children }: { number: string
                 />
             </div>
 
-            <h2 className='watchlist-serif mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='watchlist-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[280px] text-[13px] leading-[1.55] text-[#d0d0ce] sm:text-[14px]'>{description}</p>
 
@@ -660,7 +660,7 @@ const WatchlistPage: NextPage = () => {
                                 Track what matters.
                             </p>
 
-                            <h1 className='watchlist-serif mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
+                            <h1 className='watchlist-serif page-hero-title mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
                                 <span style={{ color: ORANGE_BRIGHT }}>Watchlist.</span>
 
                                 <br />
@@ -673,7 +673,7 @@ const WatchlistPage: NextPage = () => {
                                 <br className='hidden sm:block' /> and never miss a market move.
                             </p>
 
-                            <div className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-7'>
+                            <div className='page-hero-features mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-7'>
                                 {heroFeatures.map(({ icon: Icon, title, body }) => (
                                     <div key={title}>
                                         <div className='flex h-[53px] w-[53px] items-center justify-center rounded-full border' style={{ borderColor: ORANGE }}>
@@ -694,7 +694,7 @@ const WatchlistPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[270px] items-center lg:min-h-[390px]'>
+                        <div className='page-hero-art relative flex min-h-[200px] items-center sm:min-h-[270px] lg:min-h-[390px]'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -751,7 +751,7 @@ const WatchlistPage: NextPage = () => {
                                     </button>
                                 </div>
 
-                                <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+                                <div className='page-mobile-grid mt-4 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
                                     <WatchlistCard
                                         icon={Star}
                                         title='Tech Leaders'
@@ -825,7 +825,7 @@ const WatchlistPage: NextPage = () => {
                                 description='Turn insights into confident trades and smarter decisions.'
                             />
 
-                            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3'>
+                            <div className='page-mobile-grid grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3'>
                                 {actionSteps.map(({ icon: Icon, number, title, body }) => (
                                     <div key={number} className='flex flex-col items-center text-center'>
                                         <div
@@ -899,25 +899,118 @@ const WatchlistPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .watchlist-page h1,
+                .watchlist-page h2,
+                .watchlist-page h3,
+                .watchlist-page h4,
+                .watchlist-page h5,
+                .watchlist-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .watchlist-page .watchlist-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .watchlist-page button,
                 .watchlist-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
-                html {
-                    scroll-behavior: smooth;
+                .watchlist-page *,
+                .watchlist-page *::before,
+                .watchlist-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
                 }
 
                 @media (max-width: 639px) {
                     .watchlist-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .watchlist-page .watchlist-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .watchlist-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .watchlist-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .watchlist-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .watchlist-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .watchlist-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .watchlist-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .watchlist-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .watchlist-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .watchlist-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .watchlist-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .watchlist-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .watchlist-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .watchlist-page p,
+                    .watchlist-page li,
+                    .watchlist-page td,
+                    .watchlist-page th,
+                    .watchlist-page dd,
+                    .watchlist-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

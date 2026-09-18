@@ -307,13 +307,13 @@ function SectionIntro({ number, title, description, bullets }: { number: string;
     return (
         <div className='min-w-0 py-1 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='calendar-serif text-[43px] leading-none tracking-[-0.03em]' style={{ color: ACCENT }}>
+                <span className='calendar-serif page-section-number text-[43px] leading-none tracking-[-0.03em]' style={{ color: ACCENT }}>
                     {number}
                 </span>
                 <span className='mt-1 h-px w-8 bg-[#ef4d8b]/85 sm:w-10' />
             </div>
 
-            <h2 className='calendar-serif mt-1 text-[28px] leading-[1.04] tracking-[-0.025em] text-[#f6f4f4] sm:text-[31px]'>{title}</h2>
+            <h2 className='calendar-serif page-section-title mt-1 text-[28px] leading-[1.04] tracking-[-0.025em] text-[#f6f4f4] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[250px] text-[13px] leading-[1.45] text-[#d3d3d6] sm:text-[14px]'>{description}</p>
 
@@ -759,7 +759,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                                 Know the date. Know the impact.
                             </p>
 
-                            <h1 className='calendar-serif mt-2 max-w-[530px] text-[47px] leading-[0.93] tracking-[-0.045em] text-[#f5f3f3] sm:text-[61px] lg:text-[64px]'>
+                            <h1 className='calendar-serif page-hero-title mt-2 max-w-[530px] text-[47px] leading-[0.93] tracking-[-0.045em] text-[#f5f3f3] sm:text-[61px] lg:text-[64px]'>
                                 Market Moving
                                 <br />
                                 <span style={{ color: ACCENT }}>Calendars</span>
@@ -772,7 +772,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                                 <br className='hidden sm:block' /> in one place.
                             </p>
 
-                            <div className='mt-7 grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-4 lg:mt-8'>
+                            <div className='page-hero-features mt-7 grid grid-cols-4 gap-x-3 gap-y-4 sm:grid-cols-4 lg:mt-8'>
                                 {heroFeatures.map(({ icon: Icon, title, body }) => (
                                     <div key={title} className='min-w-0'>
                                         <div
@@ -792,7 +792,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative -mb-3 lg:-mr-6 lg:-mt-2'>
+                        <div className='page-hero-art relative -mb-3 lg:-mr-6 lg:-mt-2'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -851,7 +851,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                             Better information. Better timing. Better results.
                         </p>
 
-                        <div className='grid grid-cols-1 gap-y-5 sm:grid-cols-2 lg:grid-cols-5 lg:gap-0'>
+                        <div className='page-mobile-grid grid grid-cols-2 gap-y-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-0'>
                             {bottomBenefits.map(({ icon: Icon, title, body }, index) => (
                                 <div
                                     key={title}
@@ -918,8 +918,21 @@ const MarketMovingCalendarsPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .market-calendars-page h1,
+                .market-calendars-page h2,
+                .market-calendars-page h3,
+                .market-calendars-page h4,
+                .market-calendars-page h5,
+                .market-calendars-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
+
                 .market-calendars-page .calendar-serif {
                     font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
                 }
 
                 .market-calendars-page button,
@@ -927,9 +940,95 @@ const MarketMovingCalendarsPage: NextPage = () => {
                     -webkit-tap-highlight-color: transparent;
                 }
 
+                .market-calendars-page *,
+                .market-calendars-page *::before,
+                .market-calendars-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
+                }
+
                 @media (max-width: 639px) {
                     .market-calendars-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
+
+                    .market-calendars-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .market-calendars-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .market-calendars-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .market-calendars-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .market-calendars-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .market-calendars-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .market-calendars-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .market-calendars-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .market-calendars-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .market-calendars-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .market-calendars-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .market-calendars-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .market-calendars-page p,
+                    .market-calendars-page li,
+                    .market-calendars-page td,
+                    .market-calendars-page th,
+                    .market-calendars-page dd,
+                    .market-calendars-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
                 }
             `}</style>

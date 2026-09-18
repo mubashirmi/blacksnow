@@ -278,7 +278,7 @@ function SectionIntro({ number, title, description, children }: { number: string
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='movers-serif text-[43px] leading-none tracking-[-0.04em]' style={{ color: ORANGE_LIGHT }}>
+                <span className='movers-serif page-section-number text-[43px] leading-none tracking-[-0.04em]' style={{ color: ORANGE_LIGHT }}>
                     {number}
                 </span>
 
@@ -290,7 +290,7 @@ function SectionIntro({ number, title, description, children }: { number: string
                 />
             </div>
 
-            <h2 className='movers-serif mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f2ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='movers-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f2ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[270px] text-[13px] leading-[1.55] text-[#d0d0ce] sm:text-[14px]'>{description}</p>
 
@@ -641,7 +641,7 @@ const MarketMoversPage: NextPage = () => {
                                 Track what moves the market.
                             </p>
 
-                            <h1 className='movers-serif mt-3 text-[52px] leading-[0.94] tracking-[-0.045em] sm:text-[67px] lg:text-[70px]'>
+                            <h1 className='movers-serif page-hero-title mt-3 text-[52px] leading-[0.94] tracking-[-0.045em] sm:text-[67px] lg:text-[70px]'>
                                 <span style={{ color: RED }}>Market Movers.</span>
                                 <br />
                                 <span className='text-[#f4f2ed]'>Stay informed.</span>
@@ -652,7 +652,7 @@ const MarketMoversPage: NextPage = () => {
                                 <br className='hidden sm:block' /> and act on what matters most.
                             </p>
 
-                            <div className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-7'>
+                            <div className='page-hero-features mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-7'>
                                 {heroFeatures.map(({ icon: Icon, title, body }) => (
                                     <div key={title}>
                                         <div className='flex h-[53px] w-[53px] items-center justify-center rounded-full border' style={{ borderColor: ORANGE }}>
@@ -667,7 +667,7 @@ const MarketMoversPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[270px] items-center lg:min-h-[380px]'>
+                        <div className='page-hero-art relative flex min-h-[200px] items-center sm:min-h-[270px] lg:min-h-[380px]'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -781,7 +781,7 @@ const MarketMoversPage: NextPage = () => {
                         <div className='grid gap-8 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                             <SectionIntro number='04' title='From Insight to Action' description='Turn market movement into smart decisions.' />
 
-                            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3'>
+                            <div className='page-mobile-grid grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3'>
                                 {actionSteps.map(({ icon: Icon, number, title, body }) => (
                                     <div key={number} className='flex flex-col items-center text-center'>
                                         <div className='flex h-[52px] w-[52px] items-center justify-center rounded-full border' style={{ borderColor: ORANGE }}>
@@ -841,21 +841,118 @@ const MarketMoversPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .market-movers-page h1,
+                .market-movers-page h2,
+                .market-movers-page h3,
+                .market-movers-page h4,
+                .market-movers-page h5,
+                .market-movers-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .market-movers-page .movers-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .market-movers-page button,
                 .market-movers-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
+                .market-movers-page *,
+                .market-movers-page *::before,
+                .market-movers-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
+                }
+
                 @media (max-width: 639px) {
                     .market-movers-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .market-movers-page .movers-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .market-movers-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .market-movers-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .market-movers-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .market-movers-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .market-movers-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .market-movers-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .market-movers-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .market-movers-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .market-movers-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .market-movers-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .market-movers-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .market-movers-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .market-movers-page p,
+                    .market-movers-page li,
+                    .market-movers-page td,
+                    .market-movers-page th,
+                    .market-movers-page dd,
+                    .market-movers-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

@@ -55,7 +55,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
                  * Keep the existing dashboard authentication condition.
                  * Redirect when no token, ID, or required role is available.
                  */
-                if (!token && !cookieId && !roles.includes('EmailMarketing')) {
+                if (!token && !cookieId && !roles.includes('InvoiceTool')) {
                     await router.push('/login');
                     return;
                 }

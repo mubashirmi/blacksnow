@@ -48,5 +48,5 @@ export default function ContractEditorPage() {
         return <div className='min-h-screen bg-slate-100 p-6 text-sm text-slate-500'>Checking access…</div>;
     }
 
-    return <ProfessionalContractEditor authId={userId} backHref='/invoicecontractdashboard' editorTitle='Professional Contract Studio' />;
+    return <ProfessionalContractEditor authId={userId} backHref='/invoicecontractdashboard/contract' editorTitle='Professional Contract Studio' />;
 }

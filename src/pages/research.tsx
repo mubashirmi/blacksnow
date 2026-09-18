@@ -240,11 +240,11 @@ function SectionIntro({ number, title, description, bullets }: { number: string;
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='research-serif text-[43px] leading-none tracking-[-0.03em] text-[#eceae8]'>{number}</span>
+                <span className='research-serif page-section-number text-[43px] leading-none tracking-[-0.03em] text-[#eceae8]'>{number}</span>
                 <span className='mt-1 h-px w-9 bg-[#d9d9d9]/70' />
             </div>
 
-            <h2 className='research-serif mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f4f0] sm:text-[31px]'>{title}</h2>
+            <h2 className='research-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f4f0] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[270px] text-[13px] leading-[1.5] text-[#c6c9cd] sm:text-[14px]'>{description}</p>
 
@@ -625,7 +625,7 @@ const ResearchPage: NextPage = () => {
                                 Deeper research. Better insights. Smarter decisions.
                             </p>
 
-                            <h1 className='mt-3 text-[60px] font-semibold leading-[0.92] tracking-[-0.055em] text-[#f7f6f4] sm:text-[75px] lg:text-[78px]'>
+                            <h1 className='page-hero-title mt-3 text-[60px] font-semibold leading-[0.92] tracking-[-0.055em] text-[#f7f6f4] sm:text-[75px] lg:text-[78px]'>
                                 Research
                             </h1>
 
@@ -636,7 +636,7 @@ const ResearchPage: NextPage = () => {
                                 <br className='hidden sm:block' /> to help you outperform the market.
                             </p>
 
-                            <div className='mt-7 grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-3 lg:grid-cols-5'>
+                            <div className='page-hero-features mt-7 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-3 lg:grid-cols-5'>
                                 {researchPillars.map(({ icon: Icon, title, body }) => (
                                     <div key={title} className='min-w-0'>
                                         <div className='flex h-[56px] w-[56px] items-center justify-center rounded-full border border-[#d7dce1]/80'>
@@ -651,7 +651,7 @@ const ResearchPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[280px] items-center lg:min-h-[360px]'>
+                        <div className='page-hero-art relative flex min-h-[210px] items-center sm:min-h-[280px] lg:min-h-[360px]'>
                             <WorldMapArtwork />
                         </div>
                     </div>
@@ -713,11 +713,11 @@ const ResearchPage: NextPage = () => {
 
                         <div>
                             <Panel>
-                                <div className='grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-5 lg:divide-x'>
+                                <div className='page-mobile-grid grid grid-cols-2 divide-y-0 sm:grid-cols-2 lg:grid-cols-5 lg:divide-x'>
                                     {researchTools.map(({ icon: Icon, title, body }) => (
                                         <div
                                             key={title}
-                                            className='flex min-h-[150px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
+                                            className='page-compact-card flex min-h-[150px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
                                         >
                                             <Icon className='h-10 w-10 text-[#f1f3f4]' strokeWidth={1.4} />
 
@@ -768,21 +768,118 @@ const ResearchPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .research-page h1,
+                .research-page h2,
+                .research-page h3,
+                .research-page h4,
+                .research-page h5,
+                .research-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .research-page .research-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .research-page button,
                 .research-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
+                .research-page *,
+                .research-page *::before,
+                .research-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
+                }
+
                 @media (max-width: 639px) {
                     .research-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .research-page .research-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .research-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .research-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .research-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .research-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .research-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .research-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .research-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .research-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .research-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .research-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .research-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .research-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .research-page p,
+                    .research-page li,
+                    .research-page td,
+                    .research-page th,
+                    .research-page dd,
+                    .research-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

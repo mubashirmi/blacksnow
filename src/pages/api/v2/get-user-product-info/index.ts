@@ -56,13 +56,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             where: {
                 AuthId: id,
                 cancelSubscripton: false,
+                paid: true,
                 product: {
                     not: null,
                 },
             },
             select: {
                 product: true,
-                pause: true,
             },
         });
 

@@ -217,13 +217,19 @@ export function SuperAffiliateSidebar({ stripeConnected = false, stripeUserId, .
         destroyCookie(null, 'admin_token');
         destroyCookie(null, 'firstName');
         destroyCookie(null, 'lastName');
+        destroyCookie(null, 'email');
         destroyCookie(null, 'adminId');
 
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
             localStorage.removeItem('id');
             localStorage.removeItem('adminId');
+            localStorage.removeItem('adminId');
+            localStorage.removeItem('firstName');
+            localStorage.removeItem('lastName');
+            localStorage.removeItem('email');
             localStorage.removeItem('roles');
+            localStorage.removeItem('pausedRoles');
             localStorage.removeItem('referredby');
             localStorage.removeItem('affiliateId');
             localStorage.removeItem('superAffiliateId');

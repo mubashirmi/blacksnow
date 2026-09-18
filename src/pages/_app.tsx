@@ -2,6 +2,7 @@
 import { CoreLayout } from '@/components';
 import AdminLayout from '@/components/AdminLayout';
 import AffiliateLayout from '@/components/AffiliateDashboardLayout';
+import AutoLogout from '@/components/AutoLogout';
 import EmailMarketingLayout from '@/components/EmailMarketingLayout';
 import PageChangeLoader from '@/components/PageChangeLoader';
 import SalesDashboardLayout from '@/components/SalesDashboardLayout';
@@ -84,6 +85,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
+            <AutoLogout />
             <Head>
                 <title>Black Snow</title>
                 <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width' />

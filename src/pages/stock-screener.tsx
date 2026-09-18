@@ -3,6 +3,7 @@ import {
     ArrowRight,
     BarChart3,
     Bell,
+    BetweenVerticalEndIcon,
     Bookmark,
     Check,
     ChevronDown,
@@ -12,6 +13,7 @@ import {
     FileText,
     Landmark,
     LineChart,
+    Menu,
     PieChart,
     RefreshCw,
     Scale,
@@ -221,7 +223,7 @@ function SectionIntro({ number, title, description, children }: { number: string
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='screener-serif text-[43px] leading-none tracking-[-0.04em]' style={{ color: GOLD }}>
+                <span className='screener-serif page-section-number text-[43px] leading-none tracking-[-0.04em]' style={{ color: GOLD }}>
                     {number}
                 </span>
 
@@ -233,7 +235,7 @@ function SectionIntro({ number, title, description, children }: { number: string
                 />
             </div>
 
-            <h2 className='screener-serif mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f5ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='screener-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f5ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[280px] text-[13px] leading-[1.55] text-[#d0d0cd] sm:text-[14px]'>{description}</p>
 
@@ -552,7 +554,7 @@ function AnalysisPanel() {
                 </div>
             </div>
 
-            <div className='grid grid-cols-1 divide-y divide-white/[0.08] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-[1.05fr_1fr_1fr_0.8fr] lg:divide-x'>
+            <div className='page-mobile-grid grid grid-cols-2 divide-y-0 sm:grid-cols-2 lg:grid-cols-[1.05fr_1fr_1fr_0.8fr] lg:divide-x'>
                 <div className='min-h-[185px] px-5 py-4'>
                     <p className='text-[10px] uppercase text-[#d1d2ce]'>Performance (1Y)</p>
 
@@ -632,6 +634,48 @@ const StockScreenerPage: NextPage = () => {
                         'radial-gradient(circle at 72% 7%, rgba(244,194,37,0.035), transparent 25%), linear-gradient(180deg, #040607 0%, #050708 52%, #040607 100%)',
                 }}
             >
+                {/* NAV */}
+                <header className='border-b border-white/[0.04]'>
+                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
+                        <Link href='/' className='flex items-center gap-4'>
+                            <BetweenVerticalEndIcon />
+
+                            <span className='text-[16px] font-medium uppercase tracking-[0.025em] text-[#f2f2ed] sm:text-[19px]'>Stock Screener</span>
+                        </Link>
+
+                        <nav className='hidden items-center gap-9 lg:flex'>
+                            {['Overview', 'Features', 'Screens', 'Pricing', 'Docs'].map((item) => (
+                                <Link
+                                    key={item}
+                                    href='#'
+                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#eeeeea] transition-colors hover:text-[#f4c225]'
+                                >
+                                    {item}
+                                </Link>
+                            ))}
+
+                            <Link
+                                href='#'
+                                className='rounded-[5px] border px-5 py-3 text-[10px] font-medium uppercase tracking-[0.03em]'
+                                style={{
+                                    color: GOLD_LIGHT,
+                                    borderColor: GOLD,
+                                }}
+                            >
+                                Get Started
+                            </Link>
+                        </nav>
+
+                        <button
+                            type='button'
+                            aria-label='Open menu'
+                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#f4c225]/25 lg:hidden'
+                        >
+                            <Menu className='h-5 w-5' style={{ color: GOLD }} />
+                        </button>
+                    </div>
+                </header>
+
                 {/* HERO */}
                 <section className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-7 px-5 pb-7 pt-5 sm:px-8 sm:pb-10 sm:pt-8 lg:grid-cols-[0.43fr_0.57fr] lg:gap-3 lg:px-9'>
@@ -640,7 +684,7 @@ const StockScreenerPage: NextPage = () => {
                                 Screen. Analyze. Invest.
                             </p>
 
-                            <h1 className='screener-serif mt-3 text-[55px] leading-[0.88] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
+                            <h1 className='screener-serif page-hero-title mt-3 text-[55px] leading-[0.88] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
                                 <span style={{ color: GOLD }}>Stock</span>
                                 <br />
                                 <span className='text-[#f4f3ed]'>Screener</span>
@@ -652,7 +696,7 @@ const StockScreenerPage: NextPage = () => {
                                 Powerful filters. Real-time data. Smarter decisions.
                             </p>
 
-                            <div className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-7'>
+                            <div className='page-hero-features mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-7'>
                                 {heroFeatures.map(({ icon: Icon, title, body }) => (
                                     <div key={title}>
                                         <div className='flex h-[52px] w-[52px] items-center justify-center rounded-full border' style={{ borderColor: GOLD }}>
@@ -667,7 +711,7 @@ const StockScreenerPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[270px] items-center lg:min-h-[390px]'>
+                        <div className='page-hero-art relative flex min-h-[200px] items-center sm:min-h-[270px] lg:min-h-[390px]'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -743,7 +787,7 @@ const StockScreenerPage: NextPage = () => {
                                 description='Stay ahead with alerts, watchlists, and market-moving insights.'
                             />
 
-                            <div className='grid grid-cols-1 divide-y divide-white/[0.09] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x'>
+                            <div className='page-mobile-grid grid grid-cols-2 divide-y-0 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x'>
                                 {opportunities.map(({ icon: Icon, title, body }) => (
                                     <div key={title} className='flex min-h-[135px] flex-col items-center px-5 py-4 text-center'>
                                         <div className='flex h-[50px] w-[50px] items-center justify-center rounded-full border' style={{ borderColor: GOLD }}>
@@ -799,21 +843,118 @@ const StockScreenerPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .stock-screener-page h1,
+                .stock-screener-page h2,
+                .stock-screener-page h3,
+                .stock-screener-page h4,
+                .stock-screener-page h5,
+                .stock-screener-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .stock-screener-page .screener-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .stock-screener-page button,
                 .stock-screener-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
+                .stock-screener-page *,
+                .stock-screener-page *::before,
+                .stock-screener-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
+                }
+
                 @media (max-width: 639px) {
                     .stock-screener-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .stock-screener-page .screener-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .stock-screener-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .stock-screener-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .stock-screener-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .stock-screener-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .stock-screener-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .stock-screener-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .stock-screener-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .stock-screener-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .stock-screener-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .stock-screener-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .stock-screener-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .stock-screener-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .stock-screener-page p,
+                    .stock-screener-page li,
+                    .stock-screener-page td,
+                    .stock-screener-page th,
+                    .stock-screener-page dd,
+                    .stock-screener-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

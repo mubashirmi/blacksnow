@@ -12,26 +12,19 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             // Run all queries in parallel
             const [latestUsers, userCounts, latestSentEmail, latestCampains, latestSchedules, totalEmailSent, sentEmailNumbers, emailMarketingUsers] =
                 await Promise.all([
-                    //latestUsers
                     prisma.emailUser.findMany({
                         where: { authId: Id },
                         take: 5,
                         orderBy: { createdAt: 'desc' },
                     }),
-
-                    //userCounts
                     prisma.emailUser.count({
                         where: { authId: Id },
                     }),
-
-                    //latestSentEmail
                     prisma.emailJobResult.findMany({
                         where: { authId: Id, status: 'sent' },
                         take: 5,
                         orderBy: { createdAt: 'desc' },
                     }),
-
-                    //latestCampains
                     prisma.emailJobResult.findMany({
                         where: {
                             authId: Id,
@@ -39,8 +32,6 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                             status: 'pending',
                         },
                     }),
-
-                    //latestSchedules
                     prisma.emailJobResult.findMany({
                         where: {
                             authId: Id,

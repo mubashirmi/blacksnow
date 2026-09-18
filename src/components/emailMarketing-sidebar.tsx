@@ -212,13 +212,18 @@ export function EmailMarketingSidebar(props: React.HTMLAttributes<HTMLElement>) 
         destroyCookie(null, 'admin_token');
         destroyCookie(null, 'firstName');
         destroyCookie(null, 'lastName');
+        destroyCookie(null, 'email');
         destroyCookie(null, 'adminId');
 
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
+            localStorage.removeItem('firstName');
+            localStorage.removeItem('lastName');
+            localStorage.removeItem('email');
             localStorage.removeItem('id');
             localStorage.removeItem('adminId');
             localStorage.removeItem('roles');
+            localStorage.removeItem('pausedRoles');
             localStorage.removeItem('referredby');
         }
     }, []);

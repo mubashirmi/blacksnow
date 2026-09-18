@@ -502,7 +502,7 @@ const PaperTradingPage: NextPage = () => {
                                 Practice. Learn. Trade confidently.
                             </p>
 
-                            <h1 className='paper-serif mt-3 text-[51px] leading-[0.95] tracking-[-0.045em] sm:text-[64px] lg:text-[67px]'>
+                            <h1 className='paper-serif page-hero-title mt-3 text-[51px] leading-[0.95] tracking-[-0.045em] sm:text-[64px] lg:text-[67px]'>
                                 <span style={{ color: GREEN }}>Paper</span> <span className='text-[#f5f3ed]'>Trading</span>
                             </h1>
 
@@ -513,7 +513,7 @@ const PaperTradingPage: NextPage = () => {
                                 <br className='hidden sm:block' /> confidence—risk free.
                             </p>
 
-                            <div className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-0'>
+                            <div className='page-hero-features mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-0'>
                                 {heroFeatures.map(({ icon: Icon, title, description }, index) => (
                                     <div
                                         key={title}
@@ -533,7 +533,7 @@ const PaperTradingPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[260px] items-center lg:min-h-[350px]'>
+                        <div className='page-hero-art relative flex min-h-[200px] items-center sm:min-h-[260px] lg:min-h-[350px]'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -598,11 +598,11 @@ const PaperTradingPage: NextPage = () => {
                             description='Develop discipline and confidence to make smarter decisions when real money is on the line.'
                         />
 
-                        <div className='grid grid-cols-1 divide-y divide-white/[0.10] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x'>
+                        <div className='page-mobile-grid grid grid-cols-2 divide-y-0 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x'>
                             {confidenceBenefits.map(({ icon: Icon, title, description }) => (
                                 <div
                                     key={title}
-                                    className='flex min-h-[180px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
+                                    className='page-compact-card flex min-h-[180px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
                                 >
                                     <Icon className='h-12 w-12' strokeWidth={1.25} style={{ color: GREEN_BRIGHT }} />
 
@@ -627,7 +627,7 @@ const PaperTradingPage: NextPage = () => {
                         <div className='relative'>
                             <div className='absolute left-[12%] right-[12%] top-[42px] hidden border-t border-dashed lg:block' style={{ borderColor: GOLD }} />
 
-                            <div className='relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4'>
+                            <div className='page-mobile-grid relative grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4'>
                                 {startSteps.map(({ icon: Icon, number, title, description }) => (
                                     <div key={number} className='relative flex flex-col items-center text-center'>
                                         <div
@@ -697,21 +697,118 @@ const PaperTradingPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .paper-trading-page h1,
+                .paper-trading-page h2,
+                .paper-trading-page h3,
+                .paper-trading-page h4,
+                .paper-trading-page h5,
+                .paper-trading-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .paper-trading-page .paper-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .paper-trading-page button,
                 .paper-trading-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
+                .paper-trading-page *,
+                .paper-trading-page *::before,
+                .paper-trading-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
+                }
+
                 @media (max-width: 639px) {
                     .paper-trading-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .paper-trading-page .paper-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .paper-trading-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .paper-trading-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .paper-trading-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .paper-trading-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .paper-trading-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .paper-trading-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .paper-trading-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .paper-trading-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .paper-trading-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .paper-trading-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .paper-trading-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .paper-trading-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .paper-trading-page p,
+                    .paper-trading-page li,
+                    .paper-trading-page td,
+                    .paper-trading-page th,
+                    .paper-trading-page dd,
+                    .paper-trading-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

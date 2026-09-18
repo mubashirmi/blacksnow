@@ -222,17 +222,23 @@ export function DigitalBillboardSidebar({
 
     const clearSession = useCallback(() => {
         destroyCookie(null, 'id');
+        destroyCookie(null, 'userId');
         destroyCookie(null, 'token');
         destroyCookie(null, 'admin_token');
         destroyCookie(null, 'firstName');
         destroyCookie(null, 'lastName');
+        destroyCookie(null, 'email');
         destroyCookie(null, 'adminId');
 
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
             localStorage.removeItem('id');
             localStorage.removeItem('adminId');
+            localStorage.removeItem('firstName');
+            localStorage.removeItem('lastName');
+            localStorage.removeItem('email');
             localStorage.removeItem('roles');
+            localStorage.removeItem('pausedRoles');
             localStorage.removeItem('referredby');
         }
     }, []);

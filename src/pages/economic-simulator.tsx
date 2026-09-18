@@ -181,7 +181,7 @@ function SectionIntro({ number, title, description, children }: { number: string
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='simulator-serif text-[43px] leading-none tracking-[-0.04em]' style={{ color: PURPLE_SOFT }}>
+                <span className='simulator-serif page-section-number text-[43px] leading-none tracking-[-0.04em]' style={{ color: PURPLE_SOFT }}>
                     {number}
                 </span>
 
@@ -193,7 +193,7 @@ function SectionIntro({ number, title, description, children }: { number: string
                 />
             </div>
 
-            <h2 className='simulator-serif mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ee] sm:text-[31px]'>{title}</h2>
+            <h2 className='simulator-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ee] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[285px] text-[13px] leading-[1.55] text-[#d0d0d2] sm:text-[14px]'>{description}</p>
 
@@ -257,7 +257,7 @@ function HeroArtwork() {
 
 function ModelBox({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
     return (
-        <div className='flex min-h-[55px] items-center gap-3 rounded-[6px] border border-white/[0.12] bg-[#0c0b10] px-4'>
+        <div className='flex min-h-[48px] items-center gap-2 rounded-[6px] border border-white/[0.12] bg-[#0c0b10] px-2 lg:min-h-[55px] lg:gap-3 lg:px-4'>
             <Icon className='h-6 w-6 shrink-0' strokeWidth={1.35} style={{ color: PURPLE_SOFT }} />
 
             <span className='text-[12px] text-[#e7e5e8]'>{label}</span>
@@ -286,7 +286,7 @@ function ModelStructure() {
                 </p>
 
                 <div className='mt-4 grid gap-4 lg:grid-cols-[1fr_58px_1fr_58px_1fr]'>
-                    <div className='space-y-3'>
+                    <div className='grid grid-cols-3 gap-2 lg:block lg:space-y-3'>
                         {modelLeft.map((item) => (
                             <ModelBox key={item.label} icon={item.icon} label={item.label} />
                         ))}
@@ -320,7 +320,7 @@ function ModelStructure() {
                         <Connector />
                     </div>
 
-                    <div className='space-y-3'>
+                    <div className='grid grid-cols-3 gap-2 lg:block lg:space-y-3'>
                         {modelRight.map((item) => (
                             <ModelBox key={item.label} icon={item.icon} label={item.label} />
                         ))}
@@ -665,7 +665,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                 Model. Simulate. Understand.
                             </p>
 
-                            <h1 className='simulator-serif mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[72px] lg:text-[75px]'>
+                            <h1 className='simulator-serif page-hero-title mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[72px] lg:text-[75px]'>
                                 <span className='text-[#f3f0ed]'>Economic</span>
                                 <br />
                                 <span style={{ color: PURPLE_BRIGHT }}>Simulator</span>
@@ -677,7 +677,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                 See the impact before it happens.
                             </p>
 
-                            <div className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-7'>
+                            <div className='page-hero-features mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-7'>
                                 {[
                                     {
                                         icon: LineChart,
@@ -708,7 +708,7 @@ const EconomicSimulatorPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <div className='relative flex min-h-[280px] items-center lg:min-h-[385px]'>
+                        <div className='page-hero-art relative flex min-h-[200px] items-center sm:min-h-[280px] lg:min-h-[385px]'>
                             <HeroArtwork />
                         </div>
                     </div>
@@ -811,7 +811,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                 description='Use insights from simulations to design smarter policies and strategies.'
                             />
 
-                            <div className='grid grid-cols-1 divide-y divide-white/[0.09] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x'>
+                            <div className='page-mobile-grid grid grid-cols-2 divide-y-0 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x'>
                                 {decisionTools.map(({ icon: Icon, title, body }) => (
                                     <div key={title} className='flex min-h-[150px] flex-col items-center px-5 py-4 text-center'>
                                         <div className='flex h-[54px] w-[54px] items-center justify-center rounded-full border' style={{ borderColor: PURPLE }}>
@@ -874,25 +874,118 @@ const EconomicSimulatorPage: NextPage = () => {
                     text-rendering: geometricPrecision;
                 }
 
+                .economic-simulator-page h1,
+                .economic-simulator-page h2,
+                .economic-simulator-page h3,
+                .economic-simulator-page h4,
+                .economic-simulator-page h5,
+                .economic-simulator-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                    overflow-wrap: normal;
+                    word-break: normal;
+                }
 
+                .economic-simulator-page .simulator-serif {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
+                }
 
                 .economic-simulator-page button,
                 .economic-simulator-page a {
                     -webkit-tap-highlight-color: transparent;
                 }
 
-                html {
-                    scroll-behavior: smooth;
+                .economic-simulator-page *,
+                .economic-simulator-page *::before,
+                .economic-simulator-page *::after {
+                    box-sizing: border-box;
+                    min-width: 0;
                 }
 
                 @media (max-width: 639px) {
                     .economic-simulator-page {
-                        overflow-wrap: anywhere;
+                        overflow-wrap: normal;
+                        word-break: normal;
                     }
 
-                .economic-simulator-page .simulator-serif {
-                    font-family: var(--font-michroma), sans-serif !important;
-                }}
+                    .economic-simulator-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.13 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .economic-simulator-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
+
+                    .economic-simulator-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.01em !important;
+                    }
+
+                    .economic-simulator-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
+
+                    .economic-simulator-page .page-hero-features > * {
+                        min-width: 0;
+                    }
+
+                    .economic-simulator-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
+
+                    .economic-simulator-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .economic-simulator-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .economic-simulator-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .economic-simulator-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .economic-simulator-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .economic-simulator-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .economic-simulator-page p,
+                    .economic-simulator-page li,
+                    .economic-simulator-page td,
+                    .economic-simulator-page th,
+                    .economic-simulator-page dd,
+                    .economic-simulator-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
             `}</style>
         </>

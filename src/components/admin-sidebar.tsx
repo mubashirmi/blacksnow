@@ -55,6 +55,12 @@ export function AdminSidebar() {
                 localStorage.removeItem('userId');
                 localStorage.removeItem('adminId');
                 localStorage.removeItem('roles');
+                localStorage.removeItem('pausedRoles');
+                localStorage.removeItem('id');
+                localStorage.removeItem('adminId');
+                localStorage.removeItem('firstName');
+                localStorage.removeItem('lastName');
+                localStorage.removeItem('email');
                 localStorage.removeItem('referredby');
             }
         } catch (e) {
