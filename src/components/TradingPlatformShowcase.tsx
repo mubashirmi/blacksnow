@@ -1,19 +1,14 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import {
     ArrowRight,
     BarChart3,
     Check,
-    ChevronLeft,
-    ChevronRight,
     CircleDollarSign,
     Clock3,
-    FilePen,
     Filter,
     Globe2,
     Landmark,
     LineChart,
-    LockKeyhole,
-    MessageSquare,
-    Monitor,
     Newspaper,
     Rocket,
     Search,
@@ -27,7 +22,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
 
 const CYAN = '#4cc7e8';
 // const BLUE = '#2c7bbe';
@@ -94,70 +88,6 @@ const workflow: Array<{ icon: LucideIcon; title: string; body: string }> = [
     { icon: Rocket, title: 'Paper Trading', body: 'Test your strategies risk-free' },
     { icon: LineChart, title: 'Economic Simulator', body: 'Model scenarios and plan ahead' },
     { icon: Target, title: 'Better Decisions', body: 'Execute with confidence and discipline' },
-];
-
-const products = [
-    {
-        id: 'newsletter',
-        name: 'Newsletter',
-        icon: Newspaper,
-        monthly: 10,
-        yearly: 50,
-        description: 'Weekly premium market insights',
-        href: '/',
-        features: [
-            'Weekly Stock Picks',
-            'Macro Market Updates',
-            'Latest Blog Articles',
-            'Exclusive Financial Insights',
-            'Portfolio Strategy Notes',
-            'Market Data Briefings',
-        ],
-    },
-    {
-        id: 'invoice',
-        name: 'Invoice & Contract',
-        icon: FilePen,
-        monthly: 25,
-        yearly: 250,
-        description: 'All-in-one contracts, signatures, and invoices—made simple',
-        href: '/InvoiceContract',
-        features: ['Instant Invoice Builder', 'Email Delivery', 'Invoice Dashboard', 'Create Invoice Contracts', 'Add Multiple Users', 'Recurring Invoices'],
-    },
-    {
-        id: 'billboard',
-        name: 'Digital Billboard',
-        icon: Monitor,
-        monthly: 150,
-        yearly: 600,
-        description: 'Premium advertising placement across our platform',
-        href: '/advertising',
-        features: [
-            'Billboard Creator',
-            'Email & SMS Share Buttons',
-            'Lead Capture Form',
-            'Create Invoice Contracts',
-            'Add Multiple Users',
-            'Create Up to 4 Billboards',
-        ],
-    },
-    {
-        id: 'crm',
-        name: 'Email CRM',
-        icon: MessageSquare,
-        monthly: 500,
-        yearly: 4000,
-        description: 'Comprehensive communication platform for your business',
-        href: '/emailMarketing',
-        features: [
-            'Email Campaigns & Automated Sequences',
-            'SMS Campaigns & Sequences',
-            'SMS Chatbot',
-            'Email KPIs Dashboard',
-            'Email Scheduling',
-            'List Upload Tools',
-        ],
-    },
 ];
 
 function MiniLine({ id = 'line' }: { id?: string }) {
@@ -246,142 +176,76 @@ function DashboardTile({ title, value, change, type, id }: { title: string; valu
     );
 }
 
-function PricingSlider() {
-    const [active, setActive] = useState(0);
-    const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
-    const product = products[active];
-    const Icon = product.icon;
-    const saving = useMemo(() => Math.round(((product.monthly * 12 - product.yearly) / (product.monthly * 12)) * 100), [product]);
-
-    const previous = () => setActive((i) => (i - 1 + products.length) % products.length);
-    const next = () => setActive((i) => (i + 1) % products.length);
+function SimplePricingStrip() {
+    const benefits = ['All 6 tools included', 'Real-time data & updates', 'Advanced analytics', 'Cancel anytime'];
 
     return (
-        <div className='relative overflow-hidden rounded-2xl border border-[#2c7bbe]/25 bg-[#07111b]/86 shadow-[0_22px_60px_rgba(0,0,0,.35)]'>
-            <div className='flex flex-col gap-4 border-b border-[#2c7bbe]/15 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7'>
-                <div>
-                    <p className='text-[11px] font-bold uppercase tracking-[.16em] text-[#4cc7e8]'>Product Pricing</p>
-                    <p className='mt-1 text-sm text-white/55'>Swipe or use the arrows to compare products.</p>
-                </div>
-                <div className='inline-flex w-fit rounded-full border border-[#2c7bbe]/30 bg-[#050608] p-1'>
-                    {(['monthly', 'yearly'] as const).map((item) => (
-                        <button
-                            key={item}
-                            type='button'
-                            onClick={() => setBilling(item)}
-                            className={`rounded-full px-4 py-2 text-xs font-bold capitalize transition ${
-                                billing === item ? 'bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white' : 'text-white/45'
-                            }`}
-                        >
-                            {item}
-                        </button>
-                    ))}
-                </div>
-            </div>
+        <div className='overflow-hidden rounded-xl border border-[#2c7bbe]/25 bg-[#07111b]/78 shadow-[0_18px_55px_rgba(0,0,0,.32)]'>
+            <div className='grid md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1.05fr]'>
+                <div className='border-b border-[#2c7bbe]/18 p-5 sm:p-6 md:border-r xl:border-b-0'>
+                    <h2 className='showcase-section-title text-[clamp(1.1rem,4vw,1.6rem)] text-white'>Simple Pricing. Maximum Value.</h2>
 
-            <div className='grid gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[1.45fr_.55fr] lg:px-9 lg:pb-9'>
-                <div className='grid grid-cols-[56px_1fr] gap-4 sm:grid-cols-[84px_1fr] sm:gap-5'>
-                    <div className='flex h-14 w-14 items-center justify-center rounded-xl border border-[#4cc7e8]/30 bg-[#4cc7e8]/[.035] sm:h-20 sm:w-20 sm:rounded-2xl'>
-                        <Icon className='h-6 w-6 text-[#4cc7e8] sm:h-9 sm:w-9' strokeWidth={1.6} />
-                    </div>
-                    <div>
-                        <div className='flex flex-wrap items-center gap-3'>
-                            <h3 className='showcase-subheading text-xl font-black text-white sm:text-2xl'>{product.name}</h3>
-                            {billing === 'yearly' && saving > 0 && (
-                                <span className='rounded-full border border-[#4cc7e8]/25 bg-[#4cc7e8]/[.06] px-3 py-1 text-[10px] font-bold text-[#4cc7e8]'>
-                                    SAVE {saving}%
-                                </span>
-                            )}
-                        </div>
-                        <p className='mt-2 text-sm leading-6 text-white/58'>{product.description}</p>
-                        <div className='mt-5 grid gap-2 sm:grid-cols-2'>
-                            {product.features.map((feature) => (
-                                <div key={feature} className='flex items-start gap-2 rounded-lg border border-[#2c7bbe]/12 bg-white/[.018] px-3 py-2'>
-                                    <Check className='mt-0.5 h-4 w-4 shrink-0 text-[#4cc7e8]' />
-                                    <span className='text-xs leading-5 text-white/72'>{feature}</span>
-                                </div>
-                            ))}
-                        </div>
+                    <div className='mt-5 space-y-3'>
+                        {benefits.map((item) => (
+                            <div key={item} className='flex items-center gap-3 text-sm text-white/72'>
+                                <Check className='h-5 w-5 shrink-0 text-[#4cc7e8]' strokeWidth={1.8} />
+                                <span>{item}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                <div className='flex flex-col justify-center border-t border-[#2c7bbe]/15 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0'>
-                    <p className='text-[10px] uppercase tracking-[.14em] text-white/40'>{billing === 'monthly' ? 'Monthly plan' : 'Annual plan'}</p>
-                    <div className='mt-3 flex items-end gap-2'>
-                        <span className='text-4xl font-black text-white sm:text-5xl'>${billing === 'monthly' ? product.monthly : product.yearly}</span>
-                        <span className='pb-1 text-sm text-white/45'>/{billing === 'monthly' ? 'month' : 'year'}</span>
+                <div className='flex flex-col items-center justify-center border-b border-[#2c7bbe]/18 p-5 text-center sm:p-6 md:border-r xl:border-b-0'>
+                    <p className='text-[11px] font-bold uppercase tracking-[.08em] text-white/78'>Monthly Plan</p>
+
+                    <div className='mt-3 flex items-end justify-center gap-2'>
+                        <span className='text-[clamp(2.25rem,8vw,3.05rem)] font-semibold leading-none text-white'>$49</span>
+                        <span className='pb-1 text-sm text-white/72'>/month</span>
                     </div>
-                    <Link
-                        href={product.href}
-                        className='mt-6 flex h-12 items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-sm font-black text-white transition hover:scale-[1.015]'
+
+                    <ComingSoonTrigger
+                        ariaLabel='Start monthly free trial'
+                        className='mt-6 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-5 text-xs font-bold uppercase tracking-[.025em] text-[#031018] shadow-[0_0_24px_rgba(76,199,232,.12)] transition hover:brightness-110'
                     >
-                        Get Started <ArrowRight className='h-4 w-4' />
-                    </Link>
-                    <div className='mt-4 flex items-center gap-2 text-[11px] text-white/42'>
-                        <LockKeyhole className='h-4 w-4 text-[#4cc7e8]' />
-                        Secure payments. Cancel anytime.
+                        Start Free Trial
+                    </ComingSoonTrigger>
+                </div>
+
+                <div className='flex flex-col items-center justify-center border-b border-[#2c7bbe]/18 p-5 text-center sm:p-6 md:border-b-0 md:border-r xl:border-b-0'>
+                    <p className='text-[11px] font-bold uppercase tracking-[.08em] text-white/78'>Annual Plan</p>
+
+                    <div className='mt-3 flex items-end justify-center gap-2'>
+                        <span className='text-[clamp(2.25rem,8vw,3.05rem)] font-semibold leading-none text-white'>$499</span>
+                        <span className='pb-1 text-sm text-white/72'>/year</span>
                     </div>
-                </div>
-            </div>
 
-            <div className='flex items-center justify-between border-t border-[#2c7bbe]/15 px-5 py-4 sm:px-7 lg:hidden'>
-                <button
-                    type='button'
-                    onClick={previous}
-                    aria-label='Previous product'
-                    className='flex h-10 w-10 items-center justify-center rounded-full border border-[#4cc7e8]/25 bg-[#050608]/90 text-[#4cc7e8]'
-                >
-                    <ChevronLeft className='h-5 w-5' />
-                </button>
-                <div className='flex items-center gap-2'>
-                    {products.map((p, i) => (
-                        <button
-                            key={p.id}
-                            type='button'
-                            onClick={() => setActive(i)}
-                            aria-label={`Show ${p.name}`}
-                            className={`h-2 rounded-full transition-all ${i === active ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/40'}`}
-                        />
-                    ))}
-                </div>
-                <button
-                    type='button'
-                    onClick={next}
-                    aria-label='Next product'
-                    className='flex h-10 w-10 items-center justify-center rounded-full border border-[#4cc7e8]/25 bg-[#050608]/90 text-[#4cc7e8]'
-                >
-                    <ChevronRight className='h-5 w-5' />
-                </button>
-            </div>
+                    <p className='mt-2 text-[10px] text-white/55'>Save 15% with annual billing</p>
 
-            <div className='absolute bottom-5 right-6 hidden items-center gap-3 lg:flex'>
-                <button
-                    type='button'
-                    onClick={previous}
-                    aria-label='Previous product'
-                    className='flex h-9 w-9 items-center justify-center rounded-full border border-[#4cc7e8]/25 text-[#4cc7e8]'
-                >
-                    <ChevronLeft className='h-4 w-4' />
-                </button>
-                <div className='flex gap-2'>
-                    {products.map((p, i) => (
-                        <button
-                            key={p.id}
-                            type='button'
-                            onClick={() => setActive(i)}
-                            aria-label={`Show ${p.name}`}
-                            className={`h-2 rounded-full ${i === active ? 'w-7 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/40'}`}
-                        />
-                    ))}
+                    <ComingSoonTrigger
+                        ariaLabel='Start annual free trial'
+                        className='mt-5 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-5 text-xs font-bold uppercase tracking-[.025em] text-[#031018] shadow-[0_0_24px_rgba(76,199,232,.12)] transition hover:brightness-110'
+                    >
+                        Start Free Trial
+                    </ComingSoonTrigger>
                 </div>
-                <button
-                    type='button'
-                    onClick={next}
-                    aria-label='Next product'
-                    className='flex h-9 w-9 items-center justify-center rounded-full border border-[#4cc7e8]/25 text-[#4cc7e8]'
-                >
-                    <ChevronRight className='h-4 w-4' />
-                </button>
+
+                <div className='flex flex-col items-center justify-center p-5 text-center sm:p-6'>
+                    <Image
+                        src='/logocolored.png'
+                        alt='Black Snow'
+                        width={90}
+                        height={90}
+                        className='h-[72px] w-[72px] object-contain sm:h-[84px] sm:w-[84px]'
+                    />
+
+                    <p className='mt-3 text-[10px] font-bold uppercase leading-5 tracking-[.08em] text-[#4cc7e8] sm:text-[11px]'>
+                        Built for traders.
+                        <br />
+                        Backed by technology.
+                        <br />
+                        Driven by results.
+                    </p>
+                </div>
             </div>
         </div>
     );
@@ -408,18 +272,21 @@ export default function TradingPlatformShowcase() {
                             Black Snow gives you everything you need to analyze markets, test strategies, and stay ahead — all in one powerful dashboard.
                         </p>
                         <div className='mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row'>
-                            <Link
-                                href='/signup'
+                            <ComingSoonTrigger
+                                ariaLabel='Start 30-day free trial'
                                 className='flex min-h-12 items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-6 text-sm font-black text-white shadow-[0_0_30px_rgba(76,199,232,.16)]'
                             >
-                                Start 30-Day Free Trial <ArrowRight className='h-4 w-4' />
-                            </Link>
-                            <a
-                                href='#black-snow-tools'
+                                Start 30-Day Free Trial
+                                <ArrowRight className='h-4 w-4' />
+                            </ComingSoonTrigger>
+
+                            <ComingSoonTrigger
+                                ariaLabel='View live demo'
                                 className='flex min-h-12 items-center justify-center gap-3 rounded-lg border border-[#4cc7e8]/35 bg-[#050608]/60 px-6 text-sm font-bold text-white'
                             >
-                                View Live Demo <Target className='h-4 w-4 text-[#4cc7e8]' />
-                            </a>
+                                View Live Demo
+                                <Target className='h-4 w-4 text-[#4cc7e8]' />
+                            </ComingSoonTrigger>
                         </div>
                         <div className='mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3'>
                             {[
@@ -590,24 +457,7 @@ export default function TradingPlatformShowcase() {
                 </div>
 
                 <div className='mt-8'>
-                    <div className='mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
-                        <div>
-                            <h2 className='showcase-section-title text-[clamp(1.45rem,5vw,2.1rem)] font-black text-white'>
-                                Simple Pricing.{' '}
-                                <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Maximum Value.</span>
-                            </h2>
-                            <p className='mt-2 text-sm text-white/45'>Explore the products already available across Black Snow.</p>
-                        </div>
-                        <div className='grid gap-2 sm:grid-cols-2 lg:grid-cols-4'>
-                            {['Flexible plans', 'Real-time updates', 'Secure access', 'Cancel anytime'].map((item) => (
-                                <div key={item} className='flex items-center gap-2 text-xs text-white/65'>
-                                    <Check className='h-4 w-4 text-[#4cc7e8]' />
-                                    {item}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <PricingSlider />
+                    <SimplePricingStrip />
                 </div>
 
                 <div className='mt-7 flex flex-col gap-5 rounded-xl border border-[#2c7bbe]/25 bg-[#07101a]/72 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7'>
@@ -618,12 +468,13 @@ export default function TradingPlatformShowcase() {
                             <p className='mt-1 text-xs leading-5 text-white/45 sm:text-sm'>Join traders using Black Snow to gain an edge every day.</p>
                         </div>
                     </div>
-                    <Link
-                        href='/signup'
+                    <ComingSoonTrigger
+                        ariaLabel='Start your 30-day free trial'
                         className='flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-7 text-sm font-black text-white sm:w-auto'
                     >
-                        Start Your 30-Day Free Trial <ArrowRight className='h-4 w-4' />
-                    </Link>
+                        Start Your 30-Day Free Trial
+                        <ArrowRight className='h-4 w-4' />
+                    </ComingSoonTrigger>
                 </div>
             </div>
 

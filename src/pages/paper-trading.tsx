@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
@@ -17,7 +18,6 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 type StrategyRow = {
@@ -673,8 +673,7 @@ const PaperTradingPage: NextPage = () => {
                                 </div>
                             </div>
 
-                            <Link
-                                href='#'
+                            <ComingSoonTrigger
                                 className='group flex min-h-[48px] w-full items-center justify-center gap-7 rounded-[5px] border px-8 text-[13px] font-medium uppercase tracking-[0.025em] transition-all hover:bg-[#e2ad3c]/[0.05] sm:w-[300px]'
                                 style={{
                                     color: GOLD_LIGHT,
@@ -683,7 +682,7 @@ const PaperTradingPage: NextPage = () => {
                             >
                                 Get Started
                                 <ArrowRight className='h-5 w-5 transition-transform duration-200 group-hover:translate-x-1' />
-                            </Link>
+                            </ComingSoonTrigger>
                         </div>
                     </section>
                 </div>

@@ -1,9 +1,9 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
     BarChart3,
     Bell,
-    BetweenVerticalEndIcon,
     Bookmark,
     Check,
     ChevronDown,
@@ -13,7 +13,6 @@ import {
     FileText,
     Landmark,
     LineChart,
-    Menu,
     PieChart,
     RefreshCw,
     Scale,
@@ -26,7 +25,6 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 type ResultRow = {
@@ -634,48 +632,6 @@ const StockScreenerPage: NextPage = () => {
                         'radial-gradient(circle at 72% 7%, rgba(244,194,37,0.035), transparent 25%), linear-gradient(180deg, #040607 0%, #050708 52%, #040607 100%)',
                 }}
             >
-                {/* NAV */}
-                <header className='border-b border-white/[0.04]'>
-                    <div className='mx-auto flex min-h-[78px] w-full max-w-[1180px] items-center justify-between px-5 sm:px-8 lg:px-9'>
-                        <Link href='/' className='flex items-center gap-4'>
-                            <BetweenVerticalEndIcon />
-
-                            <span className='text-[16px] font-medium uppercase tracking-[0.025em] text-[#f2f2ed] sm:text-[19px]'>Stock Screener</span>
-                        </Link>
-
-                        <nav className='hidden items-center gap-9 lg:flex'>
-                            {['Overview', 'Features', 'Screens', 'Pricing', 'Docs'].map((item) => (
-                                <Link
-                                    key={item}
-                                    href='#'
-                                    className='text-[10px] font-medium uppercase tracking-[0.03em] text-[#eeeeea] transition-colors hover:text-[#f4c225]'
-                                >
-                                    {item}
-                                </Link>
-                            ))}
-
-                            <Link
-                                href='#'
-                                className='rounded-[5px] border px-5 py-3 text-[10px] font-medium uppercase tracking-[0.03em]'
-                                style={{
-                                    color: GOLD_LIGHT,
-                                    borderColor: GOLD,
-                                }}
-                            >
-                                Get Started
-                            </Link>
-                        </nav>
-
-                        <button
-                            type='button'
-                            aria-label='Open menu'
-                            className='flex h-10 w-10 items-center justify-center rounded-md border border-[#f4c225]/25 lg:hidden'
-                        >
-                            <Menu className='h-5 w-5' style={{ color: GOLD }} />
-                        </button>
-                    </div>
-                </header>
-
                 {/* HERO */}
                 <section className='relative overflow-hidden border-b border-white/[0.10]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-7 px-5 pb-7 pt-5 sm:px-8 sm:pb-10 sm:pt-8 lg:grid-cols-[0.43fr_0.57fr] lg:gap-3 lg:px-9'>
@@ -820,8 +776,7 @@ const StockScreenerPage: NextPage = () => {
                                 </div>
                             </div>
 
-                            <Link
-                                href='#'
+                            <ComingSoonTrigger
                                 className='group flex min-h-[42px] w-full items-center justify-center gap-6 rounded-[5px] px-8 text-[12px] font-semibold uppercase tracking-[0.02em] text-[#15130a] sm:w-[285px]'
                                 style={{
                                     background: 'linear-gradient(90deg, #f4c225 0%, #ffd441 100%)',
@@ -829,7 +784,7 @@ const StockScreenerPage: NextPage = () => {
                             >
                                 Start Screening
                                 <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />
-                            </Link>
+                            </ComingSoonTrigger>
                         </div>
                     </section>
                 </div>

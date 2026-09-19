@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
@@ -14,7 +15,6 @@ import {
     type LucideIcon,
 } from 'lucide-react';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 type Impact = 'High' | 'Medium';
@@ -895,8 +895,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                             </div>
                         </div>
 
-                        <Link
-                            href='#'
+                        <ComingSoonTrigger
                             className='group flex min-h-[44px] w-full items-center justify-center gap-5 rounded-[4px] px-7 text-[12px] font-semibold uppercase tracking-[0.03em] text-[#151014] transition-all duration-200 hover:brightness-110 sm:w-[365px]'
                             style={{
                                 background: 'linear-gradient(90deg, #ef4d8b 0%, #f45e99 100%)',
@@ -905,7 +904,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                         >
                             Explore All Calendars
                             <ArrowRight className='h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-1' />
-                        </Link>
+                        </ComingSoonTrigger>
                     </div>
                 </section>
             </main>

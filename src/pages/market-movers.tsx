@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowDown,
@@ -17,7 +18,6 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 type MoverRow = {
@@ -817,8 +817,7 @@ const MarketMoversPage: NextPage = () => {
                                 </div>
                             </div>
 
-                            <Link
-                                href='#'
+                            <ComingSoonTrigger
                                 className='group flex min-h-[46px] w-full items-center justify-center gap-6 rounded-[4px] border px-7 text-[12px] font-medium uppercase tracking-[0.025em] transition-colors hover:bg-[#e54848]/[0.05] sm:w-[315px]'
                                 style={{
                                     color: ORANGE_LIGHT,
@@ -827,7 +826,7 @@ const MarketMoversPage: NextPage = () => {
                             >
                                 Explore Market Movers
                                 <ArrowRight className='h-5 w-5 transition-transform group-hover:translate-x-1' />
-                            </Link>
+                            </ComingSoonTrigger>
                         </div>
                     </section>
                 </div>

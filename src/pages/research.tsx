@@ -1,7 +1,7 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import { ArrowRight, BarChart3, Bell, Check, Download, Globe2, Lightbulb, LineChart, PieChart, Search, ShieldCheck, type LucideIcon } from 'lucide-react';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 // const ACCENT = '#f2f2f0';
@@ -747,13 +747,10 @@ const ResearchPage: NextPage = () => {
                                     </div>
                                 </div>
 
-                                <Link
-                                    href='#'
-                                    className='group flex min-h-[46px] w-full items-center justify-center gap-5 rounded-[4px] border border-[#cfd4d8]/80 px-7 text-[12px] font-medium uppercase tracking-[0.02em] text-[#f0f1f1] transition-all duration-200 hover:bg-white/[0.05] sm:w-[285px]'
-                                >
+                                <ComingSoonTrigger className='group flex min-h-[46px] w-full items-center justify-center gap-5 rounded-[4px] border border-[#cfd4d8]/80 px-7 text-[12px] font-medium uppercase tracking-[0.02em] text-[#f0f1f1] transition-all duration-200 hover:bg-white/[0.05] sm:w-[285px]'>
                                     Explore Research
                                     <ArrowRight className='h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-1' />
-                                </Link>
+                                </ComingSoonTrigger>
                             </div>
                         </div>
                     </section>

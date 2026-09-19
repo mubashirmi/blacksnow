@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import { ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Truck } from 'lucide-react';
 import type { NextPage } from 'next';
@@ -372,14 +373,28 @@ function GlobalKpiPageContent() {
                     </div>
                 </div>
 
-                <div className='mx-auto flex w-full max-w-[1180px] items-center justify-center gap-4 px-5 pb-7 sm:px-8 lg:px-9'>
-                    <div className='flex h-10 w-10 items-center justify-center rounded-full border border-[#1768ff]'>
-                        <Globe2 className='h-5 w-5 text-white' strokeWidth={1.4} />
+                <div className='mx-auto flex w-full max-w-[1180px] flex-col items-center justify-between gap-5 px-5 pb-7 sm:px-8 md:flex-row lg:px-9'>
+                    <div className='flex items-center gap-4'>
+                        <div className='flex h-10 w-10 items-center justify-center rounded-full border border-[#1768ff]'>
+                            <Globe2 className='h-5 w-5 text-white' strokeWidth={1.4} />
+                        </div>
+
+                        <p className='text-center text-[11px] uppercase tracking-[0.24em] text-[#c4c5c2] md:text-left sm:text-[12px]'>
+                            Data Driven. People Focused. <span style={{ color: BLUE_BRIGHT }}>Future Ready.</span>
+                        </p>
                     </div>
 
-                    <p className='text-center text-[11px] uppercase tracking-[0.24em] text-[#c4c5c2] sm:text-[12px]'>
-                        Data Driven. People Focused. <span style={{ color: BLUE_BRIGHT }}>Future Ready.</span>
-                    </p>
+                    <ComingSoonTrigger
+                        className='group flex min-h-[44px] w-full items-center justify-center gap-4 rounded-[5px] border px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white transition-all hover:bg-[#1768ff]/10 sm:w-auto'
+                        style={{
+                            borderColor: BLUE,
+                            boxShadow: '0 0 22px rgba(23,104,255,0.10)',
+                        }}
+                        ariaLabel='Explore Global KPI'
+                    >
+                        Explore Global KPI
+                        <ArrowUp className='h-4 w-4 rotate-90 transition-transform duration-200 group-hover:translate-x-1' />
+                    </ComingSoonTrigger>
                 </div>
             </section>
         </main>

@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
     ArrowRight,
@@ -19,7 +20,6 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 type WatchlistRow = {
@@ -875,8 +875,7 @@ const WatchlistPage: NextPage = () => {
                                 </div>
                             </div>
 
-                            <Link
-                                href='/signup'
+                            <ComingSoonTrigger
                                 className='group flex min-h-[46px] w-full items-center justify-center gap-7 rounded-[4px] px-8 text-[12px] font-medium uppercase tracking-[0.025em] text-white sm:w-[290px]'
                                 style={{
                                     background: 'linear-gradient(90deg,#f25a20 0%,#ff6d1f 100%)',
@@ -885,7 +884,7 @@ const WatchlistPage: NextPage = () => {
                             >
                                 Create Watchlist
                                 <ArrowRight className='h-5 w-5 transition-transform duration-200 group-hover:translate-x-1' />
-                            </Link>
+                            </ComingSoonTrigger>
                         </div>
                     </section>
                 </div>
