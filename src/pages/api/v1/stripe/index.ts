@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
@@ -17,6 +18,37 @@ type ProductType =
     | 'SuperAffiliate'
     | 'LightningSilver'
     | 'LightningGold';
+
+/**
+ * =========================================================
+ * PRODUCT -> PRISMA ROLE MAPPING
+ * =========================================================
+ *
+ * IMPORTANT:
+ * RSVP in your frontend/API is uppercase,
+ * while your Prisma enum is Rsvp.
+ *
+ * Using this mapping ensures that values written to the
+ * database always match the Prisma Role enum exactly.
+ */
+const PRODUCT_TO_ROLE: Record<ProductType, Role> = {
+    NewsLetter: Role.NewsLetter,
+    RSVP: Role.Rsvp,
+    DigitalBillboard: Role.DigitalBillboard,
+    Affiliate: Role.Affiliate,
+    Sales: Role.Sales,
+    EmailMarketing: Role.EmailMarketing,
+    InvoiceTool: Role.InvoiceTool,
+    SuperAffiliate: Role.SuperAffiliate,
+    LightningSilver: Role.LightningSilver,
+    LightningGold: Role.LightningGold,
+};
+
+/**
+ * =========================================================
+ * PRICES
+ * =========================================================
+ */
 
 const NEWSLETTER_MONTHLY_PRICE = 10.0;
 const NEWSLETTER_YEARLY_PRICE = 50.0;
@@ -38,6 +70,12 @@ const LIGHTNING_GOLD_MONTHLY_PRICE = 250.0;
 const INVOICETOOL_MONTHLY_PRICE = 20.0;
 const INVOICETOOL_YEARLY_PRICE = 200.0;
 
+/**
+ * =========================================================
+ * HELPERS
+ * =========================================================
+ */
+
 function normalizePeriod(raw?: string): 'monthly' | 'yearly' {
     const value = (raw || 'monthly').toLowerCase().trim();
 
@@ -54,9 +92,11 @@ function isValidDate(d: unknown): d is Date {
 
 function addMonthsEOMSafe(date: Date, months: number): Date {
     const d = new Date(date);
+
     const day = d.getDate();
 
     d.setDate(1);
+
     d.setMonth(d.getMonth() + months);
 
     const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
@@ -68,9 +108,11 @@ function addMonthsEOMSafe(date: Date, months: number): Date {
 
 function addYearsEOMSafe(date: Date, years: number): Date {
     const d = new Date(date);
+
     const day = d.getDate();
 
     d.setDate(1);
+
     d.setFullYear(d.getFullYear() + years);
 
     const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
@@ -88,6 +130,12 @@ function getNextBillingDate(startDate: Date, period: 'monthly' | 'yearly'): Date
     return addMonthsEOMSafe(startDate, 1);
 }
 
+/**
+ * =========================================================
+ * GET STRIPE PRICE
+ * =========================================================
+ */
+
 function getProductPriceKey(productType: ProductType, periodInput?: string) {
     const period = normalizePeriod(periodInput);
 
@@ -101,6 +149,7 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
 
             return {
                 priceId,
+
                 price: isYearly ? NEWSLETTER_YEARLY_PRICE : NEWSLETTER_MONTHLY_PRICE,
             };
         }
@@ -108,6 +157,7 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
         case 'RSVP':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_RSVP,
+
                 price: RSVP_PRICE,
             };
 
@@ -120,6 +170,7 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
 
             return {
                 priceId,
+
                 price: isYearly ? DIGITAL_BILLBOARD_YEARLY_PRICE : DIGITAL_BILLBOARD_MONTHLY_PRICE,
             };
         }
@@ -127,30 +178,35 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
         case 'SuperAffiliate':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_SUPER_AFFILIATE,
+
                 price: SUPER_AFFILIATE_PRICE,
             };
 
         case 'Affiliate':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_AFFILIATE,
+
                 price: AFFILIATE_PRICE,
             };
 
         case 'Sales':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_SALES,
+
                 price: SALES_PRICE,
             };
 
         case 'LightningSilver':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_LIGHTNING_SILVER_MONTHLY,
+
                 price: LIGHTNING_SILVER_MONTHLY_PRICE,
             };
 
         case 'LightningGold':
             return {
                 priceId: process.env.NEXT_PRIVATE_STRIPE_PRICE_LIGHTNING_GOLD_MONTHLY,
+
                 price: LIGHTNING_GOLD_MONTHLY_PRICE,
             };
 
@@ -163,6 +219,7 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
 
             return {
                 priceId,
+
                 price: isYearly ? EMAIL_MARKETING_YEARLY_PRICE : EMAIL_MARKETING_MONTHLY_PRICE,
             };
         }
@@ -174,6 +231,7 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
 
             return {
                 priceId,
+
                 price: isYearly ? INVOICETOOL_YEARLY_PRICE : INVOICETOOL_MONTHLY_PRICE,
             };
         }
@@ -183,6 +241,12 @@ function getProductPriceKey(productType: ProductType, periodInput?: string) {
     }
 }
 
+/**
+ * =========================================================
+ * API
+ * =========================================================
+ */
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     logger.defaultMeta.service = 'stripe-checkout';
 
@@ -191,6 +255,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+        /**
+         * =========================================================
+         * REQUEST BODY
+         * =========================================================
+         */
+
         const { id, email, productType, referredBy, period } = req.body as {
             id: string | number;
             email: string;
@@ -199,12 +269,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             period?: string;
         };
 
+        /**
+         * =========================================================
+         * VALIDATION
+         * =========================================================
+         */
+
         if (!id || !email) {
             return res.status(400).json(errorResponse('Missing required fields: id or email'));
         }
 
         if (!productType) {
             return res.status(400).json(errorResponse('Missing productType'));
+        }
+
+        /**
+         * Make sure productType is actually supported.
+         */
+
+        if (!(productType in PRODUCT_TO_ROLE)) {
+            return res.status(400).json(errorResponse('Invalid productType'));
         }
 
         const authId = Number(id);
@@ -227,10 +311,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(500).json(errorResponse(`Stripe price ID not configured for ${productType} (${normalizedPeriod})`));
         }
 
+        /**
+         * Canonical Prisma role.
+         *
+         * InvoiceTool -> Role.InvoiceTool
+         * RSVP        -> Role.Rsvp
+         */
+        const productRole = PRODUCT_TO_ROLE[productType];
+
+        /**
+         * =========================================================
+         * GET USER
+         * =========================================================
+         */
+
         const authRecord = await prisma.auth.findUnique({
             where: {
                 id: authId,
             },
+
             select: {
                 id: true,
                 email: true,
@@ -243,15 +342,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json(errorResponse(`Auth record not found for AuthId: ${id}`));
         }
 
-        /*
-         * Make sure every paying user has a
-         * persistent Stripe Customer.
+        /**
+         * =========================================================
+         * STRIPE CUSTOMER
+         * =========================================================
          */
+
         let customerId = authRecord.stripeCustomerId;
 
         if (!customerId) {
             const customer = await stripe.customers.create({
                 email,
+
                 metadata: {
                     authId: String(authId),
                 },
@@ -263,42 +365,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 where: {
                     id: authId,
                 },
+
                 data: {
                     stripeCustomerId: customerId,
                 },
             });
         } else {
-            /*
-             * Keep Stripe metadata/email synchronized.
-             */
             await stripe.customers.update(customerId, {
                 email,
+
                 metadata: {
                     authId: String(authId),
                 },
             });
         }
 
-        /*
-         * Affiliate Stripe Connect account.
+        /**
+         * =========================================================
+         * AFFILIATE
+         * =========================================================
          */
-        const affiliate = referredBy
-            ? await prisma.auth.findFirst({
-                  where: {
-                      id: Number(referredBy),
-                  },
-                  select: {
-                      adminStripeConnectId: true,
-                  },
-              })
-            : null;
 
-        const affiliateConnectId = affiliate?.adminStripeConnectId || null;
+        let affiliateConnectId: string | null = null;
 
-        /*
-         * Fix:
-         * Your original fallback contained Markdown.
+        if (referredBy) {
+            const referredById = Number(referredBy);
+
+            if (Number.isInteger(referredById) && referredById > 0) {
+                const affiliate = await prisma.auth.findUnique({
+                    where: {
+                        id: referredById,
+                    },
+
+                    select: {
+                        adminStripeConnectId: true,
+                    },
+                });
+
+                affiliateConnectId = affiliate?.adminStripeConnectId || null;
+            }
+        }
+
+        /**
+         * =========================================================
+         * URLS
+         * =========================================================
          */
+
         const origin = req.headers.origin || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
         const successUrl =
@@ -310,28 +423,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const cancelUrl = `${origin}/cancel`;
 
-        const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData = {
-            metadata: {
-                authId: String(authId),
+        /**
+         * =========================================================
+         * STRIPE METADATA
+         * =========================================================
+         *
+         * Store BOTH productType and canonical role.
+         */
 
-                productType,
+        const metadata: Stripe.MetadataParam = {
+            authId: String(authId),
 
-                paymentType: 'recurring',
+            productType,
 
-                referredBy: referredBy ? String(referredBy) : '',
+            role: productRole,
 
-                period: normalizedPeriod,
-            },
+            paymentType: 'recurring',
+
+            referredBy: referredBy ? String(referredBy) : '',
+
+            period: normalizedPeriod,
         };
 
-        /*
-         * Route 40% to referrer.
-         *
-         * Your old code checked only roles[0].
-         * includes() is safer because Sales might not
-         * be the first role.
+        /**
+         * =========================================================
+         * SUBSCRIPTION DATA
+         * =========================================================
          */
-        if (affiliateConnectId && !authRecord.roles.includes('Sales')) {
+
+        const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData = {
+            metadata,
+        };
+
+        /**
+         * Send affiliate commission.
+         *
+         * Sales can now be anywhere inside roles[].
+         */
+        if (affiliateConnectId && !authRecord.roles.includes(Role.Sales)) {
             subscriptionData.transfer_data = {
                 destination: affiliateConnectId,
             };
@@ -339,12 +468,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             subscriptionData.application_fee_percent = 60;
         }
 
+        /**
+         * =========================================================
+         * CREATE STRIPE SESSION
+         * =========================================================
+         */
+
         const sessionParams: Stripe.Checkout.SessionCreateParams = {
             mode: 'subscription',
+
+            customer: customerId,
 
             line_items: [
                 {
                     price: priceId,
+
                     quantity: 1,
                 },
             ],
@@ -353,41 +491,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             cancel_url: cancelUrl,
 
-            customer: customerId,
-
             allow_promotion_codes: false,
 
-            /*
-             * Always collect a payment method.
-             */
             payment_method_collection: 'always',
 
             payment_method_types: ['card'],
 
-            /*
-             * IMPORTANT:
-             *
-             * No payment_intent_data here.
-             * This is subscription mode.
-             */
-            metadata: {
-                authId: String(authId),
-
-                productType,
-
-                paymentType: 'recurring',
-
-                referredBy: referredBy ? String(referredBy) : '',
-
-                period: normalizedPeriod,
-            },
+            metadata,
 
             subscription_data: subscriptionData,
         };
 
         const session = await stripe.checkout.sessions.create(sessionParams);
 
-        const filterProduct: ProductType | null = productType === 'Affiliate' || productType === 'Sales' ? null : productType;
+        /**
+         * =========================================================
+         * CHECKOUT PRODUCT
+         * =========================================================
+         *
+         * You previously used productType directly.
+         *
+         * Now we use the canonical Prisma Role value.
+         *
+         * InvoiceTool => InvoiceTool
+         * RSVP        => Rsvp
+         *
+         * Affiliate/Sales are kept null to preserve
+         * your existing behavior.
+         */
+
+        const checkoutProduct: Role | null = productType === 'Affiliate' || productType === 'Sales' ? null : productRole;
+
+        /**
+         * =========================================================
+         * BILLING DATES
+         * =========================================================
+         */
 
         const startDate = new Date();
 
@@ -396,6 +535,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!isValidDate(startDate) || !isValidDate(nextBillingDate)) {
             throw new Error('Invalid startDate/nextBillingDate computed');
         }
+
+        /**
+         * =========================================================
+         * CREATE PENDING CHECKOUT
+         * =========================================================
+         *
+         * IMPORTANT:
+         *
+         * At this point payment has NOT yet been confirmed.
+         *
+         * Therefore:
+         *
+         * paid = false
+         * pause = false
+         *
+         * We DO NOT update Auth.roles here.
+         */
 
         await prisma.checkout.create({
             data: {
@@ -409,7 +565,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 deleted: false,
 
-                product: filterProduct,
+                /**
+                 * FIX:
+                 *
+                 * InvoiceTool is now explicitly written as the
+                 * canonical Prisma enum value.
+                 */
+                product: checkoutProduct,
+
+                /**
+                 * FIX:
+                 *
+                 * Your feedback status API checks:
+                 *
+                 * checkout.pause === false
+                 *
+                 * Therefore save false explicitly.
+                 */
+                pause: false,
 
                 cancelSubscripton: false,
 
@@ -421,10 +594,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         });
 
-        return res.status(200).json(baseResponse('Checkout Created', session.url));
-    } catch (error: any) {
-        logger.error(`Error processing checkout request: ${error?.message}`);
+        /**
+         * =========================================================
+         * RESPONSE
+         * =========================================================
+         */
 
-        return res.status(500).json(errorResponse('Internal Server Error', error?.message));
+        return res.status(200).json(baseResponse('Checkout Created', session.url));
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+
+        logger.error(`Error processing checkout request: ${message}`);
+
+        return res.status(500).json(errorResponse('Internal Server Error'));
     }
 }

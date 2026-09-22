@@ -605,7 +605,7 @@ const InvoicesPage: NextPage = () => {
                 {/* Signed Contracts Table */}
                 <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
                     <div className='mb-3 flex items-center justify-between gap-2'>
-                        <h2 className='text-lg font-semibold text-slate-900'>Signed Contracts</h2>
+                        <h2 className='text-lg font-semibold text-slate-900'>Contract Invoicing</h2>
                     </div>
 
                     {isLoadingContracts && <p className='text-sm text-gray-500'>Loading signed contracts…</p>}

@@ -104,7 +104,7 @@ export default function ComingSoonTrigger({ children, className = '', style, ari
                                     </p>
                                 </div>
 
-                                <div className='mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-[#4cc7e8]/70 to-transparent' />
+                                {/* <div className='mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-[#4cc7e8]/70 to-transparent' /> */}
 
                                 <h2
                                     id='coming-soon-title'

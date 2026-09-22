@@ -24,6 +24,10 @@ function getUniqueProducts(products: Array<string | null>): string[] {
 
         const normalizedProduct = normalizeToolName(trimmedProduct);
 
+        if (!normalizedProduct) {
+            continue;
+        }
+
         if (!uniqueProducts.has(normalizedProduct)) {
             uniqueProducts.set(normalizedProduct, trimmedProduct);
         }
@@ -36,7 +40,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     try {
         /**
          * =========================================================
-         * GET USER FEEDBACK STATUS
+         * ONLY ALLOW GET
          * =========================================================
          *
          * GET:
@@ -50,6 +54,12 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 message: 'Method not allowed',
             });
         }
+
+        /**
+         * =========================================================
+         * VALIDATE AUTH ID
+         * =========================================================
+         */
 
         const authIdQuery = req.query.authId;
 
@@ -68,7 +78,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
         }
 
         /**
-         * GET USER AND CHECKOUT PRODUCTS
+         * =========================================================
+         * GET USER
+         * =========================================================
+         *
+         * IMPORTANT:
+         *
+         * Auth.roles is now selected and treated as the actual
+         * source of truth for which tools/roles belong to the user.
          */
 
         const user = await prisma.auth.findUnique({
@@ -80,6 +97,9 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 firstName: true,
                 lastName: true,
                 email: true,
+
+                // Actual roles stored against the Auth user.
+                roles: true,
 
                 Checkouts: {
                     where: {
@@ -104,38 +124,89 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
         }
 
         /**
+         * =========================================================
+         * ACTUAL USER ROLES
+         * =========================================================
+         */
+
+        const authRoles = getUniqueProducts(user.roles.map((role) => String(role)));
+
+        /**
+         * Normalized lookup set.
+         *
+         * Example:
+         *
+         * [
+         *   "InvoiceTool",
+         *   "EmailMarketing"
+         * ]
+         *
+         * becomes:
+         *
+         * Set {
+         *   "invoicetool",
+         *   "emailmarketing"
+         * }
+         */
+
+        const normalizedAuthRoles = new Set(authRoles.map((role) => normalizeToolName(role)));
+
+        /**
+         * =========================================================
          * ACTIVE CHECKOUT PRODUCTS
+         * =========================================================
          *
-         * Products where:
+         * Only checkout products that:
+         *
          * pause = false
-         * cancelSubscripton = false
          * deleted = false
-         */
-
-        const activeProducts = getUniqueProducts(user.Checkouts.filter((checkout) => checkout.pause === false).map((checkout) => checkout.product));
-
-        /**
-         * PAUSED CHECKOUT PRODUCTS
+         * cancelSubscripton = false
          *
-         * Products where:
-         * pause = true
-         * cancelSubscripton = false
-         * deleted = false
+         * AND
+         *
+         * product exists inside Auth.roles
+         *
+         * are considered valid active roles.
          */
 
-        const pausedRoles = getUniqueProducts(user.Checkouts.filter((checkout) => checkout.pause === true).map((checkout) => checkout.product));
+        const activeCheckoutProducts = getUniqueProducts(user.Checkouts.filter((checkout) => checkout.pause === false).map((checkout) => checkout.product));
+
+        const activeRoles = activeCheckoutProducts.filter((product) => normalizedAuthRoles.has(normalizeToolName(product)));
 
         /**
-         * Prevent a product from appearing in both roles and
-         * pausedRoles. A paused product takes precedence.
+         * =========================================================
+         * PAUSED CHECKOUT PRODUCTS
+         * =========================================================
+         *
+         * Only paused products that actually exist in Auth.roles
+         * are returned.
          */
 
-        const normalizedPausedRoles = new Set(pausedRoles.map(normalizeToolName));
+        const pausedCheckoutProducts = getUniqueProducts(user.Checkouts.filter((checkout) => checkout.pause === true).map((checkout) => checkout.product));
 
-        const roles = activeProducts.filter((product) => !normalizedPausedRoles.has(normalizeToolName(product)));
+        const pausedRoles = pausedCheckoutProducts.filter((product) => normalizedAuthRoles.has(normalizeToolName(product)));
 
         /**
+         * =========================================================
+         * PREVENT SAME ROLE FROM APPEARING IN ACTIVE + PAUSED
+         * =========================================================
+         *
+         * If there somehow happens to be:
+         *
+         * InvoiceTool -> active checkout
+         * InvoiceTool -> paused checkout
+         *
+         * paused takes precedence.
+         */
+
+        const normalizedPausedRoles = new Set(pausedRoles.map((role) => normalizeToolName(role)));
+
+        const roles = activeRoles.filter((role) => !normalizedPausedRoles.has(normalizeToolName(role)));
+
+        /**
+         * =========================================================
          * GET USER FEEDBACKS
+         * =========================================================
          */
 
         const feedbacks = await prisma.toolFeedback.findMany({
@@ -155,21 +226,33 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
         });
 
         /**
-         * TOOLS WITH FEEDBACK
+         * =========================================================
+         * TOOLS USER HAS ALREADY GIVEN FEEDBACK FOR
+         * =========================================================
          */
 
         const toolsGivenFeedback = getUniqueProducts(feedbacks.map((feedback) => feedback.toolName));
 
-        const normalizedToolsGivenFeedback = new Set(toolsGivenFeedback.map(normalizeToolName));
+        const normalizedToolsGivenFeedback = new Set(toolsGivenFeedback.map((tool) => normalizeToolName(tool)));
 
         /**
+         * =========================================================
          * ACTIVE TOOLS WITHOUT FEEDBACK
+         * =========================================================
          *
-         * Paused products are not included because this list
-         * is calculated from active roles only.
+         * Only ACTIVE and VALID Auth.roles are checked here.
+         *
+         * A checkout product that does NOT exist inside Auth.roles
+         * will never appear here.
          */
 
         const toolsWithoutFeedback = roles.filter((role) => !normalizedToolsGivenFeedback.has(normalizeToolName(role)));
+
+        /**
+         * =========================================================
+         * RESPONSE
+         * =========================================================
+         */
 
         return res.status(200).json({
             user: {
@@ -178,16 +261,32 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 lastName: user.lastName,
                 email: user.email,
 
-                // Checkout products where pause is false.
+                /**
+                 * Active products that:
+                 *
+                 * 1. Exist in Auth.roles
+                 * 2. Have an active checkout
+                 * 3. Are not paused
+                 * 4. Are not cancelled
+                 * 5. Are not deleted
+                 */
                 roles,
 
-                // Checkout products where pause is true.
+                /**
+                 * Products that:
+                 *
+                 * 1. Exist in Auth.roles
+                 * 2. Have a paused checkout
+                 */
                 pausedRoles,
             },
 
             totalFeedbacks: feedbacks.length,
+
             toolsGivenFeedback,
+
             toolsWithoutFeedback,
+
             feedbacks,
         });
     } catch (error: unknown) {

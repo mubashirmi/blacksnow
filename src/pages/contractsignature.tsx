@@ -195,21 +195,25 @@ const ContractSignPage: React.FC = () => {
         };
     }, [contractId]);
 
-    // Responsive signature canvas sizing
+    // Responsive signature-area sizing.
+    // Keep the canvas bitmap dimensions identical to its displayed dimensions so
+    // pointer coordinates map 1:1 to the actual signature stroke position.
     useEffect(() => {
         const el = sigWrapRef.current;
         if (!el) return;
 
-        const ro = new ResizeObserver(() => {
-            const w = el.clientWidth;
-            const width = Math.max(260, Math.min(720, w));
+        const syncSignatureSize = () => {
+            const width = Math.max(260, Math.floor(el.clientWidth));
             const height = Math.max(150, Math.round(width * 0.34));
-            setSigSize({ width, height });
-        });
+            setSigSize((current) => (current.width === width && current.height === height ? current : { width, height }));
+        };
 
+        syncSignatureSize();
+
+        const ro = new ResizeObserver(syncSignatureSize);
         ro.observe(el);
         return () => ro.disconnect();
-    }, []);
+    }, [mode]);
 
     useEffect(() => {
         if (!pdfUrl) return;
@@ -808,9 +812,9 @@ const ContractSignPage: React.FC = () => {
             />
 
             <div className='relative mx-auto max-w-7xl'>
-                <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-                    <section className='lg:col-span-2'>
-                        <div className='rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/30 backdrop-blur sm:p-6'>
+                <div className='grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3'>
+                    <section className='h-full lg:col-span-2'>
+                        <div className='h-full rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/30 backdrop-blur sm:p-6'>
                             <div className='mb-4 flex items-center justify-between gap-3'>
                                 <div className='flex items-center gap-3'>
                                     <div className='flex h-10 w-10 items-center justify-center rounded-xl' style={{ backgroundColor: 'rgba(44,123,190,0.20)' }}>
@@ -858,8 +862,8 @@ const ContractSignPage: React.FC = () => {
                         </div>
                     </section>
 
-                    <aside className='lg:col-span-1'>
-                        <div className='rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/30 backdrop-blur sm:p-6 lg:sticky lg:top-8'>
+                    <aside className='h-full lg:col-span-1'>
+                        <div className='flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/30 backdrop-blur sm:p-6 lg:sticky lg:top-8 lg:p-7'>
                             <div className='mb-4'>
                                 <h2 className='text-lg font-semibold text-white sm:text-xl'>Sign Contract</h2>
                                 <p className='mt-1 text-sm text-white/60'>Add your signature to finalize this agreement.</p>
@@ -901,124 +905,139 @@ const ContractSignPage: React.FC = () => {
                                 </button>
                             </div>
 
-                            {mode === 'draw' && (
-                                <div className='mb-5'>
-                                    <p className='mb-2 text-xs font-medium text-white/70'>Draw your signature</p>
+                            <div className='flex flex-1 items-center'>
+                                <div className='w-full'>
+                                    {mode === 'draw' && (
+                                        <div>
+                                            <p className='mb-2 text-xs font-medium text-white/70'>Draw your signature</p>
 
-                                    <div ref={sigWrapRef} className='overflow-hidden rounded-2xl border border-dashed border-white/15 bg-black/20'>
-                                        <SignatureCanvas
-                                            ref={sigCanvasRef}
-                                            // ✅ draw in black (PDF will always be black too)
-                                            penColor='#000000'
-                                            canvasProps={{
-                                                width: sigSize.width,
-                                                height: sigSize.height,
-                                                style: {
-                                                    display: 'block',
-                                                    width: '100%',
-                                                    height: 'auto',
-                                                    // ✅ light background so black ink is visible to user
+                                            <div
+                                                ref={sigWrapRef}
+                                                className='relative w-full overflow-hidden rounded-2xl border border-dashed border-white/15 bg-black/20'
+                                            >
+                                                <SignatureCanvas
+                                                    ref={sigCanvasRef}
+                                                    // ✅ draw in black (PDF will always be black too)
+                                                    penColor='#000000'
+                                                    canvasProps={{
+                                                        width: sigSize.width,
+                                                        height: sigSize.height,
+                                                        style: {
+                                                            display: 'block',
+                                                            width: `${sigSize.width}px`,
+                                                            height: `${sigSize.height}px`,
+                                                            maxWidth: '100%',
+                                                            // ✅ light background so black ink is visible to user
+                                                            backgroundColor: 'rgba(255,255,255,0.92)',
+                                                            touchAction: 'none',
+                                                        },
+                                                    }}
+                                                />
+
+                                                <button
+                                                    type='button'
+                                                    onClick={handleClearDrawing}
+                                                    className='absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white/85 px-3 py-2 text-xs font-medium text-black/65 shadow-sm backdrop-blur transition hover:bg-white hover:text-black'
+                                                >
+                                                    <Trash2 className='h-3.5 w-3.5' />
+                                                    Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ✅ NEW: Write mode — type your name, it becomes a signature */}
+                                    {mode === 'write' && (
+                                        <div>
+                                            <p className='mb-2 text-xs font-medium text-white/70'>Type your name — it becomes your signature</p>
+
+                                            <input
+                                                type='text'
+                                                value={typedName}
+                                                onChange={(e) => setTypedName(e.target.value)}
+                                                placeholder='John Doe'
+                                                autoComplete='name'
+                                                className='w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/20 focus:ring-2'
+                                            />
+
+                                            <div
+                                                ref={sigWrapRef}
+                                                className='mt-3 flex w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-white/15 px-4 py-6'
+                                                style={{
+                                                    height: sigSize.height,
                                                     backgroundColor: 'rgba(255,255,255,0.92)',
-                                                },
-                                            }}
-                                        />
-                                    </div>
+                                                }}
+                                            >
+                                                {typedName.trim() ? (
+                                                    <span
+                                                        className='w-full truncate text-center'
+                                                        style={{
+                                                            fontFamily: `"${SIGNATURE_FONT_FAMILY}", cursive`,
+                                                            color: '#000000',
+                                                            fontSize: 'clamp(30px, 7vw, 52px)',
+                                                            lineHeight: 1.25,
+                                                        }}
+                                                    >
+                                                        {typedName.trim()}
+                                                    </span>
+                                                ) : (
+                                                    <span className='text-sm text-black/40'>Your signature preview</span>
+                                                )}
+                                            </div>
+
+                                            <p className='mt-2 text-xs text-white/45'>This is how your signature will appear on the document.</p>
+                                        </div>
+                                    )}
+
+                                    {error && (
+                                        <div className='mt-4 flex items-start gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-3 text-sm text-red-200'>
+                                            <AlertTriangle className='mt-0.5 h-4 w-4 flex-none' />
+                                            <p className='leading-snug'>{error}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className='mt-auto pt-5'>
+                                {/* ✅ Accept (green) + Reject (red) on one line */}
+                                <div className='grid grid-cols-2 gap-2 rounded-2xl bg-black/25 p-2'>
+                                    <button
+                                        type='button'
+                                        onClick={handleSignClick}
+                                        disabled={actionsDisabled}
+                                        className={cx(
+                                            'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
+                                            actionsDisabled ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
+                                        )}
+                                        style={!actionsDisabled ? { backgroundColor: SUCCESS, boxShadow: '0 10px 30px rgba(34,197,94,0.35)' } : undefined}
+                                    >
+                                        {isSigning ? <Loader2 className='h-4 w-4 animate-spin' /> : <CheckCircle2 className='h-4 w-4' />}
+                                        {isSigning ? 'Processing…' : isFetchingContract ? 'Loading…' : 'Accept'}
+                                    </button>
 
                                     <button
                                         type='button'
-                                        onClick={handleClearDrawing}
-                                        className='mt-3 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-black/30 hover:text-white'
+                                        onClick={handleRejectClick}
+                                        disabled={isSigning || isRejecting || isFetchingContract}
+                                        className={cx(
+                                            'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
+                                            isSigning || isRejecting || isFetchingContract ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
+                                        )}
+                                        style={
+                                            !isSigning && !isRejecting && !isFetchingContract
+                                                ? { backgroundColor: DANGER, boxShadow: '0 10px 30px rgba(239,68,68,0.35)' }
+                                                : undefined
+                                        }
                                     >
-                                        <Trash2 className='h-4 w-4' />
-                                        Clear
+                                        {isRejecting ? <Loader2 className='h-4 w-4 animate-spin' /> : <X className='h-4 w-4' />}
+                                        {isRejecting ? 'Rejecting…' : 'Reject'}
                                     </button>
                                 </div>
-                            )}
 
-                            {/* ✅ NEW: Write mode — type your name, it becomes a signature */}
-                            {mode === 'write' && (
-                                <div className='mb-5'>
-                                    <p className='mb-2 text-xs font-medium text-white/70'>Type your name — it becomes your signature</p>
-
-                                    <input
-                                        type='text'
-                                        value={typedName}
-                                        onChange={(e) => setTypedName(e.target.value)}
-                                        placeholder='John Doe'
-                                        autoComplete='name'
-                                        className='w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/20 focus:ring-2'
-                                    />
-
-                                    <div
-                                        className='mt-3 flex min-h-[130px] items-center justify-center overflow-hidden rounded-2xl border border-dashed border-white/15 px-4 py-6'
-                                        style={{ backgroundColor: 'rgba(255,255,255,0.92)' }}
-                                    >
-                                        {typedName.trim() ? (
-                                            <span
-                                                className='w-full truncate text-center'
-                                                style={{
-                                                    fontFamily: `"${SIGNATURE_FONT_FAMILY}", cursive`,
-                                                    color: '#000000',
-                                                    fontSize: 'clamp(30px, 7vw, 52px)',
-                                                    lineHeight: 1.25,
-                                                }}
-                                            >
-                                                {typedName.trim()}
-                                            </span>
-                                        ) : (
-                                            <span className='text-sm text-black/40'>Your signature preview</span>
-                                        )}
-                                    </div>
-
-                                    <p className='mt-2 text-xs text-white/45'>This is how your signature will appear on the document.</p>
-                                </div>
-                            )}
-
-                            {error && (
-                                <div className='mb-4 flex items-start gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-3 text-sm text-red-200'>
-                                    <AlertTriangle className='mt-0.5 h-4 w-4 flex-none' />
-                                    <p className='leading-snug'>{error}</p>
-                                </div>
-                            )}
-
-                            {/* ✅ Accept (green) + Reject (red) on one line */}
-                            <div className='mt-2 grid grid-cols-2 gap-2 rounded-2xl bg-black/25 p-2'>
-                                <button
-                                    type='button'
-                                    onClick={handleSignClick}
-                                    disabled={actionsDisabled}
-                                    className={cx(
-                                        'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
-                                        actionsDisabled ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
-                                    )}
-                                    style={!actionsDisabled ? { backgroundColor: SUCCESS, boxShadow: '0 10px 30px rgba(34,197,94,0.35)' } : undefined}
-                                >
-                                    {isSigning ? <Loader2 className='h-4 w-4 animate-spin' /> : <CheckCircle2 className='h-4 w-4' />}
-                                    {isSigning ? 'Processing…' : isFetchingContract ? 'Loading…' : 'Accept'}
-                                </button>
-
-                                <button
-                                    type='button'
-                                    onClick={handleRejectClick}
-                                    disabled={isSigning || isRejecting || isFetchingContract}
-                                    className={cx(
-                                        'flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-white transition',
-                                        isSigning || isRejecting || isFetchingContract ? 'cursor-not-allowed bg-white/10 text-white/50' : 'hover:opacity-95'
-                                    )}
-                                    style={
-                                        !isSigning && !isRejecting && !isFetchingContract
-                                            ? { backgroundColor: DANGER, boxShadow: '0 10px 30px rgba(239,68,68,0.35)' }
-                                            : undefined
-                                    }
-                                >
-                                    {isRejecting ? <Loader2 className='h-4 w-4 animate-spin' /> : <X className='h-4 w-4' />}
-                                    {isRejecting ? 'Rejecting…' : 'Reject'}
-                                </button>
+                                <p className='mt-4 text-xs leading-relaxed text-white/45'>
+                                    Your signature, name, and business name will be added to the last page of the document.
+                                </p>
                             </div>
-
-                            <p className='mt-4 text-xs leading-relaxed text-white/45'>
-                                Your signature, name, and business name will be added to the last page of the document.
-                            </p>
                         </div>
                     </aside>
                 </div>

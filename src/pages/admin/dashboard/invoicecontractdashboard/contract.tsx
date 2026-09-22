@@ -284,7 +284,7 @@ const ContractsPage: NextPage = () => {
     const totalInvoices = invoices.length;
     const signedCount = invoices.filter((invoice) => isContractSigned(invoice.signed)).length;
     const unsignedCount = invoices.filter((invoice) => isContractUnsigned(invoice.signed)).length;
-    const signedInvoices = useMemo(() => invoices.filter((invoice) => isContractSigned(invoice.signed)), [invoices]);
+    // const signedInvoices = useMemo(() => invoices.filter((invoice) => isContractSigned(invoice.signed)), [invoices]);
 
     const filteredInvoices = useMemo(() => {
         const normalizedSearch = contractSearch.trim().toLowerCase();
@@ -361,82 +361,6 @@ const ContractsPage: NextPage = () => {
                         <div className='text-[12px] uppercase text-gray-500'>Total Contracts</div>
                         <div className='mt-1 text-[22px] font-semibold text-slate-900'>{totalInvoices}</div>
                     </div>
-                </section>
-
-                {/* Signed Contracts Table */}
-                <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex items-center justify-between gap-2'>
-                        <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Signed Contracts' : 'Signed Contracts'}</h2>
-                    </div>
-
-                    {isLoadingInvoices && <p className='text-sm text-gray-500'>Loading signed contracts…</p>}
-
-                    {invoicesError && <p className='text-[13px] text-red-700'>{invoicesError}</p>}
-
-                    {!isLoadingInvoices && !invoicesError && signedInvoices.length === 0 && (
-                        <p className='text-sm text-gray-500'>No signed contracts found yet.</p>
-                    )}
-
-                    {!isLoadingInvoices && !invoicesError && signedInvoices.length > 0 && (
-                        <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
-                            <table className='min-w-[1000px] w-full border-collapse text-[13px]'>
-                                <thead className='bg-gray-50'>
-                                    <tr>
-                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Status'].map((header) => (
-                                            <th key={header} className='border-b border-gray-200 px-3 py-2.5 text-left text-[13px] font-semibold text-gray-600'>
-                                                {header}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {signedInvoices.map((invoice, index) => {
-                                        const displayContractName = invoice.contractName && invoice.contractName.trim().length > 0 ? invoice.contractName : '—';
-                                        const displayName = invoice.name && invoice.name.trim().length > 0 ? invoice.name : '—';
-                                        const displayBusinessName = invoice.businessName && invoice.businessName.trim().length > 0 ? invoice.businessName : '—';
-                                        const isDownloading = downloadingContractId === invoice.id;
-
-                                        return (
-                                            <tr key={invoice.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{index + 1}</td>
-                                                <td className='px-3 py-2.5 text-[13px] font-medium text-slate-900'>{displayContractName}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-slate-900'>{invoice.email}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayName}</td>
-                                                <td className='px-3 py-2.5 text-[13px] text-gray-600'>{displayBusinessName}</td>
-                                                <td className='whitespace-nowrap px-3 py-2.5 text-[13px] text-gray-600'>{formatDateTime(invoice.createdAt)}</td>
-                                                <td className='px-3 py-2.5 text-[13px]'>
-                                                    <div className='flex items-center gap-3 whitespace-nowrap'>
-                                                        <a
-                                                            href={invoice.pdf}
-                                                            target='_blank'
-                                                            rel='noopener noreferrer'
-                                                            className='text-[13px] text-blue-600 no-underline hover:underline'
-                                                        >
-                                                            View
-                                                        </a>
-                                                        <button
-                                                            type='button'
-                                                            // eslint-disable-next-line
-                                                            onClick={() => void handleDownloadPdf(invoice)}
-                                                            disabled={downloadingContractId !== null}
-                                                            className='border-0 bg-transparent p-0 text-[13px] text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400'
-                                                        >
-                                                            {isDownloading ? 'Downloading…' : 'Download'}
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                                <td className='px-3 py-2.5 text-[13px]'>
-                                                    <span className='inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-[12px] font-medium text-green-800'>
-                                                        Signed
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
                 </section>
 
                 {/* All Contracts Table */}

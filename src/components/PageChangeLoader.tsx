@@ -79,8 +79,9 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
             setAnimationKey((prev) => prev + 1);
             setVisible(true);
 
-            // Safety fallback: even if routeChangeComplete does not fire properly,
-            // loader will still disappear.
+            // Safety fallback:
+            // even if routeChangeComplete doesn't fire correctly,
+            // the loader will still disappear.
             timeoutRef.current = setTimeout(() => {
                 loaderActiveRef.current = false;
                 setVisible(false);
@@ -108,6 +109,7 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
 
             clearLoaderTimeout();
         };
+
         // eslint-disable-next-line
     }, [router.events, router.asPath, duration]);
 
@@ -116,6 +118,7 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
     return (
         <div className='fixed inset-0 z-[999999] flex items-center justify-center overflow-hidden bg-black'>
             <div className='relative z-10 flex w-full max-w-sm flex-col items-center justify-center px-6'>
+                {/* Logo */}
                 <div className='relative mb-8 flex items-center justify-center'>
                     <div className='absolute h-40 w-40 rounded-full bg-[#4cc7e8]/10 blur-3xl' />
 
@@ -129,49 +132,45 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
                     />
                 </div>
 
+                {/* Progress Bar */}
                 <div className='relative h-3 w-full overflow-hidden rounded-full border border-white/10 bg-white/10 shadow-[0_0_30px_rgba(76,199,232,0.18)]'>
+                    {/* Actual progress */}
                     <div
                         key={animationKey}
-                        className='h-full rounded-full bg-gradient-to-r from-[#011430] via-[#012b69] to-[#02328b] shadow-[0_0_22px_rgba(76,199,232,0.75)]'
+                        className='absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#011430] via-[#012b69] to-[#02328b] shadow-[0_0_22px_rgba(76,199,232,0.75)] will-change-transform'
                         style={{
-                            animation: `loadBar ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+                            animation: `loadBar ${duration}ms linear forwards`,
                         }}
                     />
 
-                    <div className='absolute inset-0 animate-shine bg-gradient-to-r from-transparent via-white/35 to-transparent' />
+                    {/* Moving shine */}
+                    <div className='pointer-events-none absolute inset-0 animate-shine bg-gradient-to-r from-transparent via-white/35 to-transparent will-change-transform' />
                 </div>
             </div>
 
             <style jsx>{`
                 @keyframes loadBar {
-                    0% {
-                        width: 0%;
+                    from {
+                        transform: scaleX(0);
                     }
-                    18% {
-                        width: 28%;
-                    }
-                    45% {
-                        width: 58%;
-                    }
-                    72% {
-                        width: 84%;
-                    }
-                    100% {
-                        width: 100%;
+
+                    to {
+                        transform: scaleX(1);
                     }
                 }
 
                 @keyframes shine {
-                    0% {
-                        transform: translateX(-120%);
+                    from {
+                        transform: translate3d(-120%, 0, 0);
                     }
-                    100% {
-                        transform: translateX(120%);
+
+                    to {
+                        transform: translate3d(120%, 0, 0);
                     }
                 }
 
                 .animate-shine {
-                    animation: shine 1.15s ease-in-out infinite;
+                    animation: shine 1.15s linear infinite;
                 }
             `}</style>
         </div>
