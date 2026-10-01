@@ -91,7 +91,7 @@ const talentServiceContent: Record<
             'Background checks included',
         ],
         pricingTitle: 'Consultation Fee:',
-        pricing: ['$250/Month'],
+        pricing: ['$249.99/Month'],
         buttonLabel: 'Schedule Consultation',
     },
     global: {
@@ -109,7 +109,7 @@ const talentServiceContent: Record<
         ],
         keyPoints: ['Workforce outsourcing', 'International candidate sourcing', 'Payroll & compliance handled', 'Flexible team structures', 'Fast onboarding'],
         pricingTitle: 'Consultation Fee:',
-        pricing: ['$250/Month'],
+        pricing: ['$249.99/Month'],
         buttonLabel: 'Schedule Consultation',
     },
 };
@@ -896,7 +896,7 @@ function CareersTitle() {
                                             Ready to find your perfect candidates? Book a free consultation with our experts.
                                         </p>
                                         <div className='mt-8'>
-                                            <div className='text-5xl sm:text-6xl font-black text-white'>$250</div>
+                                            <div className='text-5xl sm:text-6xl font-black text-white'>$249.99</div>
                                             <p className='mt-2 text-sm font-semibold text-gray-400'>One-Time Consultation</p>
                                         </div>
                                     </div>

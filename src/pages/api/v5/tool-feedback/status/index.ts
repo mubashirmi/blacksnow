@@ -1,3 +1,4 @@
+import { syncPaidCheckoutRoles } from '@/lib/activateCheckoutAccess';
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -88,6 +89,10 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
          * source of truth for which tools/roles belong to the user.
          */
 
+        // Backfill roles for purchases completed before role activation was
+        // handled server-side. The operation is guarded and idempotent.
+        await syncPaidCheckoutRoles(authId);
+
         const user = await prisma.auth.findUnique({
             where: {
                 id: authId,
@@ -105,6 +110,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     where: {
                         deleted: false,
                         cancelSubscripton: false,
+                        paid: true,
                         product: {
                             not: null,
                         },

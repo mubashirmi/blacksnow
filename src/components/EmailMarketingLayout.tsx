@@ -189,7 +189,7 @@ export default function EmailMarketingLayout({ children }: { children: React.Rea
                 <EmailMarketingSidebar />
                 <main className='flex-1 p-8'>
                     <div className='max-w-6xl mx-auto'>
-                        <h1 className='text-4xl font-bold text-center mb-8'>Email Marketing Dashboard</h1>
+                        <h1 className='text-4xl font-bold text-center mb-8'>Email CRM Lite Dashboard</h1>
                         {children}
                     </div>
                 </main>

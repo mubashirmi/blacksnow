@@ -6,6 +6,7 @@ import {
     CalendarCheck,
     CheckCircle,
     ChevronDown,
+    FilePenLine,
     LinkIcon,
     Loader2,
     LogOut,
@@ -29,6 +30,7 @@ const navigationItems = [
     { name: 'Email Campaign', url: '/emailMarketing/dashboard/campaign', icon: Target },
     { name: 'Email KPI', url: '/emailMarketing/dashboard/kpi', icon: BarChart3 },
     { name: 'Email Schedules', url: '/emailMarketing/dashboard/emailSchedule', icon: CalendarCheck },
+    { name: 'Billing', url: '/emailMarketing/dashboard/billing', icon: FilePenLine },
     { name: 'Notes', url: '/emailMarketing/dashboard/notes', icon: StickyNote },
 ];
 
@@ -476,7 +478,7 @@ export function EmailMarketingSidebar(props: React.HTMLAttributes<HTMLElement>) 
 
                     <div>
                         <span className='font-bold text-xl text-gray-800'>Black Snow</span>
-                        <p className='text-gray-500 text-sm'>Email Marketing CRM</p>
+                        <p className='text-gray-500 text-sm'>Email CRM Lite</p>
                     </div>
                 </div>
             </div>

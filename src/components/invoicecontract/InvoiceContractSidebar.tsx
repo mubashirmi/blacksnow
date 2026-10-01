@@ -8,6 +8,7 @@ import {
     CheckCircle,
     ChevronDown,
     CreditCard,
+    FilePenLine,
     LinkIcon,
     Loader2,
     LogOut,
@@ -30,7 +31,7 @@ const navigationItems = [
     { title: 'Invoices', url: '/invoicecontractdashboard/invoice', icon: StickyNote },
     { title: 'Subscriptions', url: '/invoicecontractdashboard/subscription', icon: CreditCard },
     { title: 'Receipts', url: '/invoicecontractdashboard/receipts', icon: ReceiptText },
-    // { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
+    { title: 'Billing', url: '/invoicecontractdashboard/billing', icon: FilePenLine },
 ];
 
 const UNSUBSCRIBE_PRODUCT = {

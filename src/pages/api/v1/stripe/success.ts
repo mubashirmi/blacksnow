@@ -1,3 +1,4 @@
+import { activateCheckoutAccess } from '@/lib/activateCheckoutAccess';
 import { baseResponse, errorResponse } from '@/lib/baseResponse';
 import prisma from '@/lib/prisma';
 import fs from 'fs';
@@ -1617,17 +1618,9 @@ const api = async (req: NextApiRequest, res: NextApiResponse) => {
 
             logger.info(`Checkout record before update: ${JSON.stringify(checkoutRecord, null, 2)}`);
 
-            updateResult = await prisma.checkout.updateMany({
-                where: {
-                    transactionId: processedSessionId,
-                    deleted: false,
-                },
-
-                data: {
-                    paid: true,
-                    updatedAt: new Date(),
-                },
-            });
+            updateResult = {
+                count: await activateCheckoutAccess(processedSessionId),
+            };
 
             logger.info(`Checkout update result: ${JSON.stringify(updateResult, null, 2)}`);
 

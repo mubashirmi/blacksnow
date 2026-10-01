@@ -137,7 +137,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     { name: 'Affiliate Program', href: '/affiliate' },
                                     { name: 'Business Invoice', href: '/InvoiceContract' },
                                     { name: 'Digital Billboards', href: '/advertising' },
-                                    { name: 'Email CRM', href: '/emailMarketing' },
+                                    { name: 'Email CRM Lite', href: '/emailMarketing' },
                                     { name: 'Lightning Silver', href: '/lightningSilver' },
                                     { name: 'Lightning Gold', href: '/lightningGold' },
                                 ].map((link, index) => (

@@ -6,6 +6,7 @@ import {
     BellOff,
     CheckCircle,
     ChevronDown,
+    FilePenLine,
     LinkIcon,
     Loader2,
     LogOut,
@@ -25,6 +26,7 @@ const navigationItems = [
     { title: 'Notes', url: '/superAffiliate/dashboard/notes', icon: StickyNote },
     { title: 'Links', url: '/superAffiliate/dashboard/links', icon: LinkIcon },
     { title: 'KPI', url: '/superAffiliate/dashboard/kpi', icon: BarChart3 },
+    { title: 'Billing', url: '/superAffiliate/dashboard/billing', icon: FilePenLine },
 ];
 
 const UNSUBSCRIBE_PRODUCT = {

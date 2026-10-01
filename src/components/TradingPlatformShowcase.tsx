@@ -2,6 +2,8 @@ import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import {
     ArrowRight,
     BarChart3,
+    BookOpenText,
+    CalendarDays,
     Check,
     CircleDollarSign,
     Clock3,
@@ -69,6 +71,20 @@ const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string
         body: 'Model economic scenarios and see how changes in key variables could impact the markets.',
         href: '/economic-simulator',
         kind: 'curve',
+    },
+    {
+        icon: BookOpenText,
+        title: 'Research',
+        body: 'Access institutional-grade market, company, earnings, and macro research in one place.',
+        href: '/research',
+        kind: 'line',
+    },
+    {
+        icon: CalendarDays,
+        title: 'Market Moving Calendars',
+        body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
+        href: '/market-moving-calendars',
+        kind: 'bars',
     },
 ];
 
@@ -332,13 +348,15 @@ export default function TradingPlatformShowcase() {
                                     </div>
                                 </div>
                             </div>
-                            <div className='grid grid-cols-2 gap-2 p-3 sm:gap-2.5 xl:grid-cols-3'>
+                            <div className='grid grid-cols-2 gap-2 p-3 sm:gap-2.5 xl:grid-cols-4'>
                                 <DashboardTile title='Market Movers' value='NVDA' change='+4.36%' type='list' id='d1' />
                                 <DashboardTile title='Global KPI' value='5,278.63' change='+1.23%' type='line' id='d2' />
                                 <DashboardTile title='Economic Simulator' value='+0.25%' change='+2.14%' type='line' id='d3' />
                                 <DashboardTile title='Watchlist' value='AAPL' change='+1.92%' type='list' id='d4' />
                                 <DashboardTile title='Paper Trading' value='$125,743.18' change='+8.75%' type='line' id='d5' />
                                 <DashboardTile title='Stock Screener' value='128' change='Matches' type='bars' id='d6' />
+                                <DashboardTile title='Research' value='24 Reports' change='Updated' type='line' id='d7' />
+                                <DashboardTile title='Market Calendars' value='8 Events' change='Today' type='bars' id='d8' />
                             </div>
                         </div>
                     </div>
@@ -349,7 +367,7 @@ export default function TradingPlatformShowcase() {
                         <div className='h-px flex-1 bg-gradient-to-r from-transparent to-[#2c7bbe]/40' />
                         <div className='text-center'>
                             <h2 className='showcase-section-title text-[clamp(1.35rem,5vw,2rem)] font-black text-white'>
-                                Six Powerful Tools. One Unified Platform.
+                                Eight Powerful Tools. One Unified Platform.
                             </h2>
                             <p className='mt-2 text-xs text-white/45 sm:text-sm'>Everything you need to research, simulate, and master the markets.</p>
                         </div>
@@ -434,7 +452,7 @@ export default function TradingPlatformShowcase() {
                     <div className='grid grid-cols-2 divide-x divide-y divide-[#2c7bbe]/15 md:grid-cols-5 md:divide-y-0'>
                         {[
                             [Users, '50K+', 'Active Traders'],
-                            [TrendingUp, '6', 'Powerful Tools'],
+                            [TrendingUp, '8', 'Powerful Tools'],
                             [Globe2, '150+', 'Global Markets'],
                             [Clock3, '99.9%', 'Platform Uptime'],
                             [ShieldCheck, 'Bank-Level', 'Security'],

@@ -185,13 +185,15 @@ function EmailMarketing() {
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
                                         Email/SMS{' '}
-                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>CRM</span>
+                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
+                                            CRM Lite
+                                        </span>
                                     </h1>
                                 </div>
 
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
-                                    Our Combined Email/SMS CRM is designed for fast deployment, clean automation, and high deliverability. You can launch email
-                                    campaigns and automated sequences in minutes with no technical setup. Upload your lists instantly and start messaging
+                                    Our Combined Email/SMS CRM Lite is designed for fast deployment, clean automation, and high deliverability. You can launch
+                                    email campaigns and automated sequences in minutes with no technical setup. Upload your lists instantly and start messaging
                                     without complicated workflows. SMS tools combine with your email system to create a high-value communication strategy inside
                                     one simple dashboard. Run powerful outreach across email and SMS.{' '}
                                 </p>
@@ -242,9 +244,9 @@ function EmailMarketing() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Powerful <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email Marketing</span>
+                            Powerful <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email CRM</span>
                             <br />
-                            Capabilities
+                            Lite Capabilities
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             Everything you need to create, send, and optimize your email marketing campaigns for maximum impact and engagement.
@@ -289,7 +291,7 @@ function EmailMarketing() {
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Why Choose Our Digital{' '}
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email/SMS CRM </span>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email/SMS CRM Lite</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             Take your email marketing to the next level with advanced features designed for professional marketers and growing businesses.

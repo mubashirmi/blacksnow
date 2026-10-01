@@ -38,8 +38,8 @@ function Pricing() {
             {
                 id: 'NewsLetter',
                 name: 'Newsletter',
-                monthlyPrice: 10,
-                yearlyPrice: 50,
+                monthlyPrice: 9.99,
+                yearlyPrice: 49.99,
                 description: 'Weekly premium market insights',
                 features: [
                     'Weekly Stock Picks',
@@ -59,8 +59,8 @@ function Pricing() {
             {
                 id: 'InvoiceTool',
                 name: 'Invoice & Contract',
-                monthlyPrice: 25,
-                yearlyPrice: 250,
+                monthlyPrice: 24.99,
+                yearlyPrice: 249.99,
                 description: 'All-in-one contracts, signatures, and invoices—made simple',
                 features: [
                     'Instant Invoice Builder',
@@ -80,8 +80,8 @@ function Pricing() {
             {
                 id: 'DigitalBillboard',
                 name: 'Digital Billboard',
-                monthlyPrice: 150,
-                yearlyPrice: 600,
+                monthlyPrice: 149.99,
+                yearlyPrice: 599.99,
                 description: 'Premium advertising placement across our platform',
                 features: [
                     'Billboard Creator',
@@ -101,8 +101,8 @@ function Pricing() {
             {
                 id: 'Sales',
                 name: 'Email CRM',
-                monthlyPrice: 500,
-                yearlyPrice: 4000,
+                monthlyPrice: 499.99,
+                yearlyPrice: 3999.99,
                 description: 'Comprehensive communication platform for your business',
                 features: [
                     'Email Campaigns & Automated Sequences',

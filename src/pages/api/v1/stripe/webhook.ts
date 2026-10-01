@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
+import { activateCheckoutAccess } from '@/lib/activateCheckoutAccess';
 import { applySuccessfulEmailOverageCharge } from '@/lib/emailOverageBilling';
 import prisma from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
@@ -257,6 +258,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             stripeCustomerId: customerId,
                         },
                     });
+                }
+
+                /**
+                 * Persist product access even if the customer closes the
+                 * browser before the success page can confirm the payment.
+                 */
+                if (session.payment_status === 'paid') {
+                    await activateCheckoutAccess(session.id);
                 }
 
                 /**

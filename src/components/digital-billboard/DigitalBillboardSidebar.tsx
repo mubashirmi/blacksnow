@@ -1,45 +1,83 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+
 import axios from 'axios';
-import { AlertTriangle, BellOff, CheckCircle, ChevronDown, List, Loader2, LogOut, MessageSquare, Monitor, PlusSquare, Scale, Star, X } from 'lucide-react';
+
+import {
+    AlertTriangle,
+    BellOff,
+    CheckCircle,
+    ChevronDown,
+    CreditCard,
+    List,
+    Loader2,
+    LogOut,
+    MessageSquare,
+    Monitor,
+    PlusSquare,
+    Scale,
+    Star,
+    X,
+} from 'lucide-react';
+
 import Image from 'next/image';
+
 import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
+
 import { destroyCookie, parseCookies } from 'nookies';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-type ActiveKey = 'list' | 'create' | 'edit';
+type ActiveKey = 'list' | 'create' | 'edit' | 'billing';
 
 const UNSUBSCRIBE_PRODUCT = {
     id: 'DigitalBillboard',
+
     label: 'Digital Billboard',
 };
 
 // TODO: Add the real pause-subscription API endpoint supplied by your backend.
+
 const PAUSE_SUBSCRIPTION_API = '/api/v2/pause-subscription';
 
 type ToolRole = 'EmailMarketing' | 'DigitalBillboard' | 'LightningGold' | 'LightningSilver' | 'InvoiceTool';
+
 // ["EmailMarketing","DigitalBillboard","LightningGold","LightningSilver","InvoiceTool"]
+
 type FeedbackStatusResponse = {
     user?: {
         id?: number | string;
+
         firstName?: string;
+
         lastName?: string;
+
         email?: string;
+
         roles?: string[];
     };
+
     totalFeedbacks?: number;
+
     toolsGivenFeedback?: string[];
+
     toolsWithoutFeedback?: string[];
+
     feedbacks?: any[];
 };
 
 const DASHBOARD_ROUTES: Record<ToolRole, { label: string; url: string }> = {
     EmailMarketing: { label: 'Email Marketing', url: '/emailMarketing/dashboard/users' },
+
     DigitalBillboard: { label: 'Digital Billboard', url: '/digitalBillboard/dashboard' },
+
     LightningGold: { label: 'Lightning Gold', url: '/superAffiliate/dashboard/kpi' },
+
     LightningSilver: { label: 'Lightning Silver', url: '/affiliate/dashboard/kpi' },
+
     InvoiceTool: { label: 'Invoice Contract', url: '/invoicecontractdashboard/contract' },
 };
 
@@ -50,55 +88,92 @@ const hasToolName = (list: string[] | undefined, toolName: string) =>
 
 export function DigitalBillboardSidebar({
     activeKey,
+
     canCreateMore,
+
     onShowList,
+
     onCreate,
+
+    onBilling,
+
     onLogout,
+
     closeMobile,
 }: {
     activeKey: ActiveKey;
+
     canCreateMore: boolean;
+
     onShowList: () => void;
+
     onCreate: () => void;
+
+    onBilling: () => void;
+
     onLogout: () => void;
+
     closeMobile: () => void;
 }) {
     const router = useRouter();
 
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const [feedbackStatus, setFeedbackStatus] = useState<FeedbackStatusResponse | null>(null);
+
     const [isStatusLoading, setIsStatusLoading] = useState(false);
+
     const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
+
     const [legalDropdownOpen, setLegalDropdownOpen] = useState(false);
+
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
     const [feedbackReview, setFeedbackReview] = useState('');
+
     const [feedbackStars, setFeedbackStars] = useState('5');
+
     const [feedbackError, setFeedbackError] = useState<string | null>(null);
+
     const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
+
     const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
     const [showPauseConfirm, setShowPauseConfirm] = useState(false);
+
     const [isLoadingPause, setIsLoadingPause] = useState(false);
+
     const [pauseResult, setPauseResult] = useState<{
         open: boolean;
+
         type: 'success' | 'error';
+
         message: string;
     }>({
         open: false,
+
         type: 'success',
+
         message: '',
     });
 
     const [showUnsubscribeConfirm, setShowUnsubscribeConfirm] = useState(false);
+
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
+
     const [unsubscribeResult, setUnsubscribeResult] = useState<{
         open: boolean;
+
         type: 'success' | 'error';
+
         message: string;
     }>({
         open: false,
+
         type: 'success',
+
         message: '',
     });
 
@@ -114,6 +189,7 @@ export function DigitalBillboardSidebar({
 
     const fetchFeedbackStatus = useCallback(async () => {
         const cookies = parseCookies();
+
         const id = cookies.id;
 
         if (!id) return;
@@ -122,6 +198,7 @@ export function DigitalBillboardSidebar({
 
         try {
             const response = await axios.get(`/api/v5/tool-feedback/status?authId=${encodeURIComponent(id)}`);
+
             setFeedbackStatus(response.data || null);
         } catch (error) {
             console.error('Error fetching feedback status:', error);
@@ -136,11 +213,13 @@ export function DigitalBillboardSidebar({
 
     const dashboardRoles = useMemo(() => {
         const roles = feedbackStatus?.user?.roles;
+
         return Array.isArray(roles) ? roles.filter(isDashboardRole) : [];
     }, [feedbackStatus]);
 
     const dashboardOptions = useMemo(
         () => dashboardRoles.filter((role) => role !== UNSUBSCRIBE_PRODUCT.id).map((role) => ({ role, ...DASHBOARD_ROUTES[role] })),
+
         [dashboardRoles]
     );
 
@@ -150,6 +229,7 @@ export function DigitalBillboardSidebar({
         if (!feedbackStatus || isStatusLoading) return false;
 
         const alreadyGiven = hasToolName(feedbackStatus.toolsGivenFeedback, UNSUBSCRIBE_PRODUCT.id);
+
         const needsFeedback = hasToolName(feedbackStatus.toolsWithoutFeedback, UNSUBSCRIBE_PRODUCT.id);
 
         return needsFeedback && !alreadyGiven;
@@ -157,8 +237,11 @@ export function DigitalBillboardSidebar({
 
     const openFeedbackModal = () => {
         setFeedbackReview('');
+
         setFeedbackStars('5');
+
         setFeedbackError(null);
+
         setShowFeedbackModal(true);
     };
 
@@ -166,36 +249,48 @@ export function DigitalBillboardSidebar({
         if (isSubmittingFeedback) return;
 
         const cookies = parseCookies();
+
         const id = cookies.id;
+
         const review = feedbackReview.trim();
 
         if (!id) {
             setFeedbackError('User session was not found. Please sign in again and try to submit feedback.');
+
             return;
         }
 
         if (!review) {
             setFeedbackError('Please write your review before submitting.');
+
             return;
         }
 
         const confirmed = window.confirm('Are you sure you want to submit this feedback? Please recheck your review and stars before confirming.');
+
         if (!confirmed) return;
 
         setIsSubmittingFeedback(true);
+
         setFeedbackError(null);
 
         try {
             await axios.post('/api/v5/tool-feedback', {
                 authId: id,
+
                 review,
+
                 stars: feedbackStars,
+
                 toolName: UNSUBSCRIBE_PRODUCT.id,
             });
 
             setShowFeedbackModal(false);
+
             setFeedbackSuccess('Feedback submitted successfully!');
+
             setTimeout(() => setFeedbackSuccess(null), 3000);
+
             await fetchFeedbackStatus();
         } catch (error: any) {
             setFeedbackError(error?.response?.data?.message || 'Unable to submit feedback. Please try again.');
@@ -208,37 +303,58 @@ export function DigitalBillboardSidebar({
         () => [
             {
                 title: 'Digital Billboard',
+
                 icon: Monitor,
+
                 children: [
                     { title: 'My Billboards', icon: List, key: 'list' as const, onClick: onShowList },
+
                     { title: 'Create Billboard', icon: PlusSquare, key: 'create' as const, onClick: onCreate, disabled: !canCreateMore },
+
+                    { title: 'Billing', icon: CreditCard, key: 'billing' as const, onClick: onBilling },
                 ],
             },
         ],
-        [onShowList, onCreate, canCreateMore]
+
+        [onShowList, onCreate, onBilling, canCreateMore]
     );
 
     const toggleMenu = (title: string) => setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
 
     const clearSession = useCallback(() => {
         destroyCookie(null, 'id');
+
         destroyCookie(null, 'userId');
+
         destroyCookie(null, 'token');
+
         destroyCookie(null, 'admin_token');
+
         destroyCookie(null, 'firstName');
+
         destroyCookie(null, 'lastName');
+
         destroyCookie(null, 'email');
+
         destroyCookie(null, 'adminId');
 
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userId');
+
             localStorage.removeItem('id');
+
             localStorage.removeItem('adminId');
+
             localStorage.removeItem('firstName');
+
             localStorage.removeItem('lastName');
+
             localStorage.removeItem('email');
+
             localStorage.removeItem('roles');
+
             localStorage.removeItem('pausedRoles');
+
             localStorage.removeItem('referredby');
         }
     }, []);
@@ -247,10 +363,13 @@ export function DigitalBillboardSidebar({
         clearSession();
 
         setShowLogoutConfirm(false);
+
         setShowUnsubscribeConfirm(false);
+
         setUnsubscribeResult((prev) => ({ ...prev, open: false }));
 
         closeMobile?.();
+
         onLogout?.();
 
         router.push('/');
@@ -267,6 +386,7 @@ export function DigitalBillboardSidebar({
 
         try {
             const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+
             return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
         } catch {
             return [];
@@ -275,13 +395,17 @@ export function DigitalBillboardSidebar({
 
     const moveCurrentRoleToPausedRoles = () => {
         const currentRole = UNSUBSCRIBE_PRODUCT.id;
+
         const roles = readLocalStorageArray('roles');
+
         const pausedRoles = readLocalStorageArray('pausedRoles');
 
         const updatedRoles = roles.filter((role) => role !== currentRole);
+
         const updatedPausedRoles = pausedRoles.includes(currentRole) ? pausedRoles : [...pausedRoles, currentRole];
 
         localStorage.setItem('roles', JSON.stringify(updatedRoles));
+
         localStorage.setItem('pausedRoles', JSON.stringify(updatedPausedRoles));
 
         return updatedRoles;
@@ -291,25 +415,34 @@ export function DigitalBillboardSidebar({
         if (isLoadingPause) return;
 
         const cookies = parseCookies();
+
         const id = cookies.id;
 
         if (!id) {
             setShowPauseConfirm(false);
+
             setPauseResult({
                 open: true,
+
                 type: 'error',
+
                 message: 'User session was not found. Please sign in again and try to pause this subscription.',
             });
+
             return;
         }
 
         if (!PAUSE_SUBSCRIPTION_API.trim()) {
             setShowPauseConfirm(false);
+
             setPauseResult({
                 open: true,
+
                 type: 'error',
+
                 message: 'Pause API endpoint is not configured. Add the endpoint in PAUSE_SUBSCRIPTION_API.',
             });
+
             return;
         }
 
@@ -320,34 +453,45 @@ export function DigitalBillboardSidebar({
 
             if (response.status >= 200 && response.status < 300) {
                 const remainingRoles = moveCurrentRoleToPausedRoles();
+
                 setShowPauseConfirm(false);
+
                 setPauseResult({
                     open: true,
+
                     type: 'success',
+
                     message: response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription paused successfully.`,
                 });
 
                 const nextRole = remainingRoles.find(isDashboardRole);
+
                 if (nextRole) {
                     router.replace(DASHBOARD_ROUTES[nextRole].url);
                 } else {
                     router.replace('/');
                 }
+
                 return;
             }
 
             throw new Error(response.data?.message || 'Unable to pause subscription.');
         } catch (error: any) {
             console.error('Error pausing subscription:', error);
+
             setShowPauseConfirm(false);
+
             setPauseResult({
                 open: true,
+
                 type: 'error',
+
                 message: error?.response?.data?.message || error?.message || `Unable to pause ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
             });
         } finally {
             setIsLoadingPause(false);
         }
+
         // eslint-disable-next-line
     }, [isLoadingPause, router]);
 
@@ -355,15 +499,20 @@ export function DigitalBillboardSidebar({
         if (isLoadingUnsubscribe) return;
 
         const cookies = parseCookies();
+
         const id = cookies.id;
 
         if (!id) {
             setShowUnsubscribeConfirm(false);
+
             setUnsubscribeResult({
                 open: true,
+
                 type: 'error',
+
                 message: 'User session was not found. Please sign in again and try to unsubscribe.',
             });
+
             return;
         }
 
@@ -376,9 +525,12 @@ export function DigitalBillboardSidebar({
 
             if (response.status === 200) {
                 setShowUnsubscribeConfirm(false);
+
                 setUnsubscribeResult({
                     open: true,
+
                     type: 'success',
+
                     message: response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription cancelled successfully. You will be logged out now.`,
                 });
 
@@ -394,18 +546,24 @@ export function DigitalBillboardSidebar({
             }
 
             setShowUnsubscribeConfirm(false);
+
             setUnsubscribeResult({
                 open: true,
+
                 type: 'error',
+
                 message: response.data?.message || `Unable to unsubscribe from ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
             });
         } catch (error: any) {
             console.error('Error unsubscribing:', error);
 
             setShowUnsubscribeConfirm(false);
+
             setUnsubscribeResult({
                 open: true,
+
                 type: 'error',
+
                 message: error?.response?.data?.message || `Unable to unsubscribe from ${UNSUBSCRIBE_PRODUCT.label}. Please try again or contact support.`,
             });
         } finally {
@@ -416,6 +574,7 @@ export function DigitalBillboardSidebar({
     const closeResultModal = () => {
         if (unsubscribeResult.type === 'success') {
             performDashboardLogout();
+
             return;
         }
 
@@ -425,6 +584,7 @@ export function DigitalBillboardSidebar({
     return (
         <div className='h-full flex flex-col'>
             {/* Header */}
+
             <div className='p-6 border-b border-gray-100'>
                 <div className='flex items-center gap-3'>
                     <div className='relative transform hover:scale-105 transition-transform duration-300'>
@@ -447,6 +607,7 @@ export function DigitalBillboardSidebar({
             </div>
 
             {/* Nav */}
+
             <div className='flex-1 overflow-y-auto p-4'>
                 <div className='space-y-1'>
                     {showDashboardButton && (
@@ -458,8 +619,10 @@ export function DigitalBillboardSidebar({
                             >
                                 <span className='flex items-center gap-3'>
                                     <Monitor className='w-4 h-4' />
+
                                     <span>Dashboard</span>
                                 </span>
+
                                 <ChevronDown className={`w-4 h-4 transition-transform ${dashboardDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
 
@@ -471,7 +634,9 @@ export function DigitalBillboardSidebar({
                                             type='button'
                                             onClick={() => {
                                                 setDashboardDropdownOpen(false);
+
                                                 closeMobile?.();
+
                                                 router.push(item.url);
                                             }}
                                             className='w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors cursor-pointer'
@@ -483,12 +648,15 @@ export function DigitalBillboardSidebar({
                             )}
                         </div>
                     )}
+
                     {navigationItems.map((item) => {
                         const hasChildren = Array.isArray((item as any).children) && (item as any).children.length > 0;
 
                         if (hasChildren) {
                             const title = item.title;
+
                             const isChildActive = (item as any).children.some((c: any) => c.key === activeKey);
+
                             const isOpen = openMenus[title] ?? isChildActive;
 
                             return (
@@ -497,12 +665,16 @@ export function DigitalBillboardSidebar({
                                         type='button'
                                         onClick={() => toggleMenu(title)}
                                         className={`
+
                                             w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium
+
                                             ${isChildActive ? 'bg-gray-800 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'}
+
                                         `}
                                     >
                                         <span className='flex items-center gap-3'>
                                             <item.icon className='w-4 h-4' />
+
                                             <span>{title}</span>
                                         </span>
 
@@ -513,6 +685,7 @@ export function DigitalBillboardSidebar({
                                         <div className='ml-4 space-y-1'>
                                             {(item as any).children.map((child: any) => {
                                                 const childActive = child.key === activeKey;
+
                                                 const disabled = Boolean(child.disabled);
 
                                                 return (
@@ -521,21 +694,28 @@ export function DigitalBillboardSidebar({
                                                         type='button'
                                                         onClick={() => {
                                                             if (disabled) return;
+
                                                             child.onClick?.();
+
                                                             closeMobile();
                                                         }}
                                                         disabled={disabled}
                                                         className={`
+
                                                             w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-left
+
                                                             ${
                                                                 childActive
                                                                     ? 'bg-gray-800 text-white shadow-md'
                                                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                                                             }
+
                                                             ${disabled ? 'opacity-50 cursor-not-allowed hover:bg-transparent hover:text-gray-600' : ''}
+
                                                         `}
                                                     >
                                                         <child.icon className='w-4 h-4' />
+
                                                         <span>{child.title}</span>
                                                     </button>
                                                 );
@@ -552,6 +732,7 @@ export function DigitalBillboardSidebar({
             </div>
 
             {/* Footer */}
+
             <div className='p-4 border-t border-gray-100 space-y-2'>
                 {feedbackSuccess && (
                     <div className='mb-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>{feedbackSuccess}</div>
@@ -566,7 +747,9 @@ export function DigitalBillboardSidebar({
                         className='flex w-full items-center gap-3 px-4 py-3 text-left font-medium text-gray-700 transition-colors hover:bg-gray-100'
                     >
                         <Scale className='h-4 w-4' />
+
                         <span className='flex-1'>Legal</span>
+
                         <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${legalDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
@@ -582,34 +765,42 @@ export function DigitalBillboardSidebar({
                                     type='button'
                                     onClick={() => {
                                         setLegalDropdownOpen(false);
+
                                         openFeedbackModal();
                                     }}
                                     className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-700'
                                 >
                                     <MessageSquare className='w-4 h-4' />
+
                                     <span>Feedback</span>
                                 </button>
                             )}
+
                             <button
                                 type='button'
                                 onClick={() => {
                                     setLegalDropdownOpen(false);
+
                                     setShowPauseConfirm(true);
                                 }}
                                 className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-amber-50 hover:text-amber-700'
                             >
                                 <BellOff className='h-4 w-4' />
+
                                 <span>Pause</span>
                             </button>
+
                             <button
                                 type='button'
                                 onClick={() => {
                                     setLegalDropdownOpen(false);
+
                                     setShowUnsubscribeConfirm(true);
                                 }}
                                 className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-red-50 hover:text-red-700'
                             >
                                 <AlertTriangle className='h-4 w-4' />
+
                                 <span>Unsubscribe</span>
                             </button>
                         </div>
@@ -621,11 +812,13 @@ export function DigitalBillboardSidebar({
                     className='flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 font-medium cursor-pointer'
                 >
                     <LogOut className='w-4 h-4' />
+
                     <span>Logout</span>
                 </button>
             </div>
 
             {/* Logout confirmation modal */}
+
             {showLogoutConfirm && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center'>
                     <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
@@ -655,6 +848,7 @@ export function DigitalBillboardSidebar({
             )}
 
             {/* Pause subscription confirmation modal */}
+
             {showPauseConfirm && (
                 <div className='fixed inset-0 z-[60] flex items-center justify-center px-4'>
                     <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isLoadingPause && setShowPauseConfirm(false)} />
@@ -675,6 +869,7 @@ export function DigitalBillboardSidebar({
                             </div>
 
                             <h2 className='text-2xl font-black text-white mb-3'>Pause Subscription</h2>
+
                             <p className='text-gray-300 text-sm leading-relaxed'>
                                 Are you sure you want to pause the subscription of{' '}
                                 <span className='font-black text-amber-300'>{UNSUBSCRIBE_PRODUCT.label}</span>?
@@ -712,6 +907,7 @@ export function DigitalBillboardSidebar({
             )}
 
             {/* Pause result modal */}
+
             {pauseResult.open && (
                 <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-md px-4'>
                     <div className='w-full max-w-md rounded-[28px] border border-white/10 bg-[#08090c] p-7 text-center shadow-2xl'>
@@ -720,8 +916,11 @@ export function DigitalBillboardSidebar({
                         ) : (
                             <AlertTriangle className='mx-auto h-14 w-14 text-red-400' />
                         )}
+
                         <h2 className='mt-4 text-2xl font-black text-white'>{pauseResult.type === 'success' ? 'Subscription Paused' : 'Pause Failed'}</h2>
+
                         <p className='mt-3 text-sm leading-relaxed text-white/60'>{pauseResult.message}</p>
+
                         <button
                             type='button'
                             onClick={() => setPauseResult((prev) => ({ ...prev, open: false }))}
@@ -734,6 +933,7 @@ export function DigitalBillboardSidebar({
             )}
 
             {/* Unsubscribe confirmation modal */}
+
             {showUnsubscribeConfirm && (
                 <div className='fixed inset-0 z-[60] flex items-center justify-center px-4'>
                     <div
@@ -766,6 +966,7 @@ export function DigitalBillboardSidebar({
 
                             <div className='mt-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-left'>
                                 <p className='text-sm font-bold text-white'>Before you continue</p>
+
                                 <p className='text-xs text-white/50 leading-relaxed mt-1'>
                                     Your subscription will be cancelled and you will be logged out after successful unsubscribe.
                                 </p>
@@ -803,6 +1004,7 @@ export function DigitalBillboardSidebar({
             )}
 
             {/* Unsubscribe result modal */}
+
             {unsubscribeResult.open && (
                 <div className='fixed inset-0 z-[70] flex items-center justify-center px-4'>
                     <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={closeResultModal} />
@@ -856,6 +1058,7 @@ export function DigitalBillboardSidebar({
             )}
 
             {/* Feedback modal */}
+
             {showFeedbackModal && (
                 <div className='fixed inset-0 z-[80] flex items-center justify-center px-4'>
                     <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isSubmittingFeedback && setShowFeedbackModal(false)} />
@@ -864,31 +1067,54 @@ export function DigitalBillboardSidebar({
                         className='relative rounded-[32px] z-[81] border w-full max-w-[540px] overflow-hidden backdrop-blur-2xl'
                         style={{
                             borderColor: 'rgba(255,255,255,0.1)',
+
                             background: `
+
     linear-gradient(
+
       180deg,
+
       rgba(14, 17, 21, 0.74) 0%,
+
       rgba(8, 11, 15, 0.68) 45%,
+
       rgba(16, 19, 23, 0.72) 100%
+
     ),
+
     radial-gradient(
+
       circle at 50% 115%,
+
       rgba(255, 255, 255, 0.09) 0%,
+
       rgba(255, 255, 255, 0.025) 34%,
+
       transparent 62%
+
     ),
+
     radial-gradient(
+
       circle at 50% -10%,
+
       rgba(0, 194, 255, 0.08) 0%,
+
       transparent 42%
+
     )
+
   `,
+
                             WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+
                             backdropFilter: 'blur(20px) saturate(160%)',
+
                             boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
                         }}
                     >
                         {/* <div className='absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.16)_0%,transparent_38%)]' /> */}
+
                         {/* <div className='absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent' /> */}
 
                         <button
@@ -907,6 +1133,7 @@ export function DigitalBillboardSidebar({
                             </div>
 
                             <h2 className='text-center text-3xl font-black text-white mb-2'>Feedback</h2>
+
                             <p className='text-center text-sm text-white/50 mb-7'>Share your {UNSUBSCRIBE_PRODUCT.label} experience.</p>
 
                             {feedbackError && (
@@ -917,6 +1144,7 @@ export function DigitalBillboardSidebar({
                                 <div className='rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-[7px]'>
                                     <div className='mb-4 flex items-center justify-between gap-3'>
                                         <label className='block text-sm font-black text-white'>Review</label>
+
                                         <span className='rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-300'>
                                             {feedbackStars}/5 Stars
                                         </span>
@@ -925,6 +1153,7 @@ export function DigitalBillboardSidebar({
                                     <div className='flex items-center justify-center gap-2'>
                                         {Array.from({ length: 5 }, (_, index) => {
                                             const starValue = index + 1;
+
                                             const selected = Number(feedbackStars) >= starValue;
 
                                             return (
@@ -949,6 +1178,7 @@ export function DigitalBillboardSidebar({
 
                                 <div className='rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-[7px]'>
                                     <label className='mb-3 block text-sm font-black text-white'>Feedback</label>
+
                                     <textarea
                                         value={feedbackReview}
                                         onChange={(e) => setFeedbackReview(e.target.value)}

@@ -447,8 +447,8 @@ const PRODUCTS = [
         id: 'NewsLetter',
         apiName: 'NewsLetter',
         name: 'Newsletter',
-        monthlyPrice: 10,
-        yearlyPrice: 50,
+        monthlyPrice: 9.99,
+        yearlyPrice: 49.99,
         description: 'Weekly premium market insights',
         features: [
             'Weekly Stock Picks',
@@ -471,8 +471,8 @@ const PRODUCTS = [
         id: 'InvoiceTool',
         apiName: 'InvoiceTool',
         name: 'Invoice & Contract',
-        monthlyPrice: 25,
-        yearlyPrice: 250,
+        monthlyPrice: 24.99,
+        yearlyPrice: 249.99,
         description: 'All-in-one contracts, signatures, and invoices—made simple',
         features: ['Instant Invoice Builder', 'Email Delivery', 'Invoice Dashboard', 'Create Invoice Contracts', 'Add Multiple Users', 'Recurring Invoices'],
         icon: FilePen,
@@ -488,8 +488,8 @@ const PRODUCTS = [
         id: 'DigitalBillboard',
         apiName: 'DigitalBillboard',
         name: 'Digital Billboard',
-        monthlyPrice: 150,
-        yearlyPrice: 600,
+        monthlyPrice: 149.99,
+        yearlyPrice: 599.99,
         description: 'Premium advertising placement across our platform',
         features: [
             'Billboard Creator',
@@ -512,8 +512,8 @@ const PRODUCTS = [
         id: 'Sales',
         apiName: 'EmailMarketing',
         name: 'Email CRM',
-        monthlyPrice: 500,
-        yearlyPrice: 4000,
+        monthlyPrice: 499.99,
+        yearlyPrice: 3999.99,
         description: 'Comprehensive communication platform for your business',
         features: [
             'Email Campaigns & Automated Sequences',
@@ -536,8 +536,8 @@ const PRODUCTS = [
         id: 'LightningSilver',
         apiName: 'LightningSilver',
         name: 'Lightning Silver',
-        monthlyPrice: 5,
-        yearlyPrice: 60,
+        monthlyPrice: 4.99,
+        yearlyPrice: 59.99,
         description:
             'Earn 25% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to help you grow consistently.',
         features: [
@@ -561,8 +561,8 @@ const PRODUCTS = [
         id: 'LightningGold',
         apiName: 'LightningGold',
         name: 'Lightning Gold',
-        monthlyPrice: 250,
-        yearlyPrice: 3000,
+        monthlyPrice: 249.99,
+        yearlyPrice: 2999.99,
         description:
             'Earn 75% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to maximize every sale.',
         features: [

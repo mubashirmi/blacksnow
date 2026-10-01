@@ -385,15 +385,11 @@ function GlobalKpiPageContent() {
                     </div>
 
                     <ComingSoonTrigger
-                        className='group flex min-h-[44px] w-full items-center justify-center gap-4 rounded-[5px] border px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white transition-all hover:bg-[#1768ff]/10 sm:w-auto'
-                        style={{
-                            borderColor: BLUE,
-                            boxShadow: '0 0 22px rgba(23,104,255,0.10)',
-                        }}
                         ariaLabel='Explore Global KPI'
+                        className='group flex min-h-[48px] w-full items-center justify-center gap-3 rounded-[5px] bg-[#1768ff] px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(23,104,255,0.22)] transition-all duration-200 hover:bg-[#2d7cff] sm:w-auto'
                     >
                         Explore Global KPI
-                        <ArrowUp className='h-4 w-4 rotate-90 transition-transform duration-200 group-hover:translate-x-1' />
+                        <ArrowUp className='h-4 w-4 rotate-90 transition-transform duration-200 group-hover:translate-y-[-4px]' />
                     </ComingSoonTrigger>
                 </div>
             </section>

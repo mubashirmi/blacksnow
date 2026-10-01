@@ -1,3 +1,4 @@
+import { syncPaidCheckoutRoles } from '@/lib/activateCheckoutAccess';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
@@ -28,6 +29,15 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(401).json({ message: 'Invalid email or password' });
             }
 
+            // Ensure purchases completed before role synchronization was added
+            // are included in the login response as well as future sessions.
+            await syncPaidCheckoutRoles(user.id);
+
+            const refreshedUserRoles = await prisma.auth.findUnique({
+                where: { id: user.id },
+                select: { roles: true },
+            });
+
             const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
 
             const cookieOptions = {
@@ -48,7 +58,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     email: user.email,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    roles: user.roles,
+                    roles: refreshedUserRoles?.roles ?? user.roles,
                 },
             });
         } catch (error) {

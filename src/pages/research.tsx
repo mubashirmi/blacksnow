@@ -747,9 +747,12 @@ const ResearchPage: NextPage = () => {
                                     </div>
                                 </div>
 
-                                <ComingSoonTrigger className='group flex min-h-[46px] w-full items-center justify-center gap-5 rounded-[4px] border border-[#cfd4d8]/80 px-7 text-[12px] font-medium uppercase tracking-[0.02em] text-[#f0f1f1] transition-all duration-200 hover:bg-white/[0.05] sm:w-[285px]'>
+                                <ComingSoonTrigger
+                                    ariaLabel='Explore research'
+                                    className='group flex min-h-[48px] w-full items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#2c7bbe] px-5 text-[9px] font-medium uppercase tracking-[0.02em] text-white shadow-[0_0_24px_rgba(44,123,190,0.20)] transition-all duration-200 hover:bg-[#4cc7e8] sm:w-auto sm:px-7 sm:text-[11px]'
+                                >
                                     Explore Research
-                                    <ArrowRight className='h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-1' />
+                                    <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                                 </ComingSoonTrigger>
                             </div>
                         </div>

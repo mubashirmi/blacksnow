@@ -25,7 +25,7 @@ const menuItems = [
             { name: 'Affiliate Program', href: '/affiliate' },
             { name: 'Business Invoice', href: '/InvoiceContract' },
             { name: 'Digital Billboard', href: '/advertising' },
-            { name: 'Email CRM', href: '/emailMarketing' },
+            { name: 'Email CRM Lite', href: '/emailMarketing' },
         ],
     },
     {
@@ -65,7 +65,7 @@ const roleDashboardMap: Record<
         path: '/invoicecontractdashboard/contract',
     },
     EmailMarketing: {
-        label: 'Email Marketing Dashboard',
+        label: 'Email CRM Lite Dashboard',
         path: '/emailMarketing/dashboard/users',
     },
     DigitalBillboard: {
@@ -265,6 +265,20 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 >
                     {/* Header */}
                     <div className='p-6 border-b border-[#2c7bbe]/20 min-w-0'>
+                        <Link
+                            href='/'
+                            onClick={() => setIsOpen(false)}
+                            className={`mb-5 flex w-fit items-center gap-3 text-left transform transition-all duration-700 delay-100 ${
+                                isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+                            }`}
+                        >
+                            <Image width={60} height={60} src='/logocolored.png' alt='Black Snow' className='h-[60px] w-[60px] shrink-0 object-contain' />
+
+                            <span className='text-2xl sm:text-[26px] font-black leading-none bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
+                                Black Snow
+                            </span>
+                        </Link>
+
                         <h2
                             className={`w-full min-w-0 text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
@@ -326,14 +340,6 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         }`}
                     >
                         <div className='space-y-4'>
-                            <div className='text-center'>
-                                <div className='w-full flex items-center justify-center mb-1'>
-                                    <Image width={50} height={50} src='/logocolored.png' className='' alt='Logo' />
-                                </div>
-                                <div className='text-lg font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</div>
-                                <div className='text-sm text-gray-400 mt-1'>Professional Trading Solutions</div>
-                            </div>
-
                             {/* Dashboards section + Admin Dashboard validation */}
                             {((userid && dashboards.length > 0) || adminId) && (
                                 <div className='space-y-2'>
