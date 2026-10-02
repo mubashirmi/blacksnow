@@ -268,13 +268,13 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         <Link
                             href='/'
                             onClick={() => setIsOpen(false)}
-                            className={`mb-5 flex w-fit items-center gap-3 text-left transform transition-all duration-700 delay-100 ${
+                            className={`mb-5 flex flex-col w-fit items-start gap-2 text-left transform transition-all duration-700 delay-100 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                             }`}
                         >
                             <Image width={60} height={60} src='/logocolored.png' alt='Black Snow' className='h-[60px] w-[60px] shrink-0 object-contain' />
 
-                            <span className='text-2xl sm:text-[26px] font-black leading-none bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
+                            <span className='text-2xl sm:text-[24px] font-black leading-none bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
                                 Black Snow
                             </span>
                         </Link>
@@ -335,7 +335,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
 
                     {/* Footer */}
                     <div
-                        className={`absolute bottom-0 left-0 right-0 p-6 border-t border-[#2c7bbe]/20 bg-gradient-to-t from-[#050608] to-[#171d29]/70 transform transition-all duration-700 delay-500 ${
+                        className={`absolute bottom-0 left-0 right-0 p-6 bg-[#050608] transform transition-all duration-700 delay-500 ${
                             isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                         }`}
                     >

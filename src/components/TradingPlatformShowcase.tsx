@@ -73,18 +73,18 @@ const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string
         kind: 'curve',
     },
     {
+        icon: CalendarDays,
+        title: 'Calendars',
+        body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
+        href: '/market-moving-calendars',
+        kind: 'bars',
+    },
+    {
         icon: BookOpenText,
         title: 'Research',
         body: 'Access institutional-grade market, company, earnings, and macro research in one place.',
         href: '/research',
         kind: 'line',
-    },
-    {
-        icon: CalendarDays,
-        title: 'Market Moving Calendars',
-        body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
-        href: '/market-moving-calendars',
-        kind: 'bars',
     },
 ];
 
