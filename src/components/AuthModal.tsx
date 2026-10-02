@@ -1024,18 +1024,47 @@ export default function AuthModal({
 
     return (
         <>
+            {/* Thin, translucent scrollbar to match the dark glass modal. */}
+            <style>{`
+                .auth-glass-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(87, 105, 121, 0.62) rgba(0, 0, 0, 0.12);
+                }
+
+                .auth-glass-scrollbar::-webkit-scrollbar {
+                    width: 5px;
+                }
+
+                .auth-glass-scrollbar::-webkit-scrollbar-track {
+                    margin-block: 10px;
+                    border-radius: 999px;
+                    background: rgba(0, 0, 0, 0.12);
+                }
+
+                .auth-glass-scrollbar::-webkit-scrollbar-thumb {
+                    border-radius: 999px;
+                    background: linear-gradient(180deg, rgba(112, 132, 146, 0.46), rgba(58, 73, 87, 0.66));
+                    border: 1px solid rgba(255, 255, 255, 0.06);
+                    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.07), 0 0 6px rgba(0, 0, 0, 0.18);
+                }
+
+                .auth-glass-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(117, 137, 154, 0.68);
+                }
+            `}</style>
+
             <Dialog
                 open={open}
                 onOpenChange={(v) => {
                     if (!isLoading && !otpSending && !otpVerifying) onOpenChange(v);
                 }}
             >
-                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
+                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
                     <div
                         className='relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-2xl'
                         style={{
-                            minHeight: UNIFIED_CARD_HEIGHT,
                             height: UNIFIED_CARD_HEIGHT,
+                            maxHeight: 'calc(100dvh - 2rem)',
                             background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
                             WebkitBackdropFilter: 'blur(8px) saturate(145%)',
                             backdropFilter: 'blur(8px) saturate(145%)',
@@ -1114,10 +1143,10 @@ export default function AuthModal({
                         )}
 
                         {/* Body */}
-                        <div className='relative z-10 px-7 pb-5 pt-3 overflow-hidden flex-1 flex flex-col'>
+                        <div className='auth-glass-scrollbar relative z-10 min-h-0 flex-1 flex flex-col overflow-y-auto overflow-x-hidden overscroll-contain px-7 pb-5 pt-3'>
                             {alert.message && (
                                 <div
-                                    className={`mb-3 flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
+                                    className={`mb-3 flex shrink-0 items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
                                         alert.type === 'success'
                                             ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
                                             : 'border-red-400/30 bg-red-500/10 text-red-300'
@@ -1458,7 +1487,7 @@ export default function AuthModal({
                                 </form>
                             )}
 
-                            <div className='mt-3 flex items-center justify-center gap-2 text-xs text-white/30'>
+                            <div className='mt-3 flex shrink-0 items-center justify-center gap-2 text-xs text-white/30'>
                                 <Lock className='h-3.5 w-3.5' />
                                 Secure &amp; encrypted connection
                             </div>

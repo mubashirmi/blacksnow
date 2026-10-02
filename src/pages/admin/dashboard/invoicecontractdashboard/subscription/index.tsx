@@ -380,7 +380,7 @@ const InvoicesPage: NextPage = () => {
 
     const handleCreateInvoiceForContract = (contractId: number) => {
         // eslint-disable-next-line
-        void router.push(`/admin/dashboard/invoicecontractdashboard/invoice/create?contractId=${contractId}`);
+        void router.push(`/admin/dashboard/invoicecontractdashboard/subscription/create?contractId=${contractId}`);
     };
 
     const openRefundModal = (invoice: Invoice) => {
