@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type DigitalBillboardBillingProps = {
@@ -7,55 +8,89 @@ type DigitalBillboardBillingProps = {
 
 type SubscriptionUser = {
     authId: number;
+
     email: string;
+
     firstName: string;
+
     lastName: string;
 };
 
 type DigitalBillboardSubscription = {
     id: number;
+
     product: string;
+
     amount: number;
+
     period: string;
+
     paid: boolean;
+
     paused: boolean;
+
     canceled: boolean;
+
     startDate: string;
+
     storedNextBillingDate: string | null;
+
     stripeCheckoutSessionId: string | null;
+
     stripeSubscriptionId: string | null;
+
     stripeStatus: string | null;
+
     cancelAtPeriodEnd: boolean;
+
     currentPeriodStart: string | null;
+
     currentPeriodEnd: string | null;
 };
 
 type DigitalBillboardTransaction = {
     id: string;
+
     subscriptionId: string | null;
+
     paymentIntentId: string | null;
+
     status: string;
+
     paid: boolean;
+
     amountDue: number;
+
     amountPaid: number;
+
     amountRemaining: number;
+
     currency: string;
+
     transactionDate: string;
+
     hostedInvoiceUrl: string | null;
+
     invoicePdf: string | null;
 };
 
 type DigitalBillboardBillingData = {
     user: SubscriptionUser;
+
     subscription: DigitalBillboardSubscription | null;
+
     transactions: DigitalBillboardTransaction[];
+
     nextBillingDate: string | null;
 };
 
 type DigitalBillboardSubscriptionResponse = {
     success: boolean;
+
     data?: DigitalBillboardBillingData;
+
     message?: string;
+
     error?: string;
 };
 
@@ -63,8 +98,11 @@ const formatCurrency = (amount: number, currency = 'USD'): string => {
     try {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
+
             currency: currency.toUpperCase(),
+
             minimumFractionDigits: 2,
+
             maximumFractionDigits: 2,
         }).format(amount);
     } catch {
@@ -87,7 +125,9 @@ const formatDate = (value: string | null | undefined): string => {
 
     return date.toLocaleDateString(undefined, {
         year: 'numeric',
+
         month: 'long',
+
         day: 'numeric',
     });
 };
@@ -103,9 +143,13 @@ const formatDateTime = (value: string | null | undefined): string => {
 
     return date.toLocaleString(undefined, {
         year: 'numeric',
+
         month: 'short',
+
         day: 'numeric',
+
         hour: '2-digit',
+
         minute: '2-digit',
     });
 };
@@ -118,16 +162,20 @@ const capitalize = (value: string | null | undefined): string => {
 
 export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps) {
     const [billingData, setBillingData] = useState<DigitalBillboardBillingData | null>(null);
+
     const [isLoading, setIsLoading] = useState(true);
+
     const [error, setError] = useState<string | null>(null);
 
     const fetchBillingData = useCallback(async () => {
         setIsLoading(true);
+
         setError(null);
 
         try {
             const response = await fetch(`/api/v5/digital-billboard/subscription?authId=${encodeURIComponent(authId)}`, {
                 method: 'GET',
+
                 headers: {
                     Accept: 'application/json',
                 },
@@ -146,6 +194,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
             setBillingData(responseData.data);
         } catch (fetchError) {
             setBillingData(null);
+
             setError(fetchError instanceof Error ? fetchError.message : 'Something went wrong while loading billing information.');
         } finally {
             setIsLoading(false);
@@ -162,6 +211,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
     const transactions = useMemo(() => {
         return [...(billingData?.transactions ?? [])].sort((first, second) => {
             const firstTime = new Date(first.transactionDate).getTime();
+
             const secondTime = new Date(second.transactionDate).getTime();
 
             return (Number.isFinite(secondTime) ? secondTime : 0) - (Number.isFinite(firstTime) ? firstTime : 0);
@@ -176,6 +226,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         if (!subscription) {
             return {
                 label: 'Unavailable',
+
                 className: 'bg-gray-100 text-gray-700 ring-gray-200',
             };
         }
@@ -183,6 +234,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         if (subscription.canceled) {
             return {
                 label: 'Canceled',
+
                 className: 'bg-red-50 text-red-700 ring-red-200',
             };
         }
@@ -190,6 +242,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         if (subscription.paused) {
             return {
                 label: 'Paused',
+
                 className: 'bg-amber-50 text-amber-700 ring-amber-200',
             };
         }
@@ -197,6 +250,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         if (subscription.cancelAtPeriodEnd) {
             return {
                 label: 'Cancels at period end',
+
                 className: 'bg-amber-50 text-amber-700 ring-amber-200',
             };
         }
@@ -204,12 +258,14 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         if (subscription.paid && subscription.stripeStatus?.toLowerCase() === 'active') {
             return {
                 label: 'Active',
+
                 className: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
             };
         }
 
         return {
             label: capitalize(subscription.stripeStatus),
+
             className: 'bg-gray-100 text-gray-700 ring-gray-200',
         };
     }, [subscription]);
@@ -219,17 +275,23 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
             <div>
                 <div className='mb-6'>
                     <h1 className='text-2xl font-bold text-gray-900'>Billing</h1>
+
                     <p className='mt-1 text-sm text-gray-500'>Manage your Digital Billboard subscription and invoices.</p>
                 </div>
 
                 <div className='overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]'>
                     <div className='animate-pulse lg:grid lg:grid-cols-2'>
                         <div className='min-h-[520px] bg-slate-100' />
+
                         <div className='min-h-[520px] bg-white p-8'>
                             <div className='h-14 w-14 rounded-full bg-slate-100' />
+
                             <div className='mt-6 h-7 w-48 rounded bg-slate-100' />
+
                             <div className='mt-4 h-4 w-64 rounded bg-slate-100' />
+
                             <div className='mt-14 h-4 w-36 rounded bg-slate-100' />
+
                             <div className='mt-4 h-12 w-60 rounded bg-slate-100' />
                         </div>
                     </div>
@@ -237,6 +299,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                 <div className='mt-6 rounded-[20px] border border-gray-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)]'>
                     <div className='h-6 w-40 animate-pulse rounded bg-slate-100' />
+
                     <div className='mt-5 h-36 animate-pulse rounded-xl bg-slate-100' />
                 </div>
             </div>
@@ -248,11 +311,13 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
             <div>
                 <div className='mb-6'>
                     <h1 className='text-2xl font-bold text-gray-900'>Billing</h1>
+
                     <p className='mt-1 text-sm text-gray-500'>Manage your Digital Billboard subscription and invoices.</p>
                 </div>
 
                 <div className='rounded-[20px] border border-red-200 bg-red-50 px-6 py-5'>
                     <h2 className='text-lg font-semibold text-red-900'>Unable to load billing information</h2>
+
                     <p className='mt-1 text-sm text-red-700'>{error}</p>
 
                     <button
@@ -273,11 +338,13 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
             <div>
                 <div className='mb-6'>
                     <h1 className='text-2xl font-bold text-gray-900'>Billing</h1>
+
                     <p className='mt-1 text-sm text-gray-500'>Manage your Digital Billboard subscription and invoices.</p>
                 </div>
 
                 <div className='rounded-[20px] border border-gray-200 bg-white px-6 py-12 text-center shadow-[0_10px_30px_rgba(15,23,42,0.06)]'>
                     <h2 className='text-xl font-semibold text-slate-900'>No subscription found</h2>
+
                     <p className='mt-2 text-sm text-gray-500'>No Digital Billboard subscription is currently associated with this account.</p>
                 </div>
             </div>
@@ -288,6 +355,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
         <div>
             <div className='mb-6'>
                 <h1 className='text-2xl font-bold text-gray-900'>Billing</h1>
+
                 <p className='mt-1 text-sm text-gray-500'>Manage your Digital Billboard subscription and invoices.</p>
             </div>
 
@@ -328,12 +396,14 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                             height={50}
                                             className='h-[40px] w-auto object-contain sm:h-[44px]'
                                         />
+
                                         <span className='pt-2 text-[15px] font-medium tracking-wide text-white/90'>SUBSCRIPTION</span>
                                     </div>
 
                                     <div className='mt-8 h-[48px] w-[62px] rounded-[9px] border border-slate-200/70 bg-[linear-gradient(135deg,#e5e7eb,#9ca3af,#f8fafc)] p-[5px]'>
                                         <div className='h-full w-full rounded-[6px] border border-slate-500/60'>
                                             <div className='h-1/2 border-b border-slate-500/60' />
+
                                             <div className='mx-auto -mt-[19px] h-[38px] w-[16px] border-x border-slate-500/60' />
                                         </div>
                                     </div>
@@ -343,11 +413,13 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                     <div className='mt-7 flex items-end justify-between gap-6'>
                                         <div>
                                             <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Billing</div>
+
                                             <div className='mt-1 text-[15px] font-medium uppercase tracking-wide'>{subscription.period}</div>
                                         </div>
 
                                         <div className='text-right'>
                                             <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Product</div>
+
                                             <div className='mt-1 text-[15px] font-medium uppercase tracking-wide'>Digital Billboard</div>
                                         </div>
                                     </div>
@@ -359,7 +431,9 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                     <div className='mx-auto flex h-11 w-11 items-center justify-center text-[#5147df]'>
                                         <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.7' className='h-9 w-9' aria-hidden='true'>
                                             <path d='M12 3 5 6v5c0 5 3 8.5 7 10 4-1.5 7-5 7-10V6l-7-3Z' />
+
                                             <rect x='9' y='10' width='6' height='5' rx='1' />
+
                                             <path d='M10.5 10V8.8a1.5 1.5 0 0 1 3 0V10' />
                                         </svg>
                                     </div>
@@ -389,6 +463,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                     <div className='mx-auto flex h-11 w-11 items-center justify-center text-[#5147df]'>
                                         <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.7' className='h-9 w-9' aria-hidden='true'>
                                             <circle cx='12' cy='12' r='9' />
+
                                             <path d='m8 12 2.5 2.5L16.5 8.5' />
                                         </svg>
                                     </div>
@@ -411,6 +486,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                             <div className='min-w-0'>
                                 <h2 className='text-[24px] font-semibold tracking-[-0.02em] text-slate-950 sm:text-[28px]'>Digital Billboard</h2>
+
                                 <p className='mt-1 text-sm text-slate-500 sm:text-[16px]'>Your subscription at a glance</p>
                             </div>
                         </div>
@@ -438,6 +514,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                             <div>
                                 <div className='text-sm font-medium text-slate-500'>Upcoming transaction date</div>
+
                                 <div className='mt-2 text-[23px] font-semibold text-slate-950'>{formatDate(nextBillingDate)}</div>
                             </div>
 
@@ -446,6 +523,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                             <div className='space-y-5'>
                                 <div className='flex items-center justify-between gap-5'>
                                     <span className='text-sm text-slate-500 sm:text-[15px]'>Subscription status</span>
+
                                     <span
                                         className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ${subscriptionStatus.className}`}
                                     >
@@ -455,16 +533,19 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                                 <div className='flex items-center justify-between gap-5'>
                                     <span className='text-sm text-slate-500 sm:text-[15px]'>Billing period</span>
+
                                     <span className='text-sm font-semibold capitalize text-slate-900 sm:text-[15px]'>{subscription.period}</span>
                                 </div>
 
                                 <div className='flex items-center justify-between gap-5'>
                                     <span className='text-sm text-slate-500 sm:text-[15px]'>Subscription started</span>
+
                                     <span className='text-right text-sm font-semibold text-slate-900 sm:text-[15px]'>{formatDate(subscription.startDate)}</span>
                                 </div>
 
                                 <div className='flex items-center justify-between gap-5'>
                                     <span className='text-sm text-slate-500 sm:text-[15px]'>Current billing period</span>
+
                                     <span className='text-right text-sm font-semibold text-slate-900 sm:text-[15px]'>
                                         {formatDate(subscription.currentPeriodStart)} – {formatDate(subscription.currentPeriodEnd)}
                                     </span>
@@ -478,12 +559,14 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                     <span className='inline-flex items-center gap-2'>
                         <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.8' className='h-4 w-4' aria-hidden='true'>
                             <rect x='5' y='10' width='14' height='10' rx='2' />
+
                             <path d='M8 10V7a4 4 0 0 1 8 0v3' />
                         </svg>
                         Your billing information is securely processed by Stripe
                     </span>
 
                     <span className='hidden text-slate-300 sm:inline'>|</span>
+
                     <span>Digital Billboard Subscription</span>
                 </div>
             </section>
@@ -493,6 +576,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                     <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between'>
                         <div>
                             <h2 className='text-xl font-semibold text-slate-950'>Transaction History</h2>
+
                             <p className='mt-1 text-sm text-slate-500'>View and download your Digital Billboard subscription invoices.</p>
                         </div>
 
@@ -507,11 +591,13 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                         <div className='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-500'>
                             <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.7' className='h-6 w-6' aria-hidden='true'>
                                 <path d='M6 3h12v18l-3-2-3 2-3-2-3 2V3Z' />
+
                                 <path d='M9 8h6M9 12h6' />
                             </svg>
                         </div>
 
                         <h3 className='mt-4 font-semibold text-slate-900'>No transactions yet</h3>
+
                         <p className='mt-1 text-sm text-slate-500'>Subscription transactions will appear here after payment is processed.</p>
                     </div>
                 ) : (
@@ -522,15 +608,19 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                     <th className='border-b border-slate-200 px-5 py-3.5 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:px-6'>
                                         Date
                                     </th>
+
                                     <th className='border-b border-slate-200 px-5 py-3.5 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500'>
                                         Amount
                                     </th>
+
                                     <th className='border-b border-slate-200 px-5 py-3.5 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500'>
                                         Currency
                                     </th>
+
                                     <th className='border-b border-slate-200 px-5 py-3.5 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500'>
                                         Status
                                     </th>
+
                                     <th className='border-b border-slate-200 px-5 py-3.5 text-right text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:px-6'>
                                         Invoice
                                     </th>
@@ -540,6 +630,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                             <tbody className='divide-y divide-slate-100'>
                                 {transactions.map((transaction) => {
                                     const isPaid = transaction.paid || transaction.status.toLowerCase() === 'paid';
+
                                     const displayAmount = isPaid ? transaction.amountPaid : transaction.amountDue;
 
                                     return (
@@ -597,7 +688,9 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
                                                                 aria-hidden='true'
                                                             >
                                                                 <path d='M12 3v12' />
+
                                                                 <path d='m7 10 5 5 5-5' />
+
                                                                 <path d='M5 21h14' />
                                                             </svg>
                                                             Download
@@ -617,4 +710,27 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
             </section>
         </div>
     );
+}
+
+// Page entry point for /digitalBillboard/billing.
+// Keep the named export above for use inside the dashboard.
+export default function DigitalBillboardBillingPage() {
+    const [authId, setAuthId] = useState<string | null>(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+    useEffect(() => {
+        const storedAuthId = window.localStorage.getItem('userId');
+        setAuthId(storedAuthId);
+        setIsCheckingAuth(false);
+    }, []);
+
+    if (isCheckingAuth) {
+        return <div className='p-6 text-gray-500'>Loading billing information...</div>;
+    }
+
+    if (!authId) {
+        return <div className='p-6 text-gray-500'>Please sign in to view your billing information.</div>;
+    }
+
+    return <DigitalBillboardBilling authId={authId} />;
 }
