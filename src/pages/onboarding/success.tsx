@@ -106,9 +106,6 @@ export default function Page() {
                     </div>
                 </div>
 
-                {/* Glowing Background Effect */}
-                <div className='absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-3xl blur-2xl opacity-60'></div>
-
                 <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-green-500/30 hover:border-green-400/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl shadow-green-500/20 animate-slide-in-up delay-200'>
                     {/* Top Border */}
                     <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600'></div>
@@ -124,7 +121,7 @@ export default function Page() {
                         </CardTitle>
 
                         <div className='space-y-4 text-center'>
-                            <h2 className='text-2xl lg:text-3xl font-semibold text-white'>Your Stripe checkout has been connected successfully.</h2>
+                            <h2 className='text-2xl lg:text-3xl font-semibold text-white'>Your Stripe has been connected successfully.</h2>
                         </div>
                     </CardHeader>
 

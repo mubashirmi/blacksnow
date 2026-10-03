@@ -3,7 +3,14 @@ import prisma from '@/lib/prisma';
 import { getAdminRevenueRanges, getConfiguredAdminRevenueTimeZone } from '@/lib/subscriptionPlatformRevenue';
 import Stripe from 'stripe';
 
-const LIGHTNING_PRODUCTS = ['LightningSilver', 'LightningGold', 'lightningSilver', 'lightningGold'];
+export type LightningSubscriptionType = 'LightningSilver' | 'LightningGold';
+
+const LIGHTNING_PRODUCTS_BY_TYPE: Record<LightningSubscriptionType, string[]> = {
+    LightningSilver: ['LightningSilver', 'lightningSilver'],
+    LightningGold: ['LightningGold', 'lightningGold'],
+};
+
+const LIGHTNING_PRODUCTS = Object.values(LIGHTNING_PRODUCTS_BY_TYPE).flat();
 
 function normalizeLightningProduct(product: string | null) {
     const normalized = product?.trim().toLowerCase();
@@ -129,7 +136,7 @@ async function listSubscriptionInvoices(stripe: Stripe, subscriptionId: string) 
     return invoices;
 }
 
-export async function getLightningSubscription(authId: number) {
+export async function getLightningSubscription(authId: number, subscriptionType?: LightningSubscriptionType) {
     if (!Number.isInteger(authId) || authId <= 0) {
         throw new ApiError(400, 'INVALID_AUTH_ID', 'A valid authId is required');
     }
@@ -148,7 +155,7 @@ export async function getLightningSubscription(authId: number) {
         prisma.checkout.findMany({
             where: {
                 AuthId: authId,
-                product: { in: LIGHTNING_PRODUCTS },
+                product: { in: subscriptionType ? LIGHTNING_PRODUCTS_BY_TYPE[subscriptionType] : LIGHTNING_PRODUCTS },
             },
             orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
             select: {

@@ -76,7 +76,7 @@ const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string
         icon: CalendarDays,
         title: 'Calendars',
         body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
-        href: '/market-moving-calendars',
+        href: '/market-moving-calenders',
         kind: 'bars',
     },
     {

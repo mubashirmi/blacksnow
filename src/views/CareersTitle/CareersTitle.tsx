@@ -91,7 +91,7 @@ const talentServiceContent: Record<
             'Background checks included',
         ],
         pricingTitle: 'Consultation Fee:',
-        pricing: ['$249.99/Month'],
+        pricing: ['$249.99'],
         buttonLabel: 'Schedule Consultation',
     },
     global: {
@@ -109,7 +109,7 @@ const talentServiceContent: Record<
         ],
         keyPoints: ['Workforce outsourcing', 'International candidate sourcing', 'Payroll & compliance handled', 'Flexible team structures', 'Fast onboarding'],
         pricingTitle: 'Consultation Fee:',
-        pricing: ['$249.99/Month'],
+        pricing: ['$249.99'],
         buttonLabel: 'Schedule Consultation',
     },
 };

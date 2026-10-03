@@ -512,8 +512,8 @@ const PRODUCTS = [
         id: 'Sales',
         apiName: 'EmailMarketing',
         name: 'Email CRM',
-        monthlyPrice: 499.99,
-        yearlyPrice: 3999.99,
+        monthlyPrice: 249.99,
+        yearlyPrice: 1999.99,
         description: 'Comprehensive communication platform for your business',
         features: [
             'Email Campaigns & Automated Sequences',

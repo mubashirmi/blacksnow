@@ -82,12 +82,8 @@ export default function ConsultationConfirmation() {
                 <div className='absolute inset-0 rounded-3xl bg-gradient-to-r from-[#2c7bbe]/10 via-[#4cc7e8]/10 to-emerald-500/10 blur-2xl opacity-70' />
 
                 <Card
-                    className={`relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/95 to-[#050608]/95 backdrop-blur-2xl shadow-2xl transition-all duration-500 ${
-                        isError
-                            ? 'border-red-500/30 shadow-red-500/10'
-                            : isSuccess
-                            ? 'border-green-500/30 shadow-green-500/20'
-                            : 'border-[#4cc7e8]/30 shadow-[#2c7bbe]/20'
+                    className={`relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/95 to-[#050608]/95 backdrop-blur-2xl transition-all duration-500 ${
+                        isError ? 'border-red-500/30' : isSuccess ? 'border-green-500/30' : 'border-[#4cc7e8]/30'
                     }`}
                 >
                     <div

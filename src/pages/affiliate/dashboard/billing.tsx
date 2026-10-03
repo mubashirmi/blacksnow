@@ -2,7 +2,6 @@ import type { NextPage } from 'next';
 
 import { AlertCircle, CheckCircle2, CreditCard, DollarSign, RefreshCw, ShieldCheck, WalletCards } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type ReferralEarningsData = {
@@ -85,12 +84,6 @@ type LightningSubscriptionResponse = {
     error?: string;
 };
 
-type DashboardContext = {
-    type: 'silver' | 'gold';
-    product: 'LightningSilver' | 'LightningGold';
-    label: 'Lightning Silver' | 'Lightning Gold';
-};
-
 const safeNumber = (value: number | null | undefined, fallback = 0): number => {
     return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 };
@@ -119,7 +112,6 @@ const formatDate = (value: string | null | undefined, timezone?: string | null):
 
     if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
         const [year, month, day] = value.split('-').map(Number);
-
         const date = new Date(Date.UTC(year, month - 1, day));
 
         return new Intl.DateTimeFormat('en-US', {
@@ -132,9 +124,7 @@ const formatDate = (value: string | null | undefined, timezone?: string | null):
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
-        return '—';
-    }
+    if (Number.isNaN(date.getTime())) return '—';
 
     try {
         return new Intl.DateTimeFormat('en-US', {
@@ -153,9 +143,7 @@ const formatDateTime = (value: string | null | undefined, timezone?: string | nu
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
-        return '—';
-    }
+    if (Number.isNaN(date.getTime())) return '—';
 
     try {
         return new Intl.DateTimeFormat('en-US', {
@@ -182,6 +170,15 @@ const humanize = (value: string | null | undefined): string => {
         .replace(/\b\w/g, (character) => character.toUpperCase());
 };
 
+const formatProductName = (value: string | null | undefined): string => {
+    if (!value) return 'Lightning Affiliate';
+
+    if (value === 'LightningGold') return 'Lightning Gold';
+    if (value === 'LightningSilver') return 'Lightning Silver';
+
+    return humanize(value);
+};
+
 const getStatusClasses = (status: string | null | undefined): string => {
     const normalized = (status || '').toLowerCase();
 
@@ -200,45 +197,7 @@ const getStatusClasses = (status: string | null | undefined): string => {
     return 'bg-slate-100 text-slate-700 ring-slate-200';
 };
 
-const AffiliateBillingPage: NextPage = () => {
-    const router = useRouter();
-
-    /*
-     * Route is the authority for deciding which affiliate
-     * product is allowed to appear on this page.
-     *
-     * /affiliate/...      => LightningSilver only
-     * /superAffiliate/... => LightningGold only
-     */
-    const dashboardContext = useMemo<DashboardContext | null>(() => {
-        if (!router.isReady) {
-            return null;
-        }
-
-        const pathname = router.asPath.split('?')[0].split('#')[0].toLowerCase();
-
-        /*
-         * Check superAffiliate first.
-         */
-        if (pathname === '/superaffiliate' || pathname.startsWith('/superaffiliate/')) {
-            return {
-                type: 'gold',
-                product: 'LightningGold',
-                label: 'Lightning Gold',
-            };
-        }
-
-        if (pathname === '/affiliate' || pathname.startsWith('/affiliate/')) {
-            return {
-                type: 'silver',
-                product: 'LightningSilver',
-                label: 'Lightning Silver',
-            };
-        }
-
-        return null;
-    }, [router.asPath, router.isReady]);
-
+const LightningSilverBillingPage: NextPage = () => {
     const [earnings, setEarnings] = useState<ReferralEarningsData | null>(null);
 
     const [subscriptionData, setSubscriptionData] = useState<LightningSubscriptionData | null>(null);
@@ -282,9 +241,7 @@ const AffiliateBillingPage: NextPage = () => {
     );
 
     const loadData = useCallback(async () => {
-        if (typeof window === 'undefined') {
-            return;
-        }
+        if (typeof window === 'undefined') return;
 
         const userId = window.localStorage.getItem('userId');
 
@@ -297,7 +254,6 @@ const AffiliateBillingPage: NextPage = () => {
             setSubscriptionError('User information was not found. Please sign in again.');
 
             setIsLoading(false);
-
             return;
         }
 
@@ -308,9 +264,8 @@ const AffiliateBillingPage: NextPage = () => {
         const encodedUserId = encodeURIComponent(userId);
 
         const [earningsResult, subscriptionResult] = await Promise.allSettled([
-            fetchApi<ReferralEarningsResponse>(`/api/v5/lightning/referral-earnings?authId=${encodedUserId}`),
-
-            fetchApi<LightningSubscriptionResponse>(`/api/v5/lightning/subscription?authId=${encodedUserId}`),
+            fetchApi<ReferralEarningsResponse>(`/api/v5/lightning/silver/referral-earnings?authId=${encodedUserId}`),
+            fetchApi<LightningSubscriptionResponse>(`/api/v5/lightning/silver/subscription?authId=${encodedUserId}`),
         ]);
 
         if (earningsResult.status === 'fulfilled') {
@@ -318,12 +273,10 @@ const AffiliateBillingPage: NextPage = () => {
                 setEarnings(earningsResult.value.data);
             } else {
                 setEarnings(null);
-
                 setEarningsError('Referral earnings information is unavailable.');
             }
         } else {
             setEarnings(null);
-
             setEarningsError(earningsResult.reason instanceof Error ? earningsResult.reason.message : 'Failed to load referral earnings.');
         }
 
@@ -332,12 +285,10 @@ const AffiliateBillingPage: NextPage = () => {
                 setSubscriptionData(subscriptionResult.value.data);
             } else {
                 setSubscriptionData(null);
-
                 setSubscriptionError('Subscription billing information is unavailable.');
             }
         } else {
             setSubscriptionData(null);
-
             setSubscriptionError(subscriptionResult.reason instanceof Error ? subscriptionResult.reason.message : 'Failed to load subscription billing.');
         }
 
@@ -349,48 +300,9 @@ const AffiliateBillingPage: NextPage = () => {
         void loadData();
     }, [loadData]);
 
-    /*
-     * Raw API subscription.
-     *
-     * Never render this directly because it could belong
-     * to the other affiliate dashboard.
-     */
-    const rawSubscription = subscriptionData?.subscription ?? null;
+    const subscription = subscriptionData?.subscription ?? null;
 
-    /*
-     * Strict route/product filtering.
-     *
-     * Silver dashboard cannot render Gold subscription data.
-     * Gold dashboard cannot render Silver subscription data.
-     */
-    const subscription = useMemo<LightningSubscription | null>(() => {
-        if (!dashboardContext || !rawSubscription?.product) {
-            return null;
-        }
-
-        if (rawSubscription.product !== dashboardContext.product) {
-            return null;
-        }
-
-        return rawSubscription;
-    }, [dashboardContext, rawSubscription]);
-
-    /*
-     * Transactions do not contain their own product field
-     * in the supplied API response.
-     *
-     * Therefore they are only trusted when the parent
-     * subscription matches the current frontend dashboard.
-     */
     const transactions = useMemo(() => {
-        if (!dashboardContext || !subscription) {
-            return [];
-        }
-
-        if (subscription.product !== dashboardContext.product) {
-            return [];
-        }
-
         const source = Array.isArray(subscriptionData?.transactions) ? [...subscriptionData.transactions] : [];
 
         return source.sort((first, second) => {
@@ -400,22 +312,9 @@ const AffiliateBillingPage: NextPage = () => {
 
             return (Number.isFinite(secondTime) ? secondTime : 0) - (Number.isFinite(firstTime) ? firstTime : 0);
         });
-    }, [dashboardContext, subscription, subscriptionData?.transactions]);
+    }, [subscriptionData?.transactions]);
 
-    /*
-     * Product label is based on frontend route,
-     * not the API subscription.
-     */
-    const productName = dashboardContext?.label || 'Lightning Affiliate';
-
-    /*
-     * Earnings API is aggregate.
-     *
-     * We display the values exactly as returned because
-     * the API currently does not provide separate
-     * Silver/Gold earnings balances.
-     */
-    const currency = earnings?.currency || 'USD';
+    const currency = earnings?.currency || transactions.find((transaction) => transaction.currency)?.currency || 'USD';
 
     const availableBalance = safeNumber(earnings?.availableBalance);
 
@@ -425,13 +324,9 @@ const AffiliateBillingPage: NextPage = () => {
 
     const totalEarned = safeNumber(earnings?.totalEarned);
 
-    /*
-     * Only derive billing date from the matching
-     * subscription.
-     */
-    const nextBillingDate = subscription
-        ? subscriptionData?.nextBillingDate || subscription.currentPeriodEnd || subscription.storedNextBillingDate || null
-        : null;
+    const productName = formatProductName(subscription?.product);
+
+    const nextBillingDate = subscriptionData?.nextBillingDate || subscription?.currentPeriodEnd || subscription?.storedNextBillingDate || null;
 
     const subscriptionStatus = useMemo(() => {
         if (!subscription) {
@@ -470,20 +365,17 @@ const AffiliateBillingPage: NextPage = () => {
         }
 
         return {
-            label: subscription.stripeStatus ? humanize(subscription.stripeStatus) : 'Inactive',
-
+            label: humanize(subscription.stripeStatus) || 'Inactive',
             classes: 'bg-slate-100 text-slate-700 ring-slate-200',
         };
     }, [subscription]);
 
-    if ((!router.isReady || isLoading) && !earnings && !subscriptionData) {
+    if (isLoading && !earnings && !subscriptionData) {
         return (
             <div className='mx-auto w-full max-w-7xl'>
                 <div className='animate-pulse space-y-6'>
                     <div className='h-[560px] rounded-[26px] border border-slate-200 bg-white shadow-[0_16px_50px_rgba(15,23,42,0.08)]' />
-
                     <div className='h-52 rounded-[20px] border border-slate-200 bg-white shadow-[0_10px_35px_rgba(15,23,42,0.07)]' />
-
                     <div className='h-64 rounded-[20px] border border-slate-200 bg-white shadow-[0_10px_35px_rgba(15,23,42,0.07)]' />
                 </div>
             </div>
@@ -506,20 +398,19 @@ const AffiliateBillingPage: NextPage = () => {
                             <div className='flex flex-wrap items-center gap-5'>
                                 <div className='text-[44px] font-extrabold tracking-[-3px] text-[#635bff] sm:text-[52px]'>stripe</div>
 
-                                {earnings?.user?.stripeConnected === true ? (
-                                    <span className='inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm'>
-                                        Connected
+                                <span
+                                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold shadow-sm ${
+                                        earnings?.user?.stripeConnected
+                                            ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700'
+                                            : 'border-amber-200 bg-amber-50/80 text-amber-700'
+                                    }`}
+                                >
+                                    {earnings?.user?.stripeConnected ? 'Connected' : 'Not Connected'}
+
+                                    {earnings?.user?.stripeConnected && (
                                         <span className='flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[12px] text-white'>✓</span>
-                                    </span>
-                                ) : earnings?.user?.stripeConnected === false ? (
-                                    <span className='inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50/80 px-4 py-2 text-sm font-semibold text-amber-700 shadow-sm'>
-                                        Not Connected
-                                    </span>
-                                ) : (
-                                    <span className='inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm'>
-                                        Connection Unavailable
-                                    </span>
-                                )}
+                                    )}
+                                </span>
                             </div>
 
                             <p className='mt-2 text-[16px] text-slate-600 sm:text-[18px]'>Secure payments powered by Stripe</p>
@@ -696,7 +587,7 @@ const AffiliateBillingPage: NextPage = () => {
                 </div>
             </section>
 
-            {/* Matching subscription only */}
+            {/* Subscription summary */}
             <section className='mt-6 rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.07)] sm:p-6'>
                 <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
                     <div className='flex items-center gap-3'>
@@ -755,15 +646,11 @@ const AffiliateBillingPage: NextPage = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className='mt-5 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-5'>
-                        <p className='text-sm text-slate-600'>
-                            No <span className='font-semibold text-slate-900'>{productName}</span> subscription information is available for this dashboard.
-                        </p>
-                    </div>
+                    <div className='mt-5 text-sm text-slate-500'>No active subscription information is available.</div>
                 )}
             </section>
 
-            {/* Matching product transactions only */}
+            {/* Tool subscription transactions only */}
             <section className='mt-6 overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_10px_35px_rgba(15,23,42,0.07)]'>
                 <div className='border-b border-slate-200 px-5 py-5 sm:px-6'>
                     <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
@@ -799,9 +686,9 @@ const AffiliateBillingPage: NextPage = () => {
                             <CreditCard className='h-6 w-6' />
                         </div>
 
-                        <h3 className='mt-4 font-semibold text-slate-900'>No {productName} subscription transactions yet</h3>
+                        <h3 className='mt-4 font-semibold text-slate-900'>No subscription transactions yet</h3>
 
-                        <p className='mt-1 text-sm text-slate-500'>Only transactions belonging to this dashboard&apos;s subscription are shown here.</p>
+                        <p className='mt-1 text-sm text-slate-500'>Tool subscription charges will appear here when available.</p>
                     </div>
                 ) : (
                     <div className='overflow-x-auto'>
@@ -916,4 +803,4 @@ const AffiliateBillingPage: NextPage = () => {
     );
 };
 
-export default AffiliateBillingPage;
+export default LightningSilverBillingPage;

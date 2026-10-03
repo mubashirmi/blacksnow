@@ -16,7 +16,9 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     clicks: true,
                 },
                 where: {
-                    referralProductsId: Number(id),
+                    ReferralProducts: {
+                        authId: Number(id),
+                    },
                 },
             });
             const totalConversions = await prisma.referralProducts.aggregate({

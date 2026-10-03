@@ -304,6 +304,20 @@ function SubscriptionConfirmation() {
         }
     };
 
+    const subscriptionMessages: Record<string, string> = {
+        'https://blacksnowholdings.com/emailMarketing': 'You have been subscribed to our Email CRM Lite',
+
+        'https://blacksnowholdings.com/InvoiceContract': 'You have been subscribed to our Invoice & Contract Tool',
+
+        'https://blacksnowholdings.com/advertising': 'You have been subscribed to our Digital Billboard Dashboard',
+
+        'https://blacksnowholdings.com/lightningGold': 'You have been subscribed to our Lightning Gold Dashboard',
+
+        'https://blacksnowholdings.com/lightningSilver': 'You have been subscribed to our Lightning Silver Dashboard',
+    };
+
+    const subscriptionMessage = subscriptionMessages[productLink ?? ''] ?? 'You have been subscribed to our newsletter!';
+
     return (
         <div className='min-h-screen bg-[#050608] relative overflow-hidden flex items-center justify-center py-20'>
             {/* Confirmation Card */}
@@ -331,7 +345,7 @@ function SubscriptionConfirmation() {
                         </CardTitle>
 
                         <div className='space-y-4 text-center'>
-                            <h2 className='text-2xl lg:text-3xl font-bold text-white'>You have been subscribed to our newsletter!</h2>
+                            <h2 className='text-2xl lg:text-3xl font-bold text-white'>{subscriptionMessage}</h2>
 
                             <div className='flex justify-center'>
                                 {statusType === 'loading' && (
