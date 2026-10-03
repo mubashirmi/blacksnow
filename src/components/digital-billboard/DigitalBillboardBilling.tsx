@@ -321,13 +321,21 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                                 <div className='relative z-10'>
                                     <div className='flex items-start justify-between gap-4'>
-                                        <span className='text-[34px] font-bold tracking-[-2px]'>stripe</span>
+                                        <Image
+                                            src='/logocolored.png'
+                                            alt='BlackSnow'
+                                            width={160}
+                                            height={50}
+                                            className='h-[40px] w-auto object-contain sm:h-[44px]'
+                                        />
+
                                         <span className='pt-2 text-[15px] font-medium tracking-wide text-white/90'>SUBSCRIPTION</span>
                                     </div>
 
                                     <div className='mt-8 h-[48px] w-[62px] rounded-[9px] border border-slate-200/70 bg-[linear-gradient(135deg,#e5e7eb,#9ca3af,#f8fafc)] p-[5px]'>
                                         <div className='h-full w-full rounded-[6px] border border-slate-500/60'>
                                             <div className='h-1/2 border-b border-slate-500/60' />
+
                                             <div className='mx-auto -mt-[19px] h-[38px] w-[16px] border-x border-slate-500/60' />
                                         </div>
                                     </div>
@@ -550,11 +558,10 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                                             <td className='px-5 py-4'>
                                                 <span
-                                                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                        isPaid
+                                                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${isPaid
                                                             ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200'
                                                             : 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {capitalize(transaction.status)}
                                                 </span>
