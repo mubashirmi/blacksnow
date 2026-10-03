@@ -420,7 +420,13 @@ const LightningSilverBillingPage: NextPage = () => {
 
                                 <div className='relative z-10'>
                                     <div className='flex items-start justify-between gap-4'>
-                                        <span className='text-[34px] font-bold tracking-[-2px]'>stripe</span>
+                                        <Image
+                                            src='/logocolored.png'
+                                            alt='BlackSnow'
+                                            width={160}
+                                            height={50}
+                                            className='h-[40px] w-auto object-contain sm:h-[44px]'
+                                        />
 
                                         <span className='pt-2 text-[15px] font-medium tracking-wide text-white/90'>AFFILIATE</span>
                                     </div>

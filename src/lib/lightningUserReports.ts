@@ -10,8 +10,6 @@ const LIGHTNING_PRODUCTS_BY_TYPE: Record<LightningSubscriptionType, string[]> = 
     LightningGold: ['LightningGold', 'lightningGold'],
 };
 
-const LIGHTNING_PRODUCTS = Object.values(LIGHTNING_PRODUCTS_BY_TYPE).flat();
-
 function normalizeLightningProduct(product: string | null) {
     const normalized = product?.trim().toLowerCase();
 
@@ -40,7 +38,7 @@ function getStripeClient() {
     return new Stripe(secret);
 }
 
-export async function getLightningReferralEarnings(authId: number, now = new Date()) {
+export async function getLightningReferralEarnings(authId: number, subscriptionType: LightningSubscriptionType, now = new Date()) {
     if (!Number.isInteger(authId) || authId <= 0) {
         throw new ApiError(400, 'INVALID_AUTH_ID', 'A valid authId is required');
     }
@@ -91,7 +89,7 @@ export async function getLightningReferralEarnings(authId: number, now = new Dat
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
-            lightningTiers: user.roles.filter((role) => role === 'LightningSilver' || role === 'LightningGold'),
+            lightningTiers: user.roles.filter((role) => role === subscriptionType),
             stripeConnected: Boolean(user.adminStripeConnectId),
         },
         currency: 'USD',
@@ -136,7 +134,7 @@ async function listSubscriptionInvoices(stripe: Stripe, subscriptionId: string) 
     return invoices;
 }
 
-export async function getLightningSubscription(authId: number, subscriptionType?: LightningSubscriptionType) {
+export async function getLightningSubscription(authId: number, subscriptionType: LightningSubscriptionType) {
     if (!Number.isInteger(authId) || authId <= 0) {
         throw new ApiError(400, 'INVALID_AUTH_ID', 'A valid authId is required');
     }
@@ -155,7 +153,7 @@ export async function getLightningSubscription(authId: number, subscriptionType?
         prisma.checkout.findMany({
             where: {
                 AuthId: authId,
-                product: { in: subscriptionType ? LIGHTNING_PRODUCTS_BY_TYPE[subscriptionType] : LIGHTNING_PRODUCTS },
+                product: { in: LIGHTNING_PRODUCTS_BY_TYPE[subscriptionType] },
             },
             orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
             select: {

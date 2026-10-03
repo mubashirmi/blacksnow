@@ -2,7 +2,7 @@ import { ApiError, parsePositiveInteger, sendApiError } from '@/lib/apiErrors';
 import { getLightningSubscription, type LightningSubscriptionType } from '@/lib/lightningUserReports';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export function createLightningSubscriptionHandler(subscriptionType?: LightningSubscriptionType) {
+export function createLightningSubscriptionHandler(subscriptionType: LightningSubscriptionType) {
     return async function handler(req: NextApiRequest, res: NextApiResponse) {
         if (req.method !== 'GET') {
             res.setHeader('Allow', 'GET');
