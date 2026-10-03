@@ -210,7 +210,6 @@ function DigitalBillboardPage() {
                         <p className='text-center text-sm text-gray-500'>
                             {successMode === 'create' ? 'Your billboard has been successfully submitted.' : 'Your billboard has been successfully updated.'}
                         </p>
-
                         <button
                             type='button'
                             onClick={() => {
