@@ -347,7 +347,7 @@ const EmailMarketingBillingPage: NextPage = () => {
         void loadData();
     }, [loadData]);
 
-    const includedQuota = Math.max(0, safeNumber(usage?.includedEmailQuota, FALLBACK_INCLUDED_EMAIL_QUOTA));
+    const includedQuota = FALLBACK_INCLUDED_EMAIL_QUOTA;
 
     const totalEmailsSent = Math.max(0, safeNumber(usage?.totalEmailsSentThisMonth));
     const withinQuota = Math.max(0, safeNumber(usage?.emailsSentWithinQuota));
