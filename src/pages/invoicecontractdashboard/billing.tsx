@@ -1,17 +1,6 @@
 import type { NextPage } from 'next';
 
-import {
-    ArrowDownLeft,
-    ArrowUpRight,
-    BadgeDollarSign,
-    CheckCircle2,
-    CreditCard,
-    ReceiptText,
-    RefreshCw,
-    RotateCcw,
-    ShieldCheck,
-    WalletCards,
-} from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, BadgeDollarSign, CheckCircle2, CreditCard, ReceiptText, RefreshCw, RotateCcw, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -35,10 +24,22 @@ type EarningsData = {
         endDate: string;
     };
     totalEarnedThisMonth: Money;
+    totalInvoiceEarnedThisMonth: Money;
+    totalSubscriptionInvEarnedThisMonth: Money;
     successfullyWithdrawnThisMonth: Money;
     totalWithdrawn: Money;
     totalEarned: Money;
+    totalInvoiceEarned: Money;
+    totalSubscriptionInvEarned: Money;
 };
+
+type PaymentSource = 'all' | 'invoice' | 'subscription';
+
+const PAYMENT_SOURCE_OPTIONS: { value: PaymentSource; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'invoice', label: 'Invoices' },
+    { value: 'subscription', label: 'Subscriptions' },
+];
 
 type EarningsResponse = {
     success: boolean;
@@ -364,6 +365,7 @@ const BillingPage: NextPage = () => {
     const [earningsError, setEarningsError] = useState<string | null>(null);
     const [billingError, setBillingError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [paymentSource, setPaymentSource] = useState<PaymentSource>('all');
 
     const fetchJson = useCallback(
         async <
@@ -452,14 +454,37 @@ const BillingPage: NextPage = () => {
 
     const activities = useMemo(() => buildActivities(billing), [billing]);
 
-    const currency = earnings?.totalEarnedThisMonth.currency || activities.find((activity) => activity.currency)?.currency || 'USD';
+    // The source filter applies only to the two received-payment totals.
+    // Withdrawals and transaction history remain unchanged.
+    const receivedThisMonth = earnings
+        ? paymentSource === 'invoice'
+            ? earnings.totalInvoiceEarnedThisMonth
+            : paymentSource === 'subscription'
+            ? earnings.totalSubscriptionInvEarnedThisMonth
+            : earnings.totalEarnedThisMonth
+        : null;
 
-    const fullName = earnings
-        ? [earnings.user.firstName, earnings.user.lastName]
-              .map((part) => part?.trim())
-              .filter(Boolean)
-              .join(' ')
-        : '';
+    const receivedTotal = earnings
+        ? paymentSource === 'invoice'
+            ? earnings.totalInvoiceEarned
+            : paymentSource === 'subscription'
+            ? earnings.totalSubscriptionInvEarned
+            : earnings.totalEarned
+        : null;
+
+    const receivedMonthLabel =
+        paymentSource === 'invoice'
+            ? 'Received Invoice Payments This Month'
+            : paymentSource === 'subscription'
+            ? 'Received Subscription Payments This Month'
+            : 'Received Payments This Month';
+
+    const receivedTotalLabel =
+        paymentSource === 'invoice'
+            ? 'Total Received Invoice Payments'
+            : paymentSource === 'subscription'
+            ? 'Total Received Subscription Payments'
+            : 'Total Received Payments';
 
     if (isLoading && !earnings && !billing) {
         return (
@@ -516,43 +541,47 @@ const BillingPage: NextPage = () => {
 
                             <p className='mt-2 text-[16px] text-slate-600 sm:text-[18px]'>Secure payments powered by Stripe</p>
 
-                            <div className='relative mt-10 overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#222442_0%,#171936_52%,#2a1765_100%)] px-7 py-8 text-white shadow-[0_24px_45px_rgba(30,28,88,0.28)] sm:px-9 sm:py-10'>
-                                <div aria-hidden='true' className='absolute -bottom-20 -right-12 h-48 w-48 rounded-full bg-violet-600/25 blur-2xl' />
-
-                                <div className='relative z-10'>
-                                    <div className='flex items-start justify-between gap-4'>
+                            <div className='relative mx-auto mt-10 h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/35 bg-[#090d12] sm:h-[310px] sm:max-w-[470px] lg:aspect-[530/335] lg:h-auto lg:max-w-[530px]'>
+                                {/* Center the logo against the entire card, not the space below the chip. */}
+                                <div className='absolute inset-0 flex items-center justify-center'>
+                                    <div className='relative h-[72%] w-[82%] sm:h-[76%] sm:w-[84%]'>
                                         <Image
                                             src='/logocolored.png'
-                                            alt='BlackSnow'
-                                            width={160}
-                                            height={50}
-                                            className='h-[40px] w-auto object-contain sm:h-[44px]'
+                                            alt='Black Snow Holdings logo'
+                                            fill
+                                            priority
+                                            sizes='(max-width: 640px) 350px, 500px'
+                                            className='object-contain'
                                         />
-
-                                        <span className='pt-2 text-[15px] font-medium tracking-wide text-white/90'>PAYOUTS</span>
                                     </div>
+                                </div>
 
-                                    <div className='mt-8 flex h-[48px] w-[62px] items-center justify-center rounded-[9px] border border-slate-200/70 bg-[linear-gradient(135deg,#e5e7eb,#9ca3af,#f8fafc)] text-slate-700'>
-                                        <WalletCards className='h-6 w-6' />
-                                    </div>
-
-                                    <div className='mt-8 text-[20px] tracking-[0.14em] text-white/95 sm:text-[23px]'>BUSINESS EARNINGS</div>
-
-                                    <div className='mt-7 flex items-end justify-between gap-6'>
-                                        <div>
-                                            <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Account</div>
-
-                                            <div className='mt-1 max-w-[180px] truncate text-[15px] font-medium tracking-wide'>
-                                                {fullName || 'Invoice Tool User'}
-                                            </div>
-                                        </div>
-
-                                        <div className='text-right'>
-                                            <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Currency</div>
-
-                                            <div className='mt-1 text-[15px] font-medium uppercase tracking-wide'>{currency}</div>
-                                        </div>
-                                    </div>
+                                {/* Gold EMV-style card chip with etched metallic contacts. */}
+                                <div className='pointer-events-none absolute left-6 top-7 z-10 sm:left-9 sm:top-9'>
+                                    <svg
+                                        className='h-[42px] w-[56px] sm:h-[48px] sm:w-[64px]'
+                                        viewBox='0 0 64 48'
+                                        role='img'
+                                        aria-label='Gold payment card chip'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                    >
+                                        <defs>
+                                            <linearGradient id='pricing-gold-chip' x1='0%' y1='0%' x2='100%' y2='100%'>
+                                                <stop offset='0%' stopColor='#FFF1BB' />
+                                                <stop offset='34%' stopColor='#E8C46E' />
+                                                <stop offset='70%' stopColor='#C99742' />
+                                                <stop offset='100%' stopColor='#F6D88B' />
+                                            </linearGradient>
+                                        </defs>
+                                        <rect x='1' y='1' width='62' height='46' rx='8' fill='url(#pricing-gold-chip)' stroke='#FFE1A0' strokeWidth='1.2' />
+                                        <g fill='none' stroke='#9C7137' strokeWidth='1.5' strokeLinejoin='round' opacity='0.88'>
+                                            <path d='M1 15 H18 M1 33 H18 M46 15 H63 M46 33 H63' />
+                                            <path d='M18 1 V15 M46 1 V15 M18 33 V47 M46 33 V47' />
+                                            <path d='M32 1 V14 M32 34 V47 M1 24 H18 M46 24 H63' />
+                                            <rect x='18' y='14' width='28' height='20' rx='5' />
+                                        </g>
+                                        <rect x='21.5' y='17.5' width='21' height='13' rx='3.5' fill='none' stroke='#FFF1BA' strokeWidth='0.9' opacity='0.75' />
+                                    </svg>
                                 </div>
                             </div>
 
@@ -618,12 +647,45 @@ const BillingPage: NextPage = () => {
                             </div>
                         ) : earnings ? (
                             <div className='px-6 py-8 sm:px-10 sm:py-10'>
-                                <div className='flex items-start justify-between gap-5'>
-                                    <div>
-                                        <p className='text-[17px] font-medium text-slate-500 sm:text-[18px]'>Total Earned This Month</p>
+                                <div className='mb-8'>
+                                    <div className='mb-3 flex flex-wrap items-center justify-between gap-2'>
+                                        <span className='text-xs font-semibold uppercase tracking-[0.06em] text-slate-600'>Payment source</span>
+                                        <span className='text-xs text-slate-500'>Received payments only</span>
+                                    </div>
 
-                                        <div className='mt-3 text-[38px] font-semibold tracking-[-0.04em] text-slate-950 sm:text-[48px]'>
-                                            {formatCurrency(earnings.totalEarnedThisMonth.amount, earnings.totalEarnedThisMonth.currency)}
+                                    <div
+                                        className='grid grid-cols-3 gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1'
+                                        role='group'
+                                        aria-label='Filter received payments by source'
+                                    >
+                                        {PAYMENT_SOURCE_OPTIONS.map((option) => {
+                                            const selected = paymentSource === option.value;
+
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type='button'
+                                                    aria-pressed={selected}
+                                                    onClick={() => setPaymentSource(option.value)}
+                                                    className={`min-w-0 rounded-lg px-2 py-2.5 text-center text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 sm:px-3 sm:text-sm ${
+                                                        selected
+                                                            ? 'bg-white text-[#5147df] shadow-sm ring-1 ring-slate-200'
+                                                            : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'
+                                                    }`}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className='flex items-start justify-between gap-5'>
+                                    <div className='min-w-0'>
+                                        <p className='text-[17px] font-medium text-slate-500 sm:text-[18px]'>{receivedMonthLabel}</p>
+
+                                        <div className='mt-3 break-words text-[38px] font-semibold tracking-[-0.04em] text-slate-950 sm:text-[48px]'>
+                                            {receivedThisMonth && formatCurrency(receivedThisMonth.amount, receivedThisMonth.currency)}
                                         </div>
 
                                         <div className='mt-2 text-sm font-medium text-slate-500'>
@@ -654,9 +716,9 @@ const BillingPage: NextPage = () => {
                                     </div>
 
                                     <div className='flex items-center justify-between gap-5'>
-                                        <span className='text-sm text-slate-500 sm:text-[15px]'>Total Earned</span>
+                                        <span className='text-sm text-slate-500 sm:text-[15px]'>{receivedTotalLabel}</span>
                                         <span className='text-right text-sm font-semibold text-slate-950 sm:text-[16px]'>
-                                            {formatCurrency(earnings.totalEarned.amount, earnings.totalEarned.currency)}
+                                            {receivedTotal && formatCurrency(receivedTotal.amount, receivedTotal.currency)}
                                         </span>
                                     </div>
                                 </div>

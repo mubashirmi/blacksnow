@@ -316,43 +316,47 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                             <p className='mt-2 text-[16px] text-slate-600 sm:text-[18px]'>Secure payments powered by Stripe</p>
 
-                            <div className='relative mt-10 overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#222442_0%,#171936_52%,#2a1765_100%)] px-7 py-8 text-white shadow-[0_24px_45px_rgba(30,28,88,0.28)] sm:px-9 sm:py-10'>
-                                <div aria-hidden='true' className='absolute -bottom-20 -right-12 h-48 w-48 rounded-full bg-violet-600/25 blur-2xl' />
-
-                                <div className='relative z-10'>
-                                    <div className='flex items-start justify-between gap-4'>
+                            <div className='relative mx-auto mt-10 h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/35 bg-[#090d12] sm:h-[310px] sm:max-w-[470px] lg:aspect-[530/335] lg:h-auto lg:max-w-[530px]'>
+                                {/* Center the logo against the entire card, not the space below the chip. */}
+                                <div className='absolute inset-0 flex items-center justify-center'>
+                                    <div className='relative h-[72%] w-[82%] sm:h-[76%] sm:w-[84%]'>
                                         <Image
                                             src='/logocolored.png'
-                                            alt='BlackSnow'
-                                            width={160}
-                                            height={50}
-                                            className='h-[40px] w-auto object-contain sm:h-[44px]'
+                                            alt='Black Snow Holdings logo'
+                                            fill
+                                            priority
+                                            sizes='(max-width: 640px) 350px, 500px'
+                                            className='object-contain'
                                         />
-
-                                        <span className='pt-2 text-[15px] font-medium tracking-wide text-white/90'>SUBSCRIPTION</span>
                                     </div>
+                                </div>
 
-                                    <div className='mt-8 h-[48px] w-[62px] rounded-[9px] border border-slate-200/70 bg-[linear-gradient(135deg,#e5e7eb,#9ca3af,#f8fafc)] p-[5px]'>
-                                        <div className='h-full w-full rounded-[6px] border border-slate-500/60'>
-                                            <div className='h-1/2 border-b border-slate-500/60' />
-
-                                            <div className='mx-auto -mt-[19px] h-[38px] w-[16px] border-x border-slate-500/60' />
-                                        </div>
-                                    </div>
-
-                                    <div className='mt-8 text-[21px] tracking-[0.22em] text-white/95 sm:text-[24px]'>•••• •••• •••• ••••</div>
-
-                                    <div className='mt-7 flex items-end justify-between gap-6'>
-                                        <div>
-                                            <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Billing</div>
-                                            <div className='mt-1 text-[15px] font-medium uppercase tracking-wide'>{subscription.period}</div>
-                                        </div>
-
-                                        <div className='text-right'>
-                                            <div className='text-[10px] uppercase tracking-[0.16em] text-white/55'>Product</div>
-                                            <div className='mt-1 text-[15px] font-medium uppercase tracking-wide'>Digital Billboard</div>
-                                        </div>
-                                    </div>
+                                {/* Gold EMV-style card chip with etched metallic contacts. */}
+                                <div className='pointer-events-none absolute left-6 top-7 z-10 sm:left-9 sm:top-9'>
+                                    <svg
+                                        className='h-[42px] w-[56px] sm:h-[48px] sm:w-[64px]'
+                                        viewBox='0 0 64 48'
+                                        role='img'
+                                        aria-label='Gold payment card chip'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                    >
+                                        <defs>
+                                            <linearGradient id='pricing-gold-chip' x1='0%' y1='0%' x2='100%' y2='100%'>
+                                                <stop offset='0%' stopColor='#FFF1BB' />
+                                                <stop offset='34%' stopColor='#E8C46E' />
+                                                <stop offset='70%' stopColor='#C99742' />
+                                                <stop offset='100%' stopColor='#F6D88B' />
+                                            </linearGradient>
+                                        </defs>
+                                        <rect x='1' y='1' width='62' height='46' rx='8' fill='url(#pricing-gold-chip)' stroke='#FFE1A0' strokeWidth='1.2' />
+                                        <g fill='none' stroke='#9C7137' strokeWidth='1.5' strokeLinejoin='round' opacity='0.88'>
+                                            <path d='M1 15 H18 M1 33 H18 M46 15 H63 M46 33 H63' />
+                                            <path d='M18 1 V15 M46 1 V15 M18 33 V47 M46 33 V47' />
+                                            <path d='M32 1 V14 M32 34 V47 M1 24 H18 M46 24 H63' />
+                                            <rect x='18' y='14' width='28' height='20' rx='5' />
+                                        </g>
+                                        <rect x='21.5' y='17.5' width='21' height='13' rx='3.5' fill='none' stroke='#FFF1BA' strokeWidth='0.9' opacity='0.75' />
+                                    </svg>
                                 </div>
                             </div>
 
@@ -558,10 +562,11 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                                             <td className='px-5 py-4'>
                                                 <span
-                                                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${isPaid
+                                                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                        isPaid
                                                             ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200'
                                                             : 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {capitalize(transaction.status)}
                                                 </span>

@@ -29,9 +29,13 @@ export default function ShareBanner({ title, description, className }: ShareBann
         const d = (description || '').trim();
 
         const shareText = [t ? `Check this out: ${t}` : 'Check this out!', d || null, url].filter(Boolean).join('\n');
+
         const body = encodeURIComponent(shareText);
+
         const sms = isIOSUA(ua) ? `sms:&body=${body}` : `sms:?&body=${body}`;
+
         const subject = encodeURIComponent(t ? `Shared: ${t}` : 'Shared link');
+
         const email = `mailto:?subject=${subject}&body=${body}`;
 
         setSmsHref(sms);
@@ -39,21 +43,42 @@ export default function ShareBanner({ title, description, className }: ShareBann
     }, [title, description]);
 
     useEffect(() => {
+        lastScrollY.current = window.scrollY;
+
+        let frameId: number | null = null;
+
         const handleScroll = () => {
             if (ticking.current) return;
+
             ticking.current = true;
 
-            requestAnimationFrame(() => {
+            frameId = requestAnimationFrame(() => {
                 const currentY = window.scrollY;
-                // Hide when scrolling down, show when scrolling up
-                setVisible(currentY <= lastScrollY.current || currentY < 10);
+
+                // Show when scrolling down.
+                // Hide when scrolling up.
+                // Keep visible when at the top of the page.
+                setVisible(currentY > lastScrollY.current || currentY < 10);
+
                 lastScrollY.current = currentY;
                 ticking.current = false;
+                frameId = null;
             });
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, {
+            passive: true,
+        });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+
+            if (frameId !== null) {
+                cancelAnimationFrame(frameId);
+            }
+
+            ticking.current = false;
+        };
     }, []);
 
     if (!smsHref || !emailHref) return null;

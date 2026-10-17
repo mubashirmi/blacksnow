@@ -234,9 +234,9 @@ export default function InvoiceContractPage() {
             {/* Hero Section */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                    <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         {/* Left Content */}
-                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
+                        <div className='space-y-10 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
@@ -247,7 +247,7 @@ export default function InvoiceContractPage() {
                                     </h1>
                                 </div>
 
-                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     Your Business Invoice system makes billing clean, fast, and effortless. Every payment is tracked, organized, and stored so
                                     you always know where your money stands. Clients receive clear, polished invoices that make paying simple and stress-free.
                                     The platform is designed for speed, efficiency, and total accuracy. Create unlimited invoices and contracts for customers on
@@ -257,11 +257,11 @@ export default function InvoiceContractPage() {
                             </div>
 
                             {/* CTA Buttons */}
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                            <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Learn More
                                 </Button>
@@ -269,7 +269,7 @@ export default function InvoiceContractPage() {
                                     size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
-                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
@@ -278,11 +278,16 @@ export default function InvoiceContractPage() {
                         </div>
 
                         {/* RIGHT */}
-                        <div className='relative animate-slide-in-right'>
-                            <div className='relative flex items-center justify-center w-full'>
-                                <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20 px-4 py-4 sm:px-5 sm:py-5'>
-                                    <div className='w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px] lg:w-[330px] lg:h-[330px]'>
-                                        <LottieAnimation src='/animations/invoivecontracticon.json' className='w-full h-full' loop autoplay={true} />
+                        <div className='relative animate-slide-in-right min-w-0'>
+                            <div className='relative flex items-center justify-center w-full h-full'>
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='w-[90%] aspect-square sm:w-full'>
+                                        <LottieAnimation
+                                            src='/animations/invoivecontracticon.json'
+                                            style={{ width: '100%', height: '100%' }}
+                                            loop={true}
+                                            autoplay={true}
+                                        />
                                     </div>
                                 </div>
                             </div>

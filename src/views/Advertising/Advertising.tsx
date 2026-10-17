@@ -282,11 +282,11 @@ function Advertising() {
         <div className='min-h-screen bg-[#050608]'>
             <ShareBanner />
             {/* Hero Section */}
-            <section className='relative overflow-x-hidden lg:overflow-visible py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                    <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         {/* Left Content */}
-                        <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
+                        <div className='space-y-10 animate-slide-in-left'>
                             <div>
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
@@ -297,7 +297,7 @@ function Advertising() {
                                     </h1>
                                 </div>
 
-                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     Your Digital Billboard positions your business in front of active buyers exactly when intent is highest, running nonstop to
                                     funnel traffic back to your advertisement automatically. Every impression is monitored and optimized to maximize visibility,
                                     without the need for a design or marketing team. It delivers simple, always-on exposure built for speed, clarity, and
@@ -306,10 +306,10 @@ function Advertising() {
                             </div>
 
                             {/* CTA Buttons */}
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                            <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                     onClick={() => setSlideshowOpen(true)}
                                 >
                                     Learn More
@@ -318,35 +318,18 @@ function Advertising() {
                                     size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
-                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Purchase
                                 </Button>
                             </div>
                         </div>
 
-                        {/* RIGHT - Mobile */}
-                        <div className='relative w-full max-w-full overflow-hidden lg:hidden'>
-                            <div className='relative w-full max-w-full overflow-hidden'>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center w-full max-w-[340px] mx-auto rounded-2xl border border-[#2c7bbe]/20 sm:max-w-[400px] sm:rounded-3xl md:max-w-[500px]'>
-                                        <LottieAnimation
-                                            src='/animations/billboardherosection.json'
-                                            className='w-full h-[300px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px]'
-                                            loop={true}
-                                            autoplay={true}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* RIGHT - Desktop - kept like your attached code */}
-                        <div className='relative hidden lg:block animate-slide-in-right '>
-                            <div className='relative overflow-hidden '>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className=' flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
-                                        <LottieAnimation src='/animations/billboardherosection.json' loop={true} autoplay={true} />
+                        <div className='relative animate-slide-in-right min-w-0'>
+                            <div className='relative flex items-center justify-center w-full h-full'>
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='w-[90%] aspect-square sm:w-full'>
+                                        <LottieAnimation src='/animations/billboardherosection.json' className='w-full h-full' loop={true} autoplay={true} />
                                     </div>
                                 </div>
                             </div>

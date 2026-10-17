@@ -777,13 +777,11 @@ const StockScreenerPage: NextPage = () => {
                             </div>
 
                             <ComingSoonTrigger
-                                className='group flex min-h-[42px] w-full items-center justify-center gap-6 rounded-[5px] px-8 text-[12px] font-semibold uppercase tracking-[0.02em] text-[#15130a] sm:w-[285px]'
-                                style={{
-                                    background: 'linear-gradient(90deg, #f4c225 0%, #ffd441 100%)',
-                                }}
+                                ariaLabel='Get started'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e4ae25] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-[#15130a] shadow-[0_0_24px_rgba(228,174,37,0.22)] transition-all duration-200 hover:bg-[#f2bd32]'
                             >
-                                Start Screening
-                                <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />
+                                Get Started
+                                <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                             </ComingSoonTrigger>
                         </div>
                     </section>

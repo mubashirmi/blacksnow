@@ -26,7 +26,7 @@ import * as React from 'react';
 
 const navigationItems = [
     { name: 'Email Upload', url: '/emailMarketing/dashboard/users', icon: User },
-    { name: 'Email Compose', url: '/emailMarketing/dashboard/automation', icon: LinkIcon },
+    { name: 'Email Automation', url: '/emailMarketing/dashboard/automation', icon: LinkIcon },
     { name: 'Email Campaign', url: '/emailMarketing/dashboard/campaign', icon: Target },
     { name: 'Email KPI', url: '/emailMarketing/dashboard/kpi', icon: BarChart3 },
     { name: 'Email Schedules', url: '/emailMarketing/dashboard/emailSchedule', icon: CalendarCheck },
@@ -36,7 +36,7 @@ const navigationItems = [
 
 const UNSUBSCRIBE_PRODUCT = {
     id: 'EmailMarketing',
-    label: 'Email Marketing',
+    label: 'Email CRM Lite',
 };
 
 // TODO: Add the real pause-subscription API endpoint supplied by your backend.
@@ -59,7 +59,7 @@ type FeedbackStatusResponse = {
 };
 
 const DASHBOARD_ROUTES: Record<ToolRole, { label: string; url: string }> = {
-    EmailMarketing: { label: 'Email Marketing', url: '/emailMarketing/dashboard/users' },
+    EmailMarketing: { label: 'Email CRM Lite', url: '/emailMarketing/dashboard/users' },
     DigitalBillboard: { label: 'Digital Billboard', url: '/digitalBillboard/dashboard' },
     LightningGold: { label: 'Lightning Gold', url: '/superAffiliate/dashboard/kpi' },
     LightningSilver: { label: 'Lightning Silver', url: '/affiliate/dashboard/kpi' },

@@ -1,3 +1,5 @@
+import { consumeActionVerification, requireActionVerification } from '@/lib/actionVerification';
+import { sendApiError } from '@/lib/apiErrors';
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -19,7 +21,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const product = Array.isArray(rawProduct) ? rawProduct[0] : rawProduct;
 
-        if (!Number.isFinite(authId)) {
+        const rawOperation = req.method === 'PATCH' ? req.body?.operation ?? req.query.operation : undefined;
+        const operation = Array.isArray(rawOperation) ? rawOperation[0] : rawOperation;
+
+        if (req.method === 'GET' && !Number.isFinite(authId)) {
             return res.status(400).json({
                 message: 'Invalid or missing authId',
             });
@@ -31,9 +36,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
+        if (req.method === 'PATCH' && operation !== 'pause' && operation !== 'resume') {
+            return res.status(400).json({ message: 'Operation must be either pause or resume' });
+        }
+
+        const verification =
+            req.method === 'PATCH'
+                ? await requireActionVerification(req, operation === 'pause' ? 'pause_subscription' : 'resume_subscription', { product })
+                : null;
+        const effectiveAuthId = verification?.authId ?? authId;
+
         const checkout = await prisma.checkout.findFirst({
             where: {
-                AuthId: authId,
+                AuthId: effectiveAuthId,
                 product,
             },
             select: {
@@ -64,25 +79,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
-        // PATCH: toggle pause status
-        const updated = await prisma.checkout.update({
-            where: {
-                id: checkout.id,
-            },
-            data: {
-                pause: !checkout.pause,
-            },
-            select: {
-                id: true,
-                AuthId: true,
-                product: true,
-                paid: true,
-                pause: true,
-                cancelSubscripton: true,
-                nextBillingDate: true,
-                startDate: true,
-                updatedAt: true,
-            },
+        // PATCH: set the explicitly requested status (never toggle based on stale client state)
+        const updated = await prisma.$transaction(async (transaction) => {
+            await consumeActionVerification(verification!.verificationId, transaction);
+            return transaction.checkout.update({
+                where: { id: checkout.id },
+                data: { pause: operation === 'pause' },
+                select: {
+                    id: true,
+                    AuthId: true,
+                    product: true,
+                    paid: true,
+                    pause: true,
+                    cancelSubscripton: true,
+                    nextBillingDate: true,
+                    startDate: true,
+                    updatedAt: true,
+                },
+            });
         });
 
         return res.status(200).json({
@@ -91,10 +105,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             data: updated,
         });
     } catch (err) {
-        console.error('Failed to process subscription pause request:', err);
-
-        return res.status(500).json({
-            message: 'Internal Server Error',
-        });
+        return sendApiError(res, err);
     }
 }

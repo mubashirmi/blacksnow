@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-// import { destroyCookie } from 'nookies'; // Logout functionality disabled
 import { useEffect, useState } from 'react';
 
 const menuItems = [
@@ -31,15 +30,14 @@ const menuItems = [
     {
         category: 'Trading Tool Kit',
         items: [
-            { name: 'All Tools', href: '/tools' },
-            { name: 'Market Movers', href: '/market-movers' },
             { name: 'Paper Trading', href: '/paper-trading' },
-            { name: 'Market Moving Calendars', href: '/market-moving-calenders' },
-            { name: 'Research', href: '/research' },
-            { name: 'Watchlist', href: '/watchlist' },
-            { name: 'Economic Simulator', href: '/economic-simulator' },
-            { name: 'Global KPI', href: '/global-kpi' },
             { name: 'Stock Screener', href: '/stock-screener' },
+            { name: 'Watchlist', href: '/watchlist' },
+            { name: 'Market Movers', href: '/market-movers' },
+            { name: 'Global KPI', href: '/global-kpi' },
+            { name: 'Economic Simulator', href: '/economic-simulator' },
+            { name: 'Calendars', href: '/market-moving-calenders' },
+            { name: 'Research', href: '/research' },
         ],
     },
 ];
@@ -52,26 +50,32 @@ const roleDashboardMap: Record<
         label: 'Lightning Silver Dashboard',
         path: '/affiliate/dashboard/kpi',
     },
+
     LightningGold: {
         label: 'Lightning Gold Dashboard',
         path: '/superAffiliate/dashboard/kpi',
     },
+
     Sales: {
         label: 'Sales Dashboard',
         path: '/sales/dashboard/links',
     },
+
     InvoiceTool: {
         label: 'Invoice Dashboard',
         path: '/invoicecontractdashboard/contract',
     },
+
     EmailMarketing: {
         label: 'Email CRM Lite Dashboard',
         path: '/emailMarketing/dashboard/users',
     },
+
     DigitalBillboard: {
         label: 'Digital Billboard Dashboard',
         path: '/digitalBillboard/dashboard',
     },
+
     Admin: {
         label: 'Admin Dashboard',
         path: '/admin/dashboard/sales',
@@ -80,59 +84,84 @@ const roleDashboardMap: Record<
 
 const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Sales', 'DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningSilver', 'LightningGold'];
 
-// Accept userId as a prop to ensure consistency
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
+
     const [userid, setUserid] = useState<string | null>(userId ?? null);
-    const [adminid, setAdminid] = useState<string | null>(null);
+
     const [adminId, setAdminId] = useState<string | null>(null);
-    const [firstName, setFirstName] = useState<string | null>(null);
-    const [lastName, setLastName] = useState<string | null>(null);
-    const [email, setEmail] = useState<string | null>(null);
+
     const [dashboards, setDashboards] = useState<{ label: string; path: string }[]>([]);
-    // const [showLogoutModal, setShowLogoutModal] = useState(false); // Logout functionality disabled
 
     const router = useRouter();
 
-    // Prevent body scroll when menu is open + load userId / roles / adminId
+    /*
+     * Logged-in state:
+     *
+     * Normal user -> userId exists
+     * Admin -> adminId exists
+     */
+    const isLoggedIn = Boolean(userid || adminId);
+
+    /*
+     * Normal product dashboard.
+     *
+     * This is only true when the user actually has
+     * one of the subscribed/product roles.
+     */
+    const hasProductDashboard = Boolean(userid) && dashboards.length > 0;
+
+    /*
+     * Admin dashboard remains independent from
+     * normal product subscriptions.
+     */
+    const hasAdminDashboard = Boolean(adminId);
+
+    /*
+     * Footer rules:
+     *
+     * 1. Logged out:
+     *    Show footer with Sign in.
+     *
+     * 2. Logged in + subscribed product:
+     *    Show footer with Dashboard.
+     *
+     * 3. Admin:
+     *    Show footer with Admin Dashboard.
+     *
+     * 4. Logged in + NO product + NO admin:
+     *    Hide footer completely.
+     */
+    const shouldShowFooter = !isLoggedIn || hasProductDashboard || hasAdminDashboard;
+
+    // Load user/admin IDs, roles and control body scrolling.
     useEffect(() => {
-        const iid = localStorage.getItem('userId') || userId || null;
-        const adminiid = localStorage.getItem('adminId') || null;
-        const getCookie = (name: string): string | null => {
-            if (typeof document === 'undefined') return null;
+        const storedUserId = localStorage.getItem('userId') || userId || null;
 
-            const value = document.cookie
-                .split('; ')
-                .find((row) => row.startsWith(`${name}=`))
-                ?.split('=')[1];
+        const storedAdminId = localStorage.getItem('adminId') || null;
 
-            return value ? decodeURIComponent(value) : null;
-        };
-        const firstNamee = getCookie('firstName') || userId || null;
-        const lastNamee = getCookie('lastName') || userId || null;
-        const eemail = getCookie('email') || userId || null;
-        setFirstName(firstNamee);
-        setLastName(lastNamee);
-        setEmail(eemail);
-        setUserid(iid);
-        setAdminid(adminiid);
-
-        const aid = localStorage.getItem('adminId') || null;
-        setAdminId(aid);
+        setUserid(storedUserId);
+        setAdminId(storedAdminId);
 
         const storedRoles = localStorage.getItem('roles');
 
-        if (iid && storedRoles) {
+        if (storedUserId && storedRoles) {
             try {
                 const parsedRoles: string[] = JSON.parse(storedRoles);
+
                 const roleSet = new Set(parsedRoles);
-                const availableDashboards: { label: string; path: string }[] = [];
+
+                const availableDashboards: {
+                    label: string;
+                    path: string;
+                }[] = [];
 
                 ROLE_PRIORITY.forEach((role) => {
                     if (roleSet.has(role)) {
-                        const cfg = roleDashboardMap[role];
-                        if (cfg && !availableDashboards.some((d) => d.path === cfg.path)) {
-                            availableDashboards.push(cfg);
+                        const dashboard = roleDashboardMap[role];
+
+                        if (dashboard && !availableDashboards.some((item) => item.path === dashboard.path)) {
+                            availableDashboards.push(dashboard);
                         }
                     }
                 });
@@ -140,6 +169,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 setDashboards(availableDashboards);
             } catch (error) {
                 console.error('Error parsing roles from localStorage', error);
+
                 setDashboards([]);
             }
         } else {
@@ -157,61 +187,32 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
         };
     }, [isOpen, userId]);
 
-    // Close menu on escape key
+    // Close menu on Escape.
     useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
                 setIsOpen(false);
-                // setShowLogoutModal(false); // Logout functionality disabled
             }
         };
 
-        if (isOpen /* || showLogoutModal */) {
+        if (isOpen) {
             document.addEventListener('keydown', handleEscape);
         }
 
         return () => {
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isOpen /*, showLogoutModal */]);
-
-    /* Logout functionality disabled
-    const handleLogout = () => {
-        setShowLogoutModal(true);
-    };
-
-    const confirmLogout = () => {
-        destroyCookie(null, 'id');
-        destroyCookie(null, 'token');
-        destroyCookie(null, 'admin_token');
-        destroyCookie(null, 'firstName');
-        destroyCookie(null, 'lastName');
-        destroyCookie(null, 'email');
-        destroyCookie(null, 'adminId');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('adminId');
-        localStorage.removeItem('roles');
-        localStorage.removeItem('id');
-        localStorage.removeItem('referredby');
-        setShowLogoutModal(false);
-        setIsOpen(false);
-        setUserid(null);
-        setAdminid(null);
-        setAdminId(null);
-        setDashboards([]);
-        router.push('/');
-    };
-
-    const cancelLogout = () => {
-        setShowLogoutModal(false);
-    };
-    */
+    }, [isOpen]);
 
     const handleDashboardClick = () => {
-        if (!userid || dashboards.length === 0) return;
+        if (!userid || dashboards.length === 0) {
+            return;
+        }
 
-        // dashboards are already sorted by ROLE_PRIORITY,
-        // so always navigate to the highest-priority dashboard.
+        /*
+         * dashboards are already sorted using ROLE_PRIORITY,
+         * so the first one is the highest-priority dashboard.
+         */
         setIsOpen(false);
         router.push(dashboards[0].path);
     };
@@ -228,203 +229,184 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 variant='ghost'
                 size='icon'
                 onClick={() => setIsOpen(!isOpen)}
-                className='relative z-50 w-16 h-12 text-[#f4f4f4] hover:bg-[#2c7bbe]/20 transition-all duration-300 cursor-pointer'
+                className='relative z-50 h-12 w-16 cursor-pointer text-[#f4f4f4] transition-all duration-300 hover:bg-[#2c7bbe]/20'
                 aria-label='Toggle menu'
             >
-                <div className='w-6 h-6 flex flex-col justify-center items-center'>
+                <div className='flex h-6 w-6 flex-col items-center justify-center'>
                     <span
-                        className={`block h-0.5 w-8 bg-current transform transition-all duration-300 ease-in-out ${
-                            isOpen ? 'rotate-45 translate-y-1.5 opacity-0' : '-translate-y-[6px]'
+                        className={`block h-0.5 w-8 transform bg-current transition-all duration-300 ease-in-out ${
+                            isOpen ? 'translate-y-1.5 rotate-45 opacity-0' : '-translate-y-[6px]'
                         }`}
                     />
-                    <span className={`block h-0.5 w-8 bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+
+                    <span className={`block h-0.5 w-8 transform bg-current transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+
                     <span
-                        className={`block h-0.5 w-8 bg-current transform transition-all duration-300 ease-in-out ${
-                            isOpen ? '-rotate-45 -translate-y-1.5 opacity-0' : 'translate-y-[6px]'
+                        className={`block h-0.5 w-8 transform bg-current transition-all duration-300 ease-in-out ${
+                            isOpen ? '-translate-y-1.5 -rotate-45 opacity-0' : 'translate-y-[6px]'
                         }`}
                     />
                 </div>
             </Button>
 
             {/* Menu Overlay */}
-            <div className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+            <div className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
                 {/* Backdrop */}
                 <div
                     className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-all duration-500 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0'}`}
-                    onClick={() => {
-                        setIsOpen(false);
-                        // setShowLogoutModal(false); // Logout functionality disabled
-                    }}
+                    onClick={() => setIsOpen(false)}
                 />
 
                 {/* Menu Panel */}
                 <div
-                    className={`absolute right-0 top-0 h-full w-80 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-l border-[#2c7bbe]/30 shadow-2xl transform transition-all duration-500 ease-in-out ${
+                    className={`absolute right-0 top-0 flex h-full w-80 flex-col border-l border-[#2c7bbe]/30 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] shadow-2xl transition-all duration-500 ease-in-out ${
                         isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
                 >
-                    {/* Header */}
-                    <div className='p-6 border-b border-[#2c7bbe]/20 min-w-0'>
+                    {/* =====================================================
+                        HEADER
+                        Fixed height: 96px
+                        Footer uses exactly the same height.
+                    ====================================================== */}
+                    <div className='flex h-24 shrink-0 items-center justify-start border-b border-[#2c7bbe]/20 px-6'>
                         <Link
                             href='/'
                             onClick={() => setIsOpen(false)}
-                            className={`mb-5 flex flex-col w-fit items-start gap-2 text-left transform transition-all duration-700 delay-100 ${
+                            className={`flex items-center justify-center gap-2 transform transition-all duration-700 delay-100 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                             }`}
                         >
-                            <Image width={60} height={60} src='/logocolored.png' alt='Black Snow' className='h-[60px] w-[60px] shrink-0 object-contain' />
+                            {/*
+                                text-2xl = 24px
+                                Logo = 24px
 
-                            <span className='text-2xl sm:text-[24px] font-black leading-none bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>
-                                Black Snow
-                            </span>
+                                Therefore the logo is exactly the same
+                                visual size as the Black Snow heading.
+                            */}
+                            <Image width={27} height={27} src='/logocolored.png' alt='Black Snow' className='h-[27px] w-[27px] shrink-0 object-contain' />
+
+                            <span className='text-2xl font-black leading-none text-white'>Black Snow</span>
                         </Link>
+                    </div>
 
-                        <h2
-                            className={`w-full min-w-0 text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent transform transition-all duration-700 delay-200 ${
-                                isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-                            } gap-x-1`}
+                    {/* =====================================================
+                        SCROLLABLE MENU CONTENT
+                    ====================================================== */}
+                    <div className='min-h-0 flex-1 overflow-y-auto p-6'>
+                        <div className='space-y-8'>
+                            {menuItems.map((section, sectionIndex) => (
+                                <div
+                                    key={section.category}
+                                    className={`transform transition-all duration-700 ease-out ${
+                                        isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                                    }`}
+                                    style={{
+                                        transitionDelay: isOpen ? `${300 + sectionIndex * 100}ms` : '0ms',
+                                    }}
+                                >
+                                    <h3 className='relative mb-4 text-lg font-black text-[#4cc7e8]'>
+                                        {section.category}
+
+                                        <div className='absolute -bottom-1 left-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe]' />
+                                    </h3>
+
+                                    <div className='space-y-2'>
+                                        {section.items.map((item, itemIndex) => (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                onClick={() => setIsOpen(false)}
+                                                className={`group block transform rounded-xl border border-transparent px-4 py-3 font-medium text-gray-300 transition-all duration-300 hover:border-[#2c7bbe]/20 hover:bg-gradient-to-r hover:from-[#2c7bbe]/10 hover:to-[#4cc7e8]/10 hover:text-[#4cc7e8] ${
+                                                    isOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
+                                                }`}
+                                                style={{
+                                                    transitionDelay: isOpen ? `${400 + sectionIndex * 100 + itemIndex * 50}ms` : '0ms',
+                                                }}
+                                            >
+                                                <span className='flex items-center justify-between'>
+                                                    {item.name}
+
+                                                    <div className='h-2 w-2 rounded-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100' />
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* =====================================================
+                        FOOTER
+
+                        IMPORTANT:
+                        Footer does NOT render at all when:
+                        - user is logged in
+                        - user has no subscribed dashboard
+                        - user is not an admin
+
+                        Header = h-24
+                        Footer = h-24
+                    ====================================================== */}
+                    {shouldShowFooter && (
+                        <div
+                            className={`flex h-24 shrink-0 items-center justify-center border-t border-[#2c7bbe]/20 bg-[#050608] px-6 transform transition-all duration-700 delay-500 ${
+                                isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                            }`}
                         >
-                            <span className='block max-w-full leading-tight break-words [overflow-wrap:anywhere]'>
-                                {firstName ? `${firstName} ` : 'Menu'} {lastName ? `${lastName}` : ''}
-                            </span>
-                            {firstName && email && (
-                                <span className='mt-1 block max-w-full text-[15px] font-medium leading-snug text-[#2c7bbe] break-all [overflow-wrap:anywhere]'>
-                                    {email}
-                                </span>
-                            )}
-                        </h2>
-                    </div>
+                            <div className='flex w-full flex-col items-center justify-center gap-2'>
+                                {/* -------------------------------------
+                                    PRODUCT DASHBOARD
 
-                    {/* Menu Content */}
-                    <div className='p-6 space-y-8 overflow-y-auto h-full pb-[370px]'>
-                        {menuItems.map((section, sectionIndex) => (
-                            <div
-                                key={sectionIndex}
-                                className={`transform transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-                                style={{
-                                    transitionDelay: isOpen ? `${300 + sectionIndex * 100}ms` : '0ms',
-                                }}
-                            >
-                                <h3 className='text-lg font-black text-[#4cc7e8] mb-4 relative'>
-                                    {section.category}
-                                    <div className='absolute -bottom-1 left-0 w-8 h-0.5 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full' />
-                                </h3>
-                                <div className='space-y-2'>
-                                    {section.items.map((item, itemIndex) => (
-                                        <Link
-                                            key={itemIndex}
-                                            href={item.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className={`block text-gray-300 hover:text-[#4cc7e8] transition-all duration-300 font-medium py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-[#2c7bbe]/10 hover:to-[#4cc7e8]/10 border border-transparent hover:border-[#2c7bbe]/20 group transform ${
-                                                isOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
-                                            }`}
-                                            style={{
-                                                transitionDelay: isOpen ? `${400 + sectionIndex * 100 + itemIndex * 50}ms` : '0ms',
-                                            }}
-                                        >
-                                            <span className='flex items-center justify-between'>
-                                                {item.name}
-                                                <div className='w-2 h-2 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full opacity-0 group-hover:opacity-100 transform group-hover:scale-110 transition-all duration-300' />
-                                            </span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Footer */}
-                    <div
-                        className={`absolute bottom-0 left-0 right-0 p-6 bg-[#050608] transform transition-all duration-700 delay-500 ${
-                            isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-                        }`}
-                    >
-                        <div className='space-y-4'>
-                            {/* Dashboards section + Admin Dashboard validation */}
-                            {((userid && dashboards.length > 0) || adminId) && (
-                                <div className='space-y-2'>
-                                    {/* Dashboard button (role based) */}
-                                    {userid && dashboards.length > 0 && (
-                                        <Button
-                                            onClick={handleDashboardClick}
-                                            className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
-                                        >
-                                            Dashboard
-                                        </Button>
-                                    )}
-
-                                    {/* Admin Dashboard button (ONLY if adminId is present) - shown below dashboards */}
-                                    {adminId && (
-                                        <Button
-                                            variant='outline'
-                                            onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
-                                            className='w-full border-[#2c7bbe]/40 bg-transparent hover:bg-[#2c7bbe]/10 text-xs sm:text-sm font-medium cursor-pointer text-white'
-                                        >
-                                            {roleDashboardMap.Admin.label}
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
-
-                            <div
-                                className={`transform transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-                                style={{
-                                    transitionDelay: isOpen ? `${500 + menuItems.length * 100}ms` : '0ms',
-                                }}
-                            >
-                                {/* Logout button functionality disabled
-                                {userid || adminid ? (
+                                    Only appears when the user actually
+                                    owns/subscribes to a product role.
+                                -------------------------------------- */}
+                                {hasProductDashboard && (
                                     <Button
-                                        onClick={handleLogout}
-                                        className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                        onClick={handleDashboardClick}
+                                        className='h-10 w-full max-w-[272px] cursor-pointer rounded-xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-6 text-2xl font-black leading-none text-white transition-all duration-300 hover:scale-[1.02]'
                                     >
-                                        Logout
+                                        Dashboard
                                     </Button>
-                                ) : null}
-                                */}
+                                )}
 
-                                {!(userid || adminid) && (
+                                {/* -------------------------------------
+                                    ADMIN DASHBOARD
+                                -------------------------------------- */}
+                                {hasAdminDashboard && (
+                                    <Button
+                                        variant='outline'
+                                        onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
+                                        className='h-10 w-full max-w-[272px] cursor-pointer border-[#2c7bbe]/40 bg-transparent px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
+                                    >
+                                        {roleDashboardMap.Admin.label}
+                                    </Button>
+                                )}
+
+                                {/* -------------------------------------
+                                    SIGN IN
+
+                                    Appears ONLY when completely
+                                    logged out.
+
+                                    A logged-in user with no subscription
+                                    will NOT see this button.
+                                -------------------------------------- */}
+                                {!isLoggedIn && (
                                     <Button
                                         asChild
-                                        className='w-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-3 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
+                                        className='h-10 w-full max-w-[272px] cursor-pointer rounded-xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-6 !text-2xl !font-normal leading-none text-white transition-all duration-300 hover:scale-[1.02]'
                                     >
-                                        <Link href='/login' onClick={() => setIsOpen(false)}>
+                                        <Link href='/login' onClick={() => setIsOpen(false)} className='!font-normal'>
                                             Sign in
                                         </Link>
                                     </Button>
                                 )}
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
-
-            {/*
-            Logout Confirmation Modal functionality disabled
-            {showLogoutModal && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center'>
-                    <div className='absolute inset-0 bg-black/20 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100' onClick={cancelLogout} />
-                    <div className='relative z-50 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-2xl p-6 w-96 transform transition-all duration-500 ease-in-out scale-100 opacity-100'>
-                        <h2 className='text-2xl font-black bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent mb-4'>Confirm Logout</h2>
-                        <p className='text-gray-300 mb-6'>Are you sure you want to logout?</p>
-                        <div className='flex justify-end space-x-4'>
-                            <Button
-                                onClick={cancelLogout}
-                                className='bg-transparent border-2 border-[#2c7bbe] text-[#2c7bbe] hover:bg-[#2c7bbe] cursor-pointer hover:text-white transition-all duration-300 font-bold py-2 px-4 rounded-xl'
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={confirmLogout}
-                                className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] text-white font-bold py-2 px-4 rounded-xl transform hover:scale-105 transition-all duration-300 cursor-pointer'
-                            >
-                                Logout
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            */}
         </div>
     );
 }

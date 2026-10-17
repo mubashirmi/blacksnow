@@ -10,11 +10,11 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             return gdpr ? res.status(200).json({ message: 'GDPR fetched', gdpr }) : res.status(404).json({ message: 'GDPR not found' });
         } else if (method === 'POST') {
             const { gdpr: gdprText } = req.body;
-            const created = await prisma.gdpr.create({ data: { gdpr: gdprText } });
+            const created = await prisma.gdpr.create({ data: { gdpr: gdprText, content: gdprText } });
             return res.status(201).json({ message: 'Created', created });
         } else if (method === 'PUT') {
             const { id, gdpr: gdprText } = req.body;
-            const updated = await prisma.gdpr.update({ where: { id }, data: { gdpr: gdprText } });
+            const updated = await prisma.gdpr.update({ where: { id }, data: { gdpr: gdprText, content: gdprText } });
             return res.status(200).json({ message: 'Updated', updated });
         } else {
             return res.status(405).json({ message: 'Method not allowed' });

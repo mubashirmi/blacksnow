@@ -1,18 +1,6 @@
-import { Legal } from '@/views';
+import LegalDocumentPage from '@/components/legal/LegalDocumentPage';
+import { legalDocuments } from '@/lib/legal-documents';
 
-const Page = (props: any) => <Legal {...props} />;
-
-// export const getServerSideProps = async () => {
-//     const legal = await prisma.legal.findUnique({
-//         where: {
-//             id: 1,
-//         },
-//         select: {
-//             title: true,
-//             content: true,
-//         },
-//     });
-//     return { props: { legal } };
-// };
-
-export default Page;
+export default function Page() {
+    return <LegalDocumentPage document={legalDocuments[0]} />;
+}

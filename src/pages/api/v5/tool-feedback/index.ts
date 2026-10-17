@@ -1,3 +1,5 @@
+import { consumeActionVerification, requireActionVerification } from '@/lib/actionVerification';
+import { sendApiError } from '@/lib/apiErrors';
 import prisma from '@/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -91,11 +93,9 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
          */
 
         if (method === 'POST') {
-            const { authId, review, stars, toolName } = req.body;
+            const { review, stars, toolName } = req.body;
 
-            const id = Number(authId);
-
-            if (!authId || !review || !stars || !toolName) {
+            if (!review || !stars || !toolName) {
                 return res.status(400).json({
                     message: 'Missing required fields',
                 });
@@ -116,6 +116,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
              */
 
             const normalizedToolName = toolName as Role;
+            const { authId: id, verificationId } = await requireActionVerification(req, 'feedback', { toolName });
 
             const isUserHaveRole = await prisma.auth.findFirst({
                 where: {
@@ -136,15 +137,11 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
              * CREATE FEEDBACK
              */
 
-            const feedback = await prisma.toolFeedback.create({
-                data: {
-                    authId: id,
-                    review,
-                    stars,
-                    toolName,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
+            const feedback = await prisma.$transaction(async (transaction) => {
+                await consumeActionVerification(verificationId, transaction);
+                return transaction.toolFeedback.create({
+                    data: { authId: id, review, stars, toolName, createdAt: new Date(), updatedAt: new Date() },
+                });
             });
             return res.status(201).json({
                 message: 'Feedback submitted successfully',
@@ -246,9 +243,6 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             message: 'Method not allowed',
         });
     } catch (error) {
-        return res.status(500).json({
-            message: 'Internal server error',
-            error: (error as Error).message,
-        });
+        return sendApiError(res, error);
     }
 }

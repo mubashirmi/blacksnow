@@ -8,6 +8,7 @@ import PageChangeLoader from '@/components/PageChangeLoader';
 import SalesDashboardLayout from '@/components/SalesDashboardLayout';
 import SuperAffiliateLayout from '@/components/SuperAffiliateDashboardLayout';
 import InvoiceDashboardLayout from '@/components/invoicecontract/DashboardLayout';
+import '@/components/legal/legal-rich-text.css';
 import { mantineTheme } from '@/constants/mantineTheme';
 import '@aws-amplify/ui-react/styles.css';
 import '@mantine/charts/styles.css';

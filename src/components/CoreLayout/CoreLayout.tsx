@@ -159,15 +159,14 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8] whitespace-nowrap'>Trading Tool Kit</h4>
                             <div className='space-y-3'>
                                 {[
-                                    { name: 'All tools', href: '/tools' },
-                                    { name: 'Market Movers', href: '/market-movers' },
                                     { name: 'Paper Trading', href: '/paper-trading' },
-                                    { name: 'Market Moving Calendars', href: '/market-moving-calenders' },
-                                    { name: 'Research', href: '/research' },
-                                    { name: 'Watchlist', href: '/watchlist' },
-                                    { name: 'Economic Simulator', href: '/economic-simulator' },
-                                    { name: 'Global KPI', href: '/global-kpi' },
                                     { name: 'Stock Screener', href: '/stock-screener' },
+                                    { name: 'Watchlist', href: '/watchlist' },
+                                    { name: 'Market Movers', href: '/market-movers' },
+                                    { name: 'Global KPI', href: '/global-kpi' },
+                                    { name: 'Economic Simulator', href: '/economic-simulator' },
+                                    { name: 'Calendars', href: '/market-moving-calenders' },
+                                    { name: 'Research', href: '/research' },
                                 ].map((link, index) => (
                                     <Link
                                         key={index}
@@ -194,11 +193,11 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                             { name: 'Terms & Conditions', href: '/terms' },
                                             { name: 'Privacy Policy', href: '/privacy' },
                                             { name: 'GDPR', href: '/gdpr' },
-                                            { name: 'Independent Contract', href: '/independentContract' },
+                                            { name: 'Independent Contract', href: '/independentcontract' },
                                             { name: 'No Financial Advice', href: '/nofinancialadvice' },
                                             { name: 'Subscription Policy', href: '/subscriptionpolicy' },
                                             { name: 'Earnings Disclosure', href: '/earningsdisclosure' },
-                                            { name: 'Cookie Policy', href: '/cookies' },
+                                            { name: 'Cookie Policy', href: '/cookiepolicy' },
                                         ].map((link, index) => (
                                             <Link
                                                 key={index}

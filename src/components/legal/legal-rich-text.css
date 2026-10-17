@@ -1,0 +1,401 @@
+/* =========================================
+   BLACK SNOW LEGAL PAGES
+   Markdown Rich Text Styling
+========================================= */
+
+/* Shared Base */
+.legal-rich-text {
+    color: #a5b3c4;
+    font-size: 15px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+    font-weight: 400;
+}
+
+/* Reset only first element's top spacing */
+.legal-rich-text > :first-child {
+    margin-top: 0 !important;
+}
+
+/* =========================================
+   SUMMARY TAB
+========================================= */
+
+.legal-rich-text--summary {
+    color: #a5b3c4;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+/* Summary paragraphs */
+.legal-rich-text--summary p {
+    margin: 0 0 20px;
+    line-height: 1.9;
+    white-space: pre-line;
+}
+
+/* Summary headings */
+.legal-rich-text--summary h1,
+.legal-rich-text--summary h2,
+.legal-rich-text--summary h3 {
+    color: #ffffff;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 26px 0 14px;
+}
+
+.legal-rich-text--summary h1 {
+    font-size: 24px;
+}
+
+.legal-rich-text--summary h2 {
+    font-size: 20px;
+}
+
+.legal-rich-text--summary h3 {
+    font-size: 17px;
+}
+
+/* Summary checkmark list */
+.legal-rich-text--summary ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 26px 0;
+}
+
+.legal-rich-text--summary ul li {
+    position: relative;
+    list-style: none;
+    padding-left: 40px;
+    margin: 0 0 22px;
+    min-height: 28px;
+    line-height: 1.8;
+}
+
+/* Check circles */
+.legal-rich-text--summary ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #395067;
+    background: #08111c;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* Ordered lists within summary */
+.legal-rich-text--summary ol {
+    list-style: decimal;
+    padding-left: 25px;
+    margin: 18px 0 24px;
+}
+
+.legal-rich-text--summary ol li {
+    margin-bottom: 12px;
+}
+
+/* =========================================
+   FULL DOCUMENT TAB
+========================================= */
+
+.legal-rich-text--document {
+    color: #d1d5db;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.95;
+    overflow-wrap: anywhere;
+}
+
+/* Document H1 */
+.legal-rich-text--document h1 {
+    display: block;
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.4;
+    margin: 0 0 28px;
+}
+
+/* Document H2 - Main Sections */
+.legal-rich-text--document h2 {
+    display: block;
+    font-size: 21px;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.5;
+    margin: 42px 0 18px;
+}
+
+/* Document H3 - Subsections */
+.legal-rich-text--document h3 {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.5;
+    margin: 32px 0 15px;
+}
+
+/* Document H4 */
+.legal-rich-text--document h4 {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin: 25px 0 12px;
+}
+
+/* =========================================
+   DOCUMENT PARAGRAPH SPACING
+========================================= */
+
+.legal-rich-text--document p {
+    display: block;
+    margin: 0 0 22px;
+    font-size: inherit;
+    font-weight: 400;
+    line-height: 1.95;
+    color: #cbd5e1;
+    white-space: pre-line;
+}
+
+/* Space after headings */
+.legal-rich-text--document h1 + p {
+    margin-top: 14px;
+}
+
+.legal-rich-text--document h2 + p {
+    margin-top: 12px;
+}
+
+.legal-rich-text--document h3 + p {
+    margin-top: 10px;
+}
+
+/* Space between consecutive paragraphs */
+.legal-rich-text--document p + p {
+    margin-top: 8px;
+}
+
+/* Avoid double heading margins */
+.legal-rich-text--document h1 + h2,
+.legal-rich-text--document h2 + h3 {
+    margin-top: 25px;
+}
+
+/* =========================================
+   FULL DOCUMENT BULLET LISTS
+========================================= */
+
+.legal-rich-text--document ul {
+    display: block;
+    list-style-type: disc;
+    list-style-position: outside;
+    padding-left: 28px;
+    margin: 16px 0 28px;
+}
+
+.legal-rich-text--document ol {
+    display: block;
+    list-style-type: decimal;
+    list-style-position: outside;
+    padding-left: 28px;
+    margin: 16px 0 28px;
+}
+
+.legal-rich-text--document li {
+    display: list-item;
+    position: static;
+    padding-left: 4px;
+    margin: 9px 0;
+    color: #cbd5e1;
+    line-height: 1.85;
+}
+
+/* Nested lists */
+.legal-rich-text--document li ul,
+.legal-rich-text--document li ol {
+    margin-top: 10px;
+    margin-bottom: 14px;
+}
+
+/* No summary check icons */
+.legal-rich-text--document ul li::before {
+    content: none;
+    display: none;
+}
+
+/* Paragraphs inside list items */
+.legal-rich-text--document li p {
+    margin: 0 0 10px;
+}
+
+/* =========================================
+   SHARED TEXT FORMATTING
+========================================= */
+
+/* Bold */
+.legal-rich-text strong {
+    color: #ffffff;
+    font-weight: 650;
+}
+
+/* Italic */
+.legal-rich-text em {
+    font-style: italic;
+}
+
+/* Links */
+.legal-rich-text a {
+    color: #87cdf2;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.legal-rich-text a:hover {
+    color: #b5e7ff;
+}
+
+/* Blockquotes */
+.legal-rich-text blockquote {
+    border-left: 3px solid #4c91b9;
+    padding: 8px 0 8px 18px;
+    margin: 22px 0;
+    color: #c5d2df;
+}
+
+/* Horizontal rules */
+.legal-rich-text hr {
+    border: 0;
+    border-top: 1px solid #24394e;
+    margin: 32px 0;
+}
+
+/* Tables */
+.legal-rich-text table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 22px 0 30px;
+}
+
+.legal-rich-text th,
+.legal-rich-text td {
+    border: 1px solid #31445b;
+    padding: 12px;
+    text-align: left;
+}
+
+.legal-rich-text th {
+    color: #ffffff;
+    background: #17283c;
+    font-weight: 600;
+}
+
+/* Inline code */
+.legal-rich-text code {
+    overflow-wrap: anywhere;
+    border-radius: 4px;
+    background: #152539;
+    padding: 2px 5px;
+    color: #dbeafe;
+}
+
+/* Code blocks */
+.legal-rich-text pre {
+    overflow-x: auto;
+    padding: 18px;
+    margin: 20px 0;
+    border-radius: 12px;
+    background: #07111e;
+    border: 1px solid #263b52;
+}
+
+.legal-rich-text pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+========================================= */
+
+@media (max-width: 640px) {
+    .legal-rich-text {
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    /* Summary */
+    .legal-rich-text--summary p {
+        margin-bottom: 18px;
+        line-height: 1.85;
+    }
+
+    .legal-rich-text--summary ul {
+        margin: 22px 0;
+    }
+
+    .legal-rich-text--summary ul li {
+        padding-left: 38px;
+        margin-bottom: 20px;
+    }
+
+    /* Full Document */
+    .legal-rich-text--document {
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .legal-rich-text--document h1 {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+
+    .legal-rich-text--document h2 {
+        font-size: 19px;
+        margin: 34px 0 16px;
+    }
+
+    .legal-rich-text--document h3 {
+        font-size: 16px;
+        margin: 26px 0 13px;
+    }
+
+    .legal-rich-text--document h4 {
+        font-size: 15px;
+        margin: 22px 0 12px;
+    }
+
+    .legal-rich-text--document p {
+        font-size: 14px;
+        line-height: 1.85;
+        margin-bottom: 19px;
+    }
+
+    .legal-rich-text--document ul,
+    .legal-rich-text--document ol {
+        padding-left: 23px;
+        margin: 14px 0 23px;
+    }
+
+    .legal-rich-text--document li {
+        margin: 8px 0;
+        line-height: 1.8;
+    }
+
+    .legal-rich-text--document h2 + p {
+        margin-top: 10px;
+    }
+}

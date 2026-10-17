@@ -192,10 +192,10 @@ function EmailMarketing() {
                                 </div>
 
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
-                                    Our Combined Email/SMS CRM Lite is designed for fast deployment, clean automation, and high deliverability. You can launch
-                                    email campaigns and automated sequences in minutes with no technical setup. Upload your lists instantly and start messaging
-                                    without complicated workflows. SMS tools combine with your email system to create a high-value communication strategy inside
-                                    one simple dashboard. Run powerful outreach across email and SMS.{' '}
+                                    Our Combined Email CRM Lite is designed for fast deployment, clean automation, and high deliverability. You can launch email
+                                    campaigns and automated sequences in minutes with no technical setup. Upload your lists instantly and start messaging
+                                    without complicated workflows. Email CRM tool combine with your email system to create a high-value communication strategy
+                                    inside one simple dashboard. Run powerful outreach across email.{' '}
                                 </p>
                             </div>
 
@@ -291,7 +291,7 @@ function EmailMarketing() {
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Why Choose Our Digital{' '}
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email/SMS CRM Lite</span>
+                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Email CRM Lite</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
                             Take your email marketing to the next level with advanced features designed for professional marketers and growing businesses.
@@ -329,7 +329,7 @@ function EmailMarketing() {
                                 Today
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed mb-4 sm:mb-5'>
-                                Get your email and SMS campaigns running in minutes with a fast, powerful CRM built for growth..
+                                Get your email campaigns running in minutes with a fast, powerful CRM built for growth..
                             </p>
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4'>
                                 <Button

@@ -35,6 +35,9 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
     const startedAtRef = useRef<number>(0);
     const loaderActiveRef = useRef(false);
 
+    // Keep track of the current route without re-running useEffect.
+    const currentPathRef = useRef(router.asPath);
+
     const clearLoaderTimeout = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -61,10 +64,23 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
     };
 
     useEffect(() => {
-        const handleRouteChangeStart = (nextUrl: string) => {
-            const currentUrl = router.asPath;
+        currentPathRef.current = router.asPath;
 
-            const shouldSkipLoader = isDashboardRoute(currentUrl) || isDashboardRoute(nextUrl);
+        const handleRouteChangeStart = (nextUrl: string) => {
+            const currentUrl = currentPathRef.current;
+
+            const currentIsDashboard = isDashboardRoute(currentUrl);
+            const nextIsDashboard = isDashboardRoute(nextUrl);
+
+            // Skip the loader ONLY when navigating
+            // from one dashboard page to another dashboard page.
+            //
+            // Normal -> Normal      = SHOW
+            // Normal -> Dashboard   = SHOW
+            // Dashboard -> Normal   = SHOW
+            // Dashboard -> Dashboard = SKIP
+
+            const shouldSkipLoader = currentIsDashboard && nextIsDashboard;
 
             if (shouldSkipLoader) {
                 hideLoader();
@@ -76,11 +92,12 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
             loaderActiveRef.current = true;
             startedAtRef.current = Date.now();
 
+            // Restart the progress animation.
             setAnimationKey((prev) => prev + 1);
             setVisible(true);
 
             // Safety fallback:
-            // even if routeChangeComplete doesn't fire correctly,
+            // If routeChangeComplete does not fire,
             // the loader will still disappear.
             timeoutRef.current = setTimeout(() => {
                 loaderActiveRef.current = false;
@@ -88,30 +105,45 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
             }, duration + 150);
         };
 
-        const handleRouteChangeComplete = () => {
+        const handleRouteChangeComplete = (url: string) => {
+            // Store the completed route for the next navigation.
+            currentPathRef.current = url;
+
             if (!loaderActiveRef.current) return;
 
+            // Keep the loader visible for the remaining duration.
             hideLoaderAfterRemainingTime();
         };
 
-        const handleRouteChangeError = () => {
+        const handleRouteChangeError = (error: Error & { cancelled?: boolean }, url: string) => {
+            // Avoid allowing an older cancelled navigation
+            // to hide the loader for a newer navigation.
+            if (error.cancelled) {
+                return;
+            }
+
             hideLoader();
+        };
+
+        const handleHashChangeComplete = (url: string) => {
+            currentPathRef.current = url;
         };
 
         router.events.on('routeChangeStart', handleRouteChangeStart);
         router.events.on('routeChangeComplete', handleRouteChangeComplete);
         router.events.on('routeChangeError', handleRouteChangeError);
+        router.events.on('hashChangeComplete', handleHashChangeComplete);
 
         return () => {
             router.events.off('routeChangeStart', handleRouteChangeStart);
             router.events.off('routeChangeComplete', handleRouteChangeComplete);
             router.events.off('routeChangeError', handleRouteChangeError);
+            router.events.off('hashChangeComplete', handleHashChangeComplete);
 
             clearLoaderTimeout();
         };
-
         // eslint-disable-next-line
-    }, [router.events, router.asPath, duration]);
+    }, [router.events, duration]);
 
     if (!visible) return null;
 

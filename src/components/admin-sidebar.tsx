@@ -155,7 +155,7 @@ export function AdminSidebar() {
         { title: 'Billing Cycles', url: '/admin/dashboard/billingCycles', icon: ListRestart },
         { title: 'Affiliates', url: '/admin/dashboard/affiliates', icon: Users },
         {
-            title: 'CRM',
+            title: 'Email CRM Lite',
             icon: Mail,
             children: [
                 { title: 'Email Upload', url: '/admin/dashboard/users', icon: Users },
@@ -166,7 +166,7 @@ export function AdminSidebar() {
             ],
         },
         {
-            title: 'Invoice/Contract',
+            title: 'Business Invoice',
             icon: FileSpreadsheet,
             children: [
                 { title: 'Contract', url: '/admin/dashboard/invoicecontractdashboard/contract', icon: LinkIcon },

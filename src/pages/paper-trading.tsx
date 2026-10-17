@@ -674,11 +674,11 @@ const PaperTradingPage: NextPage = () => {
                             </div>
 
                             <ComingSoonTrigger
-                                ariaLabel='Get started with paper trading'
-                                className='group flex min-h-[48px] w-full items-center justify-center gap-3 rounded-[5px] bg-[#72b83f] px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(114,184,63,0.20)] transition-all duration-200 hover:bg-[#83c94d] sm:w-auto'
+                                ariaLabel='Get started'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#72b83f] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(114,184,63,0.20)] transition-all duration-200 hover:bg-[#83c94d]'
                             >
                                 Get Started
-                                <ArrowRight className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-1' />
+                                <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                             </ComingSoonTrigger>
                         </div>
                     </section>

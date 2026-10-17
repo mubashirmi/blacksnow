@@ -85,11 +85,11 @@ function Affiliate() {
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
+                    <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
+                        <div className='space-y-10 animate-slide-in-left'>
                             <div>
-                                <div className='inline-block mb-5'>
-                                    <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white'>
+                                <div className='inline-block'>
+                                    <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
                                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
                                             Lightning
                                         </span>{' '}
@@ -97,18 +97,18 @@ function Affiliate() {
                                     </h1>
                                 </div>
 
-                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     The Lightning Affiliate Program helps you earn recurring monthly income by promoting subscription-based business tools.
                                     Affiliates get automated tracking, built-in Email and SMS marketing tools, and real-time KPI metrics to monitor sales and
                                     growth. The program is designed for both beginners and experienced marketers who want predictable, long-term earnings.
                                 </p>
                             </div>
 
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                            <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     onClick={() => setIsAffiliatePopupOpen(true)}
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Learn More
                                 </Button>
@@ -116,7 +116,7 @@ function Affiliate() {
                                 <Button
                                     onClick={handleScrollToEarnBig}
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Join Now
                                 </Button>
@@ -126,7 +126,7 @@ function Affiliate() {
                                         <Button
                                             size='lg'
                                             variant='outline'
-                                            className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                            className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                         >
                                             View Earnings
                                         </Button>
@@ -135,13 +135,13 @@ function Affiliate() {
                             </div>
                         </div>
 
-                        <div className='relative animate-slide-in-right'>
-                            <div className='relative overflow-hidden'>
-                                <div className='relative flex items-center justify-center w-full h-full'>
-                                    <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                        <div className='relative animate-slide-in-right min-w-0'>
+                            <div className='relative flex items-center justify-center w-full h-full'>
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='w-[90%] aspect-square sm:w-full'>
                                         <LottieAnimation
                                             src='/animations/affiliate-coin-dollar-blue.json'
-                                            className='w-[90%] h-full sm:w-[350px] sm:h-[350px] md:w-[450px] md:h-[450px] lg:min-w-[550px] lg:h-[500px]'
+                                            className='w-full h-full'
                                             loop={true}
                                             autoplay={true}
                                         />

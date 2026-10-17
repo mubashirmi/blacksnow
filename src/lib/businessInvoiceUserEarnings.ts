@@ -154,6 +154,7 @@ export async function getBusinessInvoiceUserEarnings(authId: number, currency: s
     }
 
     const normalizedCurrency = currency.toLowerCase();
+
     const [user, invoices, subscriptionInvoices] = await prisma.$transaction([
         prisma.auth.findUnique({
             where: { id: authId },
@@ -169,16 +170,24 @@ export async function getBusinessInvoiceUserEarnings(authId: number, currency: s
             where: { authId },
             select: {
                 ...invoiceSelect,
-                invoiceRefunds: { select: refundSelect },
-                invoicePayments: { select: paymentSelect },
+                invoiceRefunds: {
+                    select: refundSelect,
+                },
+                invoicePayments: {
+                    select: paymentSelect,
+                },
             },
         }),
         prisma.subscriptionInv.findMany({
             where: { authId },
             select: {
                 ...invoiceSelect,
-                subscriptionInvRefunds: { select: refundSelect },
-                subscriptionInvPayments: { select: paymentSelect },
+                subscriptionInvRefunds: {
+                    select: refundSelect,
+                },
+                subscriptionInvPayments: {
+                    select: paymentSelect,
+                },
             },
         }),
     ]);
@@ -192,28 +201,69 @@ export async function getBusinessInvoiceUserEarnings(authId: number, currency: s
         refunds: invoice.invoiceRefunds,
         payments: invoice.invoicePayments,
     }));
+
     const subscriptionInvoiceSources: InvoiceSource[] = subscriptionInvoices.map((invoice) => ({
         ...invoice,
         refunds: invoice.subscriptionInvRefunds,
         payments: invoice.subscriptionInvPayments,
     }));
-    const earnings = collectEarnings([...invoiceSources, ...subscriptionInvoiceSources], normalizedCurrency);
+
+    /*
+     * Keep invoice and subscription invoice earnings separate so we can
+     * expose individual totals, while still preserving the existing
+     * combined earnings calculations.
+     */
+    const invoiceEarnings = collectEarnings(invoiceSources, normalizedCurrency);
+
+    const subscriptionInvoiceEarnings = collectEarnings(subscriptionInvoiceSources, normalizedCurrency);
+
+    const earnings = [...invoiceEarnings, ...subscriptionInvoiceEarnings];
 
     const timeZone = getConfiguredAdminRevenueTimeZone();
     const month = getAdminRevenueRanges(now, timeZone).monthly;
+
+    /*
+     * Invoice earnings
+     */
+    const invoiceEarnedThisMonthMinor = invoiceEarnings
+        .filter((record) => record.earnedAt >= month.start && record.earnedAt < month.endExclusive)
+        .reduce((total, record) => total + record.amountMinor, 0);
+
+    const totalInvoiceEarnedMinor = invoiceEarnings.reduce((total, record) => total + record.amountMinor, 0);
+
+    /*
+     * Subscription invoice earnings
+     */
+    const subscriptionInvEarnedThisMonthMinor = subscriptionInvoiceEarnings
+        .filter((record) => record.earnedAt >= month.start && record.earnedAt < month.endExclusive)
+        .reduce((total, record) => total + record.amountMinor, 0);
+
+    const totalSubscriptionInvEarnedMinor = subscriptionInvoiceEarnings.reduce((total, record) => total + record.amountMinor, 0);
+
+    /*
+     * Existing combined earnings
+     */
     const earnedThisMonthMinor = earnings
         .filter((record) => record.earnedAt >= month.start && record.earnedAt < month.endExclusive)
         .reduce((total, record) => total + record.amountMinor, 0);
+
     const totalEarnedMinor = earnings.reduce((total, record) => total + record.amountMinor, 0);
 
+    /*
+     * Existing Stripe payout calculations
+     */
     const payouts = user.adminStripeConnectId ? await getPaidPayouts(user.adminStripeConnectId) : [];
+
     const currencyPayouts = payouts.filter((payout) => payout.currency.toLowerCase() === normalizedCurrency);
+
     const withdrawnThisMonthMinor = currencyPayouts
         .filter((payout) => {
             const arrivalDate = new Date(payout.arrival_date * 1000);
+
             return arrivalDate >= month.start && arrivalDate < month.endExclusive;
         })
         .reduce((total, payout) => total + payout.amount, 0);
+
     const totalWithdrawnMinor = currencyPayouts.reduce((total, payout) => total + payout.amount, 0);
 
     return {
@@ -224,14 +274,43 @@ export async function getBusinessInvoiceUserEarnings(authId: number, currency: s
             lastName: user.lastName,
             stripeConnected: Boolean(user.adminStripeConnectId),
         },
+
         timezone: timeZone,
+
         currentMonth: {
             startDate: month.startDate,
             endDate: month.endDate,
         },
+
+        /*
+         * Existing combined monthly earning
+         */
         totalEarnedThisMonth: money(earnedThisMonthMinor, normalizedCurrency),
+
+        /*
+         * New monthly breakdown
+         */
+        totalInvoiceEarnedThisMonth: money(invoiceEarnedThisMonthMinor, normalizedCurrency),
+
+        totalSubscriptionInvEarnedThisMonth: money(subscriptionInvEarnedThisMonthMinor, normalizedCurrency),
+
+        /*
+         * Existing withdrawals
+         */
         successfullyWithdrawnThisMonth: money(withdrawnThisMonthMinor, normalizedCurrency),
+
         totalWithdrawn: money(totalWithdrawnMinor, normalizedCurrency),
+
+        /*
+         * Existing combined lifetime earnings
+         */
         totalEarned: money(totalEarnedMinor, normalizedCurrency),
+
+        /*
+         * New lifetime breakdown
+         */
+        totalInvoiceEarned: money(totalInvoiceEarnedMinor, normalizedCurrency),
+
+        totalSubscriptionInvEarned: money(totalSubscriptionInvEarnedMinor, normalizedCurrency),
     };
 }

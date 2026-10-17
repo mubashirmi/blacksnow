@@ -57,6 +57,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                         },
                         data: {
                             affiliateAgreement,
+                            content: affiliateAgreement,
                         },
                     });
 
@@ -69,6 +70,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 const created = await prisma.affiliateAgreement.create({
                     data: {
                         affiliateAgreement,
+                        content: affiliateAgreement,
                     },
                 });
 
@@ -126,6 +128,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                     },
                     data: {
                         affiliateAgreement,
+                        content: affiliateAgreement,
                     },
                 });
 

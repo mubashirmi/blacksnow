@@ -760,9 +760,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                             </p>
 
                             <h1 className='calendar-serif page-hero-title mt-2 max-w-[530px] text-[47px] leading-[0.93] tracking-[-0.045em] text-[#f5f3f3] sm:text-[61px] lg:text-[64px]'>
-                                Market Moving
-                                <br />
-                                <span style={{ color: ACCENT }}>Calendars</span>
+                                Calendars
                             </h1>
 
                             <div className='mt-3 h-[2px] w-12 sm:mt-4 sm:w-14' style={{ background: ACCENT }} />
@@ -896,14 +894,11 @@ const MarketMovingCalendarsPage: NextPage = () => {
                         </div>
 
                         <ComingSoonTrigger
-                            className='group flex min-h-[44px] w-full items-center justify-center gap-5 rounded-[4px] px-7 text-[12px] font-semibold uppercase tracking-[0.03em] text-[#151014] transition-all duration-200 hover:brightness-110 sm:w-[365px]'
-                            style={{
-                                background: 'linear-gradient(90deg, #ef4d8b 0%, #f45e99 100%)',
-                                boxShadow: '0 0 24px rgba(239,77,139,0.11)',
-                            }}
+                            ariaLabel='Get started'
+                            className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e44786] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(228,71,134,0.20)] transition-all duration-200 hover:bg-[#f05294]'
                         >
-                            Explore All Calendars
-                            <ArrowRight className='h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-1' />
+                            Get Started
+                            <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                         </ComingSoonTrigger>
                     </div>
                 </section>

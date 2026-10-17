@@ -10,13 +10,13 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             return terms ? res.status(200).json({ message: 'Terms fetched', terms }) : res.status(404).json({ message: 'Terms not found' });
         } else if (method === 'POST') {
             const { terms } = req.body;
-            const created = await prisma.terms.create({ data: { terms } });
+            const created = await prisma.terms.create({ data: { terms, content: terms } });
             return res.status(201).json({ message: 'Created successfully', created });
         } else if (method === 'PUT') {
             const { id, terms } = req.body;
             const updated = await prisma.terms.update({
                 where: { id },
-                data: { terms },
+                data: { terms, content: terms },
             });
             return res.status(200).json({ message: 'Updated successfully', updated });
         } else {

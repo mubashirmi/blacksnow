@@ -34,7 +34,7 @@ function getMimeType(filePath: string) {
     return 'image/png';
 }
 
-function getLogoAttachment(): SendEmailAttachment {
+export function getLogoAttachment(): SendEmailAttachment {
     const logoPath = path.join(process.cwd(), 'public', 'email', 'blacksnow-logo.png');
 
     if (!fs.existsSync(logoPath)) {
@@ -52,7 +52,7 @@ function getLogoAttachment(): SendEmailAttachment {
     };
 }
 
-function buildOtpText(fullName: string, otp: number) {
+export function buildOtpText(fullName: string, otp: number) {
     return `
 Hi ${fullName || 'there'},
 
@@ -69,7 +69,7 @@ Black Snow Holdings
 `;
 }
 
-function buildOtpHtml(fullName: string, otp: number) {
+export function buildOtpHtml(fullName: string, otp: number) {
     const safeName = escapeHtml(fullName || 'there');
 
     return `

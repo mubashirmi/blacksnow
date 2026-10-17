@@ -4,6 +4,7 @@ export interface BillboardData {
     id: number;
     createdAt?: string;
     updatedAt?: string;
+    clickCount: number;
     fullName: string;
     website: string;
     podcast: string;

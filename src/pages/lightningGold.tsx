@@ -129,23 +129,23 @@ function LightningGold() {
             {/* ── HERO ─────────────────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
+                    <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         {/* Left */}
-                        <div className='space-y-7 sm:space-y-8 md:space-y-10 animate-slide-in-left'>
+                        <div className='space-y-10 animate-slide-in-left'>
                             <div>
                                 {/* <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                     Lightning Gold
                                 </Badge> */}
 
                                 <div style={{ display: 'table' }}>
-                                    <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-[#ffd500] mb-3 sm:mb-4'>
+                                    <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-[#ffd500] mb-4 sm:mb-5'>
                                         <span className='block whitespace-nowrap'>Lightning Gold</span>
                                         <span className='block whitespace-nowrap'>75% Commission</span>
                                     </h1>
                                     {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mb-4 sm:mb-5' /> */}
                                 </div>
 
-                                <p className='text-base sm:text-md md:text-lg text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
+                                <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     Earn 75% lifetime commissions, paid on both monthly and annual subscriptions, for every active customer you refer with a
                                     $250/month membership. Gain more from the same subscribers by increasing your commission rate without changing your effort.
                                     Build faster and scale more efficiently by converting the same traffic into higher recurring payouts.
@@ -153,18 +153,18 @@ function LightningGold() {
                             </div>
 
                             {/* CTA */}
-                            <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
+                            <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     onClick={() => setActiveSlideshow('gold')}
                                     size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Learn More
                                 </Button>
                                 <Button
                                     onClick={handleJoinGold}
                                     size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Join Gold
                                 </Button>
@@ -172,15 +172,12 @@ function LightningGold() {
                         </div>
 
                         {/* Right – Lottie */}
-                        <div className='relative animate-slide-in-right'>
+                        <div className='relative animate-slide-in-right min-w-0'>
                             <div className='relative flex items-center justify-center w-full h-full'>
-                                <div className='flex items-center justify-center w-full sm:w-fit rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
-                                    <LottieAnimation
-                                        src='/animations/lightningGoldherosection.json'
-                                        className='w-[90%] lg:w-[85%] max-w-[255px] sm:max-w-[295px] md:max-w-[340px] lg:max-w-[360px] h-[315px] sm:h-[355px] md:h-[395px] lg:h-[415px]'
-                                        loop
-                                        autoplay
-                                    />
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                    <div className='w-[90%] aspect-square sm:w-full'>
+                                        <LottieAnimation src='/animations/lightningGoldherosection.json' className='w-full h-full' loop autoplay />
+                                    </div>
                                 </div>
                             </div>
                         </div>

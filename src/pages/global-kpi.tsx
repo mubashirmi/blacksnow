@@ -1,6 +1,6 @@
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
-import { ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Truck } from 'lucide-react';
+import { ArrowRight, ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Truck } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
@@ -385,11 +385,11 @@ function GlobalKpiPageContent() {
                     </div>
 
                     <ComingSoonTrigger
-                        ariaLabel='Explore Global KPI'
-                        className='group flex min-h-[48px] w-full items-center justify-center gap-3 rounded-[5px] bg-[#1768ff] px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(23,104,255,0.22)] transition-all duration-200 hover:bg-[#2d7cff] sm:w-auto'
+                        ariaLabel='Get started'
+                        className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#1768ff] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(23,104,255,0.22)] transition-all duration-200 hover:bg-[#2d7cff]'
                     >
-                        Explore Global KPI
-                        <ArrowUp className='h-4 w-4 rotate-90 transition-transform duration-200 group-hover:translate-y-[-4px]' />
+                        Get Started
+                        <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                     </ComingSoonTrigger>
                 </div>
             </section>

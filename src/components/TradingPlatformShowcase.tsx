@@ -5,12 +5,13 @@ import {
     BookOpenText,
     CalendarDays,
     Check,
+    ChevronLeft,
+    ChevronRight,
     CircleDollarSign,
     Clock3,
     Filter,
     Globe2,
     Landmark,
-    LineChart,
     Newspaper,
     Rocket,
     Search,
@@ -18,12 +19,12 @@ import {
     Target,
     TrendingUp,
     UserRound,
-    Users,
     Zap,
     type LucideIcon,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState, type ReactNode } from 'react';
 
 const CYAN = '#4cc7e8';
 // const BLUE = '#2c7bbe';
@@ -73,18 +74,18 @@ const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string
         kind: 'curve',
     },
     {
-        icon: CalendarDays,
-        title: 'Calendars',
-        body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
-        href: '/market-moving-calenders',
-        kind: 'bars',
-    },
-    {
         icon: BookOpenText,
         title: 'Research',
         body: 'Access institutional-grade market, company, earnings, and macro research in one place.',
         href: '/research',
         kind: 'line',
+    },
+    {
+        icon: CalendarDays,
+        title: 'Market Moving Calendars',
+        body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
+        href: '/market-moving-calendars',
+        kind: 'bars',
     },
 ];
 
@@ -97,13 +98,181 @@ const audiences: Array<{ icon: LucideIcon; title: string; body: string }> = [
     { icon: Newspaper, title: 'Researchers', body: 'Access powerful data, economic indicators, and simulation tools to support deeper market research.' },
 ];
 
-const workflow: Array<{ icon: LucideIcon; title: string; body: string }> = [
-    { icon: Zap, title: 'Market Movers', body: "Spot what's moving right now" },
-    { icon: Filter, title: 'Stock Screener', body: 'Find high-potential opportunities' },
-    { icon: Search, title: 'Watchlist', body: 'Monitor and track your top picks' },
-    { icon: Rocket, title: 'Paper Trading', body: 'Test your strategies risk-free' },
-    { icon: LineChart, title: 'Economic Simulator', body: 'Model scenarios and plan ahead' },
-    { icon: Target, title: 'Better Decisions', body: 'Execute with confidence and discipline' },
+type ExecutionSlide = {
+    id: string;
+    title: string;
+    subtitle: string;
+    href: string;
+    accent: string;
+    tag: string;
+    compactTitle?: boolean;
+    details: Array<{ title: string; text: string }>;
+    tape: Array<{ label: string; value: string; side: string; delta: string }>;
+};
+
+const executionSlides: ExecutionSlide[] = [
+    {
+        id: 'paper-trading',
+        title: 'Paper Trading',
+        subtitle: 'Practice the market. Build confidence before capital.',
+        href: '/paper-trading',
+        accent: '#72B83F',
+        tag: 'Paper floor',
+        details: [
+            { title: 'Workflow', text: 'Build complete paper tickets with size, side, entries, exits, and risk controls.' },
+            { title: 'Practice', text: 'Trade with virtual funds against realistic market movement without risking capital.' },
+            { title: 'Review', text: 'Measure results, identify mistakes, and refine the strategy before going live.' },
+        ],
+        tape: [
+            { label: 'NVDA', value: '950.02', side: 'BUY', delta: '+7.42%' },
+            { label: 'AAPL', value: '187.32', side: 'BUY', delta: '+1.25%' },
+            { label: 'TSLA', value: '173.24', side: 'SELL', delta: '-0.72%' },
+            { label: 'MSFT', value: '389.45', side: 'BUY', delta: '+0.73%' },
+            { label: 'AMZN', value: '188.55', side: 'BUY', delta: '+0.45%' },
+        ],
+    },
+    {
+        id: 'stock-screener',
+        title: 'Stock Screener',
+        subtitle: 'Filter the noise. Surface the setups that matter.',
+        href: '/stock-screener',
+        accent: '#E4AE25',
+        tag: 'Screen builder',
+        details: [
+            { title: 'Screen', text: 'Filter thousands of stocks using fundamental, technical, valuation, and ownership criteria.' },
+            { title: 'Compare', text: 'Bring the strongest matches side by side with the metrics that matter most.' },
+            { title: 'Act', text: 'Save screens, create alerts, and move qualified opportunities into your watchlist.' },
+        ],
+        tape: [
+            { label: 'AAPL', value: '187.32', side: 'MATCH', delta: '92%' },
+            { label: 'NVDA', value: '1,102.50', side: 'MATCH', delta: '96%' },
+            { label: 'AVGO', value: '1,553.78', side: 'MATCH', delta: '88%' },
+            { label: 'AMD', value: '156.48', side: 'MATCH', delta: '84%' },
+            { label: 'MSFT', value: '389.45', side: 'MATCH', delta: '90%' },
+        ],
+    },
+    {
+        id: 'watchlist',
+        title: 'Watchlist',
+        subtitle: 'Keep the right names close and the right alerts closer.',
+        href: '/watchlist',
+        accent: '#F25A20',
+        tag: 'Live watch',
+        details: [
+            { title: 'Track', text: 'Monitor favorite assets with live prices, compact charts, volume, and daily change.' },
+            { title: 'Organize', text: 'Group assets by strategy, theme, sector, or conviction so the list stays actionable.' },
+            { title: 'Alert', text: 'Set price, percentage, volume, and event alerts for the moves that matter.' },
+        ],
+        tape: [
+            { label: 'NVDA', value: '950.02', side: 'ALERT', delta: '+7.42%' },
+            { label: 'AAPL', value: '182.63', side: 'WATCH', delta: '+1.35%' },
+            { label: 'MSFT', value: '415.90', side: 'WATCH', delta: '+0.89%' },
+            { label: 'TSLA', value: '173.24', side: 'ALERT', delta: '-0.72%' },
+            { label: 'SPY', value: '517.38', side: 'WATCH', delta: '+0.32%' },
+        ],
+    },
+    {
+        id: 'market-movers',
+        title: 'Market Movers',
+        subtitle: 'See what is moving now—and understand why.',
+        href: '/market-movers',
+        accent: '#E54848',
+        tag: 'Live movers',
+        details: [
+            { title: 'Scan', text: 'Surface the strongest gainers, losers, unusual volume, and most active names in real time.' },
+            { title: 'Drivers', text: 'Connect the move to catalysts, volume behavior, sector context, and market impact.' },
+            { title: 'Action', text: 'Turn fast-moving market information into alerts and a focused next step.' },
+        ],
+        tape: [
+            { label: 'NVDA', value: '950.02', side: 'GAINER', delta: '+7.42%' },
+            { label: 'AMD', value: '170.58', side: 'GAINER', delta: '+6.21%' },
+            { label: 'SMCI', value: '915.30', side: 'GAINER', delta: '+5.18%' },
+            { label: 'SPOT', value: '291.26', side: 'LOSER', delta: '-4.21%' },
+            { label: 'PYPL', value: '61.83', side: 'LOSER', delta: '-3.18%' },
+        ],
+    },
+    {
+        id: 'global-kpi',
+        title: 'Global KPI',
+        subtitle: 'Read the macro picture before positioning around it.',
+        href: '/global-kpi',
+        accent: '#1768FF',
+        tag: 'Macro pulse',
+        details: [
+            { title: 'Monitor', text: 'Track the indicators that describe growth, satisfaction, efficiency, and market expansion.' },
+            { title: 'Compare', text: 'Read performance across periods and markets without losing the global context.' },
+            { title: 'Context', text: 'Use KPI movement to frame broader investment and operating decisions with better perspective.' },
+        ],
+        tape: [
+            { label: 'Revenue', value: '$2.45B', side: 'YOY', delta: '+18.6%' },
+            { label: 'Satisfaction', value: '92%', side: 'YOY', delta: '+7%' },
+            { label: 'Efficiency', value: '87%', side: 'YOY', delta: '+6%' },
+            { label: 'Markets', value: '24', side: 'NEW', delta: '+4' },
+            { label: 'Quality', value: '91%', side: 'KPI', delta: '+3%' },
+        ],
+    },
+    {
+        id: 'economic-simulator',
+        title: 'Economic Simulator',
+        subtitle: 'Model the change. See the impact before it happens.',
+        href: '/economic-simulator',
+        accent: '#7038D7',
+        tag: 'Scenario lab',
+        compactTitle: true,
+        details: [
+            { title: 'Build', text: 'Define sectors, agents, policies, and parameters inside a structured economic model.' },
+            { title: 'Simulate', text: 'Run policy changes and external shocks across multiple scenarios and time horizons.' },
+            { title: 'Analyze', text: 'Compare growth, inflation, unemployment, and debt outcomes before making decisions.' },
+        ],
+        tape: [
+            { label: 'GDP', value: '3.8%', side: 'EXPANSION', delta: '+1.5pp' },
+            { label: 'Inflation', value: '2.4%', side: 'MODEL', delta: '+0.3pp' },
+            { label: 'Unemployment', value: '5.1%', side: 'MODEL', delta: '-0.4pp' },
+            { label: 'Debt / GDP', value: '68.7', side: 'MODEL', delta: '-2.8pp' },
+            { label: 'Horizon', value: '10Y', side: 'RUN', delta: 'ACTIVE' },
+        ],
+    },
+    {
+        id: 'research',
+        title: 'Research',
+        subtitle: 'Turn deeper research into clearer market decisions.',
+        href: '/research',
+        accent: '#2C7BBE',
+        tag: 'Research desk',
+        details: [
+            { title: 'Markets', text: 'Follow macro forces, rates, commodities, currencies, sectors, and global market themes.' },
+            { title: 'Companies', text: 'Go deeper on fundamentals, valuation, estimates, earnings, and competitive positioning.' },
+            { title: 'Events', text: 'Stay ahead of earnings, catalysts, corporate events, and the research that surrounds them.' },
+        ],
+        tape: [
+            { label: 'US Economy', value: 'Neutral', side: 'OUTLOOK', delta: 'Stable' },
+            { label: 'Global Markets', value: 'Positive', side: 'OUTLOOK', delta: 'Up' },
+            { label: 'Rates', value: 'Neutral', side: 'OUTLOOK', delta: 'Q3' },
+            { label: 'Commodities', value: 'Positive', side: 'OUTLOOK', delta: 'Firm' },
+            { label: 'Currencies', value: 'Neutral', side: 'OUTLOOK', delta: 'USD' },
+        ],
+    },
+    {
+        id: 'market-calendars',
+        title: 'Calendars',
+        subtitle: 'Know the date. Know the event. Know the impact.',
+        href: '/market-moving-calenders',
+        accent: '#E44786',
+        tag: 'Event calendar',
+        compactTitle: true,
+        details: [
+            { title: 'Economic', text: 'Track releases, central-bank decisions, employment, inflation, GDP, PMI, and more.' },
+            { title: 'Earnings', text: 'Stay ahead of report dates, estimates, pre-market releases, and after-hours events.' },
+            { title: 'Corporate', text: 'Follow dividends, ex-dates, IPOs, new listings, and other market-moving milestones.' },
+        ],
+        tape: [
+            { label: 'Retail Sales', value: 'May 16', side: 'HIGH', delta: '0.4%' },
+            { label: 'Industrial Prod.', value: 'May 16', side: 'MED', delta: '0.1%' },
+            { label: 'Building Permits', value: 'May 17', side: 'MED', delta: '1.5%' },
+            { label: 'Consumer Sent.', value: 'May 17', side: 'HIGH', delta: '67.4' },
+            { label: 'Fed Chair', value: 'May 17', side: 'HIGH', delta: '—' },
+        ],
+    },
 ];
 
 function MiniLine({ id = 'line' }: { id?: string }) {
@@ -267,7 +436,397 @@ function SimplePricingStrip() {
     );
 }
 
+function PreviewShell({ slide, children }: { slide: ExecutionSlide; children: ReactNode }) {
+    return (
+        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-white/[0.055] bg-black/10 p-4 sm:min-h-[320px] sm:p-5'>
+            <div
+                className='pointer-events-none absolute inset-0 opacity-70'
+                style={{
+                    background: `radial-gradient(circle at 58% 48%, ${slide.accent}16, transparent 52%)`,
+                }}
+            />
+            <div className='relative z-10'>{children}</div>
+        </div>
+    );
+}
+
+function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
+    const accent = slide.accent;
+
+    if (slide.id === 'paper-trading') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Paper Account</p>
+                        <p className='mt-1 text-2xl font-semibold text-white'>$100,000.00</p>
+                    </div>
+                    <div className='text-right'>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Day P&amp;L</p>
+                        <p className='mt-1 text-sm font-semibold text-[#72B83F]'>+$1,250.00</p>
+                    </div>
+                </div>
+
+                <div className='mt-5 grid grid-cols-2 gap-3'>
+                    {[
+                        ['Buying Power', '$100,000'],
+                        ['Net Liq', '$100,000'],
+                        ['Margin Used', '$0.00'],
+                        ['Cash', '$100,000'],
+                    ].map(([label, value]) => (
+                        <div key={label} className='rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                            <p className='text-[9px] uppercase tracking-[0.1em] text-white/32'>{label}</p>
+                            <p className='mt-1 text-xs font-semibold text-white/85'>{value}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                    <div className='flex items-center justify-between'>
+                        <span className='text-[10px] font-semibold text-white/75'>Order Ticket</span>
+                        <span className='rounded-full px-2 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
+                            PAPER
+                        </span>
+                    </div>
+                    <div className='mt-3 grid grid-cols-3 gap-2 text-center'>
+                        {[
+                            ['Symbol', 'NVDA'],
+                            ['Side', 'BUY'],
+                            ['Qty', '25'],
+                        ].map(([label, value]) => (
+                            <div key={label} className='rounded-md border border-white/[0.06] px-2 py-2'>
+                                <p className='text-[8px] uppercase text-white/30'>{label}</p>
+                                <p className='mt-1 text-[10px] font-semibold text-white'>{value}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'stock-screener') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Screen Builder</p>
+                        <p className='mt-1 text-lg font-semibold text-white'>Precision Filters</p>
+                    </div>
+                    <div className='text-right'>
+                        <p className='text-[9px] uppercase text-white/30'>Matches</p>
+                        <p className='mt-1 text-2xl font-semibold' style={{ color: accent }}>
+                            248
+                        </p>
+                    </div>
+                </div>
+
+                <div className='mt-5 space-y-2'>
+                    {[
+                        ['Market Cap', 'Greater Than', '$2B'],
+                        ['P/E Ratio', 'Less Than', '20'],
+                        ['ROE', 'Greater Than', '15%'],
+                        ['Revenue Growth', 'Greater Than', '10%'],
+                        ['50-Day MA', 'Above', '200-Day MA'],
+                    ].map(([metric, op, value]) => (
+                        <div
+                            key={metric}
+                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-2.5 text-[9px] sm:text-[10px]'
+                        >
+                            <span className='font-medium text-white/75'>{metric}</span>
+                            <span className='text-white/38'>{op}</span>
+                            <span className='text-right font-semibold' style={{ color: accent }}>
+                                {value}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'watchlist') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>My Watchlist</p>
+                        <p className='mt-1 text-lg font-semibold text-white'>Live Monitoring</p>
+                    </div>
+                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
+                        24 ASSETS
+                    </span>
+                </div>
+
+                <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+                    {[
+                        ['NVDA', 'NVIDIA', '$950.02', '+7.42%'],
+                        ['AAPL', 'Apple', '$182.63', '+1.35%'],
+                        ['MSFT', 'Microsoft', '$415.90', '+0.89%'],
+                        ['TSLA', 'Tesla', '$173.24', '-0.72%'],
+                        ['SPY', 'S&P 500 ETF', '$517.38', '+0.32%'],
+                    ].map(([symbol, name, price, change]) => (
+                        <div key={symbol} className='grid grid-cols-[.7fr_1.2fr_.85fr_.75fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
+                            <span className='font-semibold text-white'>{symbol}</span>
+                            <span className='truncate text-white/42'>{name}</span>
+                            <span className='text-right text-white/72'>{price}</span>
+                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#ef6666]' : 'text-[#62db9b]'}`}>{change}</span>
+                        </div>
+                    ))}
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'market-movers') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='grid grid-cols-2 gap-3'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em]' style={{ color: accent }}>
+                            Top Gainers
+                        </p>
+                        <div className='mt-3 space-y-2'>
+                            {[
+                                ['NVDA', '+7.42%'],
+                                ['AMD', '+6.21%'],
+                                ['SMCI', '+5.18%'],
+                            ].map(([symbol, change]) => (
+                                <div
+                                    key={symbol}
+                                    className='flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-3'
+                                >
+                                    <span className='text-[10px] font-semibold text-white'>{symbol}</span>
+                                    <span className='text-[10px] font-semibold text-[#62db9b]'>{change}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-[#ef6666]'>Top Losers</p>
+                        <div className='mt-3 space-y-2'>
+                            {[
+                                ['SPOT', '-4.21%'],
+                                ['PYPL', '-3.18%'],
+                                ['SNAP', '-2.89%'],
+                            ].map(([symbol, change]) => (
+                                <div
+                                    key={symbol}
+                                    className='flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-3'
+                                >
+                                    <span className='text-[10px] font-semibold text-white'>{symbol}</span>
+                                    <span className='text-[10px] font-semibold text-[#ef6666]'>{change}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                    <div className='flex items-center justify-between'>
+                        <span className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Most Active</span>
+                        <span className='text-[10px] font-semibold' style={{ color: accent }}>
+                            TSLA
+                        </span>
+                    </div>
+                    <p className='mt-2 text-xs text-white/65'>112.6M volume · options activity elevated</p>
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'global-kpi') {
+        return (
+            <PreviewShell slide={slide}>
+                <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Performance Overview</p>
+
+                <div className='mt-4 grid grid-cols-2 gap-3'>
+                    {[
+                        ['Revenue Growth', '$2.45B', '+18.6%'],
+                        ['Customer Satisfaction', '92%', '+7%'],
+                        ['Operational Efficiency', '87%', '+6%'],
+                        ['New Markets', '24', '+4'],
+                    ].map(([label, value, delta]) => (
+                        <div key={label} className='rounded-lg border border-white/[0.06] bg-white/[0.018] p-3'>
+                            <p className='text-[8px] uppercase leading-4 tracking-[0.08em] text-white/32'>{label}</p>
+                            <div className='mt-2 flex items-end justify-between gap-2'>
+                                <span className='text-lg font-semibold text-white'>{value}</span>
+                                <span className='text-[9px] font-semibold text-[#62db9b]'>{delta}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='mt-5 space-y-3'>
+                    {[
+                        ['Process', 87],
+                        ['Utilization', 82],
+                        ['Quality', 91],
+                    ].map(([label, value]) => (
+                        <div key={label as string}>
+                            <div className='flex items-center justify-between text-[9px]'>
+                                <span className='text-white/48'>{label}</span>
+                                <span className='font-semibold text-white/78'>{value}%</span>
+                            </div>
+                            <div className='mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/[0.07]'>
+                                <div className='h-full rounded-full' style={{ width: `${value}%`, background: accent }} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'economic-simulator') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Scenario Controls</p>
+                        <p className='mt-1 text-lg font-semibold text-white'>Expansionary Policy</p>
+                    </div>
+                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
+                        10 YEARS
+                    </span>
+                </div>
+
+                <div className='mt-5 grid grid-cols-2 gap-3'>
+                    {[
+                        ['Fiscal Stimulus', '2.0% GDP'],
+                        ['Rate Change', '-1.00 pp'],
+                        ['Inflation', '2.4%'],
+                        ['Unemployment', '5.1%'],
+                    ].map(([label, value]) => (
+                        <div key={label} className='rounded-lg border border-white/[0.06] bg-white/[0.018] p-3'>
+                            <p className='text-[8px] uppercase tracking-[0.08em] text-white/32'>{label}</p>
+                            <p className='mt-2 text-sm font-semibold' style={{ color: accent }}>
+                                {value}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                    <p className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Model Structure</p>
+                    <div className='mt-3 grid grid-cols-3 gap-2 text-center text-[9px]'>
+                        {['Households', 'Markets', 'Central Bank'].map((item) => (
+                            <div
+                                key={item}
+                                className='rounded-md border px-2 py-3'
+                                style={{ borderColor: `${accent}36`, color: item === 'Markets' ? accent : 'rgba(255,255,255,.72)' }}
+                            >
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    if (slide.id === 'research') {
+        return (
+            <PreviewShell slide={slide}>
+                <div className='flex items-center justify-between'>
+                    <div>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Market Research Snapshot</p>
+                        <p className='mt-1 text-lg font-semibold text-white'>Latest Intelligence</p>
+                    </div>
+                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
+                        5 TOPICS
+                    </span>
+                </div>
+
+                <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+                    {[
+                        ['U.S. Economy', 'Inflation cooling', 'Neutral'],
+                        ['Global Markets', 'Growth resilient', 'Positive'],
+                        ['Interest Rates', 'Cuts expected Q3', 'Neutral'],
+                        ['Commodities', 'Supply tightness', 'Positive'],
+                        ['Currencies', 'USD may moderate', 'Neutral'],
+                    ].map(([topic, insight, outlook]) => (
+                        <div key={topic} className='grid grid-cols-[1fr_1.25fr_.65fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
+                            <span className='font-medium text-white/82'>{topic}</span>
+                            <span className='truncate text-white/42'>{insight}</span>
+                            <span className='text-right font-semibold' style={{ color: outlook === 'Positive' ? '#72B83F' : accent }}>
+                                {outlook}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </PreviewShell>
+        );
+    }
+
+    return (
+        <PreviewShell slide={slide}>
+            <div className='flex items-center justify-between'>
+                <div>
+                    <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Upcoming Market Events</p>
+                    <p className='mt-1 text-lg font-semibold text-white'>Calendar Snapshot</p>
+                </div>
+                <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
+                    TODAY
+                </span>
+            </div>
+
+            <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+                {[
+                    ['May 16', 'Retail Sales (MoM)', 'HIGH'],
+                    ['May 16', 'Industrial Production', 'MED'],
+                    ['May 17', 'Building Permits', 'MED'],
+                    ['May 17', 'Consumer Sentiment', 'HIGH'],
+                    ['May 17', 'Fed Chair Powell', 'HIGH'],
+                ].map(([date, event, impact]) => (
+                    <div key={`${date}-${event}`} className='grid grid-cols-[.7fr_1.6fr_.55fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
+                        <span className='text-white/42'>{date}</span>
+                        <span className='truncate font-medium text-white/82'>{event}</span>
+                        <span
+                            className='rounded-full px-2 py-1 text-center text-[8px] font-semibold'
+                            style={{
+                                color: impact === 'HIGH' ? accent : 'rgba(255,255,255,.62)',
+                                background: impact === 'HIGH' ? `${accent}12` : 'rgba(255,255,255,.035)',
+                            }}
+                        >
+                            {impact}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </PreviewShell>
+    );
+}
+
 export default function TradingPlatformShowcase() {
+    const [executionIndex, setExecutionIndex] = useState(0);
+    const [executionDetailIndex, setExecutionDetailIndex] = useState(0);
+
+    const activeExecutionSlide = executionSlides[executionIndex];
+    const activeExecutionDetail = activeExecutionSlide.details[executionDetailIndex];
+
+    useEffect(() => {
+        const timer = window.setInterval(() => {
+            setExecutionDetailIndex((current) => (current + 1) % activeExecutionSlide.details.length);
+        }, 3600);
+
+        return () => window.clearInterval(timer);
+    }, [executionIndex, activeExecutionSlide.details.length]);
+
+    const showExecutionSlide = (index: number) => {
+        setExecutionIndex(index);
+        setExecutionDetailIndex(0);
+    };
+
+    const previousExecutionSlide = () => {
+        showExecutionSlide((executionIndex - 1 + executionSlides.length) % executionSlides.length);
+    };
+
+    const nextExecutionSlide = () => {
+        showExecutionSlide((executionIndex + 1) % executionSlides.length);
+    };
+
     return (
         <section className='trading-platform-showcase relative overflow-x-clip bg-[#050608] px-4 py-10 text-white sm:px-6 sm:py-16 md:px-8 lg:py-20'>
             <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_6%,rgba(76,199,232,.08),transparent_24%),radial-gradient(circle_at_10%_42%,rgba(44,123,190,.07),transparent_30%),linear-gradient(180deg,#050608_0%,#07101a_48%,#050608_100%)]' />
@@ -425,52 +984,173 @@ export default function TradingPlatformShowcase() {
                 <div className='mt-9 sm:mt-12'>
                     <div className='text-center'>
                         <h2 className='showcase-section-title text-[clamp(1.4rem,5vw,2rem)] font-black text-white'>From Insight to Execution</h2>
-                        <p className='mt-2 text-sm text-white/45'>A seamless workflow designed to help you make smarter, data-driven decisions.</p>
+                        <p className='mt-2 text-sm text-white/45'>Explore the eight Black Snow tools through one unified market workflow.</p>
                     </div>
-                    <div className='mt-6 grid gap-3 sm:mt-7 sm:flex sm:snap-x sm:snap-mandatory sm:gap-4 sm:overflow-x-auto sm:pb-2 lg:grid lg:grid-cols-6 lg:overflow-visible'>
-                        {workflow.map(({ icon: Icon, title, body }, index) => (
-                            <div
-                                key={title}
-                                className='relative flex items-center gap-4 rounded-xl border border-[#2c7bbe]/18 bg-[#07101a]/42 px-4 py-3.5 text-left sm:block sm:min-w-[150px] sm:snap-start sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-center lg:min-w-0'
-                            >
-                                <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#2c7bbe]/40 bg-[#07101a] sm:mx-auto sm:h-16 sm:w-16'>
-                                    <Icon className='h-6 w-6 text-[#4cc7e8] sm:h-7 sm:w-7' strokeWidth={1.45} />
-                                </div>
-                                <div className='min-w-0'>
-                                    <p className='text-[10px] font-black uppercase text-white sm:mt-3'>
-                                        {index + 1}. {title}
-                                    </p>
-                                    <p className='mt-1 text-[11px] leading-4 text-white/45 sm:text-[10px]'>{body}</p>
-                                </div>
-                                {index < workflow.length - 1 && <ArrowRight className='absolute -right-3 top-6 hidden h-5 w-5 text-[#2c7bbe] lg:block' />}
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
-                <div className='mt-8 overflow-hidden rounded-xl border border-[#2c7bbe]/22 bg-[#07101a]/65'>
-                    <div className='grid grid-cols-2 divide-x divide-y divide-[#2c7bbe]/15 md:grid-cols-5 md:divide-y-0'>
-                        {[
-                            [Users, '50K+', 'Active Traders'],
-                            [TrendingUp, '8', 'Powerful Tools'],
-                            [Globe2, '150+', 'Global Markets'],
-                            [Clock3, '99.9%', 'Platform Uptime'],
-                            [ShieldCheck, 'Bank-Level', 'Security'],
-                        ].map(([Icon, value, label], index) => {
-                            const I = Icon as LucideIcon;
-                            return (
-                                <div
-                                    key={label as string}
-                                    className={`flex min-h-[82px] items-center justify-center gap-3 px-3 ${index === 4 ? 'col-span-2 md:col-span-1' : ''}`}
-                                >
-                                    <I className='h-7 w-7 text-[#4cc7e8]' />
-                                    <div>
-                                        <p className='text-lg font-black text-[#4cc7e8]'>{value as string}</p>
-                                        <p className='mt-1 text-[10px] text-white/45'>{label as string}</p>
+                    <div className='relative mt-7 overflow-hidden rounded-[18px] border border-white/[0.12] bg-[#090b0f]/95 shadow-[0_26px_80px_rgba(0,0,0,.42)] sm:mt-8'>
+                        <div
+                            className='pointer-events-none absolute inset-0 opacity-70'
+                            style={{
+                                background: `radial-gradient(circle at 15% 30%, ${activeExecutionSlide.accent}10, transparent 34%), radial-gradient(circle at 76% 52%, ${activeExecutionSlide.accent}0b, transparent 34%)`,
+                            }}
+                        />
+
+                        <div className='relative z-10 p-5 sm:p-7 lg:p-8'>
+                            <div className='flex items-center justify-between gap-4'>
+                                <div className='flex min-w-0 items-center gap-3'>
+                                    <Image src='/logocolored.png' alt='Black Snow' width={30} height={30} className='h-7 w-7 shrink-0 object-contain' />
+                                    <span className='truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-white/85 sm:text-[11px]'>
+                                        Black Snow
+                                    </span>
+                                </div>
+
+                                <div className='text-[11px] font-medium tracking-[0.08em] text-white/36'>
+                                    <span style={{ color: activeExecutionSlide.accent }}>{String(executionIndex + 1).padStart(2, '0')}</span>
+                                    <span className='px-1.5'>/</span>
+                                    <span>{String(executionSlides.length).padStart(2, '0')}</span>
+                                </div>
+                            </div>
+
+                            <div className='mt-8 grid h-[610px] content-start gap-8 sm:h-[640px] lg:h-[360px] lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-10'>
+                                <div className='min-w-0'>
+                                    <h3
+                                        className={`showcase-display uppercase leading-[1.02] tracking-[-0.04em] text-white ${
+                                            activeExecutionSlide.compactTitle ? 'text-[clamp(1.75rem,6.8vw,3.65rem)]' : 'text-[clamp(2.1rem,8vw,4.65rem)]'
+                                        }`}
+                                    >
+                                        {activeExecutionSlide.title}
+                                    </h3>
+
+                                    <p
+                                        className='mt-3 text-[clamp(1rem,3.7vw,1.35rem)] font-medium leading-snug'
+                                        style={{ color: activeExecutionSlide.accent }}
+                                    >
+                                        {activeExecutionSlide.subtitle}
+                                    </p>
+
+                                    <div className='mt-7 min-h-[118px] sm:mt-8'>
+                                        <div className='flex items-center justify-between gap-4'>
+                                            <p className='text-[9px] font-medium uppercase tracking-[0.2em] text-white/36'>
+                                                {String(executionDetailIndex + 1).padStart(2, '0')} /{' '}
+                                                {String(activeExecutionSlide.details.length).padStart(2, '0')}
+                                            </p>
+
+                                            <div className='flex items-center gap-1.5'>
+                                                <button
+                                                    type='button'
+                                                    aria-label='Previous content'
+                                                    onClick={() =>
+                                                        setExecutionDetailIndex(
+                                                            (executionDetailIndex - 1 + activeExecutionSlide.details.length) %
+                                                                activeExecutionSlide.details.length
+                                                        )
+                                                    }
+                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white/55 transition hover:text-white'
+                                                >
+                                                    <ChevronLeft className='h-3.5 w-3.5' />
+                                                </button>
+                                                <button
+                                                    type='button'
+                                                    aria-label='Next content'
+                                                    onClick={() => setExecutionDetailIndex((executionDetailIndex + 1) % activeExecutionSlide.details.length)}
+                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white/55 transition hover:text-white'
+                                                >
+                                                    <ChevronRight className='h-3.5 w-3.5' />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className='mt-3'>
+                                            <h4 className='showcase-subheading text-sm font-semibold uppercase tracking-[0.03em] text-white sm:text-base'>
+                                                {activeExecutionDetail.title}
+                                            </h4>
+                                            <p className='mt-2 max-w-xl text-xs leading-5 text-white/68 sm:text-sm sm:leading-6'>
+                                                {activeExecutionDetail.text}
+                                            </p>
+                                        </div>
+
+                                        <div className='mt-5 flex max-w-[230px] gap-3'>
+                                            {activeExecutionSlide.details.map((detail, index) => (
+                                                <button
+                                                    key={detail.title}
+                                                    type='button'
+                                                    aria-label={`Show ${detail.title}`}
+                                                    onClick={() => setExecutionDetailIndex(index)}
+                                                    className='h-[3px] flex-1 rounded-full bg-white/15 transition-all'
+                                                    style={{
+                                                        backgroundColor: index === executionDetailIndex ? activeExecutionSlide.accent : 'rgba(255,255,255,.16)',
+                                                        boxShadow: index === executionDetailIndex ? `0 0 12px ${activeExecutionSlide.accent}70` : 'none',
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            );
-                        })}
+
+                                <ExecutionPreview slide={activeExecutionSlide} />
+                            </div>
+
+                            <div className='mt-7 flex flex-col gap-5 border-t border-white/[0.08] pt-5 sm:flex-row sm:items-center sm:justify-between'>
+                                <div className='grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[390px]'>
+                                    <Link
+                                        href={activeExecutionSlide.href}
+                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/18 px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-white transition hover:border-white/32 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                    >
+                                        <span className='truncate text-[inherit] leading-none'>View {activeExecutionSlide.title}</span>
+                                        <ArrowRight className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1' />
+                                    </Link>
+
+                                    <ComingSoonTrigger
+                                        ariaLabel={`Get started with ${activeExecutionSlide.title}`}
+                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-white transition hover:brightness-110 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        style={{
+                                            background: activeExecutionSlide.accent,
+                                            boxShadow: `0 0 20px ${activeExecutionSlide.accent}30`,
+                                        }}
+                                    >
+                                        <span className='text-[inherit] leading-none'>Get Started</span>
+                                        <ArrowRight className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1' />
+                                    </ComingSoonTrigger>
+                                </div>
+
+                                <div className='flex items-center justify-between gap-3 sm:justify-end'>
+                                    <button
+                                        type='button'
+                                        onClick={previousExecutionSlide}
+                                        aria-label='Previous tool'
+                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/50 transition hover:border-white/25 hover:text-white'
+                                    >
+                                        <ChevronLeft className='h-4 w-4' />
+                                    </button>
+
+                                    <div className='flex items-center gap-2'>
+                                        {executionSlides.map((slide, index) => (
+                                            <button
+                                                key={slide.id}
+                                                type='button'
+                                                aria-label={`Show ${slide.title}`}
+                                                onClick={() => showExecutionSlide(index)}
+                                                className='h-2.5 rounded-full transition-all duration-300'
+                                                style={{
+                                                    width: index === executionIndex ? '24px' : '10px',
+                                                    backgroundColor: index === executionIndex ? activeExecutionSlide.accent : 'rgba(255,255,255,.26)',
+                                                    boxShadow: index === executionIndex ? `0 0 12px ${activeExecutionSlide.accent}80` : 'none',
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        type='button'
+                                        onClick={nextExecutionSlide}
+                                        aria-label='Next tool'
+                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/50 transition hover:border-white/25 hover:text-white'
+                                    >
+                                        <ChevronRight className='h-4 w-4' />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

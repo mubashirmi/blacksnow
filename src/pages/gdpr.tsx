@@ -1,5 +1,6 @@
-import { Legal } from '@/views';
+import LegalDocumentPage from '@/components/legal/LegalDocumentPage';
+import { legalDocuments } from '@/lib/legal-documents';
 
-const Page = (props: any) => <Legal {...props} />;
-
-export default Page;
+export default function Page() {
+    return <LegalDocumentPage document={legalDocuments[4]} />;
+}

@@ -207,6 +207,31 @@ type ContractStatsResponseItem = {
 
 type ContractStatsResponse = ContractStatsResponseItem[];
 
+// ─── Digital Billboard KPI types ─────────────────────────────────────────────
+
+type DigitalBillboardKpiPeriod = 'weekly' | 'monthly' | 'yearly';
+type DigitalBillboardKpiMetric = 'digitalBillboards' | 'clicks';
+
+type DigitalBillboardKpiPoint = {
+    label: string;
+    clicks: number;
+    digitalBillboards: number;
+};
+
+type DigitalBillboardKpiPeriodData = {
+    data: DigitalBillboardKpiPoint[];
+    totals: {
+        clicks: number;
+        digitalBillboards: number;
+    };
+};
+
+type DigitalBillboardKpiResponse = {
+    success: boolean;
+    period: string;
+    periods: Record<DigitalBillboardKpiPeriod, DigitalBillboardKpiPeriodData>;
+};
+
 type AdminRevenueValue = {
     invoiceRevenue: number;
     subscriptionInvRevenue: number;
@@ -506,6 +531,13 @@ export default function KPIPage() {
     const [selectedRevenueProduct, setSelectedRevenueProduct] = useState<string>('All');
     const [productRevenuePeriod, setProductRevenuePeriod] = useState<ProductRevenuePeriod>('Month');
 
+    // Chart: Digital Billboard KPI (one selectable metric at a time)
+    const [digitalBillboardKpi, setDigitalBillboardKpi] = useState<DigitalBillboardKpiResponse | null>(null);
+    const [digitalBillboardKpiLoading, setDigitalBillboardKpiLoading] = useState(false);
+    const [digitalBillboardKpiError, setDigitalBillboardKpiError] = useState<string | null>(null);
+    const [digitalBillboardPeriod, setDigitalBillboardPeriod] = useState<DigitalBillboardKpiPeriod>('monthly');
+    const [digitalBillboardMetric, setDigitalBillboardMetric] = useState<DigitalBillboardKpiMetric>('digitalBillboards');
+
     // Chart C: Lightning Billing Cycle
     // eslint-disable-next-line
     const [billingCycle, setBillingCycle] = useState<LightningBillingCycleResponse | null>(null);
@@ -529,7 +561,7 @@ export default function KPIPage() {
     const [toolFeedbackLoading, setToolFeedbackLoading] = useState(false);
     const [toolFeedbackError, setToolFeedbackError] = useState<string | null>(null);
     const [toolFeedbackTool, setToolFeedbackTool] = useState<string>('All');
-    const [toolFeedbackMetricType, setToolFeedbackMetricType] = useState<ToolFeedbackMetricType>('FeedbackCount');
+    const [toolFeedbackMetricType, setToolFeedbackMetricType] = useState<ToolFeedbackMetricType>('AverageStars');
     const [toolFeedbackMetricPeriod, setToolFeedbackMetricPeriod] = useState<MetricPeriod>('Week');
 
     // Chart F: Invoice Contract KPI
@@ -540,8 +572,8 @@ export default function KPIPage() {
     const [adminRevenueLoading, setAdminRevenueLoading] = useState(false);
     const [adminRevenueError, setAdminRevenueError] = useState<string | null>(null);
     const [contractStatsPeriod, setContractStatsPeriod] = useState<ContractStatsPeriod>('monthly');
-    const [invoiceContractEntity, setInvoiceContractEntity] = useState<InvoiceContractEntity>('contract');
-    const [invoiceContractMetric, setInvoiceContractMetric] = useState<InvoiceContractMetric>('count');
+    const [invoiceContractEntity, setInvoiceContractEntity] = useState<InvoiceContractEntity>('invoice');
+    const [invoiceContractMetric, setInvoiceContractMetric] = useState<InvoiceContractMetric>('revenue');
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -661,6 +693,39 @@ export default function KPIPage() {
                 setProductRevenue(null);
             } finally {
                 if (!cancelled) setProductRevenueLoading(false);
+            }
+        };
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            try {
+                setDigitalBillboardKpiLoading(true);
+                setDigitalBillboardKpiError(null);
+                const json = await fetchJSON<DigitalBillboardKpiResponse>('/api/admin/digital-billboard/kpi?period=all');
+                if (cancelled) return;
+
+                if (
+                    !json.success ||
+                    !json.periods ||
+                    !Array.isArray(json.periods.weekly?.data) ||
+                    !Array.isArray(json.periods.monthly?.data) ||
+                    !Array.isArray(json.periods.yearly?.data)
+                ) {
+                    throw new Error('Invalid Digital Billboard KPI response');
+                }
+                setDigitalBillboardKpi(json);
+            } catch (e: any) {
+                if (cancelled) return;
+                setDigitalBillboardKpiError(e?.message || 'Failed to load Digital Billboard KPI');
+                setDigitalBillboardKpi(null);
+            } finally {
+                if (!cancelled) setDigitalBillboardKpiLoading(false);
             }
         };
         run();
@@ -801,6 +866,28 @@ export default function KPIPage() {
     // ─────────────────────────────────────────────────────────────────────────
 
     // ─── v4 derived data ──────────────────────────────────────────────────────
+
+    /** Digital Billboard KPI: show one selected metric, using the API's period buckets. */
+    const digitalBillboardChartData = useMemo(() => {
+        const now = new Date();
+        const activePeriod =
+            digitalBillboardPeriod === 'weekly'
+                ? now.toLocaleDateString('en-US', { weekday: 'short' })
+                : digitalBillboardPeriod === 'monthly'
+                ? now.toLocaleDateString('en-US', { month: 'short' })
+                : String(now.getFullYear());
+
+        return (digitalBillboardKpi?.periods?.[digitalBillboardPeriod]?.data ?? []).map((point) => ({
+            period: point.label,
+            value: safeNumber(point[digitalBillboardMetric]),
+            active: point.label === activePeriod,
+        }));
+    }, [digitalBillboardKpi, digitalBillboardPeriod, digitalBillboardMetric]);
+
+    const digitalBillboardPeriodTotals = digitalBillboardKpi?.periods?.[digitalBillboardPeriod]?.totals;
+    const digitalBillboardMetricLabel = digitalBillboardMetric === 'clicks' ? 'Clicks' : 'Digital Billboards';
+    const digitalBillboardPeriodLabel = digitalBillboardPeriod === 'weekly' ? 'Weekly' : digitalBillboardPeriod === 'monthly' ? 'Monthly' : 'Yearly';
+    const digitalBillboardSelectedTotal = safeNumber(digitalBillboardPeriodTotals?.[digitalBillboardMetric]);
 
     /** Product Revenue: build real weekly, monthly, or yearly chart data. */
     const productRevenueChartData = useMemo(() => {
@@ -1342,132 +1429,10 @@ export default function KPIPage() {
                 </div>
 
                 {/* ============================================================ */}
-                {/* ✅ NEW CHART B: Lightning Gold Membership                     */}
-                {/* Basic affiliate chart removed; membership tier chart added     */}
-                {/* ============================================================ */}
+                {/* Lightning Silver Membership                   */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
                     <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
                         <div>
-                            {/* <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
-                                    Membership
-                                </span>
-                                <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-                                    Product: Lightning Gold
-                                </span>
-                            </div> */}
-                            <h3 className='text-lg font-semibold text-gray-800'>Lightning Gold</h3>
-                            <p className='text-sm text-gray-500'>Choose program/product, revenue, subscribers, or churn by Week/Month/Year</p>
-                        </div>
-                        <div className='flex flex-col sm:flex-row gap-3'>
-                            <select
-                                value={lightningGoldProduct}
-                                onChange={(e) => setLightningGoldProduct(e.target.value as AffiliateMetricProduct)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                {LIGHTNING_GOLD_PRODUCT_OPTIONS.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <select
-                                value={lightningGoldMetricType}
-                                onChange={(e) => setLightningGoldMetricType(e.target.value as any)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                <option value='Revenue'>Revenue</option>
-                                <option value='Subscribers'>Subscribers</option>
-                                <option value='ChurnRate'>Churn (Unsubscribed)</option>
-                            </select>
-                            <select
-                                value={lightningGoldMetricPeriod}
-                                onChange={(e) => setLightningGoldMetricPeriod(e.target.value as any)}
-                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
-                            >
-                                <option value='Week'>Week</option>
-                                <option value='Month'>Month</option>
-                                <option value='Year'>Year</option>
-                            </select>
-                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
-                                <span className='text-gray-500 mr-2'>Selected:</span>
-                                <span className='font-semibold text-gray-900'>{lightningGoldSelectedLabel}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {lightningGoldMetricError && <div className='mb-4 text-sm text-red-600'>{lightningGoldMetricError}</div>}
-                    {lightningGoldMetricLoading ? (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading Lightning Gold chart...</div>
-                    ) : lightningGoldSeries.length > 0 ? (
-                        <ResponsiveContainer width='100%' height={240}>
-                            <LineChart data={lightningGoldSeries as any}>
-                                <CartesianGrid strokeDasharray='3 3' />
-                                <XAxis dataKey='period' />
-                                <YAxis
-                                    domain={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.domain : undefined}
-                                    ticks={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.ticks : undefined}
-                                    tickFormatter={(value) => {
-                                        const v = safeNumber(value, 0);
-                                        if (lightningGoldMetricType === 'Revenue') return currency(v);
-                                        if (lightningGoldMetricType === 'ChurnRate') return percent(v);
-                                        return String(v);
-                                    }}
-                                />
-                                <Tooltip
-                                    cursor={<HorizontalCursor />}
-                                    formatter={(value: any) => {
-                                        const v = safeNumber(value, 0);
-                                        if (lightningGoldMetricType === 'Revenue') return currency(v);
-                                        if (lightningGoldMetricType === 'Subscribers') return `${v}`;
-                                        return percent(v);
-                                    }}
-                                />
-                                <Legend />
-                                <Line
-                                    type='monotone'
-                                    dataKey='value'
-                                    name={lightningGoldMetricType === 'ChurnRate' ? 'Churn (Unsubscribed)' : lightningGoldMetricType}
-                                    stroke='#f59e0b'
-                                    strokeWidth={3}
-                                    dot={(props: any) => {
-                                        const { cx, cy, payload } = props || {};
-                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
-                                        const active = Boolean(payload?.active);
-                                        return (
-                                            <circle
-                                                cx={cx}
-                                                cy={cy}
-                                                r={active ? 6 : 4}
-                                                fill={active ? '#f59e0b' : 'rgba(245,158,11,0.35)'}
-                                                stroke='#f59e0b'
-                                                strokeWidth={active ? 2 : 1}
-                                            />
-                                        );
-                                    }}
-                                    activeDot={{ r: 7 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    ) : (
-                        <div className='h-56 flex items-center justify-center text-gray-400'>No Lightning Gold data</div>
-                    )}
-                </div>
-
-                {/* ============================================================ */}
-                {/* ✅ NEW CHART C: Lightning Silver Membership                   */}
-                {/* Basic affiliate chart removed; membership tier chart added     */}
-                {/* ============================================================ */}
-                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
-                        <div>
-                            {/* <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                                    Membership
-                                </span>
-                                <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-                                    Product: Lightning Silver
-                                </span>
-                            </div> */}
                             <h3 className='text-lg font-semibold text-gray-800'>Lightning Silver</h3>
                             <p className='text-sm text-gray-500'>Choose program/product, revenue, subscribers, or churn by Week/Month/Year</p>
                         </div>
@@ -1562,6 +1527,108 @@ export default function KPIPage() {
                         </ResponsiveContainer>
                     ) : (
                         <div className='h-56 flex items-center justify-center text-gray-400'>No Lightning Silver data</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* Lightning Gold Membership                     */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Lightning Gold</h3>
+                            <p className='text-sm text-gray-500'>Choose program/product, revenue, subscribers, or churn by Week/Month/Year</p>
+                        </div>
+                        <div className='flex flex-col sm:flex-row gap-3'>
+                            <select
+                                value={lightningGoldProduct}
+                                onChange={(e) => setLightningGoldProduct(e.target.value as AffiliateMetricProduct)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                {LIGHTNING_GOLD_PRODUCT_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                value={lightningGoldMetricType}
+                                onChange={(e) => setLightningGoldMetricType(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Revenue'>Revenue</option>
+                                <option value='Subscribers'>Subscribers</option>
+                                <option value='ChurnRate'>Churn (Unsubscribed)</option>
+                            </select>
+                            <select
+                                value={lightningGoldMetricPeriod}
+                                onChange={(e) => setLightningGoldMetricPeriod(e.target.value as any)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                            >
+                                <option value='Week'>Week</option>
+                                <option value='Month'>Month</option>
+                                <option value='Year'>Year</option>
+                            </select>
+                            <div className='px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm'>
+                                <span className='text-gray-500 mr-2'>Selected:</span>
+                                <span className='font-semibold text-gray-900'>{lightningGoldSelectedLabel}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {lightningGoldMetricError && <div className='mb-4 text-sm text-red-600'>{lightningGoldMetricError}</div>}
+                    {lightningGoldMetricLoading ? (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>Loading Lightning Gold chart...</div>
+                    ) : lightningGoldSeries.length > 0 ? (
+                        <ResponsiveContainer width='100%' height={240}>
+                            <LineChart data={lightningGoldSeries as any}>
+                                <CartesianGrid strokeDasharray='3 3' />
+                                <XAxis dataKey='period' />
+                                <YAxis
+                                    domain={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.domain : undefined}
+                                    ticks={lightningGoldMetricType === 'Revenue' ? lightningGoldRevenueYAxis.ticks : undefined}
+                                    tickFormatter={(value) => {
+                                        const v = safeNumber(value, 0);
+                                        if (lightningGoldMetricType === 'Revenue') return currency(v);
+                                        if (lightningGoldMetricType === 'ChurnRate') return percent(v);
+                                        return String(v);
+                                    }}
+                                />
+                                <Tooltip
+                                    cursor={<HorizontalCursor />}
+                                    formatter={(value: any) => {
+                                        const v = safeNumber(value, 0);
+                                        if (lightningGoldMetricType === 'Revenue') return currency(v);
+                                        if (lightningGoldMetricType === 'Subscribers') return `${v}`;
+                                        return percent(v);
+                                    }}
+                                />
+                                <Legend />
+                                <Line
+                                    type='monotone'
+                                    dataKey='value'
+                                    name={lightningGoldMetricType === 'ChurnRate' ? 'Churn (Unsubscribed)' : lightningGoldMetricType}
+                                    stroke='#f59e0b'
+                                    strokeWidth={3}
+                                    dot={(props: any) => {
+                                        const { cx, cy, payload } = props || {};
+                                        if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                        const active = Boolean(payload?.active);
+                                        return (
+                                            <circle
+                                                cx={cx}
+                                                cy={cy}
+                                                r={active ? 6 : 4}
+                                                fill={active ? '#f59e0b' : 'rgba(245,158,11,0.35)'}
+                                                stroke='#f59e0b'
+                                                strokeWidth={active ? 2 : 1}
+                                            />
+                                        );
+                                    }}
+                                    activeDot={{ r: 7 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className='h-56 flex items-center justify-center text-gray-400'>No Lightning Gold data</div>
                     )}
                 </div>
 
@@ -1803,6 +1870,109 @@ export default function KPIPage() {
                         </>
                     ) : (
                         <div className='h-64 flex items-center justify-center text-gray-400'>No invoice contract KPI data available</div>
+                    )}
+                </div>
+
+                {/* ============================================================ */}
+                {/* Digital Billboard KPI: GET /api/admin/digital-billboard/kpi?period=all */}
+                {/* ============================================================ */}
+                <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+                    <div className='flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6'>
+                        <div>
+                            <h3 className='text-lg font-semibold text-gray-800'>Digital Billboard KPI</h3>
+                            <p className='text-sm text-gray-500 mt-0.5'>View clicks or digital billboard counts by week, month, or year</p>
+                        </div>
+
+                        <div className='flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3'>
+                            <select
+                                value={digitalBillboardMetric}
+                                onChange={(e) => setDigitalBillboardMetric(e.target.value as DigitalBillboardKpiMetric)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                                aria-label='Digital Billboard KPI metric'
+                            >
+                                <option value='digitalBillboards'>Digital Billboards</option>
+                                <option value='clicks'>Clicks</option>
+                            </select>
+
+                            <select
+                                value={digitalBillboardPeriod}
+                                onChange={(e) => setDigitalBillboardPeriod(e.target.value as DigitalBillboardKpiPeriod)}
+                                className='px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white'
+                                aria-label='Digital Billboard KPI period'
+                            >
+                                <option value='weekly'>Weekly</option>
+                                <option value='monthly'>Monthly</option>
+                                <option value='yearly'>Yearly</option>
+                            </select>
+
+                            <StatPill
+                                label={`${digitalBillboardMetricLabel} ${digitalBillboardPeriodLabel}`}
+                                value={digitalBillboardKpi ? digitalBillboardSelectedTotal.toLocaleString() : '—'}
+                                color='border-blue-200 bg-blue-50 text-blue-800'
+                            />
+                        </div>
+                    </div>
+
+                    {digitalBillboardKpiError && <div className='mb-4 text-sm text-red-600'>{digitalBillboardKpiError}</div>}
+
+                    {digitalBillboardKpiLoading ? (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>Loading Digital Billboard KPI...</div>
+                    ) : digitalBillboardKpi ? (
+                        <>
+                            <div className='mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500'>
+                                <span>
+                                    Metric: <span className='font-semibold text-gray-800'>{digitalBillboardMetricLabel}</span>
+                                </span>
+                                <span>
+                                    Selected period: <span className='font-semibold text-gray-800'>{digitalBillboardPeriodLabel}</span>
+                                </span>
+                            </div>
+
+                            <ResponsiveContainer width='100%' height={300}>
+                                <LineChart data={digitalBillboardChartData}>
+                                    <CartesianGrid strokeDasharray='3 3' stroke='#f1f5f9' />
+                                    <XAxis dataKey='period' tick={{ fontSize: 12, fill: '#64748b' }} />
+                                    <YAxis
+                                        allowDecimals={false}
+                                        tick={{ fontSize: 12, fill: '#64748b' }}
+                                        tickFormatter={(value) => safeNumber(value).toLocaleString()}
+                                    />
+                                    <Tooltip
+                                        cursor={<HorizontalCursor />}
+                                        formatter={(value: any) => [
+                                            `${safeNumber(value).toLocaleString()} ${digitalBillboardMetric === 'clicks' ? 'clicks' : 'digital billboards'}`,
+                                            digitalBillboardMetricLabel,
+                                        ]}
+                                    />
+                                    <Legend />
+                                    <Line
+                                        type='linear'
+                                        dataKey='value'
+                                        name={digitalBillboardMetricLabel}
+                                        stroke='#3b82f6'
+                                        strokeWidth={3}
+                                        dot={(props: any) => {
+                                            const { cx, cy, payload } = props || {};
+                                            if (typeof cx !== 'number' || typeof cy !== 'number') return null;
+                                            const active = Boolean(payload?.active);
+                                            return (
+                                                <circle
+                                                    cx={cx}
+                                                    cy={cy}
+                                                    r={active ? 6 : 4}
+                                                    fill={active ? '#3b82f6' : 'rgba(59,130,246,0.35)'}
+                                                    stroke='#3b82f6'
+                                                    strokeWidth={active ? 2 : 1}
+                                                />
+                                            );
+                                        }}
+                                        activeDot={{ r: 7 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </>
+                    ) : (
+                        <div className='h-64 flex items-center justify-center text-gray-400'>No Digital Billboard KPI data available</div>
                     )}
                 </div>
 

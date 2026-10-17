@@ -45,7 +45,7 @@ model Auth {
   stripeCustomerId String? @unique
 
   // Monthly included emails
-  emailUsageLimit Int @default(100000)
+  emailUsageLimit Int @default(50000)
 
   // Dollars per overage email.
   // $0.005 = half a cent.
@@ -57,6 +57,7 @@ model Auth {
   invoices             Invoice[]
   toolFeedbacks        ToolFeedback[]
   subscriptionInvs     SubscriptionInv[]
+  actionVerifications  ActionVerification[]
 
   emailUsages         EmailUsage[]
   emailOverageCharges EmailOverageCharge[]
@@ -78,7 +79,7 @@ model EmailUsage {
 
   // Snapshot when this monthly record was created.
   // This stops changing a user's limit later from altering old bills.
-  includedLimit Int @default(100000)
+  includedLimit Int @default(50000)
 
   // $0.005 = 5,000 micro-dollars.
   //
@@ -632,21 +633,27 @@ model AffiliateAgreement {
   id                 Int      @id @default(autoincrement())
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  affiliateAgreement String
+  affiliateAgreement String   @default("")
+  content            String   @default("") @db.Text
+  summary            String   @default("") @db.Text
 }
 
 model Gdpr {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  gdpr      String
+  gdpr      String   @default("")
+  content   String   @default("") @db.Text
+  summary   String   @default("") @db.Text
 }
 
 model Terms {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  terms     String
+  terms     String   @default("")
+  content   String   @default("") @db.Text
+  summary   String   @default("") @db.Text
 }
 
 model RiskDisclosure {
@@ -660,13 +667,64 @@ model PrivacyPolicy {
   id            Int      @id @default(autoincrement())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  privacyPolicy String
+  privacyPolicy String   @default("")
+  content       String   @default("") @db.Text
+  summary       String   @default("") @db.Text
+}
+
+model MarketDataDisclosure {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IndependentContract {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NoFinancialAdvice {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubscriptionPolicy {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EarningsDisclosure {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CookiePolicy {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  summary   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DigitalBillboard {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  clickCount  Int      @default(0)
   fullName    String
   website     String
   podcast     String
@@ -679,6 +737,19 @@ model DigitalBillboard {
   status      Status
   authId      Int? // optional foreign key
   Auth        Auth?    @relation(fields: [authId], references: [id]) // optional relation
+  clicks      DigitalBillboardClick[]
+
+  @@index([authId, createdAt])
+}
+
+model DigitalBillboardClick {
+  id          Int              @id @default(autoincrement())
+  createdAt   DateTime         @default(now())
+  billboardId Int
+  billboard   DigitalBillboard @relation(fields: [billboardId], references: [id], onDelete: Cascade)
+
+  @@index([billboardId, createdAt])
+  @@index([createdAt])
 }
 
 enum Status {
@@ -985,4 +1056,37 @@ model ToolFeedback {
   updatedAt DateTime @updatedAt
 
   Auth Auth @relation(fields: [authId], references: [id])
+}
+
+model ActionVerification {
+  id                    String    @id @default(cuid())
+  authId                Int
+  auth                  Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)
+  action                String
+  contextHash           String
+  challengeSecretHash   String
+  otpHash               String
+  expiresAt             DateTime
+  attempts              Int       @default(0)
+  maxAttempts           Int       @default(5)
+  sendCount             Int       @default(1)
+  lastSentAt            DateTime  @default(now())
+  otpSentAt              DateTime  @default(now())
+  verifiedAt            DateTime?
+  verificationTokenHash String?   @unique
+  tokenExpiresAt        DateTime?
+  consumedAt            DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([authId, action, createdAt])
+  @@index([expiresAt])
+}
+
+model ActionVerificationAttempt {
+  id             String   @id @default(cuid())
+  identifierHash String
+  createdAt      DateTime @default(now())
+
+  @@index([identifierHash, createdAt])
 }

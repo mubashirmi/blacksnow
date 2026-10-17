@@ -63,7 +63,7 @@ type ToolSlide = {
     id: string;
     name: string;
     monthlyPrice: number;
-    yearlyPrice: number;
+    yearlyPrice: number | null;
     description: string;
     features: string[];
     Icon: any;
@@ -196,8 +196,8 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     {
         id: 'NewsLetter',
         name: 'Newsletter',
-        monthlyPrice: 10,
-        yearlyPrice: 50,
+        monthlyPrice: 9.99,
+        yearlyPrice: 49.99,
         description: 'Weekly premium market insights',
         features: [
             'Weekly Stock Picks',
@@ -218,8 +218,8 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     {
         id: 'InvoiceTool',
         name: 'Invoice & Contract',
-        monthlyPrice: 25,
-        yearlyPrice: 250,
+        monthlyPrice: 24.99,
+        yearlyPrice: 249.99,
         description: 'All-in-one contracts, signatures, and invoices—made simple',
         features: ['Instant Invoice Builder', 'Email Delivery', 'Invoice Dashboard', 'Create Invoice Contracts', 'Add Multiple Users', 'Recurring Invoices'],
         Icon: FilePen,
@@ -233,8 +233,8 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     {
         id: 'DigitalBillboard',
         name: 'Digital Billboard',
-        monthlyPrice: 150,
-        yearlyPrice: 600,
+        monthlyPrice: 149.99,
+        yearlyPrice: 599.99,
         description: 'Premium advertising placement across our platform',
         features: [
             'Billboard Creator',
@@ -254,9 +254,9 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     },
     {
         id: 'Sales',
-        name: 'Email CRM',
-        monthlyPrice: 500,
-        yearlyPrice: 4000,
+        name: 'Email CRM Lite',
+        monthlyPrice: 249.99,
+        yearlyPrice: 1999.99,
         description: 'Comprehensive communication platform for your business',
         features: [
             'Email Campaigns & Automated Sequences',
@@ -267,8 +267,8 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
             'List Upload Tools',
         ],
         Icon: MessageSquare,
-        accent: '#2c7bbe',
-        gradient: 'from-[#2a8dcc] to-[#2c7bbe]',
+        accent: '#2a8dcc',
+        gradient: 'from-[#4cc7e8] to-[#2a8dcc]',
         available: true,
         popular: false,
         hasSubscription: true,
@@ -278,7 +278,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
         id: 'LightningSilver',
         name: 'Lightning Silver',
         monthlyPrice: 5,
-        yearlyPrice: 60,
+        yearlyPrice: null,
         description: '25% lifetime commissions on monthly and annual subscriptions',
         features: [
             '25% Lifetime Commissions',
@@ -300,7 +300,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
         id: 'LightningGold',
         name: 'Lightning Gold',
         monthlyPrice: 250,
-        yearlyPrice: 3000,
+        yearlyPrice: null,
         description: '75% lifetime commissions designed to maximize recurring payouts',
         features: [
             '75% Lifetime Commissions',
@@ -416,10 +416,15 @@ function PostSignupToolsSlideshow() {
     const [current, setCurrent] = useState(0);
     const [visible, setVisible] = useState(true);
     const [direction, setDirection] = useState<'next' | 'prev'>('next');
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
     const slide = POST_SIGNUP_SLIDES[current];
     const isFirstSlide = current === 0;
     const isLastSlide = current === POST_SIGNUP_SLIDES.length - 1;
+    const isMonthlyOnly = slide.id === 'LightningSilver' || slide.id === 'LightningGold' || slide.yearlyPrice == null;
+    const displayedBillingCycle = isMonthlyOnly ? 'monthly' : billingCycle;
+    const displayedPrice = displayedBillingCycle === 'yearly' ? slide.yearlyPrice : slide.monthlyPrice;
+    const displayedSuffix = displayedBillingCycle === 'yearly' ? '/yr' : '/mo';
     const Icon = slide.Icon;
 
     const goToSlide = (nextIndex: number) => {
@@ -435,8 +440,8 @@ function PostSignupToolsSlideshow() {
     };
 
     return (
-        <div className='relative z-10 w-full flex flex-col lg:flex-row' style={{ minHeight: UNIFIED_CARD_HEIGHT }}>
-            <div className='relative flex-1 flex flex-col justify-center px-8 sm:px-10 py-16 lg:py-10 overflow-hidden'>
+        <div className='relative z-10 w-full h-full min-h-0 flex flex-col lg:flex-row'>
+            <div className='relative flex-1 min-h-0 flex flex-col justify-center px-5 sm:px-8 lg:px-10 py-4 sm:py-5 lg:py-10 overflow-hidden'>
                 <div
                     className='pointer-events-none absolute inset-0 transition-all duration-500'
                     style={{
@@ -454,25 +459,25 @@ function PostSignupToolsSlideshow() {
                 />
 
                 <div
-                    className='relative z-10 transition-all duration-300'
+                    className='relative z-10 text-center lg:text-left transition-all duration-300'
                     style={{
                         opacity: visible ? 1 : 0,
                         transform: visible ? 'translateX(0)' : `translateX(${direction === 'next' ? '-18px' : '18px'})`,
                     }}
                 >
                     <div
-                        className={`mb-6 inline-flex h-24 w-24 items-center justify-center rounded-3xl border border-white/10 bg-gradient-to-br ${slide.gradient}`}
+                        className={`mb-3 lg:mb-6 mx-auto lg:mx-0 inline-flex h-16 w-16 lg:h-24 lg:w-24 items-center justify-center rounded-2xl lg:rounded-3xl border border-white/10 bg-gradient-to-br ${slide.gradient}`}
                         style={{ boxShadow: `0 0 28px ${slide.accent}44` }}
                     >
-                        <Icon className='w-12 h-12 text-white' strokeWidth={2.2} />
+                        <Icon className='w-8 h-8 lg:w-12 lg:h-12 text-white' strokeWidth={2.2} />
                     </div>
 
-                    <div className='flex items-center gap-2 mb-3'>
-                        <h2 className='text-3xl sm:text-4xl font-black text-white leading-tight'>{slide.name}</h2>
+                    <div className='flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-2 lg:mb-3'>
+                        <h2 className='text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight'>{slide.name}</h2>
 
                         {slide.popular ? (
                             <span
-                                className='rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide'
+                                className='rounded-full px-2.5 py-1 text-[9px] lg:text-[10px] font-black uppercase tracking-wide'
                                 style={{
                                     backgroundColor: `${slide.accent}1f`,
                                     color: slide.accent,
@@ -485,15 +490,15 @@ function PostSignupToolsSlideshow() {
                     </div>
 
                     <div
-                        className='h-1 w-16 rounded-full mb-5'
+                        className='h-1 w-14 lg:w-16 rounded-full mb-3 lg:mb-5 mx-auto lg:mx-0'
                         style={{
                             background: `linear-gradient(90deg, ${slide.accent}, transparent)`,
                         }}
                     />
 
-                    <p className='text-gray-400 text-base leading-relaxed max-w-md mb-5'>{slide.description}</p>
+                    <p className='text-gray-400 text-sm lg:text-base leading-relaxed max-w-md mb-0 lg:mb-5 mx-auto lg:mx-0'>{slide.description}</p>
 
-                    <ul className='grid gap-2 max-w-md'>
+                    <ul className='hidden lg:grid gap-2 max-w-md'>
                         {slide.features.map((feature) => (
                             <li key={feature} className='flex items-start gap-2.5 text-sm text-white/70'>
                                 <CheckCircle className='w-4 h-4 mt-0.5 flex-shrink-0' style={{ color: slide.accent }} strokeWidth={2.5} />
@@ -506,7 +511,7 @@ function PostSignupToolsSlideshow() {
 
             <div className='hidden lg:block w-[1px] flex-shrink-0 self-stretch bg-gradient-to-b from-transparent via-white/10 to-transparent my-8' />
 
-            <div className='relative flex-1 flex flex-col justify-center items-center text-center px-8 sm:px-10 py-16 lg:py-10'>
+            <div className='relative flex-1 min-h-0 flex flex-col justify-center items-center text-center px-5 sm:px-8 lg:px-10 pt-2 pb-14 sm:pt-3 sm:pb-16 lg:py-10'>
                 <div
                     className='transition-all duration-300'
                     style={{
@@ -514,19 +519,48 @@ function PostSignupToolsSlideshow() {
                         transform: visible ? 'translateX(0)' : `translateX(${direction === 'next' ? '18px' : '-18px'})`,
                     }}
                 >
-                    <div className='w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-white/10 bg-white/5'>
-                        <Image width={150} height={150} src='/logocolored.png' alt='Logo' />
+                    <div className='w-14 h-14 lg:w-24 lg:h-24 rounded-2xl lg:rounded-3xl flex items-center justify-center mx-auto mb-2.5 lg:mb-6 border border-white/10 bg-white/5 overflow-hidden'>
+                        <Image width={150} height={150} src='/logocolored.png' alt='Logo' className='w-full h-full object-contain' />
                     </div>
 
-                    <p className='text-gray-400 text-md font-semibold mb-4'>Starting from</p>
+                    <p className='text-gray-400 text-xs lg:text-base font-semibold mb-2 lg:mb-3'>Starting from</p>
 
-                    <h3 className='text-4xl sm:text-5xl font-black text-white mb-4'>${slide.monthlyPrice}/mo</h3>
-                    <p className='text-white/45 text-md font-semibold mb-6'>${slide.yearlyPrice}/yr</p>
+                    {!isMonthlyOnly ? (
+                        <div className='mb-3 lg:mb-4 inline-flex items-center rounded-xl border border-white/10 bg-black/20 p-1'>
+                            <button
+                                type='button'
+                                onClick={() => setBillingCycle('monthly')}
+                                className={`rounded-lg px-3 py-1.5 text-xs lg:text-sm font-bold transition-all duration-200 ${
+                                    billingCycle === 'monthly' ? 'bg-white/10 text-white' : 'text-white/45 hover:text-white/70'
+                                }`}
+                                aria-pressed={billingCycle === 'monthly'}
+                            >
+                                Monthly
+                            </button>
+                            <button
+                                type='button'
+                                onClick={() => setBillingCycle('yearly')}
+                                className={`rounded-lg px-3 py-1.5 text-xs lg:text-sm font-bold transition-all duration-200 ${
+                                    billingCycle === 'yearly' ? 'bg-white/10 text-white' : 'text-white/45 hover:text-white/70'
+                                }`}
+                                aria-pressed={billingCycle === 'yearly'}
+                            >
+                                Yearly
+                            </button>
+                        </div>
+                    ) : (
+                        <p className='mb-2 lg:mb-3 text-[11px] lg:text-xs font-bold uppercase tracking-[0.16em] text-white/40'>Monthly plan</p>
+                    )}
+
+                    <h3 className='text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 lg:mb-5'>
+                        ${displayedPrice?.toFixed(2)}
+                        <span className='ml-1 text-sm sm:text-base lg:text-lg font-bold text-white/45'>{displayedSuffix}</span>
+                    </h3>
 
                     <Button
                         type='button'
                         onClick={() => router.push(slide.redirectRoute)}
-                        className='rounded-2xl border px-8 py-6 text-base font-bold text-white/80 backdrop-blur-[7px] hover:scale-[1.02] active:scale-[0.99]'
+                        className='h-10 lg:h-11 rounded-xl lg:rounded-2xl border px-6 lg:px-8 py-0 text-sm lg:text-base font-bold text-white/80 backdrop-blur-[7px] hover:scale-[1.02] active:scale-[0.99]'
                         style={{
                             background: `linear-gradient(135deg, ${slide.accent}cc, ${slide.accent}77)`,
                             borderColor: `${slide.accent}66`,
@@ -534,17 +568,17 @@ function PostSignupToolsSlideshow() {
                         }}
                     >
                         Learn More
-                        <ArrowRight className='w-5 h-5 ml-2' />
+                        <ArrowRight className='w-4 h-4 lg:w-5 lg:h-5 ml-2' />
                     </Button>
                 </div>
             </div>
 
-            <div className='absolute bottom-6 left-0 right-0 px-6 sm:px-8 flex items-center justify-between'>
+            <div className='absolute bottom-3 lg:bottom-6 left-0 right-0 px-5 sm:px-6 lg:px-8 flex items-center justify-between'>
                 <button
                     type='button'
                     onClick={() => goToSlide(current - 1)}
                     disabled={isFirstSlide}
-                    className='w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                    className='w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
                     style={{
                         backgroundColor: 'rgba(255,255,255,0.06)',
                         border: '1px solid rgba(255,255,255,0.1)',
@@ -562,7 +596,7 @@ function PostSignupToolsSlideshow() {
                             onClick={() => goToSlide(index)}
                             className='rounded-full transition-all duration-300'
                             style={{
-                                width: index === current ? 24 : 7,
+                                width: index === current ? 22 : 7,
                                 height: 7,
                                 backgroundColor: index === current ? slide.accent : 'rgba(255,255,255,0.18)',
                             }}
@@ -575,7 +609,7 @@ function PostSignupToolsSlideshow() {
                     type='button'
                     onClick={() => goToSlide(current + 1)}
                     disabled={isLastSlide}
-                    className='w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
+                    className='w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:scale-105'
                     style={{
                         backgroundColor: 'rgba(255,255,255,0.06)',
                         border: '1px solid rgba(255,255,255,0.1)',
@@ -766,9 +800,9 @@ const TERMS_SLIDES: TermsSlide[] = [
         id: 'sms-text-messaging-terms',
         accent: '#4cc7e8',
         Icon: MessageSquare,
-        badge: 'SMS/Text Messaging Terms',
-        titleGrad: 'SMS/Text',
-        titlePlain: ' Messaging Terms',
+        badge: 'SMS Terms',
+        titleGrad: 'SMS',
+        titlePlain: ' Terms',
         summary:
             'By providing your mobile phone number and opting in to receive SMS messages from BlackSnow Holdings, you agree to receive text messages related to account access, account security, and authentication.',
         link: '/terms',
@@ -1374,7 +1408,7 @@ function SignUp() {
     };
 
     return (
-        <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] relative overflow-hidden flex items-center justify-center py-8'>
+        <div className='min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)] bg-[#050608] relative overflow-x-hidden overflow-y-auto flex items-start md:items-center justify-center py-4 sm:py-8'>
             <style>{`
                 .glassy-scrollbar {
                     scrollbar-width: thin;
@@ -1520,9 +1554,7 @@ function SignUp() {
                                         <Image width={104} height={104} src='/logocolored.png' alt='Logo' />
                                     </div>
 
-                                    <h2 className='text-[22px] font-bold text-white mb-1'>
-                                        {showVerification ? 'Verify Your Account' : 'Create Your Account'}
-                                    </h2>
+                                    <h2 className='text-[22px] font-bold text-white mb-1'>{showVerification ? 'Verify Your Account' : 'Sign Up'}</h2>
                                 </div>
 
                                 <div className='auth-form-scroll min-h-0 overflow-y-auto pr-2 pb-1 glassy-scrollbar'>
@@ -1688,13 +1720,16 @@ function SignUp() {
                                                                     .trim()
                                                                     .replace(/\s+/g, ' ').length >= 2 || 'Please enter your name',
                                                         })}
-                                                        className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
+                                                        className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300 ${
+                                                            errors.fullName
+                                                                ? 'border-red-500/80 focus:border-red-500'
+                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                        }`}
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                                         <User className='w-5 h-5 text-[#4cc7e8]' />
                                                     </div>
                                                 </div>
-                                                {errors.fullName && <p className='text-red-400 text-xs leading-tight'>{errors.fullName.message}</p>}
                                             </div>
 
                                             <div className='space-y-1.5'>
@@ -1707,13 +1742,16 @@ function SignUp() {
                                                             required: 'Phone number is required',
                                                             validate: validatePhone,
                                                         })}
-                                                        className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
+                                                        className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300 ${
+                                                            errors.phone
+                                                                ? 'border-red-500/80 focus:border-red-500'
+                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                        }`}
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                                         <Phone className='w-5 h-5 text-[#4cc7e8]' />
                                                     </div>
                                                 </div>
-                                                {errors.phone && <p className='text-red-400 text-xs leading-tight'>{errors.phone.message}</p>}
                                             </div>
 
                                             <div className='space-y-1.5'>
@@ -1726,13 +1764,16 @@ function SignUp() {
                                                             required: 'Email is required',
                                                             validate: validateEmail,
                                                         })}
-                                                        className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
+                                                        className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300 ${
+                                                            errors.email
+                                                                ? 'border-red-500/80 focus:border-red-500'
+                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                        }`}
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                                         <Mail className='w-5 h-5 text-[#4cc7e8]' />
                                                     </div>
                                                 </div>
-                                                {errors.email && <p className='text-red-400 text-xs leading-tight'>{errors.email.message}</p>}
                                             </div>
 
                                             <div className='space-y-1.5'>
@@ -1745,7 +1786,11 @@ function SignUp() {
                                                             required: 'Password is required',
                                                             validate: validatePassword,
                                                         })}
-                                                        className='h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 pr-12 rounded-2xl transition-all duration-300'
+                                                        className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 pr-12 rounded-2xl transition-all duration-300 ${
+                                                            errors.password
+                                                                ? 'border-red-500/80 focus:border-red-500'
+                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                        }`}
                                                     />
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
                                                         <Lock className='w-5 h-5 text-[#4cc7e8]' />
@@ -1759,21 +1804,22 @@ function SignUp() {
                                                         {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
                                                     </button>
                                                 </div>
-                                                {errors.password && <p className='text-red-400 text-xs leading-tight'>{errors.password.message}</p>}
                                             </div>
 
                                             <div className='space-y-1.5'>
-                                                <div className='flex items-start gap-3 text-xs text-gray-300 leading-relaxed'>
+                                                <div className='flex items-center gap-3 pl-4 pr-1 text-xs text-gray-300 leading-relaxed'>
                                                     <input
                                                         id='termsAccepted'
                                                         type='checkbox'
                                                         {...register('termsAccepted', {
                                                             required: 'Please accept the terms to continue',
                                                         })}
-                                                        className='mt-1 h-4 w-4 rounded border border-[#2c7bbe]/40 bg-[#050608] accent-[#4cc7e8]'
+                                                        className={`h-4 w-4 flex-shrink-0 rounded border bg-[#050608] accent-[#4cc7e8] ${
+                                                            errors.termsAccepted ? 'border-red-500 ring-1 ring-red-500/60' : 'border-[#2c7bbe]/40'
+                                                        }`}
                                                     />
 
-                                                    <p>
+                                                    <p className='m-0'>
                                                         <label htmlFor='termsAccepted' className='cursor-pointer'>
                                                             I agree to the{' '}
                                                         </label>
@@ -1787,7 +1833,6 @@ function SignUp() {
                                                         .
                                                     </p>
                                                 </div>
-                                                {errors.termsAccepted && <p className='text-red-400 text-xs leading-tight'>{errors.termsAccepted.message}</p>}
                                             </div>
 
                                             <Button

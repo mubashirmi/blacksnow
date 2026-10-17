@@ -10,13 +10,13 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             return policy ? res.status(200).json({ message: 'Privacy policy fetched', policy }) : res.status(404).json({ message: 'Privacy policy not found' });
         } else if (method === 'POST') {
             const { privacyPolicy } = req.body;
-            const created = await prisma.privacyPolicy.create({ data: { privacyPolicy } });
+            const created = await prisma.privacyPolicy.create({ data: { privacyPolicy, content: privacyPolicy } });
             return res.status(201).json({ message: 'Created successfully', created });
         } else if (method === 'PUT') {
             const { id, privacyPolicy } = req.body;
             const updated = await prisma.privacyPolicy.update({
                 where: { id },
-                data: { privacyPolicy },
+                data: { privacyPolicy, content: privacyPolicy },
             });
             return res.status(200).json({ message: 'Updated successfully', updated });
         } else {

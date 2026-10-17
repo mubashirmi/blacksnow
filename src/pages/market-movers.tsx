@@ -818,11 +818,11 @@ const MarketMoversPage: NextPage = () => {
                             </div>
 
                             <ComingSoonTrigger
-                                ariaLabel='Explore market movers'
-                                className='group flex min-h-[48px] w-full items-center justify-center gap-3 rounded-[5px] bg-[#e54848] px-7 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(229,72,72,0.22)] transition-all duration-200 hover:bg-[#ff5151] sm:w-auto'
+                                ariaLabel='Get started'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e54848] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(229,72,72,0.22)] transition-all duration-200 hover:bg-[#ff5151]'
                             >
-                                Explore Market Movers
-                                <ArrowRight className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-1' />
+                                Get Started
+                                <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                             </ComingSoonTrigger>
                         </div>
                     </section>

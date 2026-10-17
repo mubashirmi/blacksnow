@@ -427,6 +427,7 @@ export type ProductContext = {
 };
 
 export type AuthModalVisualVariant = 'default' | 'danger' | 'success';
+export type AuthModalAction = 'feedback' | 'unsubscribe';
 
 type PendingAuthFlow = { kind: 'signup'; user: any; role: string };
 
@@ -446,6 +447,7 @@ export type AuthModalProps = {
     sourceRoute?: string;
     productContext?: ProductContext;
     visualVariant?: AuthModalVisualVariant;
+    authAction?: AuthModalAction;
     onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; roles?: string[]; userId?: string }) => boolean | void;
 };
 
@@ -592,6 +594,7 @@ export default function AuthModal({
     sourceRoute,
     productContext,
     visualVariant = 'default',
+    authAction,
     onSuccess,
 }: AuthModalProps) {
     const router = useRouter();
@@ -636,7 +639,21 @@ export default function AuthModal({
 
     const redLogoFilter = 'brightness(0) saturate(100%) invert(18%) sepia(98%) saturate(4622%) hue-rotate(345deg) brightness(98%) contrast(98%)';
     const greenLogoFilter = 'brightness(0) saturate(100%) invert(24%) sepia(91%) saturate(876%) hue-rotate(115deg) brightness(82%) contrast(96%)';
-    const logoFilter = isDangerVariant ? redLogoFilter : isSuccessVariant ? greenLogoFilter : undefined;
+
+    // Only the Feedback/Unsubscribe entry points override the signup branding.
+    const isFeedbackAuth = authAction === 'feedback';
+    const isUnsubscribeAuth = authAction === 'unsubscribe';
+    const authTitle = isFeedbackAuth ? 'Feedback' : isUnsubscribeAuth ? 'Unsubscribe' : 'Sign Up';
+    const authLogoSrc = isFeedbackAuth ? '/logo.png' : isUnsubscribeAuth ? '/redLogo.png' : '/logocolored.png';
+    const logoFilter = isFeedbackAuth
+        ? greenLogoFilter
+        : isUnsubscribeAuth
+        ? undefined
+        : isDangerVariant
+        ? redLogoFilter
+        : isSuccessVariant
+        ? greenLogoFilter
+        : undefined;
 
     useEffect(() => {
         if (open) {
@@ -1100,14 +1117,18 @@ export default function AuthModal({
                                     <div
                                         className='h-14 w-14 rounded-2xl border bg-black/30 flex items-center justify-center mb-4 shadow-xl'
                                         style={{
-                                            borderColor: 'rgba(255,255,255,0.1)',
+                                            borderColor: isFeedbackAuth
+                                                ? 'rgba(6, 78, 59, 0.45)'
+                                                : isUnsubscribeAuth
+                                                ? 'rgba(127, 29, 29, 0.15)'
+                                                : 'rgba(255,255,255,0.1)',
                                         }}
                                     >
                                         <Image
                                             width={120}
                                             height={120}
-                                            src='/logocolored.png'
-                                            alt='Logo'
+                                            src={authLogoSrc}
+                                            alt={isFeedbackAuth ? 'Feedback logo' : isUnsubscribeAuth ? 'Unsubscribe logo' : 'Logo'}
                                             className='object-contain'
                                             style={{
                                                 filter: logoFilter,
@@ -1116,7 +1137,7 @@ export default function AuthModal({
                                     </div>
 
                                     <DialogTitle className='text-2xl font-extrabold text-white leading-tight'>
-                                        {showVerification ? 'Verify Your Account' : 'Create Your Account'}
+                                        {showVerification ? 'Verify Your Account' : authTitle}
                                     </DialogTitle>
                                 </div>
                             </DialogHeader>
@@ -1487,9 +1508,33 @@ export default function AuthModal({
                                 </form>
                             )}
 
-                            <div className='mt-3 flex shrink-0 items-center justify-center gap-2 text-xs text-white/30'>
-                                <Lock className='h-3.5 w-3.5' />
-                                Secure &amp; encrypted connection
+                            <div className='mt-3 flex shrink-0 items-center justify-center gap-2.5 text-[11px] leading-none'>
+                                <div className='flex items-center gap-1.5 text-white/55'>
+                                    <svg width='15' height='15' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className='text-white/60'>
+                                        <path
+                                            d='M12 2.75L19 5.85V11.1C19 15.77 16.06 19.91 12 21.25C7.94 19.91 5 15.77 5 11.1V5.85L12 2.75Z'
+                                            stroke='currentColor'
+                                            strokeWidth='2'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                        />
+                                        <path
+                                            d='M9.2 11.95L11.2 13.95L15.2 9.95'
+                                            stroke='currentColor'
+                                            strokeWidth='2'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                        />
+                                    </svg>
+                                    <span className='whitespace-nowrap font-medium'>Secure Checkout</span>
+                                </div>
+
+                                <div className='h-4 w-px bg-white/12' />
+
+                                <div className='flex items-center gap-1.5'>
+                                    <span className='whitespace-nowrap text-white/40'>Powered by</span>
+                                    <span className='text-[15px] font-black tracking-tight leading-none text-[#635BFF]'>stripe</span>
+                                </div>
                             </div>
                         </div>
                     </div>

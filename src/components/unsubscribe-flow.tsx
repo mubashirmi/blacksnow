@@ -1020,6 +1020,7 @@ export function FeedbackUnsubscribeButtons({ size = 'section', className = '', o
                 redirectAfterLogin='/'
                 redirectAfterSignup='/'
                 sourceRoute={authFlow === 'feedback' ? '/feedback' : '/unsubscribe'}
+                authAction={authFlow}
                 visualVariant={authFlow === 'feedback' ? 'success' : 'danger'}
                 onSuccess={handleAuthSuccess}
             />

@@ -59,7 +59,7 @@ type FeedbackStatusResponse = {
 };
 
 const DASHBOARD_ROUTES: Record<ToolRole, { label: string; url: string }> = {
-    EmailMarketing: { label: 'Email Marketing', url: '/emailMarketing/dashboard/users' },
+    EmailMarketing: { label: 'Email CRM Lite', url: '/emailMarketing/dashboard/users' },
     DigitalBillboard: { label: 'Digital Billboard', url: '/digitalBillboard/dashboard' },
     LightningGold: { label: 'Lightning Gold', url: '/superAffiliate/dashboard/kpi' },
     LightningSilver: { label: 'Lightning Silver', url: '/affiliate/dashboard/kpi' },

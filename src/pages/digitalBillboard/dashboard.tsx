@@ -7,6 +7,7 @@ import { BillboardList } from '@/components/digital-billboard/BillboardList';
 import { BillboardViewModal } from '@/components/digital-billboard/BillboardViewModal';
 import { DashboardLayout } from '@/components/digital-billboard/DashboardLayout';
 import { DigitalBillboardBilling } from '@/components/digital-billboard/DigitalBillboardBilling';
+import { DigitalBillboardKPI } from '@/components/digital-billboard/DigitalBillboardKPI';
 import { DigitalBillboardSidebar } from '@/components/digital-billboard/DigitalBillboardSidebar';
 
 import { useBillboards } from '@/hooks/useBillboards';
@@ -14,7 +15,7 @@ import { MAX_BILLBOARDS } from '@/lib/digital-billboard/constants';
 import type { BillboardData } from '@/lib/digital-billboard/types';
 import { parseRoles, toFormValues } from '@/lib/digital-billboard/utils';
 
-type DashboardView = 'list' | 'form' | 'billing';
+type DashboardView = 'kpi' | 'list' | 'form' | 'billing';
 type BillboardFormMode = 'create' | 'edit';
 
 function DigitalBillboardPage() {
@@ -25,7 +26,8 @@ function DigitalBillboardPage() {
 
     const { billboards, loading, error, setError, refresh, createBillboard, updateBillboard } = useBillboards(authId);
 
-    const [view, setView] = useState<DashboardView>('list');
+    // KPI is the initial user dashboard view.
+    const [view, setView] = useState<DashboardView>('kpi');
     const [formMode, setFormMode] = useState<BillboardFormMode>('create');
     const [activeBillboard, setActiveBillboard] = useState<BillboardData | null>(null);
 
@@ -58,6 +60,12 @@ function DigitalBillboardPage() {
         setAuthId(uid);
         setBooting(false);
     }, [router]);
+
+    const openKpi = () => {
+        setActiveBillboard(null);
+        setViewModalBillboard(null);
+        setView('kpi');
+    };
 
     const openCreate = () => {
         setFormMode('create');
@@ -93,6 +101,7 @@ function DigitalBillboardPage() {
     };
 
     const activeKey = useMemo(() => {
+        if (view === 'kpi') return 'kpi' as const;
         if (view === 'billing') return 'billing' as const;
         if (view === 'list') return 'list' as const;
 
@@ -103,13 +112,13 @@ function DigitalBillboardPage() {
         <DigitalBillboardSidebar
             activeKey={activeKey}
             canCreateMore={canCreateMore}
+            onShowKpi={openKpi}
             onShowList={() => {
                 setView('list');
                 setActiveBillboard(null);
             }}
             onCreate={() => {
                 if (!canCreateMore) return;
-
                 openCreate();
             }}
             onBilling={openBilling}
@@ -132,7 +141,7 @@ function DigitalBillboardPage() {
     return (
         <DashboardLayout Sidebar={Sidebar}>
             <div>
-                {view !== 'billing' && (
+                {(view === 'list' || view === 'form') && (
                     <BillboardHeader
                         view={view}
                         onCreate={openCreate}
@@ -143,9 +152,15 @@ function DigitalBillboardPage() {
                     />
                 )}
 
-                {error && view !== 'billing' && <div className='mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700'>{error}</div>}
+                {error && (view === 'list' || view === 'form') && (
+                    <div className='mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700'>{error}</div>
+                )}
 
-                {view === 'billing' ? (
+                {view === 'kpi' ? (
+                    authId ? (
+                        <DigitalBillboardKPI userId={authId} />
+                    ) : null
+                ) : view === 'billing' ? (
                     authId ? (
                         <DigitalBillboardBilling authId={authId} />
                     ) : null

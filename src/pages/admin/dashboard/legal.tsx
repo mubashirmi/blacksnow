@@ -1,201 +1,233 @@
-'use client';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { getLegalRecord, legalDocuments, saveLegalRecord, type LegalRecord } from '@/lib/legal-documents';
+import { Loader2, Save } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-const legalSections = [
-    { id: 1, title: 'Affiliate Agreement', apiRoute: '/api/v2/affiliate-agreement', key: 'affiliateAgreement', responseKey: 'agreement' },
-    { id: 2, title: 'Terms and Policy', apiRoute: '/api/v2/terms', key: 'terms', responseKey: 'terms' },
-    { id: 3, title: 'Risk Disclosure', apiRoute: '/api/v2/risk-disclosure', key: 'riskDisclosure', responseKey: 'disclosure' },
-    { id: 4, title: 'GDPR Compliance', apiRoute: '/api/v2/gdpr', key: 'gdpr', responseKey: 'gdpr' },
-    { id: 5, title: 'Privacy Policy', apiRoute: '/api/v2/privacy-policy', key: 'privacyPolicy', responseKey: 'policy' },
-];
+export default function LegalDocumentsAdmin() {
+    const [selected, setSelected] = useState<number>(0);
+    const [record, setRecord] = useState<LegalRecord | null>(null);
+    const [content, setContent] = useState('');
+    const [summary, setSummary] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const [notice, setNotice] = useState('');
 
-export default function LegalPage() {
-    const [expandedSection, setExpandedSection] = useState(null);
-    const [editingContent, setEditingContent] = useState({});
-    const [loading, setLoading] = useState({});
-    const [alert, setAlert] = useState({ show: false, type: '', message: '' });
-    const [sectionContents, setSectionContents] = useState({});
+    const document = legalDocuments[selected];
 
-    // Fetch content for all sections on page load
-    const fetchAllContent = useCallback(async () => {
-        try {
-            setLoading(legalSections.reduce((acc, section) => ({ ...acc, [section.id]: true }), {}));
+    useEffect(() => {
+        const controller = new AbortController();
 
-            const fetchPromises = legalSections.map(async (section) => {
-                try {
-                    const response = await fetch(section.apiRoute);
-                    if (response.status === 404) {
-                        return { id: section.id, content: '' };
-                    }
-                    if (!response.ok) throw new Error(`Failed to fetch ${section.title}`);
-                    const data = await response.json();
+        setLoading(true);
+        setError('');
+        setNotice('');
+        setRecord(null);
+        setContent('');
+        setSummary('');
 
-                    let content = '';
-                    if (data[section.responseKey] && data[section.responseKey][section.key]) {
-                        content = data[section.responseKey][section.key];
-                    }
+        getLegalRecord(document.endpoint, controller.signal)
+            .then((item) => {
+                if (controller.signal.aborted) return;
 
-                    return { id: section.id, content };
-                } catch (error: any) {
-                    console.error(`Error fetching ${section.title}:`, error);
-                    setAlert({
-                        show: true,
-                        type: 'error',
-                        message: `Failed to load ${section.title} content: ${error.message}`,
-                    });
-                    return { id: section.id, content: '' };
+                setRecord(item);
+                setContent(item?.content ?? '');
+                setSummary(item?.summary ?? '');
+            })
+            .catch((err: unknown) => {
+                if (!controller.signal.aborted) {
+                    setError(err instanceof Error ? err.message : 'Unable to load document.');
+                }
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
                 }
             });
 
-            const results = await Promise.all(fetchPromises);
-            const newContents = results.reduce(
-                (acc, { id, content }) => ({
-                    ...acc,
-                    [id]: content,
-                }),
-                {}
-            );
+        return () => controller.abort();
+    }, [document.endpoint]);
 
-            setSectionContents(newContents);
-        } finally {
-            setLoading(legalSections.reduce((acc, section) => ({ ...acc, [section.id]: false }), {}));
+    async function save() {
+        if (loading || saving || error) return;
+
+        if (!content.trim()) {
+            setError('Full document content is required.');
+            return;
         }
-    }, []);
 
-    // Load all content on component mount
-    useEffect(() => {
-        fetchAllContent();
-    }, [fetchAllContent]);
+        setSaving(true);
+        setNotice('');
 
-    // Handle section toggle
-    const handleToggleSection = useCallback((sectionId) => {
-        setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
-    }, []);
-
-    // Handle content save
-    const handleSave = async (sectionId) => {
-        const section = legalSections.find((s) => s.id === sectionId);
         try {
-            setLoading((prev: any) => ({ ...prev, [sectionId]: true }));
-            const response = await fetch(section.apiRoute, {
-                method: (sectionContents as any)[sectionId] ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(
-                    (sectionContents as any)[sectionId]
-                        ? { id: 1, [section.key]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }
-                        : { [section.key]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }
-                ),
-            });
-            if (!response.ok) throw new Error('Failed to save content');
-            setSectionContents((prev: any) => ({ ...prev, [sectionId]: (editingContent as any)[sectionId] || (sectionContents as any)[sectionId] }));
-            setEditingContent((prev: any) => ({ ...prev, [sectionId]: undefined }));
-            setAlert({
-                show: true,
-                type: 'success',
-                message: `${section.title} content saved successfully`,
-            });
-        } catch (error: any) {
-            setAlert({
-                show: true,
-                type: 'error',
-                message: `Failed to save ${section.title}: ${error.message}`,
-            });
+            await saveLegalRecord(document.endpoint, record?.id ?? null, content, summary);
+
+            // Fetch the latest record to get its actual database ID.
+            const fresh = await getLegalRecord(document.endpoint);
+
+            if (!fresh) {
+                throw new Error('Saved, but the record was not returned by GET. Please reload.');
+            }
+
+            setRecord(fresh);
+            setContent(fresh.content ?? '');
+            setSummary(fresh.summary ?? '');
+            setError('');
+            setNotice('Document saved successfully.');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Could not save document.');
         } finally {
-            setLoading((prev: any) => ({ ...prev, [sectionId]: false }));
+            setSaving(false);
         }
-    };
-
-    const handleContentChange = (sectionId, content) => {
-        setEditingContent((prev: any) => ({ ...prev, [sectionId]: content }));
-    };
-
-    // Clear alert after 5 seconds
-    const clearAlert = useCallback(() => {
-        setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
-    }, []);
+    }
 
     return (
-        <div className='space-y-6'>
-            <div className='flex items-center justify-between'>
-                <h1 className='text-3xl font-bold text-gray-800'>Legal Documents</h1>
-            </div>
+        <main className='min-h-screen bg-[#f6f8fb] px-4 py-8 text-[#1f2937] sm:px-8 lg:py-12'>
+            <div className='mx-auto max-w-6xl'>
+                {/* Page Header */}
+                <div className='mb-7'>
+                    <h1 className='text-2xl font-semibold sm:text-3xl'>Legal Documents</h1>
 
-            {alert.show && (
-                <Alert
-                    variant={alert.type === 'error' ? 'destructive' : 'default'}
-                    className={alert.type === 'success' ? 'bg-green-50 border-green-200' : ''}
-                    onAnimationEnd={clearAlert}
-                >
-                    <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
-                    <AlertDescription>{alert.message}</AlertDescription>
-                </Alert>
-            )}
+                    <p className='mt-2 text-sm text-slate-500'>Manage the summary and full content of all ten legal pages. Use Markdown for formatting.</p>
+                </div>
 
-            {/* Card styled like Notes/Newsletter: white card, rounded corners, subtle border, gradient header */}
-            <Card className='bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden'>
-                <CardHeader className='bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4'>
-                    <CardTitle className='text-xl font-bold text-white'>Legal Content Management</CardTitle>
-                </CardHeader>
-
-                <CardContent className='p-6'>
-                    <div className='space-y-4'>
-                        {legalSections.map((section) => (
-                            <div key={section.id} className='border border-slate-200 rounded-lg'>
-                                <button
-                                    onClick={() => handleToggleSection(section.id)}
-                                    className='w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors'
-                                    disabled={(loading as any)[section.id]}
-                                >
-                                    <span className='font-medium text-slate-800'>{section.title}</span>
-                                    {(loading as any)[section.id] ? (
-                                        <Loader2 className='w-4 h-4 text-slate-500 animate-spin' />
-                                    ) : expandedSection === section.id ? (
-                                        <ChevronDown className='w-4 h-4 text-slate-500' />
-                                    ) : (
-                                        <ChevronRight className='w-4 h-4 text-slate-500' />
-                                    )}
-                                </button>
-
-                                {expandedSection === section.id && (
-                                    <div className='border-t border-slate-100 p-4'>
-                                        <textarea
-                                            value={
-                                                (editingContent as any)[section.id] !== undefined
-                                                    ? (editingContent as any)[section.id]
-                                                    : (sectionContents as any)[section.id] || ''
-                                            }
-                                            onChange={(e) => handleContentChange(section.id, e.target.value)}
-                                            className='w-full h-32 p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none'
-                                            placeholder={`Enter ${section.title} content...`}
-                                            disabled={(loading as any)[section.id]}
-                                        />
-                                        <div className='mt-4'>
-                                            <Button
-                                                onClick={() => handleSave(section.id)}
-                                                className='bg-blue-500 hover:bg-blue-600 text-white'
-                                                disabled={(loading as any)[section.id]}
-                                            >
-                                                {(loading as any)[section.id] ? (
-                                                    <>
-                                                        <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                                                        Saving...
-                                                    </>
-                                                ) : (
-                                                    'Save'
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                <div className='grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]'>
+                    {/* Sidebar */}
+                    <nav aria-label='Legal documents' className='rounded-2xl border border-[#e2e8f0] bg-white p-2 shadow-sm lg:self-start'>
+                        {legalDocuments.map((item, index) => (
+                            <button
+                                key={item.endpoint}
+                                type='button'
+                                disabled={saving}
+                                onClick={() => setSelected(index)}
+                                className={`block w-full rounded-xl px-4 py-3 text-left text-sm transition-colors ${
+                                    selected === index ? 'bg-[#eaf2fc] font-semibold text-[#1e5180]' : 'text-slate-600 hover:bg-[#f5f8fc] hover:text-[#1e5180]'
+                                }`}
+                            >
+                                {item.title}
+                            </button>
                         ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+                    </nav>
+
+                    {/* Editor Card */}
+                    <section className='min-w-0 rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm sm:p-7'>
+                        {/* Document Header */}
+                        <div className='flex flex-wrap items-start justify-between gap-3 border-b border-[#e8edf3] pb-5'>
+                            <div>
+                                <h2 className='text-xl font-semibold text-[#1f2937]'>{document.title}</h2>
+
+                                <p className='mt-1 text-xs text-slate-500'>
+                                    {record
+                                        ? `Existing record · ID ${record.id} · PUT on save`
+                                        : loading
+                                        ? 'Loading...'
+                                        : error
+                                        ? 'Unable to determine record status'
+                                        : 'No record yet · POST on save'}
+                                </p>
+                            </div>
+
+                            <Link
+                                href={`/${document.slug}`}
+                                target='_blank'
+                                className='rounded-full border border-[#d8e3ed] px-4 py-2 text-xs font-medium text-[#28587e] transition hover:bg-[#f0f6fc]'
+                            >
+                                View Public Page ↗
+                            </Link>
+                        </div>
+
+                        {/* Loading */}
+                        {loading ? (
+                            <div className='flex min-h-48 items-center justify-center gap-2 text-slate-500'>
+                                <Loader2 className='h-5 w-5 animate-spin' />
+                                Loading...
+                            </div>
+                        ) : (
+                            <div className='mt-6 space-y-6'>
+                                {/* Summary Editor */}
+                                <div>
+                                    <label htmlFor='legal-summary' className='mb-2 block text-sm font-medium text-[#263548]'>
+                                        Document Summary
+                                    </label>
+
+                                    <p className='mb-3 text-xs text-slate-500'>
+                                        Displayed under the Summary tab. Separate paragraphs with blank lines; use - for checklist items.
+                                    </p>
+
+                                    <textarea
+                                        id='legal-summary'
+                                        value={summary}
+                                        onChange={(e) => {
+                                            setSummary(e.target.value);
+                                            setError('');
+                                            setNotice('');
+                                        }}
+                                        disabled={saving}
+                                        placeholder={
+                                            'A quick overview of this document.\n\n' +
+                                            '- Review key terms and conditions\n' +
+                                            '- See important dates and parties'
+                                        }
+                                        className='min-h-48 w-full resize-y rounded-xl border border-[#d8e2ed] bg-[#fcfdff] p-4 text-sm leading-7 text-[#263548] outline-none placeholder:text-slate-400 focus:border-[#467eab] focus:ring-2 focus:ring-[#467eab]/10 disabled:opacity-60'
+                                    />
+                                </div>
+
+                                {/* Full Document Editor */}
+                                <div>
+                                    <label htmlFor='legal-content' className='mb-2 block text-sm font-medium text-[#263548]'>
+                                        Full Document
+                                    </label>
+
+                                    <p className='mb-3 text-xs text-slate-500'>
+                                        Use Markdown headings (## Section), **bold**, and lists. Plain paragraphs also work.
+                                    </p>
+
+                                    <textarea
+                                        id='legal-content'
+                                        value={content}
+                                        onChange={(e) => {
+                                            setContent(e.target.value);
+                                            setError('');
+                                            setNotice('');
+                                        }}
+                                        disabled={saving}
+                                        placeholder={'Last Updated: October 9, 2026\n\n' + '## 1. Introduction\n\n' + 'Write your legal content here...'}
+                                        className='min-h-[420px] w-full resize-y rounded-xl border border-[#d8e2ed] bg-[#fcfdff] p-4 font-mono text-sm leading-7 text-[#263548] outline-none placeholder:text-slate-400 focus:border-[#467eab] focus:ring-2 focus:ring-[#467eab]/10 disabled:opacity-60'
+                                    />
+                                </div>
+
+                                {/* Error Message */}
+                                {error && (
+                                    <p role='alert' className='rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
+                                        {error}
+                                    </p>
+                                )}
+
+                                {/* Success Message */}
+                                {notice && (
+                                    <p role='status' className='rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700'>
+                                        {notice}
+                                    </p>
+                                )}
+
+                                {/* Save Action */}
+                                <div className='flex justify-end'>
+                                    <button
+                                        type='button'
+                                        // eslint-disable-next-line
+                                        onClick={save}
+                                        disabled={saving || loading || Boolean(error && error !== 'Full document content is required.')}
+                                        className='inline-flex items-center gap-2 rounded-full border border-[#234d70] bg-[#285b82] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#1e496c] disabled:cursor-not-allowed disabled:opacity-50'
+                                    >
+                                        {saving ? <Loader2 className='h-4 w-4 animate-spin' /> : <Save className='h-4 w-4' />}
+
+                                        {saving ? 'Saving...' : record ? 'Update Document' : 'Create Document'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                </div>
+            </div>
+        </main>
     );
 }

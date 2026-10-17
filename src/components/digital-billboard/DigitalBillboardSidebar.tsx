@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import {
     AlertTriangle,
+    BarChart3,
     BellOff,
     CheckCircle,
     ChevronDown,
@@ -31,7 +32,7 @@ import { destroyCookie, parseCookies } from 'nookies';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-type ActiveKey = 'list' | 'create' | 'edit' | 'billing';
+type ActiveKey = 'kpi' | 'list' | 'create' | 'edit' | 'billing';
 
 const UNSUBSCRIBE_PRODUCT = {
     id: 'DigitalBillboard',
@@ -70,7 +71,7 @@ type FeedbackStatusResponse = {
 };
 
 const DASHBOARD_ROUTES: Record<ToolRole, { label: string; url: string }> = {
-    EmailMarketing: { label: 'Email Marketing', url: '/emailMarketing/dashboard/users' },
+    EmailMarketing: { label: 'Email CRM Lite', url: '/emailMarketing/dashboard/users' },
 
     DigitalBillboard: { label: 'Digital Billboard', url: '/digitalBillboard/dashboard' },
 
@@ -91,6 +92,8 @@ export function DigitalBillboardSidebar({
 
     canCreateMore,
 
+    onShowKpi,
+
     onShowList,
 
     onCreate,
@@ -104,6 +107,8 @@ export function DigitalBillboardSidebar({
     activeKey: ActiveKey;
 
     canCreateMore: boolean;
+
+    onShowKpi: () => void;
 
     onShowList: () => void;
 
@@ -307,16 +312,18 @@ export function DigitalBillboardSidebar({
                 icon: Monitor,
 
                 children: [
-                    { title: 'My Billboards', icon: List, key: 'list' as const, onClick: onShowList },
+                    { title: 'KPI', icon: BarChart3, key: 'kpi' as const, onClick: onShowKpi },
 
                     { title: 'Create Billboard', icon: PlusSquare, key: 'create' as const, onClick: onCreate, disabled: !canCreateMore },
+
+                    { title: 'My Billboards', icon: List, key: 'list' as const, onClick: onShowList },
 
                     { title: 'Billing', icon: CreditCard, key: 'billing' as const, onClick: onBilling },
                 ],
             },
         ],
 
-        [onShowList, onCreate, onBilling, canCreateMore]
+        [onShowKpi, onShowList, onCreate, onBilling, canCreateMore]
     );
 
     const toggleMenu = (title: string) => setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));

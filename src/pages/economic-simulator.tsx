@@ -851,14 +851,11 @@ const EconomicSimulatorPage: NextPage = () => {
                             </div>
 
                             <ComingSoonTrigger
-                                className='group flex min-h-[46px] w-full items-center justify-center gap-7 rounded-[4px] px-8 text-[12px] font-medium uppercase tracking-[0.025em] text-white sm:w-[290px]'
-                                style={{
-                                    background: 'linear-gradient(90deg,#5924ad 0%,#7836d2 100%)',
-                                    boxShadow: '0 0 22px rgba(112,56,215,0.16)',
-                                }}
+                                ariaLabel='Get started'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#7038d7] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(112,56,215,0.24)] transition-all duration-200 hover:bg-[#8b4bea]'
                             >
-                                Launch Simulator
-                                <ArrowRight className='h-5 w-5 transition-transform duration-200 group-hover:translate-x-1' />
+                                Get Started
+                                <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
                             </ComingSoonTrigger>
                         </div>
                     </section>
