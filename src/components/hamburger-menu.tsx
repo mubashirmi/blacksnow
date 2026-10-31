@@ -85,7 +85,7 @@ const roleDashboardMap: Record<
 const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Sales', 'DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningSilver', 'LightningGold'];
 
 // One shared size for the logo, heading box, and footer actions.
-const MATCHED_ELEMENT_HEIGHT = 30;
+const MATCHED_ELEMENT_HEIGHT = 32;
 
 // Use a real light-weight system font for footer actions. This also avoids
 // an app-wide font that may only have its bold weight loaded.
@@ -93,10 +93,9 @@ const footerButtonStyle = {
     height: MATCHED_ELEMENT_HEIGHT,
     minHeight: MATCHED_ELEMENT_HEIGHT,
     maxHeight: MATCHED_ELEMENT_HEIGHT,
-    fontSize: 15,
-    fontWeight: 500,
-    lineHeight: '18px',
-    fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontSize: '18px',
+    fontWeight: 700,
+    lineHeight: '22px',
 } as const;
 
 export function HamburgerMenu({ userId }: { userId?: string }) {
@@ -362,7 +361,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {hasProductDashboard && (
                                     <Button
                                         onClick={handleDashboardClick}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         Dashboard
@@ -373,7 +372,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     <Button
                                         variant='outline'
                                         onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#2c7bbe]/40 bg-transparent px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#2c7bbe]/40 bg-transparent px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
                                         style={footerButtonStyle}
                                     >
                                         {roleDashboardMap.Admin.label}
@@ -383,7 +382,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {!isLoggedIn && (
                                     <Button
                                         asChild
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         <Link href='/login' onClick={() => setIsOpen(false)}>
