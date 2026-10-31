@@ -42,7 +42,9 @@ cron.schedule('* * * * *', async () => {
         if (locked.count === 0) continue;
 
         try {
-            const admin = await prisma.emailMarketingCredentials.findUnique({ where: { authId: job.authId } });
+            const admin = await prisma.emailMarketingCredentials.findUnique({
+                where: { authId_role: { authId: job.authId, role: job.role } },
+            });
             if (!admin) throw new Error('No admin email credentials found');
 
             if (!job.emailUserId) {
@@ -77,6 +79,7 @@ cron.schedule('* * * * *', async () => {
                     status: 'sent',
                     messageId: null,
                     authId: job.authId,
+                    role: job.role,
                     emailUserId: job.emailUserId,
                     credentialsId: admin.id,
                     jobResultId: job.id,
@@ -124,7 +127,9 @@ cron.schedule('* * * * *', async () => {
                 },
             });
         } catch (err) {
-            const admin = await prisma.emailMarketingCredentials.findUnique({ where: { authId: job.authId } });
+            const admin = await prisma.emailMarketingCredentials.findUnique({
+                where: { authId_role: { authId: job.authId, role: job.role } },
+            });
             if (!admin) throw new Error('No admin email credentials found');
             // put it back to pending to retry later (you can add a retry counter/backoff here)
             await prisma.emailJobResult.update({
@@ -139,6 +144,7 @@ cron.schedule('* * * * *', async () => {
                     status: 'failed',
                     errorMessage: String(err || 'Unknown error'),
                     authId: job.authId,
+                    role: job.role,
                     emailUserId: job.emailUserId,
                     credentialsId: admin.id || null,
                     jobResultId: job.id,

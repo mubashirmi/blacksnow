@@ -1,6 +1,7 @@
 import AuthModal from '@/components/AuthModal';
 import BusinessInvoiceSlideshow from '@/components/BusinessInvoiceSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
+import { ProductPricingOverview } from '@/components/ProductPricingOverview';
 import { Button } from '@/components/ui/button';
 import lottie from 'lottie-web';
 import {
@@ -260,19 +261,18 @@ export default function InvoiceContractPage() {
                             <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
-                                    onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
-                                    size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
-                                    {/* <BarChart3 className='w-6 h-6 mr-3' /> */}
                                     Purchase
+                                </Button>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setSlideshowOpen(true)}
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>
@@ -295,6 +295,8 @@ export default function InvoiceContractPage() {
                     </div>
                 </div>
             </section>
+
+            <ProductPricingOverview product='business-invoice' onGetStarted={handlePurchaseClick} />
             {/* <div ref={pricingRef} className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <PricingComponent name='InvoiceTool' />
             </div> */}
@@ -527,18 +529,18 @@ export default function InvoiceContractPage() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button
                                     size='lg'
-                                    onClick={() => setSlideshowOpen(true)}
-                                    className='bg-gradient-to-r border-2 box-border border-[#4cc7e8] from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
-                                    size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
                                     Purchase
+                                </Button>
+                                <Button
+                                    size='lg'
+                                    onClick={() => setSlideshowOpen(true)}
+                                    className='bg-gradient-to-r border-2 box-border border-[#4cc7e8] from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>

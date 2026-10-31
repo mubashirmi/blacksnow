@@ -1,3 +1,4 @@
+import { PricingBillingCard } from '@/components/billing/PricingBillingCard';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -293,12 +294,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
             <section className='overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-[0_20px_65px_rgba(15,23,42,0.12)]'>
                 <div className='lg:grid lg:grid-cols-[1fr_1.03fr]'>
-                    <div className='relative overflow-hidden border-b border-slate-200 bg-[linear-gradient(145deg,#ffffff_0%,#f8f8ff_48%,#efedff_100%)] px-6 py-7 sm:px-10 sm:py-10 lg:border-b-0 lg:border-r'>
-                        <div
-                            aria-hidden='true'
-                            className='pointer-events-none absolute -right-20 top-12 h-72 w-72 rotate-45 rounded-[60px] bg-[linear-gradient(135deg,rgba(99,102,241,0.03),rgba(79,70,229,0.18))]'
-                        />
-
+                    <div className='relative overflow-hidden border-b border-slate-200 bg-slate-50 px-6 py-7 sm:px-10 sm:py-10 lg:border-b-0 lg:border-r'>
                         <div
                             aria-hidden='true'
                             className='pointer-events-none absolute -right-36 top-16 h-72 w-72 rotate-45 rounded-[60px] border-[20px] border-indigo-400/5'
@@ -316,49 +312,7 @@ export function DigitalBillboardBilling({ authId }: DigitalBillboardBillingProps
 
                             <p className='mt-2 text-[16px] text-slate-600 sm:text-[18px]'>Secure payments powered by Stripe</p>
 
-                            <div className='relative mx-auto mt-10 h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/35 bg-[#090d12] sm:h-[310px] sm:max-w-[470px] lg:aspect-[530/335] lg:h-auto lg:max-w-[530px]'>
-                                {/* Center the logo against the entire card, not the space below the chip. */}
-                                <div className='absolute inset-0 flex items-center justify-center'>
-                                    <div className='relative h-[72%] w-[82%] sm:h-[76%] sm:w-[84%]'>
-                                        <Image
-                                            src='/logocolored.png'
-                                            alt='Black Snow Holdings logo'
-                                            fill
-                                            priority
-                                            sizes='(max-width: 640px) 350px, 500px'
-                                            className='object-contain'
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Gold EMV-style card chip with etched metallic contacts. */}
-                                <div className='pointer-events-none absolute left-6 top-7 z-10 sm:left-9 sm:top-9'>
-                                    <svg
-                                        className='h-[42px] w-[56px] sm:h-[48px] sm:w-[64px]'
-                                        viewBox='0 0 64 48'
-                                        role='img'
-                                        aria-label='Gold payment card chip'
-                                        xmlns='http://www.w3.org/2000/svg'
-                                    >
-                                        <defs>
-                                            <linearGradient id='pricing-gold-chip' x1='0%' y1='0%' x2='100%' y2='100%'>
-                                                <stop offset='0%' stopColor='#FFF1BB' />
-                                                <stop offset='34%' stopColor='#E8C46E' />
-                                                <stop offset='70%' stopColor='#C99742' />
-                                                <stop offset='100%' stopColor='#F6D88B' />
-                                            </linearGradient>
-                                        </defs>
-                                        <rect x='1' y='1' width='62' height='46' rx='8' fill='url(#pricing-gold-chip)' stroke='#FFE1A0' strokeWidth='1.2' />
-                                        <g fill='none' stroke='#9C7137' strokeWidth='1.5' strokeLinejoin='round' opacity='0.88'>
-                                            <path d='M1 15 H18 M1 33 H18 M46 15 H63 M46 33 H63' />
-                                            <path d='M18 1 V15 M46 1 V15 M18 33 V47 M46 33 V47' />
-                                            <path d='M32 1 V14 M32 34 V47 M1 24 H18 M46 24 H63' />
-                                            <rect x='18' y='14' width='28' height='20' rx='5' />
-                                        </g>
-                                        <rect x='21.5' y='17.5' width='21' height='13' rx='3.5' fill='none' stroke='#FFF1BA' strokeWidth='0.9' opacity='0.75' />
-                                    </svg>
-                                </div>
-                            </div>
+                            <PricingBillingCard />
 
                             <div className='mt-9 grid grid-cols-3 divide-x divide-slate-200'>
                                 <div className='px-2 text-center sm:px-5'>

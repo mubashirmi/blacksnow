@@ -1,6 +1,7 @@
 import AuthModal from '@/components/AuthModal';
 import DigitalBillboardSlideshow from '@/components/DigitalBillboardSlideshow';
 import { PricingComponent } from '@/components/PricingComponent';
+import { ProductPricingOverview } from '@/components/ProductPricingOverview';
 import ShareBanner from '@/components/ShareBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -309,18 +310,18 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
-                                    onClick={() => setSlideshowOpen(true)}
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
-                                    size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Purchase
+                                </Button>
+                                <Button
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                    onClick={() => setSlideshowOpen(true)}
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>
@@ -337,6 +338,8 @@ function Advertising() {
                     </div>
                 </div>
             </section>
+
+            <ProductPricingOverview product='digital-billboard' onGetStarted={handlePurchaseClick} />
 
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
                 <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
@@ -498,18 +501,18 @@ function Advertising() {
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    onClick={() => setSlideshowOpen(true)}
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
-                                    size='lg'
                                     onClick={handlePurchaseClick}
                                     variant='outline'
                                     className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                 >
                                     Purchase
+                                </Button>
+                                <Button
+                                    size='lg'
+                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    onClick={() => setSlideshowOpen(true)}
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>

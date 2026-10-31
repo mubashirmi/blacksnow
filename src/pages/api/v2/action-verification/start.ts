@@ -27,12 +27,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const userId = Number(req.body?.userId);
         const action = req.body?.action;
         const context = req.body?.context ?? {};
+        const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+        const password = typeof req.body?.password === 'string' ? req.body.password : '';
 
         if (!Number.isSafeInteger(userId) || userId <= 0) {
             throw new ApiError(400, 'INVALID_USER_ID', 'A valid userId URL parameter is required');
         }
         if (!isSensitiveAction(action)) {
             throw new ApiError(400, 'INVALID_REQUEST', 'A valid action is required');
+        }
+        if (!email || !password) {
+            throw new ApiError(400, 'INVALID_REQUEST', 'Email and password are required');
         }
 
         const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
@@ -52,9 +57,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const user = await prisma.auth.findUnique({
             where: { id: userId },
-            select: { id: true, email: true, firstName: true, lastName: true, status: true },
+            select: { id: true, email: true, firstName: true, lastName: true, password: true, status: true },
         });
         if (!user || user.status !== 'active') throw new ApiError(404, 'USER_NOT_FOUND', 'No active user was found for the provided userId');
+
+        const emailMatches = user.email.trim().toLowerCase() === email.toLowerCase();
+        const passwordMatches = emailMatches ? await bcrypt.compare(password, user.password) : false;
+        if (!passwordMatches) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Invalid email or password');
 
         const otp = String(randomInt(100000, 1000000));
         const otpHash = await bcrypt.hash(otp, 12);

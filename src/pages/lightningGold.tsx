@@ -4,6 +4,7 @@ import AuthModal from '@/components/AuthModal';
 import LightningGoldSlideshow from '@/components/LightningGoldSlideshow';
 import { MultiCurrencyAcceptanceSection } from '@/components/MultiCurrencyAcceptanceSection';
 import { PricingComponent } from '@/components/PricingComponent';
+import { ProductPricingOverview } from '@/components/ProductPricingOverview';
 import { RevenuePayoutsSection } from '@/components/RevenuePayoutsSection';
 import ShareBanner from '@/components/ShareBanner';
 import { Button } from '@/components/ui/button';
@@ -147,26 +148,26 @@ function LightningGold() {
 
                                 <p className='text-md sm:text-lg text-gray-300 leading-relaxed max-w-2xl'>
                                     Earn 75% lifetime commissions, paid on both monthly and annual subscriptions, for every active customer you refer with a
-                                    $250/month membership. Gain more from the same subscribers by increasing your commission rate without changing your effort.
-                                    Build faster and scale more efficiently by converting the same traffic into higher recurring payouts.
+                                    $99.99/month membership. Gain more from the same subscribers by increasing your commission rate without changing your
+                                    effort. Build faster and scale more efficiently by converting the same traffic into higher recurring payouts.
                                 </p>
                             </div>
 
                             {/* CTA */}
                             <div className='flex flex-col sm:flex-row sm:flex-wrap lg:flex-col 2xl:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
-                                    onClick={() => setActiveSlideshow('gold')}
-                                    size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
                                     onClick={handleJoinGold}
                                     size='lg'
                                     className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                 >
                                     Join Gold
+                                </Button>
+                                <Button
+                                    onClick={() => setActiveSlideshow('gold')}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>
@@ -176,7 +177,7 @@ function LightningGold() {
                             <div className='relative flex items-center justify-center w-full h-full'>
                                 <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <div className='w-[90%] aspect-square sm:w-full'>
-                                        <LottieAnimation src='/animations/lightningGoldherosection.json' className='w-full h-full' loop autoplay />
+                                        <LottieAnimation src='/animations/lightning-gold-cloud.json' className='w-full h-full' loop autoplay />
                                     </div>
                                 </div>
                             </div>
@@ -184,6 +185,8 @@ function LightningGold() {
                     </div>
                 </div>
             </section>
+
+            <ProductPricingOverview product='lightning-gold' onGetStarted={handleJoinGold} />
 
             {/* ── COMMISSION TABLE ─────────────────────────────────────────── */}
             <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
@@ -211,26 +214,26 @@ function LightningGold() {
                                             Monthly and annual commissions in one clear view.
                                         </div>
                                     </div>
-                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] hidden sm:block'>$250 / month</div>
+                                    <div className='text-xl sm:text-2xl md:text-3xl font-bold text-[#ffd500] hidden sm:block'>$99.99 / month</div>
                                 </div>
-                                {/* <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$250 / mo</Badge> */}
+                                {/* <Badge className='bg-[#e9a427] text-black px-4 sm:px-6 py-2 sm:py-3 font-bold text-sm sm:text-base'>$99.99 / mo</Badge> */}
                             </div>
 
                             <div className='overflow-x-auto rounded-xl border border-[#ffd500]/40'>
-                                <table className='w-full text-left'>
-                                    <thead>
+                                <table className='w-full text-left bg-[#ffd500] text-[#101418]'>
+                                    <thead className='bg-black/10'>
                                         <tr>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Product</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Monthly</th>
-                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-gray-300'>Annual</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-[#101418]'>Product</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-[#101418]'>Monthly</th>
+                                            <th className='p-4 sm:p-5 text-sm sm:text-base font-semibold text-[#101418]'>Annual</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {commissionRows.map((row) => (
-                                            <tr key={row.product} className='border-t border-[#ffd500]/40 hover:bg-white/[0.02] transition-colors'>
-                                                <td className='p-4 sm:p-5 text-gray-300 font-medium text-sm sm:text-base'>{row.product}</td>
-                                                <td className='p-4 sm:p-5 text-gray-300 font-bold text-sm sm:text-base'>{row.monthly}</td>
-                                                <td className='p-4 sm:p-5 text-gray-300 font-bold text-sm sm:text-base'>{row.annual}</td>
+                                            <tr key={row.product} className='border-t border-black/20 hover:bg-black/[0.06] transition-colors'>
+                                                <td className='p-4 sm:p-5 text-[#101418] font-medium text-sm sm:text-base'>{row.product}</td>
+                                                <td className='p-4 sm:p-5 text-[#101418] font-bold text-sm sm:text-base'>{row.monthly}</td>
+                                                <td className='p-4 sm:p-5 text-[#101418] font-bold text-sm sm:text-base'>{row.annual}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -267,18 +270,18 @@ function LightningGold() {
 
                             <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 pt-2'>
                                 <Button
-                                    onClick={() => setActiveSlideshow('gold')}
-                                    size='lg'
-                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                >
-                                    Learn More
-                                </Button>
-                                <Button
                                     onClick={handleJoinGold}
                                     size='lg'
                                     className='group border-2 box-border border-[#ccab07] cursor-pointer bg-[#ffd500] hover:bg-[#c2a203] text-black px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                 >
                                     Join Gold
+                                </Button>
+                                <Button
+                                    onClick={() => setActiveSlideshow('gold')}
+                                    size='lg'
+                                    className='group border-2 box-border border-[#ccab07] cursor-pointer hover:bg-[#c2a203]/10 text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-md shadow-[#ffd500]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                >
+                                    Learn More
                                 </Button>
                             </div>
                         </div>

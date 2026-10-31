@@ -1,8 +1,28 @@
 import type { NextPage } from 'next';
 
-import { AlertCircle, CheckCircle2, CreditCard, DollarSign, RefreshCw, ShieldCheck } from 'lucide-react';
+import { AlertCircle, CheckCircle2, CreditCard, DollarSign, Mail, RefreshCw, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+type EmailUsage = {
+    billingMonth?: string | null;
+    timezone?: string | null;
+    range?: {
+        startDate?: string | null;
+        endDate?: string | null;
+    } | null;
+    emailsSentThisMonth?: number | null;
+    includedEmails?: number | null;
+    billableEmails?: number | null;
+    pricePerEmail?: {
+        amount?: number | null;
+        currency?: string | null;
+    } | null;
+    emailCharges?: {
+        amount?: number | null;
+        currency?: string | null;
+    } | null;
+};
 
 type ReferralEarningsData = {
     user?: {
@@ -23,6 +43,7 @@ type ReferralEarningsData = {
     withdrawnThisMonth?: number | null;
     totalWithdrawn?: number | null;
     totalEarned?: number | null;
+    emailUsage?: EmailUsage | null;
 };
 
 type ReferralEarningsResponse = {
@@ -60,6 +81,10 @@ type SubscriptionTransaction = {
     amountPaid?: number | null;
     amountRemaining?: number | null;
     currency?: string | null;
+    // Optional classification fields when the backend returns email charge records.
+    type?: string | null;
+    category?: string | null;
+    description?: string | null;
     transactionDate?: string | null;
     hostedInvoiceUrl?: string | null;
     invoicePdf?: string | null;
@@ -75,6 +100,7 @@ type LightningSubscriptionData = {
     subscription?: LightningSubscription | null;
     transactions?: SubscriptionTransaction[] | null;
     nextBillingDate?: string | null;
+    emailUsage?: EmailUsage | null;
 };
 
 type LightningSubscriptionResponse = {
@@ -101,6 +127,48 @@ const formatCurrency = (amount: number | null | undefined, currency = 'USD'): st
     } catch {
         return `$${numericAmount.toFixed(2)}`;
     }
+};
+
+// The standard 2-decimal formatter hides a $0.005 email charge.
+const formatPreciseCurrency = (amount: number | null | undefined, currency = 'USD'): string => {
+    const numericAmount = safeNumber(amount);
+
+    try {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: (currency || 'USD').toUpperCase(),
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+        }).format(numericAmount);
+    } catch {
+        return `$${numericAmount.toFixed(3)}`;
+    }
+};
+
+const formatEmailPrice = (amount: number | null | undefined, currency = 'USD'): string => {
+    const numericAmount = safeNumber(amount, 0.005);
+
+    try {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: (currency || 'USD').toUpperCase(),
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 6,
+        }).format(numericAmount);
+    } catch {
+        return `$${numericAmount.toFixed(3)}`;
+    }
+};
+
+const isEmailTransaction = (transaction: SubscriptionTransaction): boolean => {
+    // Do not infer charges from the emailUsage summary: only classify actual records.
+    const classification = [transaction.type, transaction.category, transaction.description]
+        .filter((part): part is string => typeof part === 'string')
+        .join(' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/[_-]+/g, ' ');
+
+    return /\b(emails?)\b/i.test(classification);
 };
 
 const formatMinorCurrency = (amountMinor: number | null | undefined, currency = 'USD'): string => {
@@ -315,6 +383,17 @@ const LightningGoldBillingPage: NextPage = () => {
     }, [subscriptionData?.transactions]);
 
     const currency = earnings?.currency || transactions.find((transaction) => transaction.currency)?.currency || 'USD';
+
+    // Billing API is authoritative for usage; referral earnings is a fallback.
+    const emailUsage = subscriptionData?.emailUsage ?? earnings?.emailUsage ?? null;
+    const emailCurrency = emailUsage?.emailCharges?.currency || emailUsage?.pricePerEmail?.currency || 'USD';
+    const emailPrice = emailUsage?.pricePerEmail?.amount ?? 0.005;
+    const emailChargeAmount = emailUsage?.emailCharges?.amount;
+    const hasEmailUsage = emailUsage !== null;
+    const emailUsagePeriod =
+        emailUsage?.range?.startDate && emailUsage?.range?.endDate
+            ? `${formatDate(emailUsage.range.startDate)} – ${formatDate(emailUsage.range.endDate)}`
+            : emailUsage?.billingMonth || 'Current billing month';
 
     const availableBalance = safeNumber(earnings?.availableBalance);
 
@@ -662,14 +741,87 @@ const LightningGoldBillingPage: NextPage = () => {
                 )}
             </section>
 
-            {/* Tool subscription transactions only */}
+            {/* Email CRM Lite billing: exact usage comes from the backend, not the subscription ledger. */}
+            <section className='mt-6 rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,0.07)] sm:p-6'>
+                <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+                    <div className='flex items-center gap-3'>
+                        <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700'>
+                            <Mail className='h-5 w-5' />
+                        </div>
+                        <div>
+                            <h2 className='text-lg font-semibold text-slate-950'>Email CRM Lite Billing</h2>
+                            <p className='mt-1 text-sm text-slate-500'>Email sending usage and charges for the current billing month.</p>
+                        </div>
+                    </div>
+                    <div className='inline-flex w-fit items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800'>
+                        {formatEmailPrice(emailPrice, emailCurrency)} <span className='font-normal text-indigo-600'>/ billable email</span>
+                    </div>
+                </div>
+
+                {hasEmailUsage ? (
+                    <>
+                        <div className='mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-5 lg:grid-cols-4'>
+                            <div className='rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4'>
+                                <p className='text-xs font-medium text-slate-500'>Emails Sent This Month</p>
+                                <p className='mt-2 text-2xl font-semibold tracking-tight text-slate-950'>
+                                    {safeNumber(emailUsage?.emailsSentThisMonth).toLocaleString('en-US')}
+                                </p>
+                            </div>
+                            <div className='rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4'>
+                                <p className='text-xs font-medium text-slate-500'>Included Emails</p>
+                                <p className='mt-2 text-2xl font-semibold tracking-tight text-slate-950'>
+                                    {safeNumber(emailUsage?.includedEmails).toLocaleString('en-US')}
+                                </p>
+                            </div>
+                            <div className='rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-4'>
+                                <p className='text-xs font-medium text-slate-500'>Billable Emails</p>
+                                <p className='mt-2 text-2xl font-semibold tracking-tight text-slate-950'>
+                                    {safeNumber(emailUsage?.billableEmails).toLocaleString('en-US')}
+                                </p>
+                            </div>
+                            <div className='rounded-xl border border-indigo-100 bg-indigo-50/70 px-4 py-4'>
+                                <p className='text-xs font-medium text-indigo-700'>Email Charges This Month</p>
+                                <p className='mt-2 text-2xl font-semibold tracking-tight text-indigo-950'>
+                                    {emailChargeAmount == null ? '—' : formatPreciseCurrency(emailChargeAmount, emailCurrency)}
+                                </p>
+                            </div>
+                        </div>
+                        <div className='mt-4 flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between'>
+                            <span>
+                                Usage period: <span className='font-semibold text-slate-800'>{emailUsagePeriod}</span>
+                            </span>
+                            <span>
+                                Usage timezone: <span className='font-semibold text-slate-800'>{emailUsage?.timezone || 'Not provided'}</span>
+                            </span>
+                        </div>
+                    </>
+                ) : (
+                    <div className='mt-5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600'>
+                        Email usage information is not available right now. The pricing note below still applies.
+                    </div>
+                )}
+
+                <div className='mt-5 flex items-start gap-3 rounded-xl border border-indigo-100 bg-indigo-50/40 px-4 py-4'>
+                    <AlertCircle className='mt-0.5 h-4 w-4 shrink-0 text-indigo-600' />
+                    <p className='text-sm leading-6 text-slate-700'>
+                        Email CRM Lite costs{' '}
+                        <span className='font-semibold text-slate-950'>{formatEmailPrice(emailPrice, emailCurrency)} per billable email</span>. The amount above
+                        is the current-month usage charge reported by the API, not proof of payment. Actual individual billing transactions appear in the
+                        transaction history when the API provides them.
+                    </p>
+                </div>
+            </section>
+
+            {/* Existing subscription invoices and any actual itemized email transactions returned by the billing API. */}
             <section className='mt-6 overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_10px_35px_rgba(15,23,42,0.07)]'>
                 <div className='border-b border-slate-200 px-5 py-5 sm:px-6'>
                     <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <div>
-                            <h2 className='text-xl font-semibold text-slate-950'>Subscription Transactions</h2>
+                            <h2 className='text-xl font-semibold text-slate-950'>Billing Transactions</h2>
 
-                            <p className='mt-1 text-sm text-slate-500'>{productName} tool subscription payment history.</p>
+                            <p className='mt-1 text-sm text-slate-500'>
+                                {productName} subscription payments and itemized email charges returned by the billing API.
+                            </p>
                         </div>
 
                         <div className='text-sm text-slate-500'>
@@ -698,9 +850,12 @@ const LightningGoldBillingPage: NextPage = () => {
                             <CreditCard className='h-6 w-6' />
                         </div>
 
-                        <h3 className='mt-4 font-semibold text-slate-900'>No subscription transactions yet</h3>
+                        <h3 className='mt-4 font-semibold text-slate-900'>No billing transactions yet</h3>
 
-                        <p className='mt-1 text-sm text-slate-500'>Tool subscription charges will appear here when available.</p>
+                        <p className='mt-1 text-sm text-slate-500'>
+                            Subscription payments and individual email charges will appear here when the API returns transaction records. Monthly email usage is
+                            summarized above.
+                        </p>
                     </div>
                 ) : (
                     <div className='overflow-x-auto'>
@@ -731,6 +886,7 @@ const LightningGoldBillingPage: NextPage = () => {
 
                             <tbody className='divide-y divide-slate-100'>
                                 {transactions.map((transaction, index) => {
+                                    const emailTransaction = isEmailTransaction(transaction);
                                     const transactionCurrency = transaction.currency || currency;
 
                                     const amount = safeNumber(transaction.amountPaid) > 0 ? transaction.amountPaid : transaction.amountDue;
@@ -745,13 +901,17 @@ const LightningGoldBillingPage: NextPage = () => {
                                             <td className='px-5 py-4 sm:px-6'>
                                                 <div className='flex items-center gap-3'>
                                                     <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700'>
-                                                        <CreditCard className='h-4 w-4' />
+                                                        {emailTransaction ? <Mail className='h-4 w-4' /> : <CreditCard className='h-4 w-4' />}
                                                     </div>
 
                                                     <div>
-                                                        <div className='text-sm font-semibold text-slate-900'>Tool Subscription</div>
+                                                        <div className='text-sm font-semibold text-slate-900'>
+                                                            {emailTransaction ? 'Email CRM Lite' : 'Tool Subscription'}
+                                                        </div>
 
-                                                        <div className='mt-0.5 text-xs text-slate-500'>{productName}</div>
+                                                        <div className='mt-0.5 text-xs text-slate-500'>
+                                                            {transaction.description || (emailTransaction ? 'Email sending charge' : productName)}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -761,7 +921,9 @@ const LightningGoldBillingPage: NextPage = () => {
                                             </td>
 
                                             <td className='whitespace-nowrap px-5 py-4 text-sm font-semibold text-slate-950'>
-                                                {formatMinorCurrency(amount, transactionCurrency)}
+                                                {emailTransaction
+                                                    ? formatPreciseCurrency(safeNumber(amount) / 100, transactionCurrency)
+                                                    : formatMinorCurrency(amount, transactionCurrency)}
                                             </td>
 
                                             <td className='px-5 py-4'>

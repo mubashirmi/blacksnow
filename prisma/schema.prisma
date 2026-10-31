@@ -51,8 +51,8 @@ model Auth {
   // $0.005 = half a cent.
   emailOverageRate Float @default(0.005)
 
-  newsletterJobResults EmailJobResult[]   @relation("NewsletterRecipient")
-  newsletterHistories  EmailSentHistory[] @relation("NewsletterHistory")
+  newsletterJobResults EmailJobResult[]     @relation("NewsletterRecipient")
+  newsletterHistories  EmailSentHistory[]   @relation("NewsletterHistory")
   contracts            Contract[]
   invoices             Invoice[]
   toolFeedbacks        ToolFeedback[]
@@ -61,6 +61,7 @@ model Auth {
 
   emailUsages         EmailUsage[]
   emailOverageCharges EmailOverageCharge[]
+  notesForUsers       NotesForUsers[]
 }
 
 model EmailUsage {
@@ -199,10 +200,14 @@ model emailMarketingCredentials {
   updatedAt   DateTime @updatedAt
   email       String
   appPassword String
-  authId      Int      @unique
+  authId      Int
+  role        Role     @default(EmailMarketing)
 
   Auth               Auth               @relation(fields: [authId], references: [id])
   emailSentHistories EmailSentHistory[]
+
+  @@unique([authId, role])
+  @@index([authId])
 }
 
 model ReferralProducts {
@@ -249,6 +254,7 @@ model EmailUser {
   email     String
   fullName  String
   optType   String   @default("default")
+  role      Role     @default(EmailMarketing)
 
   auth               Auth               @relation(fields: [authId], references: [id])
   authId             Int
@@ -257,8 +263,9 @@ model EmailUser {
   EmailJobResult     EmailJobResult[]
   emailSentHistories EmailSentHistory[]
 
-  @@unique([authId, email])
+  @@unique([authId, role, email])
   @@index([authId])
+  @@index([authId, role])
   @@index([emailUserCSVId]) // helpful for ?csvId= queries
 }
 
@@ -267,7 +274,10 @@ model EmailUserCSV {
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   name       String
+  role       Role        @default(EmailMarketing)
   emailUsers EmailUser[]
+
+  @@index([role])
 }
 
 model EmailJobResult {
@@ -293,6 +303,7 @@ model EmailJobResult {
   // bookkeeping
   auth   Auth @relation(fields: [authId], references: [id])
   authId Int
+  role   Role @default(EmailMarketing)
 
   // For email users (existing)
   emailUser   EmailUser? @relation(fields: [emailUserId], references: [id])
@@ -306,6 +317,7 @@ model EmailJobResult {
   emailSentHistories EmailSentHistory[]
 
   @@index([authId])
+  @@index([authId, role])
   @@index([emailUserId])
   @@index([newsletterAuthId])
   @@index([status, runAt])
@@ -332,6 +344,7 @@ model EmailSentHistory {
   // Relations
   auth   Auth @relation(fields: [authId], references: [id])
   authId Int
+  role   Role @default(EmailMarketing)
 
   // For email users
   emailUser   EmailUser? @relation(fields: [emailUserId], references: [id])
@@ -348,11 +361,13 @@ model EmailSentHistory {
   jobResultId String?
 
   @@index([authId])
+  @@index([authId, role, sentAt])
   @@index([emailUserId])
   @@index([newsletterAuthId])
   @@index([credentialsId])
   @@index([jobResultId])
   @@index([status])
+  @@index([authId, status, sentAt])
 }
 
 model User {
@@ -600,6 +615,18 @@ model Notes {
   authId     Int
 }
 
+model NotesForUsers {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  title      String
+  content    String
+  authorName String?
+  email      String
+  auth       Auth     @relation(fields: [authId], references: [id])
+  authId     Int
+}
+
 model Advertiser {
   id            Int      @id @default(autoincrement())
   createdAt     DateTime @default(now())
@@ -721,10 +748,10 @@ model CookiePolicy {
 }
 
 model DigitalBillboard {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  clickCount  Int      @default(0)
+  id          Int                     @id @default(autoincrement())
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  clickCount  Int                     @default(0)
   fullName    String
   website     String
   podcast     String
@@ -736,7 +763,7 @@ model DigitalBillboard {
   description String
   status      Status
   authId      Int? // optional foreign key
-  Auth        Auth?    @relation(fields: [authId], references: [id]) // optional relation
+  Auth        Auth?                   @relation(fields: [authId], references: [id]) // optional relation
   clicks      DigitalBillboardClick[]
 
   @@index([authId, createdAt])
@@ -1071,7 +1098,7 @@ model ActionVerification {
   maxAttempts           Int       @default(5)
   sendCount             Int       @default(1)
   lastSentAt            DateTime  @default(now())
-  otpSentAt              DateTime  @default(now())
+  otpSentAt             DateTime  @default(now())
   verifiedAt            DateTime?
   verificationTokenHash String?   @unique
   tokenExpiresAt        DateTime?

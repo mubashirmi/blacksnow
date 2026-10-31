@@ -1,4 +1,5 @@
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
+import PlatformAnywhereSection from '@/components/PlatformAnywhereSection';
 import {
     ArrowRight,
     BarChart3,
@@ -341,24 +342,6 @@ function Preview({ kind, id }: { kind: (typeof tools)[number]['kind']; id: strin
         );
     if (kind === 'curve') return <MiniLine id={`${id}-curve`} />;
     return <MiniLine id={id} />;
-}
-
-function DashboardTile({ title, value, change, type, id }: { title: string; value: string; change: string; type: 'line' | 'bars' | 'list'; id: string }) {
-    return (
-        <div className='rounded-xl border border-[#2c7bbe]/20 bg-[#050b12]/92 p-3'>
-            <div className='flex items-center justify-between gap-2'>
-                <p className='text-[9px] font-bold uppercase tracking-[.04em] text-[#4cc7e8]'>{title}</p>
-                <TrendingUp className='h-3 w-3 text-[#4cc7e8]' />
-            </div>
-            <div className='mt-2 flex items-end justify-between gap-2'>
-                <p className='text-sm font-bold text-white'>{value}</p>
-                <p className='text-[9px] text-[#62db9b]'>{change}</p>
-            </div>
-            <div className='dashboard-tile-preview mt-1 hidden sm:block'>
-                {type === 'bars' ? <MiniBars /> : type === 'list' ? <MiniList /> : <MiniLine id={id} />}
-            </div>
-        </div>
-    );
 }
 
 function SimplePricingStrip() {
@@ -799,6 +782,463 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
     );
 }
 
+// The hero dashboard uses illustrative paper-trading data, not a live brokerage feed.
+type PaperDeskPeriod = '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL';
+
+type PaperDeskPeriodData = {
+    change: number;
+    changePercent: string;
+    labels: string[];
+    totalTrades: number;
+    profitableTrades: number;
+    avgGain: string;
+    avgLoss: string;
+    seed: number;
+};
+
+const PAPER_DESK_ACCOUNT_VALUE = 125743.18;
+const PAPER_DESK_RANGES: PaperDeskPeriod[] = ['1D', '1W', '1M', '3M', '1Y', 'ALL'];
+const PAPER_DESK_DATA: Record<PaperDeskPeriod, PaperDeskPeriodData> = {
+    '1D': {
+        change: 3218.42,
+        changePercent: '+2.62%',
+        labels: ['9:30', '10:30', '11:30', '12:30', '1:30', '2:30', '4:00'],
+        totalTrades: 8,
+        profitableTrades: 6,
+        avgGain: '+2.38%',
+        avgLoss: '-1.12%',
+        seed: 2,
+    },
+    '1W': {
+        change: 5134.27,
+        changePercent: '+4.26%',
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        totalTrades: 18,
+        profitableTrades: 13,
+        avgGain: '+2.25%',
+        avgLoss: '-1.04%',
+        seed: 4,
+    },
+    '1M': {
+        change: 8150.93,
+        changePercent: '+6.93%',
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        totalTrades: 34,
+        profitableTrades: 25,
+        avgGain: '+2.19%',
+        avgLoss: '-1.08%',
+        seed: 6,
+    },
+    '3M': {
+        change: 12445.36,
+        changePercent: '+10.98%',
+        labels: ['Aug', 'Sep', 'Oct'],
+        totalTrades: 62,
+        profitableTrades: 44,
+        avgGain: '+2.23%',
+        avgLoss: '-1.10%',
+        seed: 8,
+    },
+    '1Y': {
+        change: 17432.1,
+        changePercent: '+16.09%',
+        labels: ['Nov', 'Jan', 'Mar', 'May', 'Jul', 'Sep', 'Oct'],
+        totalTrades: 111,
+        profitableTrades: 76,
+        avgGain: '+2.14%',
+        avgLoss: '-1.06%',
+        seed: 10,
+    },
+    ALL: {
+        change: 19532.4,
+        changePercent: '+18.42%',
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        totalTrades: 128,
+        profitableTrades: 87,
+        avgGain: '+2.14%',
+        avgLoss: '-1.08%',
+        seed: 12,
+    },
+};
+
+const PAPER_DESK_ALLOCATIONS = [
+    { label: 'Stocks', percent: 72, color: '#3065ef' },
+    { label: 'ETFs', percent: 15, color: '#2ec9c1' },
+    { label: 'Cash', percent: 10, color: '#9183dd' },
+    { label: 'Options', percent: 3, color: '#aeb4cd' },
+];
+
+const PAPER_DESK_HOLDINGS = [
+    { symbol: 'NVDA', amount: 22418.6, change: '+4.36%' },
+    { symbol: 'AAPL', amount: 18932.4, change: '+1.92%' },
+    { symbol: 'MSFT', amount: 11245.3, change: '+2.18%' },
+    { symbol: 'AMZN', amount: 8412.15, change: '+1.64%' },
+    { symbol: 'TSLA', amount: 6904.22, change: '+3.21%' },
+];
+
+const PAPER_DESK_SECTORS = [
+    { label: 'Technology', percent: 42, color: '#3065ef' },
+    { label: 'Financials', percent: 18, color: '#348afe' },
+    { label: 'Healthcare', percent: 14, color: '#42c1f1' },
+    { label: 'Consumer Cyclical', percent: 10, color: '#a97cdb' },
+    { label: 'Other', percent: 16, color: '#9998ba' },
+];
+
+// Combine the last two categories on wide screens so all four bars still total 100%.
+const PAPER_DESK_DESKTOP_OTHER_PERCENT = PAPER_DESK_SECTORS.filter(({ label }) => label === 'Consumer Cyclical' || label === 'Other').reduce(
+    (sum, { percent }) => sum + percent,
+    0
+);
+
+function paperDeskMoney(amount: number) {
+    return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; data: PaperDeskPeriodData }) {
+    const left = 54;
+    const right = 646;
+    const top = 10;
+    const bottom = 110;
+    const startValue = PAPER_DESK_ACCOUNT_VALUE - data.change;
+    const floor = Math.floor((startValue - data.change * 0.18) / 1000) * 1000;
+    const ceiling = Math.ceil((PAPER_DESK_ACCOUNT_VALUE + data.change * 0.18) / 1000) * 1000;
+    const points = Array.from({ length: 82 }, (_, index) => {
+        const t = index / 81;
+        // Deterministic illustrative volatility. The first/last chart values always
+        // reconcile to the selected period's change and today's account balance.
+        const fade = Math.sin(Math.PI * t);
+        const wave =
+            (Math.sin(index * 0.42 + data.seed) * 0.38 + Math.sin(index * 0.17 + data.seed * 0.6) * 0.43 + Math.sin(index * 1.19 + data.seed * 1.8) * 0.11) *
+            fade;
+        const value = startValue + data.change * (t + wave * 0.105);
+        return {
+            x: left + t * (right - left),
+            y: bottom - ((value - floor) / (ceiling - floor)) * (bottom - top),
+        };
+    });
+    const strokePath = points.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`).join(' ');
+    const areaPath = `${strokePath} L${right} ${bottom} L${left} ${bottom} Z`;
+    const last = points[points.length - 1];
+    const labelCount = data.labels.length;
+
+    return (
+        <svg
+            viewBox='0 0 675 147'
+            preserveAspectRatio='none'
+            className='block h-auto w-full xl:h-[78px]'
+            role='img'
+            aria-label={`Illustrative ${period} account performance: ${paperDeskMoney(startValue)} to ${paperDeskMoney(PAPER_DESK_ACCOUNT_VALUE)}, change ${
+                data.changePercent
+            }`}
+        >
+            <defs>
+                <linearGradient id='paper-desk-performance-fill' x1='0' y1='0' x2='0' y2='1'>
+                    <stop offset='0%' stopColor='#297eff' stopOpacity='.55' />
+                    <stop offset='100%' stopColor='#2079dd' stopOpacity='.015' />
+                </linearGradient>
+                <filter id='paper-desk-point-glow' x='-300%' y='-300%' width='700%' height='700%'>
+                    <feGaussianBlur stdDeviation='3' />
+                </filter>
+            </defs>
+            {[5, 4].map((tickCount) =>
+                Array.from({ length: tickCount }, (_, index) => {
+                    const y = top + ((bottom - top) * index) / (tickCount - 1);
+                    const value = ceiling - ((ceiling - floor) * index) / (tickCount - 1);
+                    return (
+                        <g key={`horizontal-${tickCount}-${index}`} className={tickCount === 4 ? 'hidden xl:block' : 'xl:hidden'}>
+                            <line x1={left} y1={y} x2={right} y2={y} stroke='#16344b' strokeOpacity='.46' strokeWidth='.8' />
+                            <text x={left - 12} y={y + 4} textAnchor='end' fontSize='11' fill='#8493a8'>
+                                {`${Math.round(value / 1000)}K`}
+                            </text>
+                        </g>
+                    );
+                })
+            )}
+            {data.labels.map((label, index) => {
+                const x = left + (index / Math.max(labelCount - 1, 1)) * (right - left);
+                return (
+                    <g key={`${label}-${index}`}>
+                        <line x1={x} y1={top} x2={x} y2={bottom} stroke='#16344b' strokeOpacity='.25' strokeWidth='.8' />
+                        <text x={x} y='138' textAnchor='middle' fontSize={labelCount > 8 ? 10 : 11} fill='#8595aa'>
+                            {label}
+                        </text>
+                    </g>
+                );
+            })}
+            <path d={areaPath} fill='url(#paper-desk-performance-fill)' />
+            <path
+                d={strokePath}
+                fill='none'
+                stroke='#458bff'
+                strokeWidth='2.5'
+                strokeLinejoin='round'
+                strokeLinecap='round'
+                vectorEffect='non-scaling-stroke'
+            />
+            <circle cx={last.x} cy={last.y} r='8' fill='#42d5ff' opacity='.7' filter='url(#paper-desk-point-glow)' />
+            <circle cx={last.x} cy={last.y} r='3.5' fill='#65efff' stroke='#79dfff' strokeWidth='1.2' />
+        </svg>
+    );
+}
+
+function PaperDeskHoldingLogo({ symbol }: { symbol: string }) {
+    if (symbol === 'MSFT') {
+        return (
+            <span className='grid h-[18px] w-[18px] shrink-0 xl:h-[12px] xl:w-[12px] grid-cols-2 gap-[2px] xl:gap-[1px]' aria-hidden='true'>
+                <span className='bg-[#f25022]' />
+                <span className='bg-[#7fba00]' />
+                <span className='bg-[#00a4ef]' />
+                <span className='bg-[#ffb900]' />
+            </span>
+        );
+    }
+    const styles: Record<string, string> = {
+        NVDA: 'bg-[#78b900] text-[#09120b]',
+        AAPL: 'bg-white text-[#10151e]',
+        AMZN: 'bg-[#131920] text-white',
+        TSLA: 'bg-[#ec2438] text-white',
+    };
+    return (
+        <span
+            aria-hidden='true'
+            className={`flex h-[19px] w-[19px] shrink-0 xl:h-[12px] xl:w-[12px] items-center justify-center rounded-[4px] text-[13px] xl:text-[9px] font-black leading-none ${
+                styles[symbol] ?? 'bg-[#183044] text-white'
+            }`}
+        >
+            {symbol === 'NVDA' ? '◉' : symbol === 'AAPL' ? '●' : symbol === 'AMZN' ? 'a' : 'T'}
+        </span>
+    );
+}
+
+function PaperDeskDashboard() {
+    const [period, setPeriod] = useState<PaperDeskPeriod>('1D');
+    const selected = PAPER_DESK_DATA[period];
+    const winRate = Math.round((selected.profitableTrades / selected.totalTrades) * 100);
+    const panelClass =
+        'min-w-0 rounded-[13px] border border-[#0a3a51]/85 bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:h-[90px] xl:overflow-hidden xl:rounded-[8px] xl:p-[7px]';
+
+    return (
+        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#0b4160]/80 bg-[#020b14] p-2.5 text-white xl:h-[420px] xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(32,135,206,.075)] sm:p-3'>
+            <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_30%,rgba(12,50,90,.16),transparent_58%)]' />
+            <div className='relative space-y-2.5 sm:space-y-3 lg:space-y-2 xl:space-y-[6px]'>
+                <div className='flex flex-wrap items-center justify-between gap-x-3 gap-y-3 px-2 py-2 sm:px-3 sm:py-2.5 xl:h-[36px] xl:flex-nowrap xl:gap-y-0 xl:px-2 xl:py-0'>
+                    <div className='flex min-w-0 items-center gap-2.5 sm:gap-3'>
+                        <Image
+                            src='/logocolored.png'
+                            alt='Black Snow'
+                            width={49}
+                            height={49}
+                            className='h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12 xl:h-8 xl:w-8'
+                        />
+                        <div className='min-w-0'>
+                            <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-white sm:text-[16px] xl:text-[12px]'>
+                                BLACK SNOW
+                            </p>
+                            <p className='mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[.14em] text-[#35c4e7] sm:text-[12px] xl:text-[9px]'>
+                                PAPER DESK ANALYTICS
+                            </p>
+                        </div>
+                    </div>
+                    <div className='flex shrink-0 items-center gap-0.5 sm:gap-1' role='group' aria-label='Account performance timeframe'>
+                        {PAPER_DESK_RANGES.map((range) => (
+                            <button
+                                key={range}
+                                type='button'
+                                aria-label={`Show ${range} account performance`}
+                                aria-pressed={period === range}
+                                onClick={() => setPeriod(range)}
+                                className={`flex h-7 min-w-7 items-center justify-center rounded-md border px-1.5 text-[8px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#45c9e9] sm:h-9 sm:min-w-9 sm:px-2 sm:text-[11px] xl:h-7 xl:min-w-7 xl:px-1 xl:text-[9px] ${
+                                    period === range
+                                        ? 'border-[#0c9ecd]/90 bg-[#0b2535] text-white shadow-[0_0_12px_rgba(39,191,239,.14)]'
+                                        : 'border-transparent text-[#8a93a6] hover:border-[#1e536a] hover:bg-[#0b2333] hover:text-white'
+                                }`}
+                            >
+                                {range}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className='grid grid-cols-3 rounded-[13px] border border-[#0a3a51]/85 bg-[#030e18]/80 px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
+                    <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
+                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
+                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
+                            {paperDeskMoney(PAPER_DESK_ACCOUNT_VALUE)}
+                        </p>
+                    </div>
+                    <div className='min-w-0 border-x border-[#0b3043]/75 px-2 sm:px-4 xl:px-3'>
+                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Total Return</p>
+                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#28dca9]'>
+                            +18.42%
+                        </p>
+                        <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#28dca9] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
+                    </div>
+                    <div className='min-w-0 px-2 sm:px-4 xl:px-3' aria-live='polite' aria-atomic='true'>
+                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>{period === '1D' ? "Today's P&L" : `${period} P&L`}</p>
+                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#28dca9]'>
+                            +{paperDeskMoney(selected.change)}
+                        </p>
+                        <p className='mt-0.5 text-[10px] text-[#28dca9] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
+                    </div>
+                </div>
+
+                <div className={`${panelClass} xl:h-[106px]`}>
+                    <div className='mb-1.5 flex items-center justify-between gap-3'>
+                        <h3 className='text-[12px] font-bold uppercase tracking-[.015em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                            Account Performance
+                        </h3>
+                        <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#36c4ee] sm:h-5 sm:w-5 xl:h-3 xl:w-3' strokeWidth={1.8} aria-hidden='true' />
+                    </div>
+                    <PaperDeskPerformanceChart period={period} data={selected} />
+                </div>
+
+                <div className='grid gap-2.5 min-[520px]:grid-cols-2 sm:gap-3 lg:gap-2 xl:gap-[6px]'>
+                    <div className={panelClass}>
+                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                Asset Allocation
+                            </h3>
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                        </div>
+                        <div className='flex items-center justify-between gap-2'>
+                            <div
+                                className='relative aspect-square w-[42%] max-w-[150px] shrink-0 rounded-full xl:w-[60px]'
+                                style={{ background: 'conic-gradient(#3065ef 0% 72%, #2ec9c1 72% 87%, #9183dd 87% 97%, #aeb4cd 97% 100%)' }}
+                            >
+                                <div className='absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-[#05111c] text-center shadow-[inset_0_0_10px_rgba(0,0,0,.3)]'>
+                                    <span className='text-[clamp(11px,1.65vw,17px)] font-bold xl:text-[9px]'>$125.7K</span>
+                                    <span className='mt-0.5 text-[10px] text-[#9ca7b7] sm:text-[11px] xl:mt-0 xl:text-[9px]'>Total</span>
+                                </div>
+                            </div>
+                            <div className='min-w-0 flex-1 space-y-2 xl:space-y-[1px]'>
+                                {PAPER_DESK_ALLOCATIONS.map(({ label, percent, color }) => (
+                                    <div key={label} className='flex items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'>
+                                        <span className='h-3 w-3 shrink-0 rounded-full xl:h-2 xl:w-2' style={{ backgroundColor: color }} />
+                                        <span className='min-w-0 flex-1 text-[#b0b8ca]'>{label}</span>
+                                        <span className='font-medium tabular-nums text-white'>{percent}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={panelClass}>
+                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                Top Holdings
+                            </h3>
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                        </div>
+                        <div className='space-y-2 xl:space-y-[4px]'>
+                            {PAPER_DESK_HOLDINGS.map(({ symbol, amount, change }, index) => (
+                                <div
+                                    key={symbol}
+                                    className={`grid grid-cols-[19px_minmax(0,1fr)_auto_auto] items-center gap-x-2.5 text-[10px] sm:text-[11px] xl:grid-cols-[13px_minmax(0,1fr)_auto_auto] xl:gap-x-1.5 xl:text-[9px] xl:leading-[12px] ${
+                                        index === 4 ? 'xl:hidden' : ''
+                                    }`}
+                                >
+                                    <PaperDeskHoldingLogo symbol={symbol} />
+                                    <span className='font-medium text-[#e0e7f3]'>{symbol}</span>
+                                    <span className='whitespace-nowrap tabular-nums text-[#dde1e9]'>{paperDeskMoney(amount)}</span>
+                                    <span className='w-[49px] whitespace-nowrap xl:w-[41px] text-right tabular-nums text-[#2ad9ab]'>{change}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className={panelClass}>
+                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                Sector Exposure
+                            </h3>
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                        </div>
+                        <div className='space-y-2.5 xl:space-y-[4px]'>
+                            {PAPER_DESK_SECTORS.map(({ label, percent, color }) => {
+                                const isDesktopOther = label === 'Other';
+                                const desktopPercent = isDesktopOther ? PAPER_DESK_DESKTOP_OTHER_PERCENT : percent;
+                                return (
+                                    <div
+                                        key={label}
+                                        className={`grid grid-cols-[minmax(0,1fr)_minmax(46px,1.1fr)_32px] items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px] ${
+                                            label === 'Consumer Cyclical' ? 'xl:hidden' : ''
+                                        }`}
+                                    >
+                                        <span className='truncate text-[#aab4c7]'>{label}</span>
+                                        <span className='h-3 overflow-hidden rounded-full bg-[#162b3c] xl:h-[6px]'>
+                                            <span
+                                                className={`h-full rounded-full ${isDesktopOther ? 'block xl:hidden' : 'block'}`}
+                                                style={{ width: `${percent}%`, backgroundColor: color }}
+                                            />
+                                            {isDesktopOther && (
+                                                <span
+                                                    className='hidden h-full rounded-full xl:block'
+                                                    style={{ width: `${desktopPercent}%`, backgroundColor: color }}
+                                                />
+                                            )}
+                                        </span>
+                                        <span className='text-right tabular-nums text-[#e9edf6]'>
+                                            {isDesktopOther ? (
+                                                <>
+                                                    <span className='xl:hidden'>{percent}%</span>
+                                                    <span className='hidden xl:inline'>{desktopPercent}%</span>
+                                                </>
+                                            ) : (
+                                                `${percent}%`
+                                            )}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className={panelClass}>
+                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                Paper Trading Stats
+                            </h3>
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                        </div>
+                        <div
+                            className='divide-y divide-[#153047]/55 text-[11px] sm:text-[12px] xl:text-[9px] xl:leading-[11px]'
+                            aria-live='polite'
+                            aria-atomic='true'
+                        >
+                            {[
+                                ['Win Rate', `${winRate}%`, 'positive'],
+                                ['Total Trades', `${selected.totalTrades}`, 'normal'],
+                                ['Profitable Trades', `${selected.profitableTrades}`, 'normal'],
+                                ['Avg. Gain', selected.avgGain, 'positive'],
+                                ['Avg. Loss', selected.avgLoss, 'negative'],
+                            ].map(([label, value, sentiment]) => (
+                                <div
+                                    key={label}
+                                    className={`flex items-center justify-between gap-3 py-[5px] first:pt-0 last:pb-0 xl:py-[3px] ${
+                                        label === 'Profitable Trades' ? 'xl:hidden' : ''
+                                    }`}
+                                >
+                                    <span className='text-[#aab4c7]'>{label}</span>
+                                    <span
+                                        className={`font-medium tabular-nums ${
+                                            sentiment === 'positive' ? 'text-[#28dca9]' : sentiment === 'negative' ? 'text-[#fa5468]' : 'text-[#f2f6fd]'
+                                        }`}
+                                    >
+                                        {value}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <p className='px-1 pb-0.5 text-right text-[9px] xl:hidden tracking-[.02em] text-[#698296]'>
+                    Illustrative paper account · Simulated performance
+                </p>
+            </div>
+        </div>
+    );
+}
+
 export default function TradingPlatformShowcase() {
     const [executionIndex, setExecutionIndex] = useState(0);
     const [executionDetailIndex, setExecutionDetailIndex] = useState(0);
@@ -885,39 +1325,9 @@ export default function TradingPlatformShowcase() {
                         </div>
                     </div>
 
-                    <div className='relative'>
-                        <div className='absolute -inset-8 rounded-full bg-[#2c7bbe]/8 blur-3xl' />
-                        <div className='relative overflow-hidden rounded-2xl border border-[#2c7bbe]/28 bg-[#050a11]/94 shadow-[0_25px_80px_rgba(0,0,0,.45),0_0_55px_rgba(44,123,190,.08)]'>
-                            <div className='flex flex-col gap-3 border-b border-[#2c7bbe]/15 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
-                                <div className='flex items-center gap-3'>
-                                    <Image src='/logocolored.png' alt='Black Snow' width={34} height={34} className='h-8 w-8 object-contain' />
-                                    <div>
-                                        <p className='text-[10px] font-bold uppercase tracking-[.22em] text-white'>Black Snow</p>
-                                        <p className='mt-0.5 text-[7px] uppercase tracking-[.13em] text-[#4cc7e8]'>Intelligence Platform</p>
-                                    </div>
-                                </div>
-                                <div className='grid w-full grid-cols-2 gap-3 rounded-lg border border-[#2c7bbe]/12 bg-white/[.015] px-3 py-2 text-[8px] sm:flex sm:w-auto sm:gap-5 sm:border-0 sm:bg-transparent sm:p-0'>
-                                    <div>
-                                        <p className='text-white/35'>Account Value</p>
-                                        <p className='mt-0.5 font-semibold text-white'>$125,743.18</p>
-                                    </div>
-                                    <div>
-                                        <p className='text-white/35'>Today&apos;s P&amp;L</p>
-                                        <p className='mt-0.5 font-semibold text-[#62db9b]'>+$3,218.42</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='grid grid-cols-2 gap-2 p-3 sm:gap-2.5 xl:grid-cols-4'>
-                                <DashboardTile title='Market Movers' value='NVDA' change='+4.36%' type='list' id='d1' />
-                                <DashboardTile title='Global KPI' value='5,278.63' change='+1.23%' type='line' id='d2' />
-                                <DashboardTile title='Economic Simulator' value='+0.25%' change='+2.14%' type='line' id='d3' />
-                                <DashboardTile title='Watchlist' value='AAPL' change='+1.92%' type='list' id='d4' />
-                                <DashboardTile title='Paper Trading' value='$125,743.18' change='+8.75%' type='line' id='d5' />
-                                <DashboardTile title='Stock Screener' value='128' change='Matches' type='bars' id='d6' />
-                                <DashboardTile title='Research' value='24 Reports' change='Updated' type='line' id='d7' />
-                                <DashboardTile title='Market Calendars' value='8 Events' change='Today' type='bars' id='d8' />
-                            </div>
-                        </div>
+                    <div className='relative min-w-0'>
+                        <div className='pointer-events-none absolute -inset-8 rounded-full bg-[#2c7bbe]/8 blur-3xl' />
+                        <PaperDeskDashboard />
                     </div>
                 </div>
 
@@ -1153,6 +1563,9 @@ export default function TradingPlatformShowcase() {
                         </div>
                     </div>
                 </div>
+
+                {/* ─── DESKTOP & MOBILE SHOWCASE — directly below the execution carousel ─── */}
+                <PlatformAnywhereSection />
 
                 <div className='mt-8'>
                     <SimplePricingStrip />

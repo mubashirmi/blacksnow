@@ -277,7 +277,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     {
         id: 'LightningSilver',
         name: 'Lightning Silver',
-        monthlyPrice: 5,
+        monthlyPrice: 9.99,
         yearlyPrice: null,
         description: '25% lifetime commissions on monthly and annual subscriptions',
         features: [
@@ -299,7 +299,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
     {
         id: 'LightningGold',
         name: 'Lightning Gold',
-        monthlyPrice: 250,
+        monthlyPrice: 99.99,
         yearlyPrice: null,
         description: '75% lifetime commissions designed to maximize recurring payouts',
         features: [

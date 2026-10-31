@@ -84,6 +84,21 @@ const roleDashboardMap: Record<
 
 const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Sales', 'DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningSilver', 'LightningGold'];
 
+// One shared size for the logo, heading box, and footer actions.
+const MATCHED_ELEMENT_HEIGHT = 30;
+
+// Use a real light-weight system font for footer actions. This also avoids
+// an app-wide font that may only have its bold weight loaded.
+const footerButtonStyle = {
+    height: MATCHED_ELEMENT_HEIGHT,
+    minHeight: MATCHED_ELEMENT_HEIGHT,
+    maxHeight: MATCHED_ELEMENT_HEIGHT,
+    fontSize: 15,
+    fontWeight: 500,
+    lineHeight: '18px',
+    fontFamily: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+} as const;
+
 export function HamburgerMenu({ userId }: { userId?: string }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -263,29 +278,29 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
                 >
-                    {/* =====================================================
-                        HEADER
-                        Fixed height: 96px
-                        Footer uses exactly the same height.
-                    ====================================================== */}
+                    {/* Header and footer are both exactly 96px high. */}
                     <div className='flex h-24 shrink-0 items-center justify-start border-b border-[#2c7bbe]/20 px-6'>
                         <Link
                             href='/'
                             onClick={() => setIsOpen(false)}
-                            className={`flex items-center justify-center gap-2 transform transition-all duration-700 delay-100 ${
+                            className={`flex items-center gap-2 transform transition-all duration-700 delay-100 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                             }`}
                         >
-                            {/*
-                                text-2xl = 24px
-                                Logo = 24px
-
-                                Therefore the logo is exactly the same
-                                visual size as the Black Snow heading.
-                            */}
-                            <Image width={27} height={27} src='/logocolored.png' alt='Black Snow' className='h-[27px] w-[27px] shrink-0 object-contain' />
-
-                            <span className='text-2xl font-black leading-none text-white'>Black Snow</span>
+                            <Image
+                                width={MATCHED_ELEMENT_HEIGHT}
+                                height={MATCHED_ELEMENT_HEIGHT}
+                                src='/logocolored.png'
+                                alt='Black Snow'
+                                className='shrink-0 object-contain'
+                                style={{ width: MATCHED_ELEMENT_HEIGHT, height: MATCHED_ELEMENT_HEIGHT }}
+                            />
+                            <span
+                                className='flex shrink-0 items-center whitespace-nowrap text-[30px] font-bold text-white'
+                                style={{ height: MATCHED_ELEMENT_HEIGHT, lineHeight: `${MATCHED_ELEMENT_HEIGHT}px` }}
+                            >
+                                Black Snow
+                            </span>
                         </Link>
                     </div>
 
@@ -336,18 +351,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         </div>
                     </div>
 
-                    {/* =====================================================
-                        FOOTER
-
-                        IMPORTANT:
-                        Footer does NOT render at all when:
-                        - user is logged in
-                        - user has no subscribed dashboard
-                        - user is not an admin
-
-                        Header = h-24
-                        Footer = h-24
-                    ====================================================== */}
+                    {/* Footer stays exactly 96px high when it is shown. */}
                     {shouldShowFooter && (
                         <div
                             className={`flex h-24 shrink-0 items-center justify-center border-t border-[#2c7bbe]/20 bg-[#050608] px-6 transform transition-all duration-700 delay-500 ${
@@ -355,49 +359,34 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                             }`}
                         >
                             <div className='flex w-full flex-col items-center justify-center gap-2'>
-                                {/* -------------------------------------
-                                    PRODUCT DASHBOARD
-
-                                    Only appears when the user actually
-                                    owns/subscribes to a product role.
-                                -------------------------------------- */}
                                 {hasProductDashboard && (
                                     <Button
                                         onClick={handleDashboardClick}
-                                        className='h-10 w-full max-w-[272px] cursor-pointer rounded-xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-6 text-2xl font-black leading-none text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        style={footerButtonStyle}
                                     >
                                         Dashboard
                                     </Button>
                                 )}
 
-                                {/* -------------------------------------
-                                    ADMIN DASHBOARD
-                                -------------------------------------- */}
                                 {hasAdminDashboard && (
                                     <Button
                                         variant='outline'
                                         onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
-                                        className='h-10 w-full max-w-[272px] cursor-pointer border-[#2c7bbe]/40 bg-transparent px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#2c7bbe]/40 bg-transparent px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
+                                        style={footerButtonStyle}
                                     >
                                         {roleDashboardMap.Admin.label}
                                     </Button>
                                 )}
 
-                                {/* -------------------------------------
-                                    SIGN IN
-
-                                    Appears ONLY when completely
-                                    logged out.
-
-                                    A logged-in user with no subscription
-                                    will NOT see this button.
-                                -------------------------------------- */}
                                 {!isLoggedIn && (
                                     <Button
                                         asChild
-                                        className='h-10 w-full max-w-[272px] cursor-pointer rounded-xl bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-6 !text-2xl !font-normal leading-none text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-sm !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        style={footerButtonStyle}
                                     >
-                                        <Link href='/login' onClick={() => setIsOpen(false)} className='!font-normal'>
+                                        <Link href='/login' onClick={() => setIsOpen(false)}>
                                             Sign in
                                         </Link>
                                     </Button>

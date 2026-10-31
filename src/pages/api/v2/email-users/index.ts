@@ -1,4 +1,5 @@
 // /pages/api/email-users.ts
+import { parseEmailServiceRole } from '@/lib/emailServiceRole';
 import prisma from '@/lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -14,6 +15,8 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
     };
 
     try {
+        const role = parseEmailServiceRole(method === 'GET' || method === 'DELETE' ? req.query.role ?? 'EmailMarketing' : req.body?.role ?? 'EmailMarketing');
+
         if (method === 'POST') {
             const { email, fullName, authId } = req.body;
 
@@ -21,13 +24,13 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(400).json({ message: 'email, fullName and authId are required' });
             }
 
-            const findEmail = await prisma.emailUser.findFirst({ where: { email, authId } });
+            const findEmail = await prisma.emailUser.findFirst({ where: { email, authId: Number(authId), role } });
             if (findEmail) {
                 return res.status(200).json({ message: 'Email already exist.' });
             }
 
             const created = await prisma.emailUser.create({
-                data: { email, fullName, authId: Number(authId) }, // ensure number
+                data: { email, fullName, authId: Number(authId), role }, // ensure number
             });
 
             return res.status(201).json({ message: 'Created successfully', emailUser: created });
@@ -39,7 +42,7 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
 
             // GET by id
             if (id) {
-                const emailUser = await prisma.emailUser.findUnique({ where: { id } });
+                const emailUser = await prisma.emailUser.findFirst({ where: { id, role } });
                 if (!emailUser) return res.status(404).json({ message: 'Email user not found' });
                 return res.status(200).json({ emailUser });
             }
@@ -47,13 +50,14 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             // GET by authId
             if (authId) {
                 // Use findFirst if authId is expected to be unique; switch to findMany if not.
-                const emailUser = await prisma.emailUser.findMany({ where: { authId }, include: { emailUserCSV: true } });
+                const emailUser = await prisma.emailUser.findMany({ where: { authId, role }, include: { emailUserCSV: true } });
                 if (!emailUser) return res.status(404).json({ message: 'Email user not found' });
                 return res.status(200).json({ emailUser });
             }
 
             // GET all
             const emailUsers = await prisma.emailUser.findMany({
+                where: { role },
                 orderBy: { id: 'desc' },
             });
             return res.status(200).json({ emailUsers });
@@ -73,10 +77,21 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
                 return res.status(400).json({ message: 'Nothing to update' });
             }
 
-            // optional: prevent duplicate email on update
-            if (email) {
+            const current = await prisma.emailUser.findFirst({
+                where: { id, role },
+                select: { authId: true, email: true, role: true },
+            });
+            if (!current) return res.status(404).json({ message: 'Email user not found' });
+
+            // Prevent duplicates within the same owner and service role.
+            if (email || authId !== undefined) {
                 const existing = await prisma.emailUser.findFirst({
-                    where: { email, id: { not: id } },
+                    where: {
+                        authId: data.authId ?? current.authId,
+                        role,
+                        email: data.email ?? current.email,
+                        id: { not: id },
+                    },
                 });
                 if (existing) return res.status(409).json({ message: 'Email already exist.' });
             }
@@ -93,7 +108,8 @@ export default async function api(req: NextApiRequest, res: NextApiResponse) {
             const id = getNumberFromQuery('id');
             if (!id) return res.status(400).json({ message: 'Valid id is required in query (?id=)' });
 
-            await prisma.emailUser.delete({ where: { id } });
+            const deleted = await prisma.emailUser.deleteMany({ where: { id, role } });
+            if (deleted.count === 0) return res.status(404).json({ message: 'Email user not found' });
             return res.status(200).json({ message: 'Deleted successfully' });
         }
 

@@ -220,7 +220,7 @@ function Pricing() {
                 return product.period ? (['year', 'yearly', 'yr'].includes(String(product.period).toLowerCase()) ? '/yr' : '/mo') : '';
             }
 
-            return billingPeriod === 'monthly' ? '/mo' : '/yr';
+            return billingPeriod === 'monthly' ? '/Mo' : '/Yr';
         },
 
         [billingPeriod]
@@ -263,10 +263,24 @@ function Pricing() {
     const nextProduct = products[(activeProductIndex + 1) % products.length];
 
     return (
-        <div className='relative min-h-screen overflow-hidden bg-[#050608] text-white'>
+        <div className='relative min-h-screen isolate overflow-hidden bg-[#050608] text-white'>
+            {/* Subtle atmospheric lighting inspired by the previous pricing design. */}
+            <div
+                aria-hidden='true'
+                className='pointer-events-none absolute inset-0 z-0'
+                style={{
+                    background: [
+                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
+                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
+                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
+                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
+                    ].join(', '),
+                }}
+            />
+
             {/* ── Hero Section ─────────────────────────────────────────── */}
 
-            <section className='relative px-4 pb-8 pt-12 sm:px-6 sm:pt-16 md:px-8 lg:pb-10'>
+            <section className='relative z-10 px-4 pb-8 pt-12 sm:px-6 sm:pt-16 md:px-8 lg:pb-10'>
                 <div className='mx-auto max-w-[1380px]'>
                     <div className='grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14'>
                         <div className='relative isolate z-10 animate-slide-in-left'>
@@ -326,13 +340,17 @@ function Pricing() {
                         </div>
 
                         <div className='relative min-h-[300px] overflow-visible animate-slide-in-right sm:min-h-[420px] lg:min-h-[470px]'>
-                            {/* Ambient lighting only: card positioning and the graph bars remain unchanged. */}
+                            {/* Soft blue halo, fading naturally into the page background. */}
                             <div
                                 aria-hidden='true'
-                                className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[490px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,126,210,0.37)_0%,rgba(32,111,195,0.29)_26%,rgba(26,89,160,0.16)_51%,rgba(5,6,8,0)_78%)] blur-[44px] sm:h-[620px] sm:w-[790px] lg:left-[60%] lg:top-[52%] lg:h-[660px] lg:w-[900px] lg:blur-[58px]'
+                                className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[490px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.24)_0%,rgba(26,94,157,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:left-[60%] lg:top-[52%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
                             />
 
-                            <div className='pricing-hero-card relative z-20 top-4 mx-auto h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/35 bg-[#090d12] shadow-[0_24px_84px_-32px_rgba(38,126,210,0.38)] sm:top-6 sm:h-[310px] sm:max-w-[470px] lg:absolute lg:left-1/2 lg:top-16 lg:h-[335px] lg:w-[530px] lg:max-w-none'>
+                            <div className='pricing-hero-card relative z-20 top-4 mx-auto h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/30 bg-[linear-gradient(150deg,#101a23_0%,#090d12_49%,#0b1720_100%)] shadow-[0_32px_110px_-38px_rgba(25,112,168,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)] sm:top-6 sm:h-[310px] sm:max-w-[470px] lg:absolute lg:left-1/2 lg:top-16 lg:h-[335px] lg:w-[530px] lg:max-w-none'>
+                                <div
+                                    aria-hidden='true'
+                                    className='pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(145,220,255,0.13),inset_0_0_65px_rgba(35,106,150,0.05)]'
+                                />
                                 {/* Center the logo against the entire card, not the space below the chip. */}
                                 <div className='absolute inset-0 flex items-center justify-center'>
                                     <div className='relative h-[72%] w-[82%] sm:h-[76%] sm:w-[84%]'>
@@ -347,10 +365,10 @@ function Pricing() {
                                     </div>
                                 </div>
 
-                                {/* Gold EMV-style card chip with etched metallic contacts. */}
-                                <div className='pointer-events-none absolute left-6 top-7 z-10 sm:left-9 sm:top-9'>
+                                {/* Half-size gold chip, centered vertically at the card's left edge. */}
+                                <div className='pointer-events-none absolute left-6 top-1/2 z-10 -translate-y-1/2 sm:left-9'>
                                     <svg
-                                        className='h-[42px] w-[56px] sm:h-[48px] sm:w-[64px]'
+                                        className='h-[21px] w-[28px] sm:h-[24px] sm:w-[32px]'
                                         viewBox='0 0 64 48'
                                         role='img'
                                         aria-label='Gold payment card chip'
@@ -375,26 +393,6 @@ function Pricing() {
                                     </svg>
                                 </div>
                             </div>
-
-                            <div className='pointer-events-none absolute bottom-14 left-[4%] z-30 hidden h-44 items-end gap-4 md:flex'>
-                                {[40, 76, 116, 154].map((height, index) => (
-                                    <div
-                                        key={index}
-                                        className='w-6 rounded-t-md border border-[#4cc7e8]/25 bg-[#153553]'
-                                        style={{ height: `${height}px` }}
-                                    ></div>
-                                ))}
-                            </div>
-
-                            <div className='pointer-events-none absolute bottom-14 right-[3%] z-30 hidden h-56 items-end gap-4 md:flex'>
-                                {[88, 122, 164, 206].map((height, index) => (
-                                    <div
-                                        key={index}
-                                        className='w-7 rounded-t-md border border-[#4cc7e8]/25 bg-[#153553]'
-                                        style={{ height: `${height}px` }}
-                                    ></div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -402,9 +400,13 @@ function Pricing() {
 
             {/* ── Animated Product Slider ───────────────────────────────── */}
 
-            <section className='relative overflow-hidden px-4 pb-10 sm:px-6 md:px-8'>
-                <div className='mx-auto max-w-[1380px]'>
-                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#2c7bbe]/35 bg-[#0a0b0f] shadow-[0_20px_90px_-30px_rgba(44,123,190,0.16)]'>
+            <section className='relative z-10 overflow-hidden px-4 pb-10 sm:px-6 md:px-8'>
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute left-1/2 top-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
+                />
+                <div className='relative mx-auto max-w-[1380px]'>
+                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#2c7bbe]/35 bg-[linear-gradient(120deg,#0b1117_0%,#090b0f_55%,#0a1119_100%)] shadow-[0_28px_110px_-40px_rgba(30,111,165,0.25),0_20px_65px_-35px_rgba(0,0,0,0.8)]'>
                         <div
                             className='pricing-slider-track relative z-10 flex w-full min-w-0'
                             style={{

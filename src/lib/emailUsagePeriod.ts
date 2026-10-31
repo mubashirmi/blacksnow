@@ -1,5 +1,6 @@
 import { ApiError } from '@/lib/apiErrors';
 import prisma from '@/lib/prisma';
+import type { Role } from '@prisma/client';
 import { EmailStatus } from '@prisma/client';
 
 export const EMAIL_USAGE_TIME_ZONE = 'UTC';
@@ -69,12 +70,13 @@ export function parseRequiredAuthId(value: string | string[] | undefined): numbe
     return authId;
 }
 
-export async function getEmailUsageTotal(authId: number, period: EmailUsagePeriod, now = new Date()) {
+export async function getEmailUsageTotal(authId: number, period: EmailUsagePeriod, now = new Date(), role?: Role) {
     const range = period === 'weekly' ? getCurrentWeekRange(now) : getCurrentMonthRange(now);
 
     const totalEmailsSent = await prisma.emailSentHistory.count({
         where: {
             authId,
+            ...(role ? { role } : {}),
             status: EmailStatus.sent,
             sentAt: {
                 gte: range.start,

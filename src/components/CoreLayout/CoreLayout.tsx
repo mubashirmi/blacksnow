@@ -1,3 +1,4 @@
+import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import { AuthProvider } from '@/lib/auth';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
@@ -62,7 +63,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     </div>
                                 </div>
 
-                                <div className='relative group'>
+                                <ComingSoonTrigger ariaLabel='Black Snow Headphones Coming Soon' className='relative group cursor-pointer'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
                                         <Image
                                             src='/BlacksnowHeadphoneIcon.png'
@@ -72,7 +73,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                             className='object-contain drop-shadow-2xl'
                                         />
                                     </div>
-                                </div>
+                                </ComingSoonTrigger>
 
                                 {/* Mobile buttons - right side opposite logo */}
                                 {/* <div className='shrink-0 lg:hidden'>

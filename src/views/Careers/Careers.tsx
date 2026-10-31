@@ -299,7 +299,21 @@ function Careers() {
     };
 
     return (
-        <div className='min-h-screen bg-[#050608] relative overflow-hidden'>
+        <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
+            {/* Same layered ambient background as the Pricing page. */}
+            <div
+                aria-hidden='true'
+                className='pointer-events-none absolute inset-0 z-0'
+                style={{
+                    background: [
+                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
+                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
+                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
+                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
+                    ].join(', '),
+                }}
+            />
+
             {/* Alert */}
             {alert && (
                 <div
@@ -313,7 +327,13 @@ function Careers() {
 
             {/* Header */}
             <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-7xl text-center'>
+                {/* Diffused glow underneath the centered page heading. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[420px] w-[720px] max-w-[125%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.20)_0%,rgba(26,94,157,0.12)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[540px] sm:w-[960px] lg:blur-[65px]'
+                />
+
+                <div className='container mx-auto max-w-7xl text-center relative z-10'>
                     <h1 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
                         <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Career </span>
                         <span className='text-white'> Opportunities</span>
@@ -326,7 +346,13 @@ function Careers() {
             </div>
 
             <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-7xl'>
+                {/* Pricing slider-style glow under the content. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute left-1/2 top-0 z-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
+                />
+
+                <div className='container mx-auto max-w-7xl relative z-10'>
                     {isLoading ? (
                         <div className='flex justify-center items-center py-16'>
                             <div className='dot-spinner'>
@@ -412,8 +438,8 @@ function Careers() {
             </div>
 
             {/* Final CTA */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
                             <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>

@@ -1,5 +1,7 @@
 import { ApiError } from '@/lib/apiErrors';
+import { getLightningEmailUsage } from '@/lib/lightningEmailUsage';
 import prisma from '@/lib/prisma';
+import { isStripeResourceMissing } from '@/lib/stripeErrorUtils';
 import { getAdminRevenueRanges, getConfiguredAdminRevenueTimeZone } from '@/lib/subscriptionPlatformRevenue';
 import Stripe from 'stripe';
 
@@ -76,6 +78,8 @@ export async function getLightningReferralEarnings(authId: number, subscriptionT
         throw new ApiError(404, 'USER_NOT_FOUND', 'User not found');
     }
 
+    const emailUsage = await getLightningEmailUsage(authId, subscriptionType, now);
+
     const timeZone = getConfiguredAdminRevenueTimeZone();
     const month = getAdminRevenueRanges(now, timeZone).monthly;
     const totalWithdrawn = withdrawals.reduce((total, payout) => total + parsePayoutAmount(payout.amount), 0);
@@ -102,6 +106,7 @@ export async function getLightningReferralEarnings(authId: number, subscriptionT
         withdrawnThisMonth,
         totalWithdrawn,
         totalEarned: Number(referralEarnings._sum.comission ?? 0),
+        emailUsage,
     };
 }
 
@@ -110,31 +115,51 @@ async function resolveSubscriptionId(stripe: Stripe, transactionId: string | nul
     if (transactionId.startsWith('sub_')) return transactionId;
     if (!transactionId.startsWith('cs_')) return null;
 
-    const session = await stripe.checkout.sessions.retrieve(transactionId);
-    return getStripeId(session.subscription as string | Stripe.Subscription | null);
+    try {
+        const session = await stripe.checkout.sessions.retrieve(transactionId);
+        return getStripeId(session.subscription as string | Stripe.Subscription | null);
+    } catch (error) {
+        if (isStripeResourceMissing(error)) return null;
+        throw error;
+    }
 }
 
 async function listSubscriptionInvoices(stripe: Stripe, subscriptionId: string) {
     const invoices: Stripe.Invoice[] = [];
     let startingAfter: string | undefined;
 
-    do {
-        const page = await stripe.invoices.list({
-            subscription: subscriptionId,
-            limit: 100,
-            ...(startingAfter ? { starting_after: startingAfter } : {}),
-        });
+    try {
+        do {
+            const page = await stripe.invoices.list({
+                subscription: subscriptionId,
+                limit: 100,
+                ...(startingAfter ? { starting_after: startingAfter } : {}),
+            });
 
-        invoices.push(...page.data);
+            invoices.push(...page.data);
 
-        if (!page.has_more || page.data.length === 0) break;
-        startingAfter = page.data[page.data.length - 1].id;
-    } while (startingAfter);
+            if (!page.has_more || page.data.length === 0) break;
+            startingAfter = page.data[page.data.length - 1].id;
+        } while (startingAfter);
+    } catch (error) {
+        if (!isStripeResourceMissing(error)) throw error;
+    }
 
     return invoices;
 }
 
-export async function getLightningSubscription(authId: number, subscriptionType: LightningSubscriptionType) {
+async function retrieveSubscription(stripe: Stripe, subscriptionId: string | null): Promise<Stripe.Subscription | null> {
+    if (!subscriptionId) return null;
+
+    try {
+        return await stripe.subscriptions.retrieve(subscriptionId);
+    } catch (error) {
+        if (isStripeResourceMissing(error)) return null;
+        throw error;
+    }
+}
+
+export async function getLightningSubscription(authId: number, subscriptionType: LightningSubscriptionType, now = new Date()) {
     if (!Number.isInteger(authId) || authId <= 0) {
         throw new ApiError(400, 'INVALID_AUTH_ID', 'A valid authId is required');
     }
@@ -178,6 +203,8 @@ export async function getLightningSubscription(authId: number, subscriptionType:
         throw new ApiError(404, 'USER_NOT_FOUND', 'User not found');
     }
 
+    const emailUsage = await getLightningEmailUsage(authId, subscriptionType, now);
+
     const currentCheckout = checkouts.find((checkout) => checkout.paid && !checkout.deleted && !checkout.pause && !checkout.cancelSubscripton) ?? null;
 
     if (checkouts.length === 0) {
@@ -191,6 +218,7 @@ export async function getLightningSubscription(authId: number, subscriptionType:
             subscription: null,
             transactions: [],
             nextBillingDate: null,
+            emailUsage,
         };
     }
 
@@ -228,7 +256,7 @@ export async function getLightningSubscription(authId: number, subscriptionType:
             .sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime());
 
         const currentSubscriptionId = currentCheckout ? subscriptionIdByCheckoutId.get(currentCheckout.id) ?? null : null;
-        const stripeSubscription = currentSubscriptionId ? await stripe.subscriptions.retrieve(currentSubscriptionId) : null;
+        const stripeSubscription = await retrieveSubscription(stripe, currentSubscriptionId);
         const nextBillingDate = stripeSubscription?.current_period_end
             ? new Date(stripeSubscription.current_period_end * 1000)
             : currentCheckout?.nextBillingDate ?? null;
@@ -261,6 +289,7 @@ export async function getLightningSubscription(authId: number, subscriptionType:
                 : null,
             transactions,
             nextBillingDate,
+            emailUsage,
         };
     } catch (error) {
         console.error('Failed to retrieve Lightning subscription data from Stripe:', error);

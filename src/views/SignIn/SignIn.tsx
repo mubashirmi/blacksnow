@@ -436,7 +436,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
 
         name: 'Lightning Silver',
 
-        monthlyPrice: 5,
+        monthlyPrice: 9.99,
 
         yearlyPrice: 60,
 
@@ -476,7 +476,7 @@ const POST_SIGNUP_SLIDES: ToolSlide[] = [
 
         name: 'Lightning Gold',
 
-        monthlyPrice: 250,
+        monthlyPrice: 99.99,
 
         yearlyPrice: 3000,
 

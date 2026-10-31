@@ -536,7 +536,7 @@ const PRODUCTS = [
         id: 'LightningSilver',
         apiName: 'LightningSilver',
         name: 'Lightning Silver',
-        monthlyPrice: 4.99,
+        monthlyPrice: 9.99,
         yearlyPrice: 59.99,
         description:
             'Earn 25% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to help you grow consistently.',
@@ -561,7 +561,7 @@ const PRODUCTS = [
         id: 'LightningGold',
         apiName: 'LightningGold',
         name: 'Lightning Gold',
-        monthlyPrice: 249.99,
+        monthlyPrice: 99.99,
         yearlyPrice: 2999.99,
         description:
             'Earn 75% lifetime commissions on every active subscriber you refer—automated payouts, KPI tracking, and Email & SMS CRM tools to maximize every sale.',

@@ -1,621 +1,613 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Calculator, ChevronDown, Home, PiggyBank, TrendingUp, Wallet } from 'lucide-react';
-import { useCallback, useMemo, useState, type ElementType, type ReactElement, type ReactNode } from 'react';
+import { Calculator, ChevronDown, Home, PiggyBank, TrendingUp, Wallet, type LucideIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-type ChartPoint = {
-    year: string;
-    amount: number;
-};
-
 type CalculatorKey = 'investment' | 'mortgage' | 'loan' | 'retirement';
-
-type CalculatorShellProps = {
-    title: string;
-    Icon: ElementType;
-    gradient: string;
-    chartData: ChartPoint[];
-    children: ReactNode;
-    showSelector?: boolean;
-    selectedKey?: CalculatorKey;
-    onSelectedKeyChange?: (key: CalculatorKey) => void;
-};
-
-// ─── Formatters / helpers ────────────────────────────────────────────────────
-const fmt = (n: number) =>
-    new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 2,
-    }).format(Number.isFinite(n) ? n : 0);
-
-function safeNumber(value: string | number, fallback = 0) {
-    const parsed = typeof value === 'number' ? value : Number(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function clampYears(value: string | number, fallback = 1, max = 60) {
-    const years = Math.floor(safeNumber(value, fallback));
-    if (!Number.isFinite(years) || years < 1) return fallback;
-    return Math.min(years, max);
-}
-
-function compactCurrency(value: any) {
-    const n = safeNumber(value, 0);
-    const abs = Math.abs(n);
-
-    if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-    if (abs >= 1_000) return `$${(n / 1_000).toFixed(0)}k`;
-
-    return `$${n.toFixed(0)}`;
-}
-
-function getPayment(principal: number, annualRate: number, months: number) {
-    if (principal <= 0 || months <= 0) return 0;
-
-    const monthlyRate = annualRate / 100 / 12;
-
-    if (monthlyRate === 0) return principal / months;
-
-    return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
-}
-
-function buildBalanceChart(principal: number, annualRate: number, years: number) {
-    const safePrincipal = Math.max(0, principal);
-    const totalMonths = Math.max(1, years * 12);
-    const monthlyRate = annualRate / 100 / 12;
-    const payment = getPayment(safePrincipal, annualRate, totalMonths);
-    const data: ChartPoint[] = [{ year: '0', amount: safePrincipal }];
-
-    let balance = safePrincipal;
-
-    for (let month = 1; month <= totalMonths; month += 1) {
-        if (monthlyRate === 0) {
-            balance = Math.max(0, balance - payment);
-        } else {
-            const interest = balance * monthlyRate;
-            const principalPayment = payment - interest;
-            balance = Math.max(0, balance - principalPayment);
-        }
-
-        if (month % 12 === 0 || month === totalMonths) {
-            data.push({
-                year: String(Math.ceil(month / 12)),
-                amount: balance,
-            });
-        }
-    }
-
-    return data;
-}
-
-// ─── Shared input ─────────────────────────────────────────────────────────────
-function Field({ label, prefix, value, onChange }: { label: string; prefix?: string; value: string; onChange: (v: string) => void }) {
-    return (
-        <div>
-            <label className='block text-[10px] font-bold text-[#7b7f9d] mb-1.5 uppercase tracking-[0.18em]'>{label}</label>
-
-            <div className='flex items-center gap-2 rounded-xl border border-[#2c7bbe]/30 bg-[#050608] px-3 py-2.5 focus-within:border-[#4cc7e8]/70 transition-colors duration-200'>
-                {prefix && <span className='text-gray-400 font-semibold text-sm flex-shrink-0'>{prefix}</span>}
-
-                <input
-                    type='number'
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    className='w-full bg-transparent outline-none text-white font-semibold text-sm tabular-nums placeholder-gray-600'
-                />
-            </div>
-        </div>
-    );
-}
-
-// ─── Result row ───────────────────────────────────────────────────────────────
-function ResultRow({ label, value }: { label: string; value: string }) {
-    return (
-        <div className='flex items-center justify-between py-2 border-b border-[#2c7bbe]/10 last:border-0'>
-            <span className='text-gray-400 text-xs'>{label}</span>
-            <span className='text-[#4cc7e8] font-bold text-xs tabular-nums'>{value}</span>
-        </div>
-    );
-}
-
-function ChartBox({ data }: { data: ChartPoint[] }) {
-    return (
-        <div className='h-28 md:h-40 lg:h-56 rounded-xl border border-[#252944] bg-gradient-to-br from-[#3c4158] via-[#222637] to-[#12141e] overflow-hidden p-2 lg:p-4'>
-            <ResponsiveContainer width='100%' height='100%'>
-                <LineChart data={data} margin={{ top: 8, right: 10, left: -16, bottom: 2 }}>
-                    <CartesianGrid stroke='rgba(255,255,255,0.08)' strokeDasharray='3 3' />
-
-                    <XAxis
-                        dataKey='year'
-                        tick={{ fontSize: 9, fill: '#b7bed8' }}
-                        axisLine={{ stroke: 'rgba(255,255,255,0.16)' }}
-                        tickLine={{ stroke: 'rgba(255,255,255,0.16)' }}
-                        interval='preserveStartEnd'
-                        label={{
-                            value: 'Years',
-                            position: 'insideBottom',
-                            offset: -2,
-                            fill: '#9aa4c7',
-                            fontSize: 9,
-                        }}
-                    />
-
-                    <YAxis
-                        tick={{ fontSize: 9, fill: '#b7bed8' }}
-                        axisLine={{ stroke: 'rgba(255,255,255,0.16)' }}
-                        tickLine={{ stroke: 'rgba(255,255,255,0.16)' }}
-                        tickFormatter={compactCurrency}
-                        width={44}
-                    />
-
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#050608',
-                            border: '1px solid rgba(76,199,232,0.35)',
-                            borderRadius: 12,
-                            color: '#ffffff',
-                        }}
-                        labelStyle={{ color: '#ffffff' }}
-                        formatter={(value: any) => [fmt(safeNumber(value)), 'Amount']}
-                        labelFormatter={(label) => `Year ${label}`}
-                    />
-
-                    <Line
-                        type='monotone'
-                        dataKey='amount'
-                        stroke='#F5A623'
-                        strokeWidth={3}
-                        dot={{ r: 3, fill: '#F5A623', stroke: '#F5A623' }}
-                        activeDot={{ r: 5 }}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
-    );
-}
-
-function CalculatorShell({ title, Icon, gradient, chartData, children, showSelector, selectedKey, onSelectedKeyChange }: CalculatorShellProps) {
-    const [selectorOpen, setSelectorOpen] = useState(false);
-
-    return (
-        <div className='w-full'>
-            {/* Graph first */}
-            <ChartBox data={chartData} />
-
-            <div className='mt-4 flex items-center gap-3'>
-                <div className={`h-12 w-12 shrink-0 rounded-xl bg-gradient-to-r ${gradient} flex items-center justify-center shadow-lg shadow-black/30`}>
-                    <Icon className='h-6 w-6 text-white' />
-                </div>
-
-                {showSelector && selectedKey && onSelectedKeyChange ? (
-                    <div className='relative min-w-0 flex-1'>
-                        <button
-                            type='button'
-                            onClick={() => setSelectorOpen((open) => !open)}
-                            className='flex w-full items-center justify-between gap-3 rounded-xl border border-[#2c7bbe]/25 bg-[#050608] px-3 py-2 text-left transition-colors duration-200 hover:border-[#4cc7e8]/60'
-                            aria-haspopup='listbox'
-                            aria-expanded={selectorOpen}
-                        >
-                            <span className='min-w-0 truncate text-lg font-black text-white'>{title}</span>
-                            <ChevronDown className={`h-5 w-5 shrink-0 text-[#F5A623] transition-transform duration-200 ${selectorOpen ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {selectorOpen && (
-                            <div
-                                className='absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-xl border border-[#2c7bbe]/35 bg-[#050608] shadow-2xl shadow-black/60'
-                                role='listbox'
-                            >
-                                {CALCULATORS.map((calculator) => {
-                                    const active = calculator.key === selectedKey;
-
-                                    return (
-                                        <button
-                                            key={calculator.key}
-                                            type='button'
-                                            onClick={() => {
-                                                onSelectedKeyChange(calculator.key);
-                                                setSelectorOpen(false);
-                                            }}
-                                            className={`block w-full px-3 py-3 text-left text-sm font-bold transition-colors duration-200 ${
-                                                active ? 'bg-[#F5A623] text-[#050608]' : 'text-white hover:bg-[#2c7bbe]/20'
-                                            }`}
-                                            role='option'
-                                            aria-selected={active}
-                                        >
-                                            {calculator.label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <h2 className='text-lg md:text-xl font-black text-white'>{title}</h2>
-                )}
-            </div>
-
-            <div className='my-4 h-px bg-[#2c7bbe]/20' />
-
-            {/* Calculations after graph */}
-            {children}
-        </div>
-    );
-}
-
-// ─── Investment Calculator ───────────────────────────────────────────────────
-function InvestmentCalc({
-    showSelector,
-    selectedKey,
-    onSelectedKeyChange,
-}: {
-    showSelector?: boolean;
-    selectedKey?: CalculatorKey;
-    onSelectedKeyChange?: (key: CalculatorKey) => void;
-}) {
-    const [amount, setAmount] = useState('10000');
-    const [years, setYears] = useState('5');
-    const [rate, setRate] = useState('7');
-    const [result, setResult] = useState<{ future: number; gain: number; pct: number } | null>(null);
-
-    const chartData = useMemo(() => {
-        const p = Math.max(0, safeNumber(amount));
-        const r = safeNumber(rate) / 100;
-        const n = clampYears(years, 5, 60);
-
-        return Array.from({ length: n + 1 }, (_, index) => ({
-            year: String(index),
-            amount: p * Math.pow(1 + r, index),
-        }));
-    }, [amount, years, rate]);
-
-    const calculate = useCallback(() => {
-        const future = chartData[chartData.length - 1]?.amount ?? 0;
-        const p = Math.max(0, safeNumber(amount));
-
-        setResult({
-            future,
-            gain: future - p,
-            pct: p ? ((future - p) / p) * 100 : 0,
-        });
-    }, [amount, chartData]);
-
-    return (
-        <CalculatorShell
-            title='Investment Calculator'
-            Icon={TrendingUp}
-            gradient='from-[#F5A623] to-[#f0941a]'
-            chartData={chartData}
-            showSelector={showSelector}
-            selectedKey={selectedKey}
-            onSelectedKeyChange={onSelectedKeyChange}
-        >
-            <div className='space-y-3'>
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-3'>
-                    <Field label='Amount' prefix='$' value={amount} onChange={setAmount} />
-                    <Field label='Years' value={years} onChange={setYears} />
-                    <Field label='Rate (%)' value={rate} onChange={setRate} />
-                </div>
-
-                <Button
-                    onClick={calculate}
-                    className='w-full rounded-xl bg-gradient-to-r from-[#F5A623] to-[#f0941a] hover:from-[#f0941a] hover:to-[#F5A623] text-[#050608] font-bold py-5 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]'
-                >
-                    <Calculator className='w-4 h-4 mr-2' />
-                    Calculate
-                </Button>
-
-                {result && (
-                    <div className='rounded-xl border border-[#2c7bbe]/20 bg-[#050608] p-3'>
-                        <ResultRow label='Estimated Value' value={fmt(result.future)} />
-                        <ResultRow label='Total Gain' value={fmt(result.gain)} />
-                        <ResultRow label='Return' value={`${result.pct.toFixed(1)}%`} />
-                    </div>
-                )}
-            </div>
-        </CalculatorShell>
-    );
-}
-
-// ─── Mortgage Calculator ─────────────────────────────────────────────────────
-function MortgageCalc({
-    showSelector,
-    selectedKey,
-    onSelectedKeyChange,
-}: {
-    showSelector?: boolean;
-    selectedKey?: CalculatorKey;
-    onSelectedKeyChange?: (key: CalculatorKey) => void;
-}) {
-    const [homePrice, setHomePrice] = useState('400000');
-    const [downPayment, setDownPayment] = useState('40000');
-    const [term, setTerm] = useState('30');
-    const [rate, setRate] = useState('6.5');
-    const [result, setResult] = useState<{ monthly: number; total: number; interest: number } | null>(null);
-
-    const principal = useMemo(() => Math.max(0, safeNumber(homePrice) - safeNumber(downPayment)), [homePrice, downPayment]);
-    const years = useMemo(() => clampYears(term, 30, 60), [term]);
-    const chartData = useMemo(() => buildBalanceChart(principal, safeNumber(rate), years), [principal, rate, years]);
-
-    const calculate = useCallback(() => {
-        const months = years * 12;
-        const monthly = getPayment(principal, safeNumber(rate), months);
-        const total = monthly * months;
-
-        setResult({
-            monthly,
-            total,
-            interest: Math.max(0, total - principal),
-        });
-    }, [principal, rate, years]);
-
-    return (
-        <CalculatorShell
-            title='Mortgage Calculator'
-            Icon={Home}
-            gradient='from-[#E74C3C] to-[#c0392b]'
-            chartData={chartData}
-            showSelector={showSelector}
-            selectedKey={selectedKey}
-            onSelectedKeyChange={onSelectedKeyChange}
-        >
-            <div className='space-y-3'>
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
-                    <Field label='Home Price' prefix='$' value={homePrice} onChange={setHomePrice} />
-                    <Field label='Down Payment' prefix='$' value={downPayment} onChange={setDownPayment} />
-                    <Field label='Term (Years)' value={term} onChange={setTerm} />
-                    <Field label='Rate (%)' value={rate} onChange={setRate} />
-                </div>
-
-                <Button
-                    onClick={calculate}
-                    className='w-full rounded-xl bg-gradient-to-r from-[#E74C3C] to-[#c0392b] hover:from-[#c0392b] hover:to-[#E74C3C] text-white font-bold py-5 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]'
-                >
-                    <Calculator className='w-4 h-4 mr-2' />
-                    Calculate
-                </Button>
-
-                {result && (
-                    <div className='rounded-xl border border-[#2c7bbe]/20 bg-[#050608] p-3'>
-                        <ResultRow label='Monthly Payment' value={fmt(result.monthly)} />
-                        <ResultRow label='Total Payment' value={fmt(result.total)} />
-                        <ResultRow label='Total Interest' value={fmt(result.interest)} />
-                    </div>
-                )}
-            </div>
-        </CalculatorShell>
-    );
-}
-
-// ─── Loan Calculator ─────────────────────────────────────────────────────────
-function LoanCalc({
-    showSelector,
-    selectedKey,
-    onSelectedKeyChange,
-}: {
-    showSelector?: boolean;
-    selectedKey?: CalculatorKey;
-    onSelectedKeyChange?: (key: CalculatorKey) => void;
-}) {
-    const [loanAmount, setLoanAmount] = useState('20000');
-    const [term, setTerm] = useState('4');
-    const [rate, setRate] = useState('9');
-    const [result, setResult] = useState<{ monthly: number; total: number; interest: number } | null>(null);
-
-    const principal = useMemo(() => Math.max(0, safeNumber(loanAmount)), [loanAmount]);
-    const years = useMemo(() => clampYears(term, 4, 60), [term]);
-    const chartData = useMemo(() => buildBalanceChart(principal, safeNumber(rate), years), [principal, rate, years]);
-
-    const calculate = useCallback(() => {
-        const months = years * 12;
-        const monthly = getPayment(principal, safeNumber(rate), months);
-        const total = monthly * months;
-
-        setResult({
-            monthly,
-            total,
-            interest: Math.max(0, total - principal),
-        });
-    }, [principal, rate, years]);
-
-    return (
-        <CalculatorShell
-            title='Loan Calculator'
-            Icon={Wallet}
-            gradient='from-[#2ECC71] to-[#27ae60]'
-            chartData={chartData}
-            showSelector={showSelector}
-            selectedKey={selectedKey}
-            onSelectedKeyChange={onSelectedKeyChange}
-        >
-            <div className='space-y-3'>
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-3'>
-                    <Field label='Loan Amount' prefix='$' value={loanAmount} onChange={setLoanAmount} />
-                    <Field label='Term (Years)' value={term} onChange={setTerm} />
-                    <Field label='Rate (%)' value={rate} onChange={setRate} />
-                </div>
-
-                <Button
-                    onClick={calculate}
-                    className='w-full rounded-xl bg-gradient-to-r from-[#2ECC71] to-[#27ae60] hover:from-[#27ae60] hover:to-[#2ECC71] text-[#050608] font-bold py-5 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]'
-                >
-                    <Calculator className='w-4 h-4 mr-2' />
-                    Calculate
-                </Button>
-
-                {result && (
-                    <div className='rounded-xl border border-[#2c7bbe]/20 bg-[#050608] p-3'>
-                        <ResultRow label='Monthly Payment' value={fmt(result.monthly)} />
-                        <ResultRow label='Total Repayment' value={fmt(result.total)} />
-                        <ResultRow label='Total Interest' value={fmt(result.interest)} />
-                    </div>
-                )}
-            </div>
-        </CalculatorShell>
-    );
-}
-
-// ─── Retirement Calculator ───────────────────────────────────────────────────
-function RetirementCalc({
-    showSelector,
-    selectedKey,
-    onSelectedKeyChange,
-}: {
-    showSelector?: boolean;
-    selectedKey?: CalculatorKey;
-    onSelectedKeyChange?: (key: CalculatorKey) => void;
-}) {
-    const [currentAge, setCurrentAge] = useState('35');
-    const [retirementAge, setRetirementAge] = useState('65');
-    const [monthlySavings, setMonthlySavings] = useState('500');
-    const [roi, setRoi] = useState('7');
-    const [result, setResult] = useState<{ nest: number; contributions: number; growth: number } | null>(null);
-
-    const years = useMemo(() => {
-        const current = safeNumber(currentAge, 35);
-        const retirement = safeNumber(retirementAge, 65);
-
-        return Math.max(1, Math.min(60, Math.floor(retirement - current)));
-    }, [currentAge, retirementAge]);
-
-    const chartData = useMemo(() => {
-        const monthlyRate = safeNumber(roi) / 100 / 12;
-        const pmt = Math.max(0, safeNumber(monthlySavings));
-
-        return Array.from({ length: years + 1 }, (_, year) => {
-            const months = year * 12;
-            const amount = monthlyRate === 0 ? pmt * months : pmt * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
-
-            return {
-                year: String(year),
-                amount,
-            };
-        });
-    }, [monthlySavings, roi, years]);
-
-    const calculate = useCallback(() => {
-        const nest = chartData[chartData.length - 1]?.amount ?? 0;
-        const contributions = Math.max(0, safeNumber(monthlySavings)) * years * 12;
-
-        setResult({
-            nest,
-            contributions,
-            growth: nest - contributions,
-        });
-    }, [chartData, monthlySavings, years]);
-
-    return (
-        <CalculatorShell
-            title='Retirement Calculator'
-            Icon={PiggyBank}
-            gradient='from-[#2c7bbe] to-[#4cc7e8]'
-            chartData={chartData}
-            showSelector={showSelector}
-            selectedKey={selectedKey}
-            onSelectedKeyChange={onSelectedKeyChange}
-        >
-            <div className='space-y-3'>
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-3'>
-                    <Field label='Current Age' value={currentAge} onChange={setCurrentAge} />
-                    <Field label='Retirement Age' value={retirementAge} onChange={setRetirementAge} />
-                    <Field label='Monthly Savings' prefix='$' value={monthlySavings} onChange={setMonthlySavings} />
-                    <Field label='ROI (%)' value={roi} onChange={setRoi} />
-                </div>
-
-                <Button
-                    onClick={calculate}
-                    className='w-full rounded-xl bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-5 shadow-lg shadow-[#2c7bbe]/30 transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99]'
-                >
-                    <Calculator className='w-4 h-4 mr-2' />
-                    Calculate
-                </Button>
-
-                {result && (
-                    <div className='rounded-xl border border-[#2c7bbe]/20 bg-[#050608] p-3'>
-                        <ResultRow label='Retirement Nest Egg' value={fmt(result.nest)} />
-                        <ResultRow label='Total Contributions' value={fmt(result.contributions)} />
-                        <ResultRow label='Investment Growth' value={fmt(result.growth)} />
-                    </div>
-                )}
-            </div>
-        </CalculatorShell>
-    );
-}
-
-// ─── Calculator config ───────────────────────────────────────────────────────
-const CALCULATORS: {
+type SeriesKey = 'amount' | 'secondary';
+type FieldDef = { key: string; placeholder: string; frequency?: boolean; step?: string };
+type ChartPoint = { year: number; amount: number; secondary: number };
+type ResultItem = { label: string; value: string };
+type Calculation = { chart: ChartPoint[]; results: ResultItem[]; error?: string };
+
+type CalculatorDef = {
     key: CalculatorKey;
     label: string;
-    Component: (props: { showSelector?: boolean; selectedKey?: CalculatorKey; onSelectedKeyChange?: (key: CalculatorKey) => void }) => ReactElement;
-}[] = [
-    { key: 'investment', label: 'Investment Calculator', Component: InvestmentCalc },
-    { key: 'mortgage', label: 'Mortgage Calculator', Component: MortgageCalc },
-    { key: 'loan', label: 'Loan Calculator', Component: LoanCalc },
-    { key: 'retirement', label: 'Retirement Calculator', Component: RetirementCalc },
+    icon: LucideIcon;
+    accent: string;
+    primaryLabel: string;
+    secondaryLabel: string;
+    fields: FieldDef[];
+};
+
+const CALCULATORS: CalculatorDef[] = [
+    {
+        key: 'investment',
+        label: 'Investment Calculator',
+        icon: TrendingUp,
+        accent: '#e7e9ed',
+        primaryLabel: 'Total',
+        secondaryLabel: 'Gain',
+        fields: [
+            { key: 'principal', placeholder: 'Principal' },
+            { key: 'years', placeholder: 'Years', step: '1' },
+            { key: 'rate', placeholder: 'Rate (%)' },
+            { key: 'frequency', placeholder: 'Frequency', frequency: true },
+        ],
+    },
+    {
+        key: 'mortgage',
+        label: 'Mortgage Calculator',
+        icon: Home,
+        accent: '#e7e9ed',
+        primaryLabel: 'Balance',
+        secondaryLabel: 'Principal Paid',
+        fields: [
+            { key: 'homePrice', placeholder: 'Home Price' },
+            { key: 'downPayment', placeholder: 'Down Payment' },
+            { key: 'term', placeholder: 'Term (Years)', step: '1' },
+            { key: 'rate', placeholder: 'Rate (%)' },
+        ],
+    },
+    {
+        key: 'loan',
+        label: 'Loan Calculator',
+        icon: Wallet,
+        accent: '#e7e9ed',
+        primaryLabel: 'Balance',
+        secondaryLabel: 'Principal Paid',
+        fields: [
+            { key: 'loanAmount', placeholder: 'Loan Amount' },
+            { key: 'term', placeholder: 'Term (Years)', step: '1' },
+            { key: 'rate', placeholder: 'Rate (%)' },
+            { key: 'paymentFrequency', placeholder: 'Frequency', frequency: true },
+        ],
+    },
+    {
+        key: 'retirement',
+        label: 'Retirement Calculator',
+        icon: PiggyBank,
+        accent: '#e7e9ed',
+        primaryLabel: 'Total',
+        secondaryLabel: 'Contributions',
+        fields: [
+            { key: 'currentAge', placeholder: 'Current Age', step: '1' },
+            { key: 'retirementAge', placeholder: 'Retirement Age', step: '1' },
+            { key: 'monthlySavings', placeholder: 'Monthly Savings' },
+            { key: 'roi', placeholder: 'ROI (%)' },
+        ],
+    },
 ];
 
-function MobilePhoneFrame({ children }: { children: ReactNode }) {
-    return (
-        <div className='relative w-full max-w-[330px] rounded-[44px] border-[18px] border-[#4a4c78] bg-[#08090e] px-3 py-5 shadow-[0_30px_80px_rgba(0,0,0,0.65)]'>
-            <div className='absolute -left-[23px] top-[92px] h-9 w-[7px] rounded-l-md bg-[#4a4c78]' />
-            <div className='absolute -left-[23px] top-[145px] h-9 w-[7px] rounded-l-md bg-[#4a4c78]' />
-            <div className='absolute -right-[23px] top-[118px] h-12 w-[7px] rounded-r-md bg-[#4a4c78]' />
+// Empty field values are intentional: names remain visible as placeholders.
+// Until all four inputs have been supplied the chart displays a sample projection.
+const EMPTY_VALUES: Record<CalculatorKey, Record<string, string>> = {
+    investment: { principal: '', years: '', rate: '', frequency: '' },
+    mortgage: { homePrice: '', downPayment: '', term: '', rate: '' },
+    loan: { loanAmount: '', term: '', rate: '', paymentFrequency: '' },
+    retirement: { currentAge: '', retirementAge: '', monthlySavings: '', roi: '' },
+};
+const EXAMPLE_VALUES: Record<CalculatorKey, Record<string, string>> = {
+    investment: { principal: '10000', years: '5', rate: '7', frequency: '1' },
+    mortgage: { homePrice: '400000', downPayment: '40000', term: '30', rate: '6.5' },
+    loan: { loanAmount: '20000', term: '4', rate: '9', paymentFrequency: '12' },
+    retirement: { currentAge: '35', retirementAge: '65', monthlySavings: '500', roi: '7' },
+};
+// Preserve a two-column arrangement on small screens.
+const MOBILE_FIELD_ORDER: Record<CalculatorKey, Record<string, string>> = {
+    investment: { principal: 'order-1', frequency: 'order-2', years: 'order-3', rate: 'order-4' },
+    mortgage: { homePrice: 'order-1', downPayment: 'order-2', term: 'order-3', rate: 'order-4' },
+    loan: { loanAmount: 'order-1', paymentFrequency: 'order-2', term: 'order-3', rate: 'order-4' },
+    retirement: { currentAge: 'order-1', retirementAge: 'order-2', monthlySavings: 'order-3', roi: 'order-4' },
+};
+const FREQUENCIES = [
+    { label: 'Annually', value: '1' },
+    { label: 'Quarterly', value: '4' },
+    { label: 'Monthly', value: '12' },
+    { label: 'Daily', value: '365' },
+];
 
-            {children}
-        </div>
+const money = (number: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(number);
+
+function compactMoney(value: number) {
+    const absolute = Math.abs(value);
+    if (absolute >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}m`;
+    if (absolute >= 1_000) return `$${(value / 1_000).toFixed(0)}k`;
+    return `$${Math.round(value)}`;
+}
+
+function paymentPerPeriod(balance: number, annualRate: number, periods: number, periodsPerYear: number) {
+    if (balance <= 0 || periods <= 0) return 0;
+    const periodRate = annualRate / 100 / periodsPerYear;
+    if (!periodRate) return balance / periods;
+    return (balance * periodRate) / (1 - Math.pow(1 + periodRate, -periods));
+}
+
+/** Returns a point at time zero and at the end of each year. */
+function repaymentProjection(principal: number, annualRate: number, years: number, periodsPerYear = 12) {
+    const periods = years * periodsPerYear;
+    const installment = paymentPerPeriod(principal, annualRate, periods, periodsPerYear);
+    const periodRate = annualRate / 100 / periodsPerYear;
+    let balance = principal;
+    const chart: ChartPoint[] = [{ year: 0, amount: principal, secondary: 0 }];
+
+    for (let period = 1; period <= periods; period++) {
+        balance = Math.max(0, balance * (1 + periodRate) - installment);
+        if (period % periodsPerYear === 0) {
+            // Eliminate tiny floating point balances on the last payment.
+            if (period === periods) balance = 0;
+            chart.push({ year: period / periodsPerYear, amount: balance, secondary: principal - balance });
+        }
+    }
+    return { chart, installment, total: installment * periods, interest: installment * periods - principal };
+}
+
+function validate(key: CalculatorKey, fields: Record<string, string>): string | undefined {
+    const definition = CALCULATORS.find((item) => item.key === key)!;
+    if (definition.fields.some((field) => !fields[field.key]?.trim())) return 'Please complete all four fields.';
+    if (definition.fields.some((field) => !Number.isFinite(Number(fields[field.key])))) return 'Enter valid numbers.';
+    if (definition.fields.some((field) => Number(fields[field.key]) < 0)) return 'Values cannot be negative.';
+
+    const annualRate = Number(fields[key === 'retirement' ? 'roi' : 'rate']);
+    if (annualRate > 100) return 'The annual rate must be between 0% and 100%.';
+
+    if (key === 'investment' || key === 'mortgage' || key === 'loan') {
+        const years = Number(fields[key === 'investment' ? 'years' : 'term']);
+        if (!Number.isInteger(years) || years < 1 || years > 60) return 'Enter a whole number of years between 1 and 60.';
+    }
+    if (key === 'investment' && Number(fields.principal) <= 0) return 'Principal must be greater than zero.';
+    if (key === 'mortgage' && Number(fields.homePrice) <= 0) return 'Home price must be greater than zero.';
+    if (key === 'mortgage' && Number(fields.downPayment) > Number(fields.homePrice)) return 'Down payment cannot exceed home price.';
+    if (key === 'loan' && Number(fields.loanAmount) <= 0) return 'Loan amount must be greater than zero.';
+    if (key === 'investment' && ![1, 4, 12, 365].includes(Number(fields.frequency))) return 'Choose a compounding frequency.';
+    if (key === 'loan' && ![1, 4, 12, 365].includes(Number(fields.paymentFrequency))) return 'Choose a payment frequency.';
+
+    if (key === 'retirement') {
+        const current = Number(fields.currentAge);
+        const retirement = Number(fields.retirementAge);
+        if (!Number.isInteger(current) || !Number.isInteger(retirement) || current < 1 || retirement > 110)
+            return 'Enter valid whole-number ages between 1 and 110.';
+        if (retirement <= current) return 'Retirement age must be greater than current age.';
+        if (retirement - current > 60) return 'The retirement period cannot exceed 60 years.';
+    }
+    return undefined;
+}
+
+function calculateProjection(key: CalculatorKey, fields: Record<string, string>): Calculation {
+    const invalid = validate(key, fields);
+    if (invalid) return { chart: [], results: [], error: invalid };
+    const number = (field: string) => Number(fields[field]);
+
+    if (key === 'investment') {
+        const principal = number('principal');
+        const years = number('years');
+        const rate = number('rate') / 100;
+        const periodsPerYear = number('frequency');
+        const chart = Array.from({ length: years + 1 }, (_, year) => {
+            const amount = principal * Math.pow(1 + rate / periodsPerYear, year * periodsPerYear);
+            return { year, amount, secondary: amount - principal };
+        });
+        const ending = chart[chart.length - 1].amount;
+        return {
+            chart,
+            results: [
+                { label: 'Estimated Value', value: money(ending) },
+                { label: 'Total Gain', value: money(ending - principal) },
+                { label: 'Return', value: `${((ending / principal - 1) * 100).toFixed(1)}%` },
+            ],
+        };
+    }
+
+    if (key === 'mortgage' || key === 'loan') {
+        const principal = key === 'mortgage' ? number('homePrice') - number('downPayment') : number('loanAmount');
+        const periodsPerYear = key === 'mortgage' ? 12 : number('paymentFrequency');
+        const { chart, installment, total, interest } = repaymentProjection(principal, number('rate'), number('term'), periodsPerYear);
+        const label =
+            periodsPerYear === 1 ? 'Annual Payment' : periodsPerYear === 4 ? 'Quarterly Payment' : periodsPerYear === 365 ? 'Daily Payment' : 'Monthly Payment';
+        return {
+            chart,
+            results: [
+                { label, value: money(installment) },
+                { label: key === 'mortgage' ? 'Total Payment' : 'Total Repayment', value: money(total) },
+                { label: 'Total Interest', value: money(Math.max(0, interest)) },
+            ],
+        };
+    }
+
+    const currentAge = number('currentAge');
+    const retirementAge = number('retirementAge');
+    const monthlySavings = number('monthlySavings');
+    const monthlyRate = number('roi') / 1200;
+    // The x-axis uses actual ages, not elapsed years (35, 36...65).
+    const chart = Array.from({ length: retirementAge - currentAge + 1 }, (_, offset) => {
+        const months = offset * 12;
+        const total =
+            monthlyRate === 0 ? monthlySavings * months : monthlySavings * (Math.expm1(months * Math.log1p(monthlyRate)) / monthlyRate) * (1 + monthlyRate);
+        return { year: currentAge + offset, amount: total, secondary: monthlySavings * months };
+    });
+    const last = chart[chart.length - 1];
+    return {
+        chart,
+        results: [
+            { label: 'Retirement Nest Egg', value: money(last.amount) },
+            { label: 'Total Contributions', value: money(last.secondary) },
+            { label: 'Investment Growth', value: money(last.amount - last.secondary) },
+        ],
+    };
+}
+
+// Keep six evenly spaced, readable labels like the reference graph.
+function verticalTicks(chart: ChartPoint[], series: SeriesKey) {
+    const max = Math.max(0, ...chart.map((point) => point[series]));
+    if (max === 0) return [0, 1, 2, 3, 4, 5];
+    const target = max / 5;
+    const power = 10 ** Math.floor(Math.log10(target));
+    const normalized = target / power;
+    const multiple = [1, 2, 2.5, 5, 10].find((candidate) => candidate >= normalized) ?? 10;
+    const step = multiple * power;
+    return Array.from({ length: 8 }, (_, index) => Number((index * step).toPrecision(12)));
+}
+
+function horizontalTicks(chart: ChartPoint[]) {
+    if (!chart.length) return [];
+    const first = chart[0].year;
+    const last = chart[chart.length - 1].year;
+    const segments = Math.min(6, last - first);
+    if (segments <= 0) return [first];
+    return [...new Set(Array.from({ length: segments + 1 }, (_, index) => Math.round(first + ((last - first) * index) / segments)))];
+}
+
+// Preview values recreate the ascending white line from the supplied screenshot.
+// Calculated values use the precise financial projections above instead.
+const REFERENCE_PREVIEW: ChartPoint[] = Array.from({ length: 6 }, (_, year) => ({
+    year,
+    amount: 5300 + year * 1700,
+    secondary: year * 1700,
+}));
+
+function NumericField({ field, value, onChange }: { field: FieldDef; value: string; onChange: (value: string) => void }) {
+    const style =
+        'h-[51px] w-full min-w-0 rounded-[6px] border border-[#323e50] bg-[#0a1523] px-[15px] ' +
+        'text-[16px] font-normal text-[#e4e7ec] outline-none transition-colors ' +
+        'placeholder:text-[#e0e3e9] focus:border-[#81dfe6] focus:ring-1 focus:ring-[#81dfe6]/20';
+
+    if (field.frequency) {
+        return (
+            <select
+                aria-label={field.placeholder}
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                className={`${style} cursor-pointer ${value ? '' : 'text-[#e0e3e9]'}`}
+            >
+                <option value='' disabled>
+                    {field.placeholder}
+                </option>
+                {FREQUENCIES.map((frequency) => (
+                    <option key={frequency.value} value={frequency.value} className='bg-[#0a1523] text-white'>
+                        {frequency.label}
+                    </option>
+                ))}
+            </select>
+        );
+    }
+
+    return (
+        <input
+            aria-label={field.placeholder}
+            type='number'
+            inputMode='decimal'
+            min='0'
+            step={field.step ?? 'any'}
+            placeholder={field.placeholder}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            className={style}
+        />
     );
 }
 
-function DesktopWideFrame({ children }: { children: ReactNode }) {
-    return (
-        <div className='relative w-full rounded-[44px] border-[18px] border-[#4a4c78] bg-[#08090e] p-6 lg:p-8 shadow-[0_30px_100px_rgba(0,0,0,0.7)]'>
-            <div className='absolute -left-[23px] top-[120px] h-14 w-[7px] rounded-l-md bg-[#4a4c78]' />
-            <div className='absolute -left-[23px] top-[195px] h-14 w-[7px] rounded-l-md bg-[#4a4c78]' />
-            <div className='absolute -right-[23px] top-[150px] h-20 w-[7px] rounded-r-md bg-[#4a4c78]' />
+function ChartPanel({
+    chart,
+    series,
+    isRetirement,
+    referencePreview,
+}: {
+    chart: ChartPoint[];
+    series: SeriesKey;
+    isRetirement: boolean;
+    referencePreview: boolean;
+}) {
+    const normalTicks = useMemo(() => verticalTicks(chart, series), [chart, series]);
+    const yTicks = referencePreview && series === 'amount' ? [0, 3200, 6400, 9600, 12800, 16000] : normalTicks;
+    const xTicks = useMemo(() => horizontalTicks(chart), [chart]);
+    const axisColor = '#9ca3af';
+    const lineColor = '#e8eaee';
 
-            {children}
-        </div>
+    return (
+        <section aria-label='Financial projection chart'>
+            {/* Upper status strip, with the cyan dot and muted right-aligned mode. */}
+            <div className='flex h-[14px] items-center justify-between px-[6px] text-[10px] font-semibold tracking-[0.035em]'>
+                <span className='inline-flex items-center gap-[7px] text-[#81dadd]'>
+                    <span className='h-[9px] w-[9px] rounded-full bg-[#7ceaf0] shadow-[0_0_8px_rgba(124,234,240,0.12)]' />
+                    POWER LIVE
+                </span>
+                <span className='text-[10px] font-medium text-[#858895]'>MODE LOW</span>
+            </div>
+
+            <div className='mt-[4px] h-[180px] w-full'>
+                <ResponsiveContainer width='100%' height='100%'>
+                    <LineChart data={chart} margin={{ top: 6, right: 14, bottom: 0, left: 0 }}>
+                        <CartesianGrid stroke='rgba(135,150,172,0.105)' strokeDasharray='2 2' />
+                        <XAxis
+                            dataKey='year'
+                            type='number'
+                            scale='linear'
+                            domain={[chart[0].year, chart[chart.length - 1].year]}
+                            allowDataOverflow
+                            ticks={xTicks}
+                            height={21}
+                            tickMargin={7}
+                            tickLine={false}
+                            axisLine={{ stroke: '#273446', strokeWidth: 1 }}
+                            tick={{ fontSize: 10, fill: axisColor }}
+                        />
+                        <YAxis
+                            domain={[yTicks[0], yTicks[yTicks.length - 1]]}
+                            ticks={yTicks}
+                            tickFormatter={compactMoney}
+                            width={32}
+                            tickMargin={6}
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 10, fill: axisColor }}
+                        />
+                        <Tooltip
+                            cursor={{ stroke: '#b5c0d0', strokeOpacity: 0.3, strokeDasharray: '3 3' }}
+                            contentStyle={{
+                                backgroundColor: '#101b2a',
+                                border: '1px solid #354153',
+                                borderRadius: 7,
+                                color: '#e7e9ed',
+                                fontSize: 12,
+                            }}
+                            labelStyle={{ color: '#c6ced9' }}
+                            itemStyle={{ color: lineColor }}
+                            formatter={(value) => money(Number(value ?? 0))}
+                            labelFormatter={(value) => `${isRetirement ? 'Age' : 'Year'} ${value}`}
+                        />
+                        <Line
+                            name='Value'
+                            type='linear'
+                            dataKey={series}
+                            stroke={lineColor}
+                            strokeWidth={2.2}
+                            dot={{ r: 3.3, fill: lineColor, stroke: lineColor, strokeWidth: 0 }}
+                            activeDot={{ r: 4.5, fill: '#fff', stroke: '#0b1726', strokeWidth: 1.5 }}
+                            isAnimationActive={false}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+
+            <div className='mt-[2px] flex h-[22px] items-center justify-center gap-[21px] text-[16px] leading-[22px] text-[#e9eaf0]'>
+                <span className='inline-flex items-center gap-[10px]'>
+                    <span>X</span>
+                    <span>Principal</span>
+                </span>
+                <span className='inline-flex items-center gap-[10px]'>
+                    <span>Y</span>
+                    <span>Time</span>
+                </span>
+            </div>
+        </section>
     );
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+/**
+ * BLACK SNOW — financial calculator, styled to match the supplied reference.
+ * Keep Tailwind CSS, lucide-react and recharts installed as in the original app.
+ */
 export default function BlackSnowMathematics() {
-    const [selectedCalculator, setSelectedCalculator] = useState<CalculatorKey>('investment');
-    const ActiveCalculator = CALCULATORS.find((calculator) => calculator.key === selectedCalculator)?.Component ?? InvestmentCalc;
+    const [selectedKey, setSelectedKey] = useState<CalculatorKey>('investment');
+    const [values, setValues] = useState<Record<CalculatorKey, Record<string, string>>>(EMPTY_VALUES);
+    const [displaySeries, setDisplaySeries] = useState<Record<CalculatorKey, SeriesKey>>({
+        investment: 'amount',
+        mortgage: 'amount',
+        loan: 'amount',
+        retirement: 'amount',
+    });
+    const [results, setResults] = useState<Partial<Record<CalculatorKey, ResultItem[]>>>({});
+    const [error, setError] = useState('');
+    const [calculatorOpen, setCalculatorOpen] = useState(false);
+
+    const selected = CALCULATORS.find((item) => item.key === selectedKey)!;
+    const Icon = selected.icon;
+    const fields = values[selectedKey];
+    const referencePreview = selectedKey === 'investment' && selected.fields.every((field) => !fields[field.key]);
+    const projection = useMemo(() => {
+        if (referencePreview) return { chart: REFERENCE_PREVIEW, results: [] as ResultItem[] };
+        // Preview intermediate field changes with defaults. On Calculate, all four values are required.
+        const previewFields = {
+            ...EXAMPLE_VALUES[selectedKey],
+            ...Object.fromEntries(Object.entries(values[selectedKey]).filter(([, value]) => value !== '')),
+        };
+        return calculateProjection(selectedKey, previewFields);
+    }, [selectedKey, values, referencePreview]);
+    const series = displaySeries[selectedKey];
+
+    function selectCalculator(key: CalculatorKey) {
+        setSelectedKey(key);
+        setCalculatorOpen(false);
+        setError('');
+    }
+
+    function updateValue(key: string, value: string) {
+        setValues((previous) => ({
+            ...previous,
+            [selectedKey]: { ...previous[selectedKey], [key]: value },
+        }));
+        setResults((previous) => ({ ...previous, [selectedKey]: undefined }));
+        setError('');
+    }
+
+    function calculate() {
+        const calculated = calculateProjection(selectedKey, fields);
+        if (calculated.error) {
+            setError(calculated.error);
+            setResults((previous) => ({ ...previous, [selectedKey]: undefined }));
+            return;
+        }
+        setError('');
+        setResults((previous) => ({ ...previous, [selectedKey]: calculated.results }));
+    }
+
+    function clear() {
+        setValues((previous) => ({ ...previous, [selectedKey]: { ...EMPTY_VALUES[selectedKey] } }));
+        setResults((previous) => ({ ...previous, [selectedKey]: undefined }));
+        setDisplaySeries((previous) => ({ ...previous, [selectedKey]: 'amount' }));
+        setError('');
+    }
 
     return (
-        <div className='min-h-screen bg-[#050608] px-4 py-8 lg:px-8 lg:py-12'>
-            {/* Mobile version remains the same */}
-            <div className='lg:hidden flex justify-center'>
-                <MobilePhoneFrame>
-                    <h1 className='text-center text-[#2cbbff] text-sm font-semibold mb-3'>Black Snow Mathematics</h1>
+        <div
+            className='relative min-h-screen text-[#e5e7ec]'
+            style={{
+                fontFamily: 'Arial, Helvetica, sans-serif',
+                background: 'linear-gradient(115deg, #08121e 0%, #08101f 70%, #09111f 100%)',
+            }}
+        >
+            {/* Fine, subdued line along the upper edge as in the screenshot. */}
+            <div aria-hidden='true' className='pointer-events-none absolute inset-x-0 top-[5px] h-px bg-[#212a37]/50' />
 
-                    <ActiveCalculator showSelector selectedKey={selectedCalculator} onSelectedKeyChange={setSelectedCalculator} />
-                </MobilePhoneFrame>
-            </div>
+            <main className='flex min-h-screen items-center justify-center px-4 pb-0 pt-3'>
+                <div
+                    className='w-full max-w-[686px] rounded-[22px] border border-[#2c3545] px-[22px] pb-[23px] pt-[11px] shadow-[0_18px_55px_rgba(0,0,0,0.21)]'
+                    style={{ background: 'linear-gradient(145deg, #131c29 0%, #0b1523 46%, #07101e 100%)' }}
+                >
+                    <ChartPanel chart={projection.chart} series={series} isRetirement={selectedKey === 'retirement'} referencePreview={referencePreview} />
 
-            {/* Desktop version: same dropdown calculator flow as mobile, only larger */}
-            <div className='hidden lg:block max-w-7xl mx-auto'>
-                <DesktopWideFrame>
-                    <h1 className='text-center text-[#2cbbff] text-2xl font-semibold mb-6'>Black Snow Mathematics</h1>
+                    {/* Main selectors: 311px columns at the reference's 961px viewport. */}
+                    <div className='mt-[13px] grid grid-cols-2 gap-[18px] max-[530px]:grid-cols-1'>
+                        <div className='relative min-w-0'>
+                            <button
+                                type='button'
+                                onClick={() => setCalculatorOpen((open) => !open)}
+                                aria-label='Choose a calculator'
+                                aria-expanded={calculatorOpen}
+                                aria-haspopup='listbox'
+                                className='flex h-[51px] w-full min-w-0 items-center gap-[17px] rounded-[6px] border border-[#384254] bg-gradient-to-br from-[#18202c] to-[#0d1726] px-[13px] text-left text-[#daddE5] transition-colors hover:border-[#536073] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#81dfe6]'
+                            >
+                                <Icon aria-hidden='true' className='h-[19px] w-[19px] shrink-0 text-[#737e90]' />
+                                <span className='min-w-0 flex-1 truncate text-[16px]'>{selected.label}</span>
+                                <ChevronDown
+                                    aria-hidden='true'
+                                    className={`h-4 w-4 shrink-0 text-[#7f8a9a] transition-transform ${calculatorOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                            {calculatorOpen && (
+                                <div
+                                    role='listbox'
+                                    aria-label='Available calculators'
+                                    className='absolute inset-x-0 top-[calc(100%+5px)] z-20 overflow-hidden rounded-[7px] border border-[#344255] bg-[#101b2a] shadow-2xl'
+                                >
+                                    {CALCULATORS.map((calculator) => {
+                                        const OptionIcon = calculator.icon;
+                                        return (
+                                            <button
+                                                key={calculator.key}
+                                                type='button'
+                                                role='option'
+                                                aria-selected={selectedKey === calculator.key}
+                                                onClick={() => selectCalculator(calculator.key)}
+                                                className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[#e0e5ea] transition-colors hover:bg-[#253246] ${
+                                                    selectedKey === calculator.key ? 'bg-[#1e2a3d]' : ''
+                                                }`}
+                                            >
+                                                <OptionIcon aria-hidden='true' className='h-4 w-4 text-[#99a4b4]' />
+                                                {calculator.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
 
-                    <div className='rounded-3xl border border-[#2c7bbe]/30 bg-[#050608]/70 p-6 lg:p-8 shadow-[0_18px_50px_rgba(0,0,0,0.35)]'>
-                        <ActiveCalculator showSelector selectedKey={selectedCalculator} onSelectedKeyChange={setSelectedCalculator} />
+                        <label className='min-w-0'>
+                            <span className='sr-only'>Chart data to display</span>
+                            <select
+                                aria-label='Chart data to display'
+                                value={series}
+                                onChange={(event) =>
+                                    setDisplaySeries((previous) => ({
+                                        ...previous,
+                                        [selectedKey]: event.target.value as SeriesKey,
+                                    }))
+                                }
+                                className='h-[51px] w-full appearance-none rounded-[6px] border border-[#334053] bg-[#091523] px-[15px] text-[17px] text-[#e1e4e9] outline-none focus:border-[#81dfe6]'
+                            >
+                                <option value='amount'>{selected.primaryLabel}</option>
+                                <option value='secondary'>{selected.secondaryLabel}</option>
+                            </select>
+                        </label>
                     </div>
-                </DesktopWideFrame>
-            </div>
 
-            {/* Remove number spinners */}
+                    {/* Four uniformly sized input boxes on desktop. */}
+                    <div className='mt-[18px] grid grid-cols-4 gap-[16px] max-[530px]:grid-cols-2 max-[530px]:gap-3'>
+                        {selected.fields.map((field) => (
+                            <div key={`${selectedKey}-${field.key}`} className={`min-w-0 ${MOBILE_FIELD_ORDER[selectedKey][field.key]} min-[531px]:order-none`}>
+                                <NumericField field={field} value={fields[field.key]} onChange={(value) => updateValue(field.key, value)} />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className='mt-[14px] grid grid-cols-2 gap-[15px]'>
+                        <button
+                            type='button'
+                            // eslint-disable-next-line
+                            onClick={calculate}
+                            className='flex h-[48px] items-center justify-center gap-[13px] rounded-[6px] border border-[#354052] bg-gradient-to-br from-[#1b2330] to-[#151e2b] text-[16px] text-[#e6e8ee] transition-colors hover:border-[#536579] hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#81dfe6]'
+                        >
+                            <Calculator aria-hidden='true' className='h-[19px] w-[19px] text-[#858d9a]' />
+                            Calculate
+                        </button>
+                        <button
+                            type='button'
+                            // eslint-disable-next-line
+                            onClick={clear}
+                            className='h-[48px] rounded-[6px] border border-[#344053] bg-[#091523] text-[16px] text-[#e5e7ed] transition-colors hover:border-[#536579] hover:bg-[#152133] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#81dfe6]'
+                        >
+                            Clear
+                        </button>
+                    </div>
+
+                    {error && (
+                        <p role='alert' className='mt-3 text-sm text-[#fda4af]'>
+                            {error}
+                        </p>
+                    )}
+                    {results[selectedKey] && (
+                        <div role='status' aria-live='polite' className='mt-4 rounded-[7px] border border-[#344154] bg-[#0a1523] px-4 py-2'>
+                            {results[selectedKey]!.map((item) => (
+                                <div
+                                    key={item.label}
+                                    className='flex items-center justify-between gap-3 border-b border-[#2a3545] py-2.5 text-sm last:border-0'
+                                >
+                                    <span className='text-[#c4ccd8]'>{item.label}</span>
+                                    <strong className='text-right tabular-nums text-[#e7e9ed]'>{item.value}</strong>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </main>
+
             <style jsx global>{`
                 input[type='number']::-webkit-inner-spin-button,
                 input[type='number']::-webkit-outer-spin-button {
                     -webkit-appearance: none;
                     margin: 0;
                 }
-
                 input[type='number'] {
                     -moz-appearance: textfield;
                 }

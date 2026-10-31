@@ -536,11 +536,36 @@ function CareersTitle() {
     };
 
     return (
-        <div className='min-h-screen bg-[#050608] overflow-hidden relative'>
+        <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
+            {/* Same layered ambient background as the Pricing page. */}
+            <div
+                aria-hidden='true'
+                className='pointer-events-none absolute inset-0 z-0'
+                style={{
+                    background: [
+                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
+                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
+                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
+                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
+                    ].join(', '),
+                }}
+            />
+
             <TermsSlideModal open={isTermsModalOpen} onOpenChange={setIsTermsModalOpen} onComplete={handleTermsComplete} />
             {/* Job Seekers Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                {/* Gentle blue illumination behind the hero text, matching Pricing. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute -left-[18%] top-[46%] z-0 h-[390px] w-[530px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(40,121,195,0.14)_0%,rgba(30,96,165,0.08)_42%,rgba(5,6,8,0)_78%)] blur-[46px] sm:h-[470px] sm:w-[650px] lg:-left-[24%] lg:h-[540px] lg:w-[720px]'
+                />
+                {/* Wide, soft halo behind the hero artwork/card, matching Pricing. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute right-[-22%] top-[46%] z-0 h-[490px] w-[620px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.24)_0%,rgba(26,94,157,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:right-[-18%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
+                />
+
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='animate-slide-in-left'>
                             <div>
@@ -574,7 +599,7 @@ function CareersTitle() {
                                 <Link href={'/careeroptions'}>
                                     <Button
                                         size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Career Opportunities
                                     </Button>
@@ -621,7 +646,7 @@ function CareersTitle() {
                                 <Link href={'/careeroptions'}>
                                     <Button
                                         size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Career Opportunities
                                     </Button>
@@ -633,8 +658,14 @@ function CareersTitle() {
             </section>
 
             {/* Recruitment Agency Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                {/* Pricing slider-style glow under the content. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute left-1/2 top-0 z-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
+                />
+
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='animate-slide-in-right'>
                             <div>
@@ -667,7 +698,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Opportunities
                                     </Button>
@@ -675,7 +706,7 @@ function CareersTitle() {
                                 <Link href={'/consultation'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
                                         Consultation
                                     </Button>
@@ -721,7 +752,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Opportunities
                                     </Button>
@@ -729,7 +760,7 @@ function CareersTitle() {
                                 <Link href={'/consultation'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-xl shadow-[#4cc7e8]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
                                         Consultation
                                     </Button>
@@ -741,8 +772,8 @@ function CareersTitle() {
             </section>
 
             {/* Talent Acquisition / BPO Section */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='rounded-[2rem] border border-[#2c7bbe]/25 bg-gradient-to-br from-[#050608] via-[#070b10] to-[#020304] p-4 sm:p-6 md:p-10 shadow-2xl shadow-[#2c7bbe]/10'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8'>
                             {talentTabs.map((tab) => {
@@ -755,7 +786,7 @@ function CareersTitle() {
                                         onClick={() => setActiveTalentTab(tab.key)}
                                         className={`rounded-xl border px-5 py-3 text-sm sm:text-base font-bold transition-all duration-300 ${
                                             isActive
-                                                ? 'border-[#4cc7e8]/50 bg-gradient-to-r from-[#1e4f85] to-[#0e2747] text-white shadow-lg shadow-[#2c7bbe]/30'
+                                                ? 'border-[#4cc7e8]/50 bg-gradient-to-r from-[#1e4f85] to-[#0e2747] text-white shadow-sm shadow-[#2c7bbe]/15'
                                                 : 'border-white/10 bg-transparent text-gray-300 hover:border-[#4cc7e8]/40 hover:text-white'
                                         }`}
                                     >
@@ -832,7 +863,7 @@ function CareersTitle() {
                                     <Button
                                         type='button'
                                         onClick={openConsultationModal}
-                                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] py-5 text-base font-extrabold text-white shadow-lg shadow-[#2c7bbe]/35 transition-all duration-300 hover:from-[#4cc7e8] hover:to-[#2a8dcc]'
+                                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] py-5 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 hover:from-[#4cc7e8] hover:to-[#2a8dcc]'
                                     >
                                         {activeTalentService.buttonLabel}
                                     </Button>
@@ -1078,7 +1109,7 @@ function CareersTitle() {
                                             <Button
                                                 type='submit'
                                                 disabled={isSubmittingConsultation}
-                                                className='w-full sm:w-auto min-w-[250px] bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-8 py-6 text-base font-extrabold text-[#050608] shadow-lg cursor-pointer shadow-[#4cc7e8]/30 transition-all duration-300 hover:from-[#72d8f0] hover:to-[#4cc7e8] disabled:cursor-not-allowed disabled:opacity-70'
+                                                className='w-full sm:w-auto min-w-[250px] bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-8 py-6 text-base font-extrabold text-[#050608] shadow-[0_4px_14px_rgba(44,123,190,0.16)] cursor-pointer transition-all duration-300 hover:from-[#72d8f0] hover:to-[#4cc7e8] disabled:cursor-not-allowed disabled:opacity-70'
                                             >
                                                 {isSubmittingConsultation ? (
                                                     <>
@@ -1102,8 +1133,8 @@ function CareersTitle() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -1117,14 +1148,14 @@ function CareersTitle() {
                             </p>
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Link href={'/careeroptions'}>
-                                    <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
+                                    <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
                                         Browse Jobs
                                     </Button>
                                 </Link>
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                        className='border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         Hire Talent
                                     </Button>

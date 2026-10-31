@@ -1,5 +1,6 @@
 import { ApiError } from '@/lib/apiErrors';
 import prisma from '@/lib/prisma';
+import { isStripeResourceMissing } from '@/lib/stripeErrorUtils';
 import Stripe from 'stripe';
 
 const DIGITAL_BILLBOARD_PRODUCTS = ['DigitalBillboard', 'digitalBillboard', 'digitalbillboard'];
@@ -24,28 +25,48 @@ async function resolveSubscriptionId(stripe: Stripe, transactionId: string | nul
     if (transactionId.startsWith('sub_')) return transactionId;
     if (!transactionId.startsWith('cs_')) return null;
 
-    const session = await stripe.checkout.sessions.retrieve(transactionId);
-    return getStripeId(session.subscription as string | Stripe.Subscription | null);
+    try {
+        const session = await stripe.checkout.sessions.retrieve(transactionId);
+        return getStripeId(session.subscription as string | Stripe.Subscription | null);
+    } catch (error) {
+        if (isStripeResourceMissing(error)) return null;
+        throw error;
+    }
 }
 
 async function listSubscriptionInvoices(stripe: Stripe, subscriptionId: string) {
     const invoices: Stripe.Invoice[] = [];
     let startingAfter: string | undefined;
 
-    do {
-        const page = await stripe.invoices.list({
-            subscription: subscriptionId,
-            limit: 100,
-            ...(startingAfter ? { starting_after: startingAfter } : {}),
-        });
+    try {
+        do {
+            const page = await stripe.invoices.list({
+                subscription: subscriptionId,
+                limit: 100,
+                ...(startingAfter ? { starting_after: startingAfter } : {}),
+            });
 
-        invoices.push(...page.data);
+            invoices.push(...page.data);
 
-        if (!page.has_more || page.data.length === 0) break;
-        startingAfter = page.data[page.data.length - 1].id;
-    } while (startingAfter);
+            if (!page.has_more || page.data.length === 0) break;
+            startingAfter = page.data[page.data.length - 1].id;
+        } while (startingAfter);
+    } catch (error) {
+        if (!isStripeResourceMissing(error)) throw error;
+    }
 
     return invoices;
+}
+
+async function retrieveSubscription(stripe: Stripe, subscriptionId: string | null): Promise<Stripe.Subscription | null> {
+    if (!subscriptionId) return null;
+
+    try {
+        return await stripe.subscriptions.retrieve(subscriptionId);
+    } catch (error) {
+        if (isStripeResourceMissing(error)) return null;
+        throw error;
+    }
 }
 
 export async function getDigitalBillboardSubscription(authId: number) {
@@ -143,7 +164,7 @@ export async function getDigitalBillboardSubscription(authId: number) {
             .sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime());
 
         const currentSubscriptionId = currentCheckout ? subscriptionIdByCheckoutId.get(currentCheckout.id) ?? null : null;
-        const stripeSubscription = currentSubscriptionId ? await stripe.subscriptions.retrieve(currentSubscriptionId) : null;
+        const stripeSubscription = await retrieveSubscription(stripe, currentSubscriptionId);
         const nextBillingDate = stripeSubscription?.current_period_end
             ? new Date(stripeSubscription.current_period_end * 1000)
             : currentCheckout?.nextBillingDate ?? null;

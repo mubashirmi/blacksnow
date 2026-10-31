@@ -4,6 +4,7 @@ import {
     AlertTriangle,
     BarChart3,
     BellOff,
+    CalendarCheck,
     CheckCircle,
     ChevronDown,
     FilePenLine,
@@ -14,6 +15,8 @@ import {
     Scale,
     Star,
     StickyNote,
+    Target,
+    User,
     X,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -27,6 +30,13 @@ const navigationItems = [
     { title: 'Links', url: '/affiliate/dashboard/links', icon: LinkIcon },
     { title: 'KPI', url: '/affiliate/dashboard/kpi', icon: BarChart3 },
     { title: 'Billing', url: '/affiliate/dashboard/billing', icon: FilePenLine },
+
+    { title: 'Email Upload', url: '/affiliate/dashboard/emailMarketing/users', icon: User },
+    { title: 'Email Automation', url: '/affiliate/dashboard/emailMarketing/automation', icon: LinkIcon },
+    { title: 'Email Campaign', url: '/affiliate/dashboard/emailMarketing/campaign', icon: Target },
+    { title: 'Email KPI', url: '/affiliate/dashboard/emailMarketing/kpi', icon: BarChart3 },
+    { title: 'Email Schedules', url: '/affiliate/dashboard/emailMarketing/emailSchedule', icon: CalendarCheck },
+    { title: 'Email Billing', url: '/affiliate/dashboard/emailMarketing/billing', icon: FilePenLine },
 ];
 
 const UNSUBSCRIBE_PRODUCT = {

@@ -219,7 +219,7 @@ function GlobalKpiPageContent() {
                         />
 
                         <Image
-                            src='/images/global-kpi-hero-map.webp'
+                            src='/images/global-kpi-hero-map.png'
                             alt='Global KPI network'
                             fill
                             priority
@@ -363,7 +363,7 @@ function GlobalKpiPageContent() {
 
                     <div className='relative aspect-[664/255] min-h-[210px] w-full'>
                         <Image
-                            src='/images/global-kpi-expansion-map.webp'
+                            src='/images/global-kpi-hero-map.png'
                             alt='Global market expansion'
                             fill
                             quality={100}

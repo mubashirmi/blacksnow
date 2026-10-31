@@ -1,16 +1,11 @@
 // src/pages/api/auth/auth-email/index.ts
 
+import { BRAND_BLUE, BRAND_DARK, BRAND_NAME, BRAND_WHITE, LOGO_CONTENT_ID, escapeHtml, getLogoAttachment } from '@/lib/emailBranding';
 import { prisma } from '@/lib/prisma';
-import { sendEmail, type SendEmailAttachment } from '@/lib/sendEmail';
-import fs from 'fs';
+import { sendEmail } from '@/lib/sendEmail';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import path from 'path';
 
-const BRAND_NAME = 'Black Snow Holdings';
-const BRAND_BLUE = '#1557FF';
-const BRAND_DARK = '#000000';
-const BRAND_WHITE = '#FFFFFF';
-const LOGO_CONTENT_ID = 'blacksnow-logo';
+export { getLogoAttachment } from '@/lib/emailBranding';
 
 function generateOtp() {
     return Math.floor(100000 + Math.random() * 900000);
@@ -18,38 +13,6 @@ function generateOtp() {
 
 function isValidEmail(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function escapeHtml(value: string) {
-    return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
-}
-
-function getMimeType(filePath: string) {
-    const ext = path.extname(filePath).toLowerCase();
-
-    if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
-    if (ext === '.webp') return 'image/webp';
-    if (ext === '.svg') return 'image/svg+xml';
-
-    return 'image/png';
-}
-
-export function getLogoAttachment(): SendEmailAttachment {
-    const logoPath = path.join(process.cwd(), 'public', 'email', 'blacksnow-logo.png');
-
-    if (!fs.existsSync(logoPath)) {
-        throw new Error(`Logo file not found at: ${logoPath}`);
-    }
-
-    const logoBase64 = fs.readFileSync(logoPath).toString('base64');
-
-    return {
-        content: logoBase64,
-        filename: 'blacksnow-logo.png',
-        type: getMimeType(logoPath),
-        disposition: 'inline',
-        content_id: LOGO_CONTENT_ID,
-    };
 }
 
 export function buildOtpText(fullName: string, otp: number) {

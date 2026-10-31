@@ -1,11 +1,14 @@
 // pages/api/send-email.ts
 
+import { ApiError, sendApiError } from '@/lib/apiErrors';
+import { parseEmailServiceRole } from '@/lib/emailServiceRole';
 import { recordEmailUsage } from '@/lib/emailUsage';
 import { signOptToken } from '@/lib/optToken';
 import prisma from '@/lib/prisma';
 
 import sgMail from '@sendgrid/mail';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import nodemailer from 'nodemailer';
 
 type BodyItem = {
     id?: number; // EmailUser.id (single) OR Auth.id for newsletter
@@ -103,6 +106,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             timeInterval, // legacy schedule
             items, // new flexible
             isNewsletter, // flag to indicate newsletter mode
+            role: requestedRole,
         } = req.body ?? {};
 
         // ------------------------------------------------------------
@@ -115,6 +119,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             });
         }
 
+        const normalizedAdminId = Number(adminId);
+        if (!Number.isInteger(normalizedAdminId) || normalizedAdminId <= 0) {
+            return res.status(400).json({ message: '"adminId" must be a positive integer' });
+        }
+
+        const role = parseEmailServiceRole(requestedRole);
         // ------------------------------------------------------------
         // SENDGRID CONFIG
         // ------------------------------------------------------------
@@ -122,20 +132,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const sendGridApiKey = process.env.SENDGRID_API_KEY?.trim();
         const sendGridFromEmail = process.env.SENDGRID_FROM_EMAIL?.trim();
         const sendGridDefaultFromName = process.env.SENDGRID_FROM_NAME?.trim() || 'Black Snow Holdings';
+        const usesSendGrid = isNewsletter || role === 'EmailMarketing';
 
-        if (!sendGridApiKey) {
+        if (usesSendGrid && !sendGridApiKey) {
             return res.status(500).json({
                 message: 'SENDGRID_API_KEY is not configured',
             });
         }
 
-        if (!sendGridFromEmail) {
+        if (usesSendGrid && !sendGridFromEmail) {
             return res.status(500).json({
                 message: 'SENDGRID_FROM_EMAIL is not configured',
             });
         }
 
-        sgMail.setApiKey(sendGridApiKey);
+        if (usesSendGrid) sgMail.setApiKey(sendGridApiKey!);
 
         // ------------------------------------------------------------
         // ADMIN / NEWSLETTER SENDER CONTEXT
@@ -143,6 +154,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         let replyToEmail: string | undefined;
         let credentialsId: number | null = null;
+        let roleSenderPassword: string | undefined;
 
         if (isNewsletter) {
             /*
@@ -160,22 +172,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
              * - credentialsId history relation
              * - admin-specific reply address
              *
-             * appPassword is no longer used for sending.
+             * EmailMarketing immediate sends retain the existing SendGrid
+             * path. Lightning immediate sends use this role's SMTP account.
              */
             const adminMail = await prisma.emailMarketingCredentials.findUnique({
                 where: {
-                    authId: Number(adminId),
+                    authId_role: { authId: normalizedAdminId, role },
                 },
             });
 
             if (!adminMail) {
                 return res.status(404).json({
-                    message: 'Admin email credentials not found',
+                    message: `Email credentials not found for ${role}`,
                 });
             }
 
             replyToEmail = adminMail.email;
             credentialsId = adminMail.id;
+            roleSenderPassword = adminMail.appPassword;
         }
 
         /**
@@ -198,11 +212,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             emailText?: string;
             emailHtml?: string;
         }): Promise<SendGridSendResult> => {
+            if (!usesSendGrid) {
+                if (!replyToEmail || !roleSenderPassword) throw new Error(`Email credentials not found for ${role}`);
+
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 465,
+                    secure: true,
+                    auth: { user: replyToEmail, pass: roleSenderPassword },
+                });
+                const response = await transporter.sendMail({
+                    from: typeof fromName === 'string' && fromName.trim() ? `"${fromName.trim()}" <${replyToEmail}>` : replyToEmail,
+                    replyTo: replyToEmail,
+                    to,
+                    subject: emailSubject,
+                    text: emailText,
+                    html: emailHtml,
+                });
+
+                return {
+                    messageId: typeof response.messageId === 'string' ? response.messageId : null,
+                    accepted: Array.isArray(response.accepted) ? response.accepted.map(String) : [to],
+                    rejected: Array.isArray(response.rejected) ? response.rejected.map(String) : [],
+                };
+            }
+
             const message: any = {
                 to,
 
                 from: {
-                    email: sendGridFromEmail,
+                    email: sendGridFromEmail!,
                     name: typeof fromName === 'string' && fromName.trim() ? fromName.trim() : sendGridDefaultFromName,
                 },
 
@@ -488,6 +527,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             } else {
                 const emailUsers = await prisma.emailUser.findMany({
                     where: {
+                        authId: normalizedAdminId,
+                        role,
                         id: {
                             in: allTargetIds,
                         },
@@ -607,7 +648,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                                 sentAt: new Date(),
 
-                                authId: Number(adminId),
+                                authId: normalizedAdminId,
+                                role,
 
                                 emailUserId: isNewsletter ? null : u.id,
 
@@ -633,7 +675,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                                     subject: subj,
 
-                                    authId: Number(adminId),
+                                    authId: normalizedAdminId,
+                                    role,
 
                                     emailUserId: u.id,
 
@@ -672,7 +715,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                                 sentAt: null,
 
-                                authId: Number(adminId),
+                                authId: normalizedAdminId,
+                                role,
 
                                 emailUserId: isNewsletter ? null : u.id,
 
@@ -701,7 +745,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             if (successfulEmailCount > 0) {
                 try {
-                    await recordEmailUsage(Number(adminId), successfulEmailCount);
+                    await recordEmailUsage(normalizedAdminId, successfulEmailCount);
                 } catch (usageError) {
                     console.error('Failed to record email usage after successful sends:', usageError);
                 }
@@ -774,6 +818,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 const emailUsers = await prisma.emailUser.findMany({
                     where: {
+                        authId: normalizedAdminId,
+                        role,
                         id: {
                             in: ids,
                         },
@@ -841,7 +887,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                                 sentAt: new Date(),
 
-                                authId: Number(adminId),
+                                authId: normalizedAdminId,
+                                role,
 
                                 emailUserId: isNewsletter ? null : u.id,
 
@@ -860,7 +907,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                                     subject: subject ?? '(no subject)',
 
-                                    authId: Number(adminId),
+                                    authId: normalizedAdminId,
+                                    role,
 
                                     emailUserId: u.id,
 
@@ -904,7 +952,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             if (successfulEmailCount > 0) {
                 try {
-                    await recordEmailUsage(Number(adminId), successfulEmailCount);
+                    await recordEmailUsage(normalizedAdminId, successfulEmailCount);
                 } catch (usageError) {
                     console.error('Failed to record email usage after successful sends:', usageError);
                 }
@@ -978,6 +1026,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             } else {
                 const emailUsers = await prisma.emailUser.findMany({
                     where: {
+                        authId: normalizedAdminId,
+                        role,
                         id: {
                             in: allIdsReferenced,
                         },
@@ -1065,7 +1115,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                             subject: subj,
 
-                            authId: Number(adminId),
+                            authId: normalizedAdminId,
+                            role,
 
                             emailUserId: isNewsletter ? null : rid,
 
@@ -1132,7 +1183,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                             subject: subj,
 
-                            authId: Number(adminId),
+                            authId: normalizedAdminId,
+                            role,
 
                             emailUserId: isNewsletter ? null : rid,
 
@@ -1197,7 +1249,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                             subject: subj,
 
-                            authId: Number(adminId),
+                            authId: normalizedAdminId,
+                            role,
 
                             emailUserId: isNewsletter ? null : rid,
 
@@ -1249,7 +1302,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                         subject: subj,
 
-                        authId: Number(adminId),
+                        authId: normalizedAdminId,
+                        role,
 
                         emailUserId: isNewsletter ? null : rid,
 
@@ -1288,6 +1342,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!isNewsletter) {
                 const emailUsers = await prisma.emailUser.findMany({
                     where: {
+                        authId: normalizedAdminId,
+                        role,
                         id: {
                             in: ids,
                         },
@@ -1366,7 +1422,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     subject: subject ?? '(no subject)',
 
-                    authId: Number(adminId),
+                    authId: normalizedAdminId,
+                    role,
 
                     emailUserId: isNewsletter ? null : rid,
 
@@ -1406,6 +1463,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             count: rowsToCreate.length,
         });
     } catch (error: any) {
+        if (error instanceof ApiError) return sendApiError(res, error);
+
         console.error('Send email API error:', error?.response?.body ?? error);
 
         return res.status(500).json({

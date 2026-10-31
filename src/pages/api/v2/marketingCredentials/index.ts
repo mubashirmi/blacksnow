@@ -1,48 +1,67 @@
+import { ApiError, sendApiError } from '@/lib/apiErrors';
+import { parseEmailServiceRole } from '@/lib/emailServiceRole';
 import prisma from '@/lib/prisma';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function api(req: NextApiRequest, res: NextApiResponse) {
-    const { method } = req;
-    const { adminId } = req.query;
+function parseAuthId(value: unknown) {
+    const authId = Number(value);
+    if (!Number.isInteger(authId) || authId <= 0) {
+        throw new ApiError(400, 'INVALID_AUTH_ID', 'A valid adminId/id is required');
+    }
+    return authId;
+}
 
-    const Id = Number(adminId);
+function validateCredentials(email: unknown, appPassword: unknown) {
+    if (typeof email !== 'string' || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+        throw new ApiError(400, 'INVALID_EMAIL', 'A valid sender email is required');
+    }
+    if (typeof appPassword !== 'string' || !appPassword.replace(/\s/g, '')) {
+        throw new ApiError(400, 'INVALID_APP_PASSWORD', 'appPassword is required');
+    }
+
+    return { email: email.trim(), appPassword: appPassword.replace(/\s/g, '') };
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (!['GET', 'POST', 'PUT'].includes(req.method ?? '')) {
+        res.setHeader('Allow', 'GET, POST, PUT');
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
+
     try {
-        if (method === 'GET') {
-            const policy = await prisma.emailMarketingCredentials.findFirst({
-                where: { authId: Id },
+        const role = parseEmailServiceRole(req.method === 'GET' ? req.query.role : req.body?.role);
+        const authId = parseAuthId(req.method === 'GET' ? req.query.adminId : req.body?.id);
+        if (req.method === 'GET') {
+            const policy = await prisma.emailMarketingCredentials.findUnique({
+                where: { authId_role: { authId, role } },
             });
+
             return policy
-                ? res.status(200).json({ message: 'credentials fetched successfully', policy })
-                : res.status(404).json({ message: 'credentials not found' });
-        } else if (method === 'POST') {
-            const { email, appPassword, id } = req.body;
-            console.log(email, appPassword, id);
-            const find = await prisma.emailMarketingCredentials.findFirst({
-                where: { authId: id },
+                ? res.status(200).json({ message: 'Credentials fetched successfully', policy })
+                : res.status(404).json({ message: `Credentials not found for ${role}` });
+        }
+
+        const credentials = validateCredentials(req.body?.email, req.body?.appPassword);
+
+        if (req.method === 'POST') {
+            const existing = await prisma.emailMarketingCredentials.findUnique({
+                where: { authId_role: { authId, role } },
+                select: { id: true },
             });
-            if (find) {
-                return res.status(200).json('Credentials already exists.');
-            }
+            if (existing) return res.status(409).json({ message: `Credentials already exist for ${role}` });
 
             const created = await prisma.emailMarketingCredentials.create({
-                data: {
-                    email,
-                    appPassword,
-                    authId: id,
-                },
+                data: { ...credentials, authId, role },
             });
             return res.status(201).json({ message: 'Created successfully', created });
-        } else if (method === 'PUT') {
-            const { id, privacyPolicy } = req.body;
-            const updated = await prisma.privacyPolicy.update({
-                where: { id },
-                data: { id, privacyPolicy },
-            });
-            return res.status(200).json({ message: 'Updated successfully', updated });
-        } else {
-            return res.status(405).json({ message: 'Method not allowed' });
         }
+
+        const updated = await prisma.emailMarketingCredentials.update({
+            where: { authId_role: { authId, role } },
+            data: credentials,
+        });
+        return res.status(200).json({ message: 'Updated successfully', updated });
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
+        return sendApiError(res, error);
     }
 }

@@ -5,8 +5,33 @@ import Image from 'next/image';
 
 function About() {
     return (
-        <div className='min-h-screen bg-[#050608]'>
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+        <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
+            {/* Same layered ambient background as the Pricing page. */}
+            <div
+                aria-hidden='true'
+                className='pointer-events-none absolute inset-0 z-0'
+                style={{
+                    background: [
+                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
+                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
+                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
+                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
+                    ].join(', '),
+                }}
+            />
+
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
+                {/* Gentle blue illumination behind the hero text, matching Pricing. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute -left-[18%] top-[46%] z-0 h-[390px] w-[530px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(40,121,195,0.14)_0%,rgba(30,96,165,0.08)_42%,rgba(5,6,8,0)_78%)] blur-[46px] sm:h-[470px] sm:w-[650px] lg:-left-[24%] lg:h-[540px] lg:w-[720px]'
+                />
+                {/* Wide, soft halo behind the hero artwork/card, matching Pricing. */}
+                <div
+                    aria-hidden='true'
+                    className='pointer-events-none absolute right-[-22%] top-[46%] z-0 h-[490px] w-[620px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.24)_0%,rgba(26,94,157,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:right-[-18%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
+                />
+
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='space-y-8 sm:space-y-10 md:space-y-12 animate-slide-in-left'>
@@ -48,7 +73,7 @@ function About() {
                         </div>
 
                         <div className='relative w-full'>
-                            <div className='relative w-full sm:w-96 h-96 rounded-3xl border border-[#2c7bbe]/30 shadow-2xl backdrop-blur-xl flex items-center justify-center mx-auto'>
+                            <div className='relative w-full sm:w-96 h-96 rounded-3xl border border-[#2c7bbe]/30 bg-[linear-gradient(150deg,#101a23_0%,#090d12_49%,#0b1720_100%)] shadow-[0_32px_110px_-38px_rgba(25,112,168,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)] backdrop-blur-xl flex items-center justify-center mx-auto'>
                                 <Image width={100} height={100} src='/logocolored.png' alt='Black Snow Logo' className='w-[90%]' />
                             </div>
                         </div>
@@ -56,8 +81,8 @@ function About() {
                 </div>
             </section>
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]' id='core-values'>
-                <div className='container mx-auto max-w-8xl'>
+            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8' id='core-values'>
+                <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-12 sm:mb-16'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                             Core <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Values</span>
