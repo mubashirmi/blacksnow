@@ -291,9 +291,7 @@ function Advertising() {
                             <div>
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>
-                                            Digital
-                                        </span>
+                                        <span className='text-[#4333AF]'>Digital</span>
                                         &nbsp;Billboards
                                     </h1>
                                 </div>
@@ -311,14 +309,13 @@ function Advertising() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    variant='outline'
-                                    className='border-2 cursor-pointer border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                    className='border-2 cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
                                 >
                                     Purchase
                                 </Button>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
                                     onClick={() => setSlideshowOpen(true)}
                                 >
                                     Learn More
@@ -328,7 +325,7 @@ function Advertising() {
 
                         <div className='relative animate-slide-in-right min-w-0'>
                             <div className='relative flex items-center justify-center w-full h-full'>
-                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#414A5D]'>
                                     <div className='w-[90%] aspect-square sm:w-full'>
                                         <LottieAnimation src='/animations/billboardherosection.json' className='w-full h-full' loop={true} autoplay={true} />
                                     </div>
@@ -341,10 +338,10 @@ function Advertising() {
 
             <ProductPricingOverview product='digital-billboard' onGetStarted={handlePurchaseClick} />
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8  bg-gradient-to-br from-[#0a0b0f] via-[#050608] to-[#0a0b0f]'>
-                <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10 '>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+                <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10'>
                     <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22] text-center leading-[1.22]'>
-                        Digital Billboard <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Features</span>{' '}
+                        Digital Billboard <span className='text-[#4333AF]'>Features</span>{' '}
                     </h2>
                     <p className='text-base sm:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed text-center px-20'>
                         High-visibility placement, real-time analytics, share buttons, up to 4 campaigns, and team access.
@@ -357,59 +354,59 @@ function Advertising() {
                                 description:
                                     'Your ads appear in premium online locations that drive real clicks and real visibility. No confusing settings—just plug in your offer and let the system distribute traffic.',
                                 icon: Eye,
-                                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                                color: 'bg-[#4333AF]',
                             },
                             {
                                 title: 'Live Analytics Dashboard',
                                 description: 'Track impressions, clicks, and engagement in real time. You always know exactly how your campaign is performing.',
                                 icon: BarChart3,
-                                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                                color: 'bg-[#4333AF]',
                             },
                             {
                                 title: 'Simple Setup & Zero Maintenance',
                                 description:
                                     'Upload your content once and let the system run itself. Perfect for business owners who want steady traffic without extra work.',
                                 icon: Zap,
-                                color: 'from-[#4cc7e8] to-[#2a8dcc]',
+                                color: 'bg-[#4333AF]',
                             },
                             {
                                 title: 'Create Up to 4 Billboards',
                                 description:
                                     'Run multiple billboard campaigns at once for different products, offers, or audiences. Maximize your exposure with more digital real estate.',
                                 icon: Monitor,
-                                color: 'from-[#2a8dcc] to-[#2c7bbe]',
+                                color: 'bg-[#4333AF]',
                             },
                             {
                                 title: 'Email & SMS Share Buttons',
                                 description:
                                     'Your ads include built-in share buttons that let viewers send your offer instantly through email or SMS. This expands your reach through effortless referrals.',
                                 icon: Megaphone,
-                                color: 'from-[#4cc7e8] to-[#2c7bbe]',
+                                color: 'bg-[#4333AF]',
                             },
                             {
                                 title: 'Add Multiple Users',
                                 description:
                                     'Invite team members into the platform with controlled access. Great for larger businesses and teams that need collaborative management.',
                                 icon: CheckCircle,
-                                color: 'from-[#2c7bbe] to-[#4cc7e8]',
+                                color: 'bg-[#4333AF]',
                             },
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#2c7bbe]/20 bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/5 p-5 sm:p-6 transition-all duration-300 hover:border-[#4cc7e8]/40 hover:translate-y-[-2px]'
+                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#414A5D] p-5 sm:p-6 transition-all duration-300 hover:border-[#4333AF] hover:translate-y-[-2px] bg-[#0C0F18] '
                             >
                                 {/* glow */}
-                                <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-[#4cc7e8]/10 to-[#2c7bbe]/10' />
+                                <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#4333AF]/10' />
 
                                 <div className='relative flex items-start gap-4'>
                                     <div
-                                        className={`flex h-12 w-12 p-2 items-center justify-center rounded-xl bg-gradient-to-r ${feature.color} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                                        className={`flex h-12 w-12 p-2 items-center justify-center rounded-xl ${feature.color} shadow-lg transition-transform duration-300 group-hover:scale-110 hover:bg-[#372990]`}
                                     >
                                         <feature.icon className='h-14 w-14 text-white' />
                                     </div>
 
                                     <div className='space-y-2'>
-                                        <h3 className='text-lg font-bold text-white leading-[1.28] group-hover:text-[#4cc7e8] transition-colors'>
+                                        <h3 className='text-lg font-bold text-white leading-[1.28] group-hover:text-[#4333AF] transition-colors'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
@@ -425,8 +422,7 @@ function Advertising() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Why Choose Our{' '}
-                            <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Digital Billboard?</span>
+                            Why Choose Our <span className='text-[#4333AF]'>Digital Billboard?</span>
                         </h2>
                         <p className='text-base sm:text-lg text-gray-300 max-w-3xl mx-auto'>
                             Experience the power of premium digital advertising with our cutting-edge platform designed for maximum impact and ROI.
@@ -468,10 +464,10 @@ function Advertising() {
                         ].map((feature, index) => (
                             <Card
                                 key={index}
-                                className='bg-gradient-to-br from-[#050608] to-[#0a0b0f] border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 rounded-2xl transform hover:scale-105'
+                                className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 bg-[#0C0F18]'
                             >
                                 <CardContent className='p-8'>
-                                    <div className='w-16 h-16 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-2xl flex items-center justify-center mb-6'>
+                                    <div className='w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-[#4333AF]'>
                                         <feature.icon className='w-8 h-8 text-white' />
                                     </div>
                                     <h3 className='text-2xl font-bold text-white mb-4 leading-[1.28]'>{feature.title}</h3>
@@ -484,13 +480,13 @@ function Advertising() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
                         <div className='space-y-8'>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform&nbsp;</span>
+                                Ready to <span className='text-[#4333AF]'>Transform&nbsp;</span>
                                 <br className='hidden sm:block' />
                                 Your Future?
                             </h2>
@@ -502,14 +498,13 @@ function Advertising() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    variant='outline'
-                                    className='cursor-pointer border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                    className='cursor-pointer border-2 px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
                                 >
                                     Purchase
                                 </Button>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border border-[#4cc7e8] cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
                                     onClick={() => setSlideshowOpen(true)}
                                 >
                                     Learn More
@@ -519,7 +514,7 @@ function Advertising() {
 
                         {/* Right Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/advretisingicon.json' loop={true} autoplay={true} />
                             </div>
                         </div>
@@ -544,22 +539,22 @@ function Advertising() {
 
             {/* Purchase Modal */}
             <Dialog open={showPurchaseModal} onOpenChange={setShowPurchaseModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <button
                         onClick={() => setShowPurchaseModal(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group z-10 bg-[#4333AF] hover:bg-[#372990]'
                     >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        <X className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                     </button>
 
                     <DialogHeader className='space-y-6 pb-6'>
                         <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='min-w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <Monitor className='w-6 h-6 text-white' />
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Purchase Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogDescription className='text-[#4333AF] font-semibold'>
                                     Please purchase a Digital Billboard subscription to advertise.
                                 </DialogDescription>
                             </div>
@@ -570,7 +565,7 @@ function Advertising() {
                         <p className='text-gray-300 leading-relaxed'>You need to purchase a subscription to proceed with advertising.</p>
                         <Button
                             onClick={handlePurchaseRequiredClick}
-                            className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'
+                            className='w-full text-white font-black py-3 text-lg shadow-2xl shadow-[#4333AF]/15 hover:shadow-[#4333AF]/15 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer bg-[#4333AF] hover:bg-[#372990]'
                         >
                             Purchase Now
                         </Button>
@@ -580,22 +575,22 @@ function Advertising() {
 
             {/* Form Modal */}
             <Dialog open={showFormModal} onOpenChange={setShowFormModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl max-h-[80vh] overflow-y-auto'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl max-h-[80vh] overflow-y-auto bg-[#0C0F18]'>
                     <button
                         onClick={() => setShowFormModal(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group z-10 bg-[#4333AF] hover:bg-[#372990]'
                     >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        <X className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                     </button>
 
                     <DialogHeader className='space-y-6 pb-6'>
                         <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='min-w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <Monitor className='w-6 h-6 text-white' />
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Billboard Application</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogDescription className='text-[#4333AF] font-semibold'>
                                     Please fill out the details for your advertising application.
                                 </DialogDescription>
                             </div>
@@ -607,7 +602,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Full Name</Label> */}
                             <Input
                                 placeholder='Enter your Full Name'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.fullName}
                                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             />
@@ -617,7 +612,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Website</Label> */}
                             <Input
                                 placeholder='Enter your Website URL'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.website}
                                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                             />
@@ -627,7 +622,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Podcast</Label> */}
                             <Input
                                 placeholder='Enter your Podcast Link'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.podcast}
                                 onChange={(e) => setFormData({ ...formData, podcast: e.target.value })}
                             />
@@ -637,7 +632,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Twitter</Label> */}
                             <Input
                                 placeholder='Enter your Twitter Link'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.twitter}
                                 onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                             />
@@ -647,7 +642,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>YouTube</Label> */}
                             <Input
                                 placeholder='Enter your Youtube Link'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.youTube}
                                 onChange={(e) => setFormData({ ...formData, youTube: e.target.value })}
                             />
@@ -657,7 +652,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Facebook</Label> */}
                             <Input
                                 placeholder='Enter your Facebook Link'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.facebook}
                                 onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
                             />
@@ -672,7 +667,7 @@ function Advertising() {
                                     const file = e.target.files?.[0];
                                     if (file) handleImageUpload(file);
                                 }}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 border-2 text-white p-2 rounded-lg w-full'
+                                className='bg-[#0a0b0f] border-[#414A5D] border-2 text-white p-2 rounded-lg w-full'
                             />
                             {formData.image && <p className='text-green-400 text-sm break-words'>{truncateImageName(formData.image)}</p>}
                             {errors.image && <p className='text-red-500 text-sm'>{errors.image}</p>}
@@ -681,7 +676,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Company Name</Label> */}
                             <Input
                                 placeholder='Enter your Company Name'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.companyName}
                                 onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                             />
@@ -691,7 +686,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Description</Label> */}
                             <Input
                                 placeholder='Enter Description'
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/30 text-white'
+                                className='bg-[#0a0b0f] border-[#414A5D] text-white'
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             />
@@ -699,7 +694,7 @@ function Advertising() {
                         </div>
                         <Button
                             onClick={handleFormSubmit}
-                            className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer'
+                            className='w-full text-white font-black py-3 text-lg shadow-2xl shadow-[#4333AF]/15 hover:shadow-[#4333AF]/15 transition-all duration-500 transform hover:scale-105 rounded-2xl cursor-pointer bg-[#4333AF] hover:bg-[#372990]'
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (
@@ -717,22 +712,22 @@ function Advertising() {
 
             {/* Confirmation Modal */}
             <Dialog open={showConfirmationModal} onOpenChange={setShowConfirmationModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <button
                         onClick={() => setShowConfirmationModal(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group z-10 bg-[#4333AF] hover:bg-[#372990]'
                     >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        <X className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                     </button>
 
                     <DialogHeader className='space-y-6 pb-6'>
                         <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='min-w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <Monitor className='w-7 h-7 text-white' />
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Application Submitted</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogDescription className='text-[#4333AF] font-semibold'>
                                     Your billboard advertising application has been sent to admin for approval. We will inform you via email if the admin
                                     approves or rejects.
                                 </DialogDescription>
@@ -744,22 +739,22 @@ function Advertising() {
 
             {/* Existing Application Modal */}
             <Dialog open={showExistingApplicationModal} onOpenChange={setShowExistingApplicationModal}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <button
                         onClick={() => setShowExistingApplicationModal(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group z-10 bg-[#4333AF] hover:bg-[#372990]'
                     >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        <X className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                     </button>
 
                     <DialogHeader className='space-y-6 pb-6'>
                         <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='min-w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <Monitor className='w-7 h-7 text-white' />
                             </div>
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Application Status</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold'>
+                                <DialogDescription className='text-[#4333AF] font-semibold'>
                                     You have already applied for a digital billboard. Please wait for approval from admin; we will inform you as soon as
                                     possible via email. Alternatively, visit{' '}
                                     <Link href='/billboards' className='underline'>

@@ -3,6 +3,7 @@ import AuthModal from '@/components/AuthModal';
 import { PricingComponent } from '@/components/PricingComponent';
 
 import HeroTradingCarousel from '@/components/HeroTradingCarousel';
+
 import TradingPlatformShowcase from '@/components/TradingPlatformShowcase';
 
 import { LottieAnimation } from '@/components/lottie-animation';
@@ -131,7 +132,7 @@ const strategyPanels = [
 
         label: 'Global KPI',
 
-        accent: '#4A90D9',
+        accent: '#4333AF',
 
         HeaderIcon: Globe,
 
@@ -155,7 +156,7 @@ const strategyPanels = [
 
         label: 'Economic Simulator',
 
-        accent: '#5F32C8',
+        accent: '#4333AF',
 
         HeaderIcon: BarChart2,
 
@@ -219,8 +220,7 @@ function MobileDesktopSection() {
             <div className='container mx-auto max-w-6xl'>
                 <div className='text-center mb-8 sm:mb-10'>
                     <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black leading-[1.22] sm:leading-tight text-white mb-3'>
-                        <span className='whitespace-nowrap'>Mobile & Desktop</span>{' '}
-                        <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent whitespace-nowrap'>Compatible</span>
+                        <span className='whitespace-nowrap'>Mobile & Desktop</span> <span className='whitespace-nowrap text-[#4333AF]'>Compatible</span>
                     </h2>
 
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
@@ -228,16 +228,16 @@ function MobileDesktopSection() {
                     </p>
                 </div>
 
-                <div className='max-w-5xl mx-auto rounded-[28px] border border-[#2c7bbe]/30 bg-[#050a12] shadow-[0_0_0_1px_rgba(44,123,190,0.08),0_20px_60px_rgba(0,0,0,0.45)] overflow-hidden'>
+                <div className='max-w-5xl mx-auto rounded-[28px] border border-[#414A5D] bg-[#0C0F18] shadow-[0_0_0_1px_rgba(67,51,175,0.08),0_20px_60px_rgba(0,0,0,0.45)] overflow-hidden'>
                     {MOBILE_DESKTOP_FEATURES.map(({ Icon, title, desc }, i) => (
                         <div
                             key={title}
                             className='flex items-start gap-4 sm:gap-5 px-5 sm:px-8 py-5 sm:py-6'
                             style={{
-                                borderBottom: i < MOBILE_DESKTOP_FEATURES.length - 1 ? '1px solid rgba(76,199,232,0.10)' : 'none',
+                                borderBottom: i < MOBILE_DESKTOP_FEATURES.length - 1 ? '1px solid rgba(67,51,175,0.10)' : 'none',
                             }}
                         >
-                            <div className='flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#2c7bbe] to-[#4cc7e8] flex items-center justify-center shadow-[0_8px_30px_rgba(76,199,232,0.18)]'>
+                            <div className='flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgba(67,51,175,0.14)] bg-[#4333AF]'>
                                 <Icon className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
                             </div>
 
@@ -253,7 +253,7 @@ function MobileDesktopSection() {
                         <Button
                             onClick={() => router.push('/signup')}
                             size='lg'
-                            className='w-full h-14 cursor-pointer sm:h-16 rounded-2xl border border-[#6ad7f0] bg-gradient-to-r from-[#3d82c2] to-[#57c4e4] hover:from-[#4a8fd0] hover:to-[#63cee8] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(76,199,232,0.22)] transition-all duration-300'
+                            className='w-full h-14 cursor-pointer sm:h-16 rounded-2xl border border-[#414A5D] text-white text-base sm:text-2xl font-bold shadow-[0_0_30px_rgba(67,51,175,0.14)] transition-all duration-300 bg-[#4333AF] hover:bg-[#372990]'
                         >
                             Open Account
                             {/* <span className='ml-3 text-lg sm:text-2xl'>→</span> */}
@@ -274,7 +274,7 @@ function DataAnalyticsSection() {
 
             title: 'Data Driven Analytics',
 
-            accent: '#4cc7e8',
+            accent: '#4333AF',
 
             icon: BarChart2,
 
@@ -286,7 +286,7 @@ function DataAnalyticsSection() {
 
             title: 'Smart Technology Infrastructure',
 
-            accent: '#5EDC7A',
+            accent: '#4333AF',
 
             icon: Zap,
 
@@ -298,7 +298,7 @@ function DataAnalyticsSection() {
 
             title: 'Black Snow Philosophy',
 
-            accent: '#F5A623',
+            accent: '#4333AF',
 
             icon: Shield,
 
@@ -310,7 +310,7 @@ function DataAnalyticsSection() {
 
             title: 'Trade Execution Engine',
 
-            accent: '#F5A623',
+            accent: '#4333AF',
 
             icon: DollarSign,
 
@@ -322,7 +322,7 @@ function DataAnalyticsSection() {
 
             title: 'Strategy Optimization',
 
-            accent: '#5F32C8',
+            accent: '#4333AF',
 
             icon: TrendingUp,
 
@@ -334,7 +334,7 @@ function DataAnalyticsSection() {
 
             title: 'Data-Driven Technology',
 
-            accent: '#E74C3C',
+            accent: '#4333AF',
 
             icon: LayoutGrid,
 
@@ -346,13 +346,13 @@ function DataAnalyticsSection() {
         <section className='relative py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-[#050608] overflow-hidden'>
             <div
                 className='pointer-events-none absolute inset-0'
-                style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(44,123,190,0.06) 0%, transparent 60%)' }}
+                style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(67,51,175,0.06) 0%, transparent 60%)' }}
             />
 
             <div
                 className='pointer-events-none absolute inset-0'
                 style={{
-                    backgroundImage: `linear-gradient(rgba(44,123,190,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(44,123,190,0.025) 1px, transparent 1px)`,
+                    backgroundImage: `linear-gradient(rgba(67,51,175,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(67,51,175,0.025) 1px, transparent 1px)`,
 
                     backgroundSize: '64px 64px',
                 }}
@@ -361,10 +361,7 @@ function DataAnalyticsSection() {
             <div className='container mx-auto max-w-7xl relative z-10'>
                 <div className='text-center mb-12 sm:mb-14'>
                     <h2 className='text-[clamp(1.6rem,6.8vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-[1.22] sm:leading-tight'>
-                        <span className='whitespace-nowrap'>Built for Modern</span>{' '}
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent whitespace-nowrap'>
-                            Trading Workflows
-                        </span>
+                        <span className='whitespace-nowrap'>Built for Modern</span> <span className='whitespace-nowrap text-[#4333AF]'>Trading Workflows</span>
                     </h2>
 
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>
@@ -376,17 +373,14 @@ function DataAnalyticsSection() {
                     {analyticsBlocks.map(({ label, title, accent, icon: Icon, body }) => (
                         <div
                             key={label}
-                            className='relative rounded-2xl border border-white/10 p-6 sm:p-7 transition-all duration-300 hover:border-white/15'
+                            className='relative rounded-2xl border border-[#414A5D] p-6 sm:p-7 transition-all duration-300 hover:border-[#414A5D]'
                             style={{
-                                background: 'linear-gradient(180deg, rgba(13,17,23,0.98) 0%, rgba(11,19,32,0.98) 100%)',
+                                background: '#0C0F18',
 
                                 boxShadow: '0 18px 40px rgba(0,0,0,0.35)',
                             }}
                         >
-                            <div
-                                className='absolute top-0 left-0 right-0 h-[1px]'
-                                style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                            />
+                            <div className='absolute top-0 left-0 right-0 h-[1px]' style={{ background: '#4333AF' }} />
 
                             <div className='flex items-center gap-4 mb-5'>
                                 <div
@@ -589,7 +583,7 @@ function Home() {
     const validateForm = () => {
         const errors: typeof formErrors = {};
 
-        const emailRegex = /^\S+@\S+\.\S+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!firstName.trim()) errors.firstName = 'First name is required.';
 
@@ -689,7 +683,7 @@ function Home() {
 
     const StackedStrategiesSection = () => {
         return (
-            <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-[#0B1320] overflow-hidden'>
+            <section className='relative py-16 px-4 sm:px-6 md:px-8 bg-[#050608] overflow-hidden'>
                 <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06),transparent_55%)]' />
 
                 <div className='container mx-auto max-w-7xl relative z-10'>
@@ -697,9 +691,7 @@ function Home() {
 
                     <div className='text-center mb-12'>
                         <h2 className='text-[clamp(1.38rem,5.8vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.22] sm:leading-tight'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent whitespace-nowrap'>
-                                Explore Data-Driven
-                            </span>
+                            <span className='whitespace-nowrap text-[#4333AF]'>Explore Data-Driven</span>
 
                             <br />
 
@@ -707,9 +699,7 @@ function Home() {
                                 <span className='text-white'>Market </span>
 
                                 <span className='relative inline-block'>
-                                    <span className='bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] bg-clip-text text-transparent'>
-                                        Intelligence Hub
-                                    </span>
+                                    <span className='text-[#4333AF]'>Intelligence Hub</span>
                                 </span>
                             </span>
                         </h2>
@@ -730,19 +720,16 @@ function Home() {
                             return (
                                 <div
                                     key={id}
-                                    className='relative rounded-3xl overflow-hidden border border-white/10 flex flex-col'
+                                    className='relative rounded-3xl overflow-hidden border border-[#414A5D] flex flex-col'
                                     style={{
-                                        background: 'linear-gradient(135deg, #0d1117 0%, #0B1320 50%, #0d1117 100%)',
+                                        background: '#0C0F18',
 
                                         boxShadow: `0 0 0 1px rgba(255,255,255,0.06), 0 40px 80px rgba(0,0,0,0.6), 0 0 80px ${accent}18`,
                                     }}
                                 >
                                     {/* Glow accent line at top */}
 
-                                    <div
-                                        className='absolute top-0 left-0 right-0 h-[2px]'
-                                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                                    />
+                                    <div className='absolute top-0 left-0 right-0 h-[2px]' style={{ background: '#4333AF' }} />
 
                                     <div
                                         className='pointer-events-none absolute inset-0'
@@ -874,11 +861,11 @@ function Home() {
                                                             type='button'
                                                             className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                             style={{
-                                                                background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                                                background: '#4333AF',
 
-                                                                border: `2px solid ${accent}`,
+                                                                border: '2px solid #4333AF',
 
-                                                                boxShadow: `0 0 28px ${accent}45`,
+                                                                boxShadow: '0 0 18px rgba(67,51,175,0.12)',
                                                             }}
                                                         >
                                                             {panel.cta}
@@ -904,11 +891,11 @@ function Home() {
                                                         type='button'
                                                         className='w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-full inline-flex items-center justify-center gap-3 font-semibold text-white text-base md:text-lg lg:text-xl whitespace-nowrap transition-all duration-200 hover:opacity-90 active:scale-95'
                                                         style={{
-                                                            background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                                            background: '#4333AF',
 
-                                                            border: `2px solid ${accent}`,
+                                                            border: '2px solid #4333AF',
 
-                                                            boxShadow: `0 0 28px ${accent}45`,
+                                                            boxShadow: '0 0 18px rgba(67,51,175,0.12)',
                                                         }}
                                                     >
                                                         {panel.discoveryCta}
@@ -964,9 +951,7 @@ function Home() {
 
                                     <br />
 
-                                    <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2a8dcc] to-[#2c7bbe] bg-clip-text text-transparent font-black whitespace-nowrap'>
-                                        Intelligence Engine
-                                    </span>
+                                    <span className='font-black whitespace-nowrap text-[#4333AF]'>Intelligence Engine</span>
                                 </h1>
 
                                 <p className='text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed max-w-xl font-light'>
@@ -977,10 +962,10 @@ function Home() {
                             {/* Mobile animation */}
 
                             <div className='block min-[1100px]:hidden w-full animate-slide-in-left delay-300'>
-                                <div className='flex items-center justify-center w-full rounded-2xl border border-[#2c7bbe]/20 bg-[#07131a]/50'>
+                                <div className='home-hero-lottie-surface flex items-center justify-center w-full rounded-2xl border border-[#414A5D] bg-transparent'>
                                     <LottieAnimation
                                         src='/animations/growthChartIcon.json'
-                                        className='w-full h-[220px] xs:h-[250px]'
+                                        className='w-full h-[220px] xs:h-[250px] bg-transparent'
                                         loop={true}
                                         autoplay={true}
                                     />
@@ -995,8 +980,8 @@ function Home() {
                         {/* ── RIGHT — desktop only ── */}
 
                         <div className='hidden min-[1100px]:flex relative animate-slide-in-right w-full self-stretch items-center justify-center'>
-                            <div className='w-full max-w-[440px] h-full min-h-[490px] max-h-[530px] bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl border border-[#2c7bbe]/20 overflow-hidden'>
-                                <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full' loop={true} autoplay={true} />
+                            <div className='home-hero-lottie-surface w-full max-w-[440px] h-full min-h-[490px] max-h-[530px] rounded-3xl border border-[#414A5D] overflow-hidden bg-transparent'>
+                                <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full bg-transparent' loop={true} autoplay={true} />
                             </div>
                         </div>
                     </div>
@@ -1026,23 +1011,20 @@ function Home() {
             {/* 1) Checking Entitlement Loader */}
 
             <Dialog open={isCheckingOpen} onOpenChange={setIsCheckingOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <DialogHeader className='space-y-2'>
                         <DialogTitle className='text-2xl font-black text-white'>Checking access…</DialogTitle>
 
-                        <DialogDesc className='text-[#4cc7e8] font-semibold'>Verifying your newsletter subscription status</DialogDesc>
+                        <DialogDesc className='text-[#4333AF] font-semibold'>Verifying your newsletter subscription status</DialogDesc>
                     </DialogHeader>
 
                     <div className='flex flex-col items-center justify-center py-8'>
-                        <div className='w-10 h-10 rounded-full border-4 border-[#2c7bbe]/30 border-t-[#4cc7e8] animate-spin'></div>
+                        <div className='w-10 h-10 rounded-full border-4 border-[#414A5D] border-t-[#4333AF] animate-spin'></div>
 
                         {entitlementError && <p className='text-red-400 mt-6 text-sm text-center'>{entitlementError}</p>}
 
                         {entitlementError && (
-                            <Button
-                                onClick={() => setIsCheckingOpen(false)}
-                                className='mt-4 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white font-black'
-                            >
+                            <Button onClick={() => setIsCheckingOpen(false)} className='mt-4 text-white font-black bg-[#4333AF]'>
                                 Close
                             </Button>
                         )}
@@ -1053,24 +1035,24 @@ function Home() {
             {/* 2) Subscribe Form */}
 
             <Dialog open={isSubscribeFormOpen} onOpenChange={setIsSubscribeFormOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <button
                         onClick={() => setIsSubscribeFormOpen(false)}
-                        className='absolute right-4 top-4 w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                        className='absolute right-4 top-4 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group z-10 bg-[#4333AF] hover:bg-[#372990]'
                     >
-                        <X className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                        <X className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                     </button>
 
                     <DialogHeader className='space-y-6 pb-6'>
                         <div className='flex items-center space-x-4'>
-                            <div className='w-12 h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <Calendar className='w-6 h-6 text-white' />
                             </div>
 
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Subscribe to Newsletter</DialogTitle>
 
-                                <DialogDesc className='text-[#4cc7e8] font-semibold'>Enter your details to receive updates.</DialogDesc>
+                                <DialogDesc className='text-[#4333AF] font-semibold'>Enter your details to receive updates.</DialogDesc>
                             </div>
                         </div>
                     </DialogHeader>
@@ -1081,7 +1063,7 @@ function Home() {
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                                 placeholder='Enter your first name'
-                                className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
+                                className='bg-[#050608] border-[#414A5D] text-white placeholder:text-gray-400'
                             />
 
                             <FieldError msg={formErrors.firstName} />
@@ -1092,7 +1074,7 @@ function Home() {
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 placeholder='Enter your last name'
-                                className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
+                                className='bg-[#050608] border-[#414A5D] text-white placeholder:text-gray-400'
                             />
 
                             <FieldError msg={formErrors.lastName} />
@@ -1104,7 +1086,7 @@ function Home() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 type='email'
                                 placeholder='Enter your email'
-                                className='bg-[#050608]/50 border-[#2c7bbe]/30 text-white placeholder:text-gray-400'
+                                className='bg-[#050608] border-[#414A5D] text-white placeholder:text-gray-400'
                             />
 
                             <FieldError msg={formErrors.email} />
@@ -1116,11 +1098,11 @@ function Home() {
                                 type='checkbox'
                                 checked={agree}
                                 onChange={(e) => setAgree(e.target.checked)}
-                                className='mt-1 w-4 h-4 rounded border-[#2c7bbe]/40 bg-transparent'
+                                className='mt-1 w-4 h-4 rounded border-[#414A5D] bg-transparent'
                             />
 
                             <label htmlFor='agree' className='text-sm text-gray-300'>
-                                I agree to the <span className='text-[#4cc7e8] underline underline-offset-2 cursor-pointer'>terms and policies</span>.
+                                I agree to the <span className='text-[#4333AF] underline underline-offset-2 cursor-pointer'>terms and policies</span>.
                             </label>
                         </div>
 
@@ -1128,7 +1110,7 @@ function Home() {
 
                         <Button
                             onClick={submitNewsletter}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                            className='w-full cursor-pointer text-white font-black py-3 text-lg shadow-2xl shadow-[#4333AF]/15 hover:shadow-[#4333AF]/15 transition-all duration-500 transform hover:scale-105 rounded-2xl bg-[#4333AF] hover:bg-[#372990]'
                             disabled={submitLoading}
                         >
                             {submitLoading ? 'Submitting…' : 'Submit'}
@@ -1140,17 +1122,17 @@ function Home() {
             {/* 3) Success Modal */}
 
             <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
-                <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                <DialogContent className='sm:max-w-md border-2 border-[#414A5D] shadow-2xl shadow-[#4333AF]/15 backdrop-blur-2xl bg-[#0C0F18]'>
                     <DialogHeader className='space-y-6 pb-2'>
                         <div className='flex items-center space-x-4'>
-                            <div className='min-w-12 min-h-12 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-xl'>
+                            <div className='min-w-12 min-h-12 rounded-2xl flex items-center justify-center shadow-xl bg-[#4333AF]'>
                                 <CheckCircle className='w-6 h-6 text-white' />
                             </div>
 
                             <div>
                                 <DialogTitle className='text-2xl font-black text-white'>Request Submitted</DialogTitle>
 
-                                <DialogDesc className='text-[#4cc7e8] font-semibold'>
+                                <DialogDesc className='text-[#4333AF] font-semibold'>
                                     Your request was submitted successfully. We will inform you further via email.
                                 </DialogDesc>
                             </div>
@@ -1160,7 +1142,7 @@ function Home() {
                     <div className='pt-2'>
                         <Button
                             onClick={() => setIsSuccessModalOpen(false)}
-                            className='w-full cursor-pointer bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2c7bbe] text-white font-black py-3 text-lg shadow-2xl shadow-[#2c7bbe]/50 hover:shadow-[#4cc7e8]/60 transition-all duration-500 transform hover:scale-105 rounded-2xl'
+                            className='w-full cursor-pointer text-white font-black py-3 text-lg shadow-2xl shadow-[#4333AF]/15 hover:shadow-[#4333AF]/15 transition-all duration-500 transform hover:scale-105 rounded-2xl bg-[#4333AF] hover:bg-[#372990]'
                         >
                             Done
                         </Button>

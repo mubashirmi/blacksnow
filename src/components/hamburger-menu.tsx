@@ -243,7 +243,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                 variant='ghost'
                 size='icon'
                 onClick={() => setIsOpen(!isOpen)}
-                className='relative z-50 h-12 w-16 cursor-pointer text-[#f4f4f4] transition-all duration-300 hover:bg-[#2c7bbe]/20'
+                className='relative z-50 h-12 w-16 cursor-pointer text-[#f4f4f4] transition-all duration-300 hover:bg-[#4333AF]/15'
                 aria-label='Toggle menu'
             >
                 <div className='flex h-6 w-6 flex-col items-center justify-center'>
@@ -273,12 +273,12 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
 
                 {/* Menu Panel */}
                 <div
-                    className={`absolute right-0 top-0 flex h-full w-80 flex-col border-l border-[#2c7bbe]/30 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] shadow-2xl transition-all duration-500 ease-in-out ${
+                    className={`absolute right-0 top-0 flex h-full w-80 flex-col border-l border-[#414A5D] bg-[#0C0F18] shadow-2xl transition-all duration-500 ease-in-out ${
                         isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
                 >
                     {/* Header and footer are both exactly 96px high. */}
-                    <div className='flex h-24 shrink-0 items-center justify-start border-b border-[#2c7bbe]/20 px-6'>
+                    <div className='flex h-24 shrink-0 items-center justify-start border-b border-[#414A5D] px-6'>
                         <Link
                             href='/'
                             onClick={() => setIsOpen(false)}
@@ -318,10 +318,10 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                         transitionDelay: isOpen ? `${300 + sectionIndex * 100}ms` : '0ms',
                                     }}
                                 >
-                                    <h3 className='relative mb-4 text-lg font-black text-[#4cc7e8]'>
+                                    <h3 className='relative mb-4 text-lg font-black text-[#4333AF]'>
                                         {section.category}
 
-                                        <div className='absolute -bottom-1 left-0 h-0.5 w-8 rounded-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe]' />
+                                        <div className='absolute -bottom-1 left-0 h-0.5 w-8 rounded-full bg-[#4333AF]' />
                                     </h3>
 
                                     <div className='space-y-2'>
@@ -330,7 +330,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                                 key={item.href}
                                                 href={item.href}
                                                 onClick={() => setIsOpen(false)}
-                                                className={`group block transform rounded-xl border border-transparent px-4 py-3 font-medium text-gray-300 transition-all duration-300 hover:border-[#2c7bbe]/20 hover:bg-gradient-to-r hover:from-[#2c7bbe]/10 hover:to-[#4cc7e8]/10 hover:text-[#4cc7e8] ${
+                                                className={`group block transform rounded-xl border border-transparent px-4 py-3 font-medium text-gray-300 transition-all duration-300 hover:border-[#414A5D] hover:bg-[#4333AF]/10 hover:text-[#4333AF] ${
                                                     isOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'
                                                 }`}
                                                 style={{
@@ -340,7 +340,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                                 <span className='flex items-center justify-between'>
                                                     {item.name}
 
-                                                    <div className='h-2 w-2 rounded-full bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100' />
+                                                    <div className='h-2 w-2 rounded-full bg-[#4333AF] opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100' />
                                                 </span>
                                             </Link>
                                         ))}
@@ -353,7 +353,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     {/* Footer stays exactly 96px high when it is shown. */}
                     {shouldShowFooter && (
                         <div
-                            className={`flex h-24 shrink-0 items-center justify-center border-t border-[#2c7bbe]/20 bg-[#050608] px-6 transform transition-all duration-700 delay-500 ${
+                            className={`flex h-24 shrink-0 items-center justify-center border-t border-[#414A5D] bg-[#0C0F18] px-6 transform transition-all duration-700 delay-500 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                             }`}
                         >
@@ -361,7 +361,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {hasProductDashboard && (
                                     <Button
                                         onClick={handleDashboardClick}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#4333AF] hover:bg-[#382B96] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         Dashboard
@@ -372,7 +372,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     <Button
                                         variant='outline'
                                         onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#2c7bbe]/40 bg-transparent px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:bg-[#2c7bbe]/10 hover:text-white'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#4333AF] bg-transparent px-4 py-0 !text-[18px] !font-light !text-[#4333AF] transition-all duration-300 hover:bg-[#4333AF]/10 hover:text-[#4333AF]'
                                         style={footerButtonStyle}
                                     >
                                         {roleDashboardMap.Admin.label}
@@ -382,7 +382,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {!isLoggedIn && (
                                     <Button
                                         asChild
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#4333AF] hover:bg-[#382B96] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         <Link href='/login' onClick={() => setIsOpen(false)}>

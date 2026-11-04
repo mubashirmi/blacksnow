@@ -159,8 +159,9 @@ const Users = makeIcon('users');
 const Wifi = makeIcon('wifi');
 const Zap = makeIcon('zap');
 
-const BLUE = '#26B7FF';
-const PURPLE = '#B44BFF';
+const BRAND_PURPLE = '#4333AF';
+const CARD_BORDER = '#414A5D';
+const CARD_BACKGROUND = '#0C0F18';
 
 type Feature = { label: string; Icon: LucideIcon };
 type Benefit = { label: string; note: string; progress: number };
@@ -212,47 +213,43 @@ function DesktopArtwork() {
             aria-label='Desktop illustration of the Black Snow trading dashboard'
             role='img'
         >
-            <div className='relative w-[92%] rounded-[9px] border-[5px] border-[#2499de] bg-[#0b1624] p-[7px] shadow-[0_0_16px_rgba(38,183,255,.26),inset_0_0_0_2px_#70d9ff] sm:border-[6px]'>
-                <div className='grid aspect-[1.8/1] grid-cols-[18%_1fr] gap-2 overflow-hidden bg-[#03101c] p-2'>
-                    <div className='space-y-2 border-r border-[#16334b] pr-2'>
-                        <MountainMark className='mb-3 h-5 w-full text-[#94c4ed]' />
-                        <div className='h-1.5 w-full rounded-sm bg-[#27b8fa]' />
+            <div className='relative w-[92%] rounded-[9px] border-[5px] border-[#4333AF] bg-[#0C0F18] p-[7px] shadow-[0_0_16px_rgba(67,51,175,.22),inset_0_0_0_2px_#414A5D] sm:border-[6px]'>
+                <div className='grid aspect-[1.8/1] grid-cols-[18%_1fr] gap-2 overflow-hidden bg-[#07090E] p-2'>
+                    <div className='space-y-2 border-r border-[#414A5D] pr-2'>
+                        <MountainMark className='mb-3 h-5 w-full text-[#4333AF]' />
+                        <div className='h-1.5 w-full rounded-sm bg-[#4333AF]' />
                         {[70, 86, 68, 80, 53].map((width, index) => (
-                            <div key={index} className='h-1 rounded-sm bg-[#244459]' style={{ width: `${width}%` }} />
+                            <div key={index} className='h-1 rounded-sm bg-[#414A5D]' style={{ width: `${width}%` }} />
                         ))}
                     </div>
                     <div className='flex min-w-0 flex-col gap-2'>
-                        <div className='h-2 w-[72%] rounded-sm bg-[#10293d]' />
+                        <div className='h-2 w-[72%] rounded-sm bg-[#414A5D]' />
                         <div className='grid min-h-0 flex-1 grid-cols-[1.15fr_.85fr] gap-2'>
-                            <div className='flex items-end justify-around gap-1 rounded-sm bg-[#0b263d] px-2 pb-2 pt-3'>
+                            <div className='flex items-end justify-around gap-1 rounded-sm bg-[#121521] px-2 pb-2 pt-3'>
                                 {[35, 49, 69, 90].map((height, index) => (
-                                    <div
-                                        key={index}
-                                        className='w-[16%] rounded-t-[1px] bg-gradient-to-t from-[#0879db] to-[#37c5ff]'
-                                        style={{ height: `${height}%` }}
-                                    />
+                                    <div key={index} className='w-[16%] rounded-t-[1px] bg-[#4333AF]' style={{ height: `${height}%` }} />
                                 ))}
                             </div>
-                            <div className='grid place-items-center rounded-sm bg-[#0b263d]'>
+                            <div className='grid place-items-center rounded-sm bg-[#121521]'>
                                 <div
                                     className='aspect-square w-[60%] rounded-full'
-                                    style={{ background: 'conic-gradient(#2ec5ff 0 30%, #105eae 30% 76%, #163750 76% 100%)' }}
+                                    style={{ background: 'conic-gradient(#4333AF 0 30%, #34278F 30% 76%, #414A5D 76% 100%)' }}
                                 >
-                                    <div className='m-[27%] aspect-square rounded-full bg-[#0b263d]' />
+                                    <div className='m-[27%] aspect-square rounded-full bg-[#121521]' />
                                 </div>
                             </div>
                         </div>
                         <div className='grid h-[28%] grid-cols-2 gap-2'>
                             {[0, 1].map((index) => (
-                                <div key={index} className='space-y-1 rounded-sm bg-[#0b263d] px-2 py-1.5'>
-                                    <div className='h-1 w-[60%] rounded-full bg-[#315d82]' />
+                                <div key={index} className='space-y-1 rounded-sm bg-[#121521] px-2 py-1.5'>
+                                    <div className='h-1 w-[60%] rounded-full bg-[#414A5D]' />
                                     <div className='flex gap-1'>
-                                        <i className='h-1.5 w-1.5 rounded-full bg-[#227cc2]' />
-                                        <i className='h-1 w-[58%] rounded-full bg-[#20425d]' />
+                                        <i className='h-1.5 w-1.5 rounded-full bg-[#4333AF]' />
+                                        <i className='h-1 w-[58%] rounded-full bg-[#414A5D]' />
                                     </div>
                                     <div className='flex gap-1'>
-                                        <i className='h-1.5 w-1.5 rounded-full bg-[#227cc2]' />
-                                        <i className='h-1 w-[46%] rounded-full bg-[#20425d]' />
+                                        <i className='h-1.5 w-1.5 rounded-full bg-[#4333AF]' />
+                                        <i className='h-1 w-[46%] rounded-full bg-[#414A5D]' />
                                     </div>
                                 </div>
                             ))}
@@ -260,16 +257,16 @@ function DesktopArtwork() {
                     </div>
                 </div>
             </div>
-            <div className='h-[17px] w-[13%] bg-gradient-to-r from-[#1474b6] via-[#34bbff] to-[#1474b6]' />
-            <div className='h-[7px] w-[31%] rounded-t-[4px] bg-gradient-to-b from-[#42c5ff] to-[#168be5]' />
+            <div className='h-[17px] w-[13%] bg-[#4333AF]' />
+            <div className='h-[7px] w-[31%] rounded-t-[4px] bg-[#414A5D]' />
         </div>
     );
 }
 
 function DeviceTile({ Icon, label }: { Icon: LucideIcon; label: string }) {
     return (
-        <div className='flex min-h-0 flex-col items-center justify-center gap-1 rounded-[5px] bg-[#261845] p-1 text-center'>
-            <Icon className='h-[clamp(13px,2vw,22px)] w-[clamp(13px,2vw,22px)] text-[#c15bff]' fill='currentColor' strokeWidth={1.7} />
+        <div className='flex min-h-0 flex-col items-center justify-center gap-1 rounded-[5px] bg-[#151829] p-1 text-center'>
+            <Icon className='h-[clamp(13px,2vw,22px)] w-[clamp(13px,2vw,22px)] text-[#4333AF]' fill='currentColor' strokeWidth={1.7} />
             <span className='text-[7px] leading-tight text-white/80 sm:text-[8px]'>{label}</span>
         </div>
     );
@@ -282,22 +279,22 @@ function MobileArtwork() {
             aria-label='Tablet and smartphone illustration of the Black Snow platform'
             role='img'
         >
-            <div className='w-[79%] rounded-[12px] border-[6px] border-[#7021c2] bg-[#0b0a18] p-[7px] shadow-[0_0_15px_rgba(180,75,255,.35)] sm:border-[8px]'>
-                <div className='grid aspect-[1.4/1] grid-cols-2 grid-rows-2 gap-1.5 rounded-md bg-[#100e29] p-1.5'>
+            <div className='w-[79%] rounded-[12px] border-[6px] border-[#4333AF] bg-[#0C0F18] p-[7px] shadow-[0_0_15px_rgba(67,51,175,.28)] sm:border-[8px]'>
+                <div className='grid aspect-[1.4/1] grid-cols-2 grid-rows-2 gap-1.5 rounded-md bg-[#080A10] p-1.5'>
                     <DeviceTile Icon={BarChart3} label='Analytics' />
                     <DeviceTile Icon={Send} label='Campaigns' />
                     <DeviceTile Icon={FileText} label='Invoices' />
                     <DeviceTile Icon={Users} label='Account' />
                 </div>
             </div>
-            <div className='absolute bottom-0 left-0 w-[30%] rounded-[12px] border-[3px] border-[#a44aea] bg-[#080a18] p-[4px] shadow-[0_0_0_2px_#4b2474,0_0_14px_rgba(180,75,255,.26)]'>
-                <div className='relative rounded-[6px] bg-[#0e1025] p-1 pt-3'>
-                    <span className='absolute left-1/2 top-[3px] h-[3px] w-5 -translate-x-1/2 rounded-full bg-[#473d73]' />
-                    <MountainMark className='mx-auto mb-2 h-6 w-[78%] text-[#bfb4d7]' />
+            <div className='absolute bottom-0 left-0 w-[30%] rounded-[12px] border-[3px] border-[#4333AF] bg-[#0C0F18] p-[4px] shadow-[0_0_0_2px_#414A5D,0_0_14px_rgba(67,51,175,.24)]'>
+                <div className='relative rounded-[6px] bg-[#080A10] p-1 pt-3'>
+                    <span className='absolute left-1/2 top-[3px] h-[3px] w-5 -translate-x-1/2 rounded-full bg-[#414A5D]' />
+                    <MountainMark className='mx-auto mb-2 h-6 w-[78%] text-[#4333AF]' />
                     {[BarChart3, Send, FileText, Users].map((Icon, index) => (
-                        <div key={index} className='mb-1 flex h-[22px] items-center gap-2 rounded-[3px] bg-[#251b45] px-2 last:mb-0'>
-                            <Icon className='h-3.5 w-3.5 text-[#c15bff]' fill='currentColor' strokeWidth={1.6} />
-                            <div className='h-1 w-[45%] rounded-full bg-[#64438c]' />
+                        <div key={index} className='mb-1 flex h-[22px] items-center gap-2 rounded-[3px] bg-[#151829] px-2 last:mb-0'>
+                            <Icon className='h-3.5 w-3.5 text-[#4333AF]' fill='currentColor' strokeWidth={1.6} />
+                            <div className='h-1 w-[45%] rounded-full bg-[#414A5D]' />
                         </div>
                     ))}
                 </div>
@@ -308,15 +305,17 @@ function MobileArtwork() {
 
 function FeatureStrip({ items, accent, mobile }: { items: Feature[]; accent: string; mobile: boolean }) {
     return (
-        <div className='overflow-hidden rounded-[7px] border bg-black/15' style={{ borderColor: `${accent}5c` }}>
-            <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: `${accent}55` }}>
+        <div className='overflow-hidden rounded-[7px] border bg-[#080A10]' style={{ borderColor: CARD_BORDER }}>
+            <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: CARD_BORDER }}>
                 Key Features
             </p>
             <div className='grid grid-cols-5 py-2 sm:py-3'>
                 {items.map(({ label, Icon }, index) => (
                     <div
                         key={label}
-                        className={`flex min-w-0 flex-col items-center justify-start gap-1.5 px-0.5 text-center ${index > 0 ? 'border-l border-white/20' : ''}`}
+                        className={`flex min-w-0 flex-col items-center justify-start gap-1.5 px-0.5 text-center ${
+                            index > 0 ? 'border-l border-[#414A5D]/65' : ''
+                        }`}
                     >
                         <Icon className='h-5 w-5 sm:h-7 sm:w-7' color={accent} fill={mobile && index !== 3 ? accent : 'none'} strokeWidth={mobile ? 2 : 2.5} />
                         <span className='flex min-h-[36px] max-w-[90px] items-start justify-center text-[9px] leading-[1.25] text-white/90 sm:text-[10px]'>
@@ -331,8 +330,8 @@ function FeatureStrip({ items, accent, mobile }: { items: Feature[]; accent: str
 
 function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
     return (
-        <div className='mt-2 overflow-hidden rounded-[7px] border bg-black/15' style={{ borderColor: `${accent}5c` }}>
-            <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: `${accent}55` }}>
+        <div className='mt-2 overflow-hidden rounded-[7px] border bg-[#080A10]' style={{ borderColor: CARD_BORDER }}>
+            <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: CARD_BORDER }}>
                 Top Benefits
             </p>
             <div className='space-y-1.5 px-2.5 py-2.5 sm:px-3'>
@@ -342,18 +341,18 @@ function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
                         className='grid grid-cols-[17px_minmax(0,1fr)_minmax(70px,.8fr)] items-center gap-2 text-[9px] sm:grid-cols-[18px_minmax(0,1.15fr)_minmax(75px,1.25fr)_minmax(0,.95fr)] sm:text-[10px]'
                     >
                         <div className='flex h-[17px] w-[17px] items-center justify-center rounded-full' style={{ background: accent }}>
-                            <Check className='h-3 w-3 text-[#091220]' strokeWidth={3} />
+                            <Check className='h-3 w-3 text-white' strokeWidth={3} />
                         </div>
                         <span className='truncate text-white/90' title={label}>
                             {label}
                         </span>
-                        <div className='h-[13px] rounded-full border bg-black/35 p-[1px]' style={{ borderColor: `${accent}60` }}>
+                        <div className='h-[13px] rounded-full border bg-black/35 p-[1px]' style={{ borderColor: CARD_BORDER }}>
                             <div
                                 className='h-full rounded-full'
                                 style={{
                                     width: `${progress}%`,
-                                    background: `linear-gradient(90deg, ${accent}, ${accent}c0)`,
-                                    boxShadow: `0 0 6px ${accent}60`,
+                                    background: accent,
+                                    boxShadow: '0 0 6px rgba(67,51,175,.22)',
                                 }}
                             />
                         </div>
@@ -369,21 +368,18 @@ function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
 
 function PlatformCard({ mode }: { mode: 'desktop' | 'mobile' }) {
     const isMobile = mode === 'mobile';
-    const accent = isMobile ? PURPLE : BLUE;
+    const accent = BRAND_PURPLE;
     const heading = isMobile ? 'Mobile & Tablet' : 'Desktop';
     return (
         <article
             className='relative flex min-w-0 flex-col rounded-[13px] border p-2 shadow-[inset_0_0_26px_rgba(0,0,0,.2)] sm:p-2.5'
-            style={{
-                borderColor: `${accent}91`,
-                background: isMobile ? 'linear-gradient(155deg,#120b21 0%,#090b17 100%)' : 'linear-gradient(155deg,#061b2b 0%,#07101a 100%)',
-            }}
+            style={{ borderColor: CARD_BORDER, background: CARD_BACKGROUND }}
         >
             <div className='mb-2 flex h-[39px] min-w-0 items-center gap-2 sm:gap-3'>
                 <div className='relative flex h-full shrink-0 items-center pl-4 pr-7 sm:pl-5 sm:pr-8' style={{ filter: `drop-shadow(0 0 4px ${accent}30)` }}>
                     <div
                         className='absolute inset-0 border'
-                        style={{ clipPath: 'polygon(0 0,88% 0,100% 100%,0 100%)', background: `${accent}13`, borderColor: `${accent}80` }}
+                        style={{ clipPath: 'polygon(0 0,88% 0,100% 100%,0 100%)', background: `${accent}13`, borderColor: CARD_BORDER }}
                     />
                     <span
                         className='relative whitespace-nowrap text-[11px] font-bold uppercase tracking-[.15em] text-white sm:text-[13px] sm:tracking-[.25em]'
@@ -400,10 +396,10 @@ function PlatformCard({ mode }: { mode: 'desktop' | 'mobile' }) {
 
             <div
                 className='grid min-h-[190px] grid-cols-[.9fr_1.4fr] items-center gap-1 overflow-hidden rounded-[9px] border px-3 py-3 sm:min-h-[200px] sm:grid-cols-[.85fr_1.35fr] sm:px-4'
-                style={{ borderColor: `${accent}50`, background: 'rgba(2,8,16,.48)' }}
+                style={{ borderColor: CARD_BORDER, background: '#080A10' }}
             >
                 <div className='min-w-0'>
-                    <h3 className='text-[20px] font-black leading-[1.12] tracking-tight text-white sm:text-[24px]'>
+                    <h3 className='text-[20px] font-black leading-[1.3] tracking-tight text-white sm:text-[24px]'>
                         Built for
                         <br />
                         <span style={{ color: accent }}>{isMobile ? 'Your Life.' : 'Deep Work.'}</span>
@@ -429,20 +425,17 @@ function PlatformCard({ mode }: { mode: 'desktop' | 'mobile' }) {
 export function PlatformAnywhereSection() {
     return (
         <section aria-labelledby='platform-anywhere-title' className='relative mt-10 sm:mt-14'>
-            <div className='pointer-events-none absolute -inset-x-4 -inset-y-4 -z-10 rounded-2xl bg-[linear-gradient(110deg,rgba(16,115,192,.035),rgba(130,35,175,.045))]' />
             <header className='mb-5 text-center sm:mb-6'>
                 <div className='flex items-center justify-center gap-3'>
-                    <span className='hidden h-px w-12 bg-gradient-to-r from-transparent to-[#26b7ff]/60 sm:block md:w-20' />
+                    <span className='hidden h-px w-12 bg-[#4333AF] sm:block md:w-20' />
                     <h2
                         id='platform-anywhere-title'
                         className='text-[clamp(1.18rem,3vw,2.05rem)] uppercase leading-[1.35] tracking-[.015em] text-white'
                         style={{ fontFamily: 'var(--font-michroma), sans-serif', fontWeight: 400 }}
                     >
-                        Same Platform.{' '}
-                        <span className='bg-gradient-to-r from-[#26b7ff] via-[#6f86fc] to-[#b44bff] bg-clip-text text-transparent'>More Ways</span>{' '}
-                        <span className='text-[#b44bff]'>to Win.</span>
+                        Same Platform. <span className='text-[#4333AF]'>More Ways</span> <span className='text-[#4333AF]'>to Win.</span>
                     </h2>
-                    <span className='hidden h-px w-12 bg-gradient-to-l from-transparent to-[#b44bff]/60 sm:block md:w-20' />
+                    <span className='hidden h-px w-12 bg-[#4333AF] sm:block md:w-20' />
                 </div>
                 <p className='mt-1.5 text-[9px] font-semibold uppercase tracking-[.24em] text-white/55 sm:text-[11px] sm:tracking-[.42em]'>
                     Powerful tools. Anywhere you work.

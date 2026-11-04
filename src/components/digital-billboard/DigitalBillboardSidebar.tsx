@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 
+import { ActionVerificationModal, type VerifiedAction } from '@/components/action-verification-modal';
 import axios from 'axios';
 
 import {
@@ -39,8 +40,6 @@ const UNSUBSCRIBE_PRODUCT = {
 
     label: 'Digital Billboard',
 };
-
-// TODO: Add the real pause-subscription API endpoint supplied by your backend.
 
 const PAUSE_SUBSCRIPTION_API = '/api/v2/pause-subscription';
 
@@ -136,6 +135,11 @@ export function DigitalBillboardSidebar({
 
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
+    const feedbackSubmitLock = useRef(false);
+    const [verificationAction, setVerificationAction] = useState<VerifiedAction | null>(null);
+    const [verifiedFeedbackToken, setVerifiedFeedbackToken] = useState<string | null>(null);
+    const [lastSubscriptionOperation, setLastSubscriptionOperation] = useState<'pause' | 'resume'>('pause');
+
     const [feedbackReview, setFeedbackReview] = useState('');
 
     const [feedbackStars, setFeedbackStars] = useState('5');
@@ -145,8 +149,6 @@ export function DigitalBillboardSidebar({
     const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
 
     const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
-
-    const [showPauseConfirm, setShowPauseConfirm] = useState(false);
 
     const [isLoadingPause, setIsLoadingPause] = useState(false);
 
@@ -163,8 +165,6 @@ export function DigitalBillboardSidebar({
 
         message: '',
     });
-
-    const [showUnsubscribeConfirm, setShowUnsubscribeConfirm] = useState(false);
 
     const [isLoadingUnsubscribe, setIsLoadingUnsubscribe] = useState(false);
 
@@ -242,67 +242,61 @@ export function DigitalBillboardSidebar({
 
     const openFeedbackModal = () => {
         setFeedbackReview('');
-
         setFeedbackStars('5');
-
         setFeedbackError(null);
+        setVerifiedFeedbackToken(null);
+        setVerificationAction('feedback');
+    };
 
-        setShowFeedbackModal(true);
+    const closeFeedbackModal = () => {
+        if (isSubmittingFeedback) return;
+        setVerifiedFeedbackToken(null);
+        setShowFeedbackModal(false);
     };
 
     const submitFeedback = useCallback(async () => {
-        if (isSubmittingFeedback) return;
-
-        const cookies = parseCookies();
-
-        const id = cookies.id;
-
+        if (isSubmittingFeedback || feedbackSubmitLock.current) return;
         const review = feedbackReview.trim();
-
-        if (!id) {
-            setFeedbackError('User session was not found. Please sign in again and try to submit feedback.');
-
-            return;
-        }
-
         if (!review) {
             setFeedbackError('Please write your review before submitting.');
-
             return;
         }
-
-        const confirmed = window.confirm('Are you sure you want to submit this feedback? Please recheck your review and stars before confirming.');
-
-        if (!confirmed) return;
-
-        setIsSubmittingFeedback(true);
-
-        setFeedbackError(null);
-
-        try {
-            await axios.post('/api/v5/tool-feedback', {
-                authId: id,
-
-                review,
-
-                stars: feedbackStars,
-
-                toolName: UNSUBSCRIBE_PRODUCT.id,
-            });
-
+        if (!verifiedFeedbackToken) {
+            // Never submit unverified feedback. Preserve the draft while re-verifying.
             setShowFeedbackModal(false);
-
+            setVerificationAction('feedback');
+            return;
+        }
+        feedbackSubmitLock.current = true;
+        setIsSubmittingFeedback(true);
+        setFeedbackError(null);
+        // An action token may be one-time-use: discard it after attempting submission.
+        const actionToken = verifiedFeedbackToken;
+        setVerifiedFeedbackToken(null);
+        try {
+            const response = await axios.post(
+                '/api/v5/tool-feedback',
+                {
+                    review,
+                    stars: feedbackStars,
+                    toolName: UNSUBSCRIBE_PRODUCT.id,
+                },
+                { headers: { 'x-action-verification-token': actionToken } }
+            );
+            if (response.data?.success === false) {
+                throw new Error(response.data?.message || 'Unable to submit feedback.');
+            }
+            setShowFeedbackModal(false);
             setFeedbackSuccess('Feedback submitted successfully!');
-
             setTimeout(() => setFeedbackSuccess(null), 3000);
-
             await fetchFeedbackStatus();
         } catch (error: any) {
-            setFeedbackError(error?.response?.data?.message || 'Unable to submit feedback. Please try again.');
+            setFeedbackError(error?.response?.data?.message || error?.message || 'Unable to submit feedback. Verify your identity again to retry.');
         } finally {
+            feedbackSubmitLock.current = false;
             setIsSubmittingFeedback(false);
         }
-    }, [feedbackReview, feedbackStars, fetchFeedbackStatus, isSubmittingFeedback]);
+    }, [feedbackReview, feedbackStars, fetchFeedbackStatus, isSubmittingFeedback, verifiedFeedbackToken]);
 
     const navigationItems = useMemo(
         () => [
@@ -363,15 +357,22 @@ export function DigitalBillboardSidebar({
             localStorage.removeItem('pausedRoles');
 
             localStorage.removeItem('referredby');
+
+            localStorage.removeItem('affiliateId');
+
+            localStorage.removeItem('superAffiliateId');
         }
     }, []);
 
-    const performDashboardLogout = useCallback(() => {
+    const doLogout = useCallback(() => {
+        if (unsubscribeRedirectTimerRef.current) {
+            clearTimeout(unsubscribeRedirectTimerRef.current);
+            unsubscribeRedirectTimerRef.current = null;
+        }
+
         clearSession();
 
         setShowLogoutConfirm(false);
-
-        setShowUnsubscribeConfirm(false);
 
         setUnsubscribeResult((prev) => ({ ...prev, open: false }));
 
@@ -379,13 +380,13 @@ export function DigitalBillboardSidebar({
 
         onLogout?.();
 
-        router.push('/');
+        router.replace('/');
     }, [clearSession, closeMobile, onLogout, router]);
 
     const cancelLogout = () => setShowLogoutConfirm(false);
 
     const confirmLogout = () => {
-        performDashboardLogout();
+        doLogout();
     };
 
     const readLocalStorageArray = (key: string): string[] => {
@@ -418,169 +419,117 @@ export function DigitalBillboardSidebar({
         return updatedRoles;
     };
 
-    const confirmPause = useCallback(async () => {
-        if (isLoadingPause) return;
+    const moveCurrentRoleFromPausedRoles = () => {
+        const currentRole = UNSUBSCRIBE_PRODUCT.id;
+        const roles = readLocalStorageArray('roles');
+        const pausedRoles = readLocalStorageArray('pausedRoles');
+        const updatedRoles = roles.includes(currentRole) ? roles : [...roles, currentRole];
+        const updatedPausedRoles = pausedRoles.filter((role) => role !== currentRole);
+        localStorage.setItem('roles', JSON.stringify(updatedRoles));
+        localStorage.setItem('pausedRoles', JSON.stringify(updatedPausedRoles));
+        return updatedRoles;
+    };
 
-        const cookies = parseCookies();
-
-        const id = cookies.id;
-
-        if (!id) {
-            setShowPauseConfirm(false);
-
-            setPauseResult({
-                open: true,
-
-                type: 'error',
-
-                message: 'User session was not found. Please sign in again and try to pause this subscription.',
-            });
-
-            return;
-        }
-
-        if (!PAUSE_SUBSCRIPTION_API.trim()) {
-            setShowPauseConfirm(false);
-
-            setPauseResult({
-                open: true,
-
-                type: 'error',
-
-                message: 'Pause API endpoint is not configured. Add the endpoint in PAUSE_SUBSCRIPTION_API.',
-            });
-
-            return;
-        }
-
-        setIsLoadingPause(true);
-
-        try {
-            const response = await axios.patch(`${PAUSE_SUBSCRIPTION_API}?authId=${encodeURIComponent(id)}&product=${UNSUBSCRIBE_PRODUCT.id}`);
-
-            if (response.status >= 200 && response.status < 300) {
-                const remainingRoles = moveCurrentRoleToPausedRoles();
-
-                setShowPauseConfirm(false);
-
+    const confirmPause = useCallback(
+        async (verificationToken: string, operation: 'pause' | 'resume') => {
+            if (isLoadingPause) return;
+            if (!verificationToken) throw new Error('Verification token is required.');
+            setIsLoadingPause(true);
+            setLastSubscriptionOperation(operation);
+            try {
+                const response = await axios.patch(
+                    `${PAUSE_SUBSCRIPTION_API}?product=${encodeURIComponent(UNSUBSCRIBE_PRODUCT.id)}&operation=${operation}`,
+                    null,
+                    { headers: { 'x-action-verification-token': verificationToken } }
+                );
+                if (response.data?.success === false) throw new Error(response.data?.message || `Unable to ${operation} subscription.`);
+                const roles = operation === 'pause' ? moveCurrentRoleToPausedRoles() : moveCurrentRoleFromPausedRoles();
                 setPauseResult({
                     open: true,
-
                     type: 'success',
-
-                    message: response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription paused successfully.`,
+                    message:
+                        response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription ${operation === 'pause' ? 'paused' : 'resumed'} successfully.`,
                 });
-
-                const nextRole = remainingRoles.find(isDashboardRole);
-
-                if (nextRole) {
-                    router.replace(DASHBOARD_ROUTES[nextRole].url);
+                if (operation === 'pause') {
+                    const nextRole = roles.find(isDashboardRole);
+                    if (nextRole) router.replace(DASHBOARD_ROUTES[nextRole].url);
+                    else router.replace('/');
                 } else {
-                    router.replace('/');
+                    // eslint-disable-next-line
+                    void fetchFeedbackStatus();
+                    router.refresh();
                 }
-
-                return;
+            } catch (error: any) {
+                setPauseResult({
+                    open: true,
+                    type: 'error',
+                    message: error?.response?.data?.message || error?.message || `Unable to ${operation} ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
+                });
+            } finally {
+                setIsLoadingPause(false);
             }
-
-            throw new Error(response.data?.message || 'Unable to pause subscription.');
-        } catch (error: any) {
-            console.error('Error pausing subscription:', error);
-
-            setShowPauseConfirm(false);
-
-            setPauseResult({
-                open: true,
-
-                type: 'error',
-
-                message: error?.response?.data?.message || error?.message || `Unable to pause ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
-            });
-        } finally {
-            setIsLoadingPause(false);
-        }
-
+        },
         // eslint-disable-next-line
-    }, [isLoadingPause, router]);
+        [isLoadingPause, router, fetchFeedbackStatus]
+    );
 
-    const confirmUnsubscribe = useCallback(async () => {
-        if (isLoadingUnsubscribe) return;
-
-        const cookies = parseCookies();
-
-        const id = cookies.id;
-
-        if (!id) {
-            setShowUnsubscribeConfirm(false);
-
-            setUnsubscribeResult({
-                open: true,
-
-                type: 'error',
-
-                message: 'User session was not found. Please sign in again and try to unsubscribe.',
-            });
-
-            return;
-        }
-
-        setIsLoadingUnsubscribe(true);
-
-        try {
-            const response = await axios.post(`/api/v2/cancel-subscription?id=${encodeURIComponent(id)}`, {
-                product: UNSUBSCRIBE_PRODUCT.id,
-            });
-
-            if (response.status === 200) {
-                setShowUnsubscribeConfirm(false);
-
+    const confirmUnsubscribe = useCallback(
+        async (verificationToken: string) => {
+            if (isLoadingUnsubscribe) return;
+            if (!verificationToken) throw new Error('Verification token is required.');
+            setIsLoadingUnsubscribe(true);
+            try {
+                const response = await axios.post(
+                    '/api/v2/cancel-subscription',
+                    {
+                        product: UNSUBSCRIBE_PRODUCT.id,
+                    },
+                    { headers: { 'x-action-verification-token': verificationToken } }
+                );
+                if (response.data?.success === false) throw new Error(response.data?.message || 'Unable to unsubscribe.');
                 setUnsubscribeResult({
                     open: true,
-
                     type: 'success',
-
                     message: response.data?.message || `${UNSUBSCRIBE_PRODUCT.label} subscription cancelled successfully. You will be logged out now.`,
                 });
-
-                if (unsubscribeRedirectTimerRef.current) {
-                    clearTimeout(unsubscribeRedirectTimerRef.current);
-                }
-
-                unsubscribeRedirectTimerRef.current = setTimeout(() => {
-                    performDashboardLogout();
-                }, 3000);
-
-                return;
+                if (unsubscribeRedirectTimerRef.current) clearTimeout(unsubscribeRedirectTimerRef.current);
+                unsubscribeRedirectTimerRef.current = setTimeout(() => doLogout(), 3000);
+            } catch (error: any) {
+                setUnsubscribeResult({
+                    open: true,
+                    type: 'error',
+                    message: error?.response?.data?.message || error?.message || `Unable to unsubscribe from ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
+                });
+            } finally {
+                setIsLoadingUnsubscribe(false);
             }
+        },
+        // eslint-disable-next-line
+        [doLogout, isLoadingUnsubscribe]
+    );
 
-            setShowUnsubscribeConfirm(false);
-
-            setUnsubscribeResult({
-                open: true,
-
-                type: 'error',
-
-                message: response.data?.message || `Unable to unsubscribe from ${UNSUBSCRIBE_PRODUCT.label}. Please try again.`,
-            });
-        } catch (error: any) {
-            console.error('Error unsubscribing:', error);
-
-            setShowUnsubscribeConfirm(false);
-
-            setUnsubscribeResult({
-                open: true,
-
-                type: 'error',
-
-                message: error?.response?.data?.message || `Unable to unsubscribe from ${UNSUBSCRIBE_PRODUCT.label}. Please try again or contact support.`,
-            });
-        } finally {
-            setIsLoadingUnsubscribe(false);
+    const handleVerifiedAction = async (action: VerifiedAction, verificationToken: string) => {
+        switch (action) {
+            case 'feedback':
+                setVerifiedFeedbackToken(verificationToken);
+                setShowFeedbackModal(true);
+                return;
+            case 'pause_subscription':
+                await confirmPause(verificationToken, 'pause');
+                return;
+            case 'resume_subscription':
+                await confirmPause(verificationToken, 'resume');
+                return;
+            case 'unsubscribe':
+                await confirmUnsubscribe(verificationToken);
+                // eslint-disable-next-line
+                return;
         }
-    }, [isLoadingUnsubscribe, performDashboardLogout]);
+    };
 
     const closeResultModal = () => {
         if (unsubscribeResult.type === 'success') {
-            performDashboardLogout();
+            doLogout();
 
             return;
         }
@@ -788,7 +737,7 @@ export function DigitalBillboardSidebar({
                                 onClick={() => {
                                     setLegalDropdownOpen(false);
 
-                                    setShowPauseConfirm(true);
+                                    setVerificationAction('pause_subscription');
                                 }}
                                 className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-amber-50 hover:text-amber-700'
                             >
@@ -796,13 +745,24 @@ export function DigitalBillboardSidebar({
 
                                 <span>Pause</span>
                             </button>
+                            <button
+                                type='button'
+                                onClick={() => {
+                                    setLegalDropdownOpen(false);
+                                    setVerificationAction('resume_subscription');
+                                }}
+                                className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-green-50 hover:text-green-700'
+                            >
+                                <CheckCircle className='h-4 w-4' />
+                                <span>Resume</span>
+                            </button>
 
                             <button
                                 type='button'
                                 onClick={() => {
                                     setLegalDropdownOpen(false);
 
-                                    setShowUnsubscribeConfirm(true);
+                                    setVerificationAction('unsubscribe');
                                 }}
                                 className='flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-red-50 hover:text-red-700'
                             >
@@ -854,65 +814,6 @@ export function DigitalBillboardSidebar({
                 </div>
             )}
 
-            {/* Pause subscription confirmation modal */}
-
-            {showPauseConfirm && (
-                <div className='fixed inset-0 z-[60] flex items-center justify-center px-4'>
-                    <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isLoadingPause && setShowPauseConfirm(false)} />
-
-                    <div className='relative z-[61] w-full max-w-md overflow-hidden rounded-[32px] border border-amber-500/35 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] shadow-2xl shadow-amber-500/20'>
-                        <button
-                            type='button'
-                            disabled={isLoadingPause}
-                            onClick={() => setShowPauseConfirm(false)}
-                            className='absolute right-4 top-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center bg-black/45 border border-amber-500/35 hover:border-amber-500/70 hover:bg-amber-500/10 transition-all duration-300 disabled:opacity-50'
-                        >
-                            <X className='w-5 h-5 text-amber-400' />
-                        </button>
-
-                        <div className='px-7 py-8 text-center'>
-                            <div className='mx-auto h-16 w-16 rounded-2xl border border-amber-500/35 bg-amber-500/10 flex items-center justify-center mb-5'>
-                                <AlertTriangle className='h-8 w-8 text-amber-400' />
-                            </div>
-
-                            <h2 className='text-2xl font-black text-white mb-3'>Pause Subscription</h2>
-
-                            <p className='text-gray-300 text-sm leading-relaxed'>
-                                Are you sure you want to pause the subscription of{' '}
-                                <span className='font-black text-amber-300'>{UNSUBSCRIBE_PRODUCT.label}</span>?
-                            </p>
-
-                            <div className='mt-7 flex flex-col gap-3'>
-                                <button
-                                    type='button'
-                                    disabled={isLoadingPause}
-                                    onClick={confirmPause}
-                                    className='w-full rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
-                                >
-                                    {isLoadingPause ? (
-                                        <span className='flex items-center justify-center gap-2'>
-                                            <Loader2 className='h-4 w-4 animate-spin' />
-                                            Pausing...
-                                        </span>
-                                    ) : (
-                                        'Yes, Pause Subscription'
-                                    )}
-                                </button>
-
-                                <button
-                                    type='button'
-                                    disabled={isLoadingPause}
-                                    onClick={() => setShowPauseConfirm(false)}
-                                    className='w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Pause result modal */}
 
             {pauseResult.open && (
@@ -924,7 +825,15 @@ export function DigitalBillboardSidebar({
                             <AlertTriangle className='mx-auto h-14 w-14 text-red-400' />
                         )}
 
-                        <h2 className='mt-4 text-2xl font-black text-white'>{pauseResult.type === 'success' ? 'Subscription Paused' : 'Pause Failed'}</h2>
+                        <h2 className='mt-4 text-2xl font-black text-white'>
+                            {pauseResult.type === 'success'
+                                ? lastSubscriptionOperation === 'resume'
+                                    ? 'Subscription Resumed'
+                                    : 'Subscription Paused'
+                                : lastSubscriptionOperation === 'resume'
+                                ? 'Resume Failed'
+                                : 'Pause Failed'}
+                        </h2>
 
                         <p className='mt-3 text-sm leading-relaxed text-white/60'>{pauseResult.message}</p>
 
@@ -935,77 +844,6 @@ export function DigitalBillboardSidebar({
                         >
                             Close
                         </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Unsubscribe confirmation modal */}
-
-            {showUnsubscribeConfirm && (
-                <div className='fixed inset-0 z-[60] flex items-center justify-center px-4'>
-                    <div
-                        className='absolute inset-0 bg-black/40 backdrop-blur-md transition-all duration-500 ease-in-out opacity-100'
-                        onClick={() => !isLoadingUnsubscribe && setShowUnsubscribeConfirm(false)}
-                    />
-
-                    <div className='relative z-[61] w-full max-w-md overflow-hidden rounded-[32px] border border-red-500/35 bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] shadow-2xl shadow-red-500/20'>
-                        <div className='absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-800 via-red-500 to-red-800' />
-
-                        <button
-                            type='button'
-                            disabled={isLoadingUnsubscribe}
-                            onClick={() => setShowUnsubscribeConfirm(false)}
-                            className='absolute right-4 top-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center bg-black/45 border border-red-500/35 hover:border-red-500/70 hover:bg-red-500/10 transition-all duration-300 disabled:opacity-50'
-                        >
-                            <X className='w-5 h-5 text-red-400' />
-                        </button>
-
-                        <div className='px-7 py-8 text-center'>
-                            <div className='mx-auto h-16 w-16 rounded-2xl border border-red-500/35 bg-red-500/10 flex items-center justify-center mb-5 shadow-xl shadow-red-500/20'>
-                                <AlertTriangle className='h-8 w-8 text-red-400' />
-                            </div>
-
-                            <h2 className='text-2xl font-black text-white mb-3'>Confirm Unsubscribe</h2>
-
-                            <p className='text-gray-300 text-sm leading-relaxed'>
-                                Are you sure you want to unsubscribe from <span className='font-black text-red-300'>{UNSUBSCRIBE_PRODUCT.label}</span>?
-                            </p>
-
-                            <div className='mt-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-left'>
-                                <p className='text-sm font-bold text-white'>Before you continue</p>
-
-                                <p className='text-xs text-white/50 leading-relaxed mt-1'>
-                                    Your subscription will be cancelled and you will be logged out after successful unsubscribe.
-                                </p>
-                            </div>
-
-                            <div className='mt-7 flex flex-col gap-3'>
-                                <Button
-                                    type='button'
-                                    disabled={isLoadingUnsubscribe}
-                                    onClick={confirmUnsubscribe}
-                                    className='w-full rounded-2xl bg-red-700 hover:bg-red-800 text-white font-black py-5 text-base shadow-md shadow-red-600/40 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed'
-                                >
-                                    {isLoadingUnsubscribe ? (
-                                        <span className='flex items-center justify-center gap-2'>
-                                            <Loader2 className='h-4 w-4 animate-spin' />
-                                            Unsubscribing...
-                                        </span>
-                                    ) : (
-                                        'Yes, Unsubscribe'
-                                    )}
-                                </Button>
-
-                                <Button
-                                    type='button'
-                                    disabled={isLoadingUnsubscribe}
-                                    onClick={() => setShowUnsubscribeConfirm(false)}
-                                    className='w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             )}
@@ -1068,7 +906,7 @@ export function DigitalBillboardSidebar({
 
             {showFeedbackModal && (
                 <div className='fixed inset-0 z-[80] flex items-center justify-center px-4'>
-                    <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={() => !isSubmittingFeedback && setShowFeedbackModal(false)} />
+                    <div className='absolute inset-0 bg-black/40 backdrop-blur-md' onClick={closeFeedbackModal} />
 
                     <div
                         className='relative rounded-[32px] z-[81] border w-full max-w-[540px] overflow-hidden backdrop-blur-2xl'
@@ -1127,7 +965,7 @@ export function DigitalBillboardSidebar({
                         <button
                             type='button'
                             disabled={isSubmittingFeedback}
-                            onClick={() => setShowFeedbackModal(false)}
+                            onClick={closeFeedbackModal}
                             className='absolute right-4 top-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center bg-black/45 border border-emerald-400/25 hover:border-emerald-400/60 hover:bg-emerald-400/10 transition-all duration-300 disabled:opacity-50'
                             aria-label='Close feedback modal'
                         >
@@ -1217,7 +1055,7 @@ export function DigitalBillboardSidebar({
                                 <button
                                     type='button'
                                     disabled={isSubmittingFeedback}
-                                    onClick={() => setShowFeedbackModal(false)}
+                                    onClick={closeFeedbackModal}
                                     className='w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black py-5 text-base transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed'
                                 >
                                     Cancel
@@ -1226,6 +1064,16 @@ export function DigitalBillboardSidebar({
                         </div>
                     </div>
                 </div>
+            )}
+
+            {verificationAction && (
+                <ActionVerificationModal
+                    action={verificationAction}
+                    product={UNSUBSCRIBE_PRODUCT.id}
+                    productLabel={UNSUBSCRIBE_PRODUCT.label}
+                    onClose={() => setVerificationAction(null)}
+                    onVerified={handleVerifiedAction}
+                />
             )}
         </div>
     );

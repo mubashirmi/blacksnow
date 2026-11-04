@@ -27,9 +27,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 
-const CYAN = '#4cc7e8';
-// const BLUE = '#2c7bbe';
-// const BLUE_MID = '#2a8dcc';
+const TOOL_PREVIEW_COLOR = '#414A5D';
+// const BLUE = '#4333AF';
+// const BLUE_MID = '#4333AF';
 
 const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string; kind: 'line' | 'bars' | 'list' | 'globe' | 'curve' }> = [
     {
@@ -83,7 +83,7 @@ const tools: Array<{ icon: LucideIcon; title: string; body: string; href: string
     },
     {
         icon: CalendarDays,
-        title: 'Market Moving Calendars',
+        title: 'Calendars',
         body: 'Track economic releases, dividends, IPOs, and earnings before they move the market.',
         href: '/market-moving-calendars',
         kind: 'bars',
@@ -123,6 +123,7 @@ const executionSlides: ExecutionSlide[] = [
             { title: 'Workflow', text: 'Build complete paper tickets with size, side, entries, exits, and risk controls.' },
             { title: 'Practice', text: 'Trade with virtual funds against realistic market movement without risking capital.' },
             { title: 'Review', text: 'Measure results, identify mistakes, and refine the strategy before going live.' },
+            { title: 'Improve', text: 'Review trade results and risk decisions to make each practice session more useful.' },
         ],
         tape: [
             { label: 'NVDA', value: '950.02', side: 'BUY', delta: '+7.42%' },
@@ -143,6 +144,7 @@ const executionSlides: ExecutionSlide[] = [
             { title: 'Screen', text: 'Filter thousands of stocks using fundamental, technical, valuation, and ownership criteria.' },
             { title: 'Compare', text: 'Bring the strongest matches side by side with the metrics that matter most.' },
             { title: 'Act', text: 'Save screens, create alerts, and move qualified opportunities into your watchlist.' },
+            { title: 'Repeat', text: 'Reuse your saved filters and alerts to keep screening for similar opportunities.' },
         ],
         tape: [
             { label: 'AAPL', value: '187.32', side: 'MATCH', delta: '92%' },
@@ -163,6 +165,7 @@ const executionSlides: ExecutionSlide[] = [
             { title: 'Track', text: 'Monitor favorite assets with live prices, compact charts, volume, and daily change.' },
             { title: 'Organize', text: 'Group assets by strategy, theme, sector, or conviction so the list stays actionable.' },
             { title: 'Alert', text: 'Set price, percentage, volume, and event alerts for the moves that matter.' },
+            { title: 'Review', text: 'Revisit watchlists regularly as prices, volume, and market conditions change.' },
         ],
         tape: [
             { label: 'NVDA', value: '950.02', side: 'ALERT', delta: '+7.42%' },
@@ -183,6 +186,7 @@ const executionSlides: ExecutionSlide[] = [
             { title: 'Scan', text: 'Surface the strongest gainers, losers, unusual volume, and most active names in real time.' },
             { title: 'Drivers', text: 'Connect the move to catalysts, volume behavior, sector context, and market impact.' },
             { title: 'Action', text: 'Turn fast-moving market information into alerts and a focused next step.' },
+            { title: 'Follow', text: 'Monitor whether unusual activity continues and adjust your market watch accordingly.' },
         ],
         tape: [
             { label: 'NVDA', value: '950.02', side: 'GAINER', delta: '+7.42%' },
@@ -197,12 +201,13 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Global KPI',
         subtitle: 'Read the macro picture before positioning around it.',
         href: '/global-kpi',
-        accent: '#1768FF',
+        accent: '#4333AF',
         tag: 'Macro pulse',
         details: [
             { title: 'Monitor', text: 'Track the indicators that describe growth, satisfaction, efficiency, and market expansion.' },
             { title: 'Compare', text: 'Read performance across periods and markets without losing the global context.' },
             { title: 'Context', text: 'Use KPI movement to frame broader investment and operating decisions with better perspective.' },
+            { title: 'Evaluate', text: 'Review shifting indicators over time to see how the broader economic picture develops.' },
         ],
         tape: [
             { label: 'Revenue', value: '$2.45B', side: 'YOY', delta: '+18.6%' },
@@ -217,13 +222,14 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Economic Simulator',
         subtitle: 'Model the change. See the impact before it happens.',
         href: '/economic-simulator',
-        accent: '#7038D7',
+        accent: '#4333AF',
         tag: 'Scenario lab',
         compactTitle: true,
         details: [
             { title: 'Build', text: 'Define sectors, agents, policies, and parameters inside a structured economic model.' },
             { title: 'Simulate', text: 'Run policy changes and external shocks across multiple scenarios and time horizons.' },
             { title: 'Analyze', text: 'Compare growth, inflation, unemployment, and debt outcomes before making decisions.' },
+            { title: 'Refine', text: 'Adjust assumptions and rerun scenarios to better understand potential outcomes.' },
         ],
         tape: [
             { label: 'GDP', value: '3.8%', side: 'EXPANSION', delta: '+1.5pp' },
@@ -238,12 +244,13 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Research',
         subtitle: 'Turn deeper research into clearer market decisions.',
         href: '/research',
-        accent: '#2C7BBE',
+        accent: '#4333AF',
         tag: 'Research desk',
         details: [
             { title: 'Markets', text: 'Follow macro forces, rates, commodities, currencies, sectors, and global market themes.' },
             { title: 'Companies', text: 'Go deeper on fundamentals, valuation, estimates, earnings, and competitive positioning.' },
             { title: 'Events', text: 'Stay ahead of earnings, catalysts, corporate events, and the research that surrounds them.' },
+            { title: 'Synthesize', text: 'Bring market, company, and event research together to support a clearer decision.' },
         ],
         tape: [
             { label: 'US Economy', value: 'Neutral', side: 'OUTLOOK', delta: 'Stable' },
@@ -265,6 +272,7 @@ const executionSlides: ExecutionSlide[] = [
             { title: 'Economic', text: 'Track releases, central-bank decisions, employment, inflation, GDP, PMI, and more.' },
             { title: 'Earnings', text: 'Stay ahead of report dates, estimates, pre-market releases, and after-hours events.' },
             { title: 'Corporate', text: 'Follow dividends, ex-dates, IPOs, new listings, and other market-moving milestones.' },
+            { title: 'Plan', text: 'Organize upcoming events into a calendar so you can prepare before key dates arrive.' },
         ],
         tape: [
             { label: 'Retail Sales', value: 'May 16', side: 'HIGH', delta: '0.4%' },
@@ -281,19 +289,19 @@ function MiniLine({ id = 'line' }: { id?: string }) {
         <svg viewBox='0 0 220 90' className='h-20 w-full' preserveAspectRatio='none' aria-hidden='true'>
             <defs>
                 <linearGradient id={`${id}-fill`} x1='0' y1='0' x2='0' y2='1'>
-                    <stop offset='0%' stopColor={CYAN} stopOpacity='.32' />
-                    <stop offset='100%' stopColor={CYAN} stopOpacity='0' />
+                    <stop offset='0%' stopColor={TOOL_PREVIEW_COLOR} stopOpacity='.32' />
+                    <stop offset='100%' stopColor={TOOL_PREVIEW_COLOR} stopOpacity='0' />
                 </linearGradient>
             </defs>
             {[18, 42, 66].map((y) => (
-                <line key={y} x1='0' y1={y} x2='220' y2={y} stroke='rgba(76,199,232,.08)' strokeDasharray='3 4' />
+                <line key={y} x1='0' y1={y} x2='220' y2={y} stroke='rgba(67,51,175,.08)' strokeDasharray='3 4' />
             ))}
             <path d='M0 72 L20 66 L38 72 L58 51 L78 57 L98 36 L118 47 L138 27 L158 39 L178 19 L198 30 L220 10 L220 90 L0 90 Z' fill={`url(#${id}-fill)`} />
             <polyline
                 points='0,72 20,66 38,72 58,51 78,57 98,36 118,47 138,27 158,39 178,19 198,30 220,10'
                 fill='none'
-                stroke={CYAN}
-                strokeWidth='2'
+                stroke={TOOL_PREVIEW_COLOR}
+                strokeWidth='2.7'
                 vectorEffect='non-scaling-stroke'
             />
         </svg>
@@ -304,7 +312,7 @@ function MiniBars() {
     return (
         <div className='flex h-20 items-end justify-center gap-2'>
             {[34, 52, 42, 77, 48, 88, 63].map((h, i) => (
-                <div key={i} className='w-3 rounded-t-[2px] bg-gradient-to-t from-[#2c7bbe] to-[#4cc7e8]' style={{ height: `${h}%` }} />
+                <div key={i} className='w-3 rounded-t-[2px] bg-[#414A5D]' style={{ height: `${h}%` }} />
             ))}
         </div>
     );
@@ -322,7 +330,7 @@ function MiniList() {
                 <div key={s} className='grid grid-cols-[1fr_auto_auto] gap-3'>
                     <span className='font-semibold text-white'>{s}</span>
                     <span className='text-white/65'>{p}</span>
-                    <span className='text-[#62db9b]'>{c}</span>
+                    <span className='text-[#414A5D]'>{c}</span>
                 </div>
             ))}
         </div>
@@ -335,9 +343,9 @@ function Preview({ kind, id }: { kind: (typeof tools)[number]['kind']; id: strin
     if (kind === 'globe')
         return (
             <div className='relative flex h-20 items-center justify-center'>
-                <Globe2 className='h-20 w-20 text-[#4cc7e8]/45' strokeWidth={0.8} />
-                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#4cc7e8] shadow-[0_0_15px_rgba(76,199,232,.9)]' />
-                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#4cc7e8] shadow-[0_0_15px_rgba(76,199,232,.9)]' />
+                <Globe2 className='h-20 w-20 text-[#414A5D]' strokeWidth={1.5} />
+                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#414A5D]' />
+                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#414A5D]' />
             </div>
         );
     if (kind === 'curve') return <MiniLine id={`${id}-curve`} />;
@@ -348,22 +356,22 @@ function SimplePricingStrip() {
     const benefits = ['All 6 tools included', 'Real-time data & updates', 'Advanced analytics', 'Cancel anytime'];
 
     return (
-        <div className='overflow-hidden rounded-xl border border-[#2c7bbe]/25 bg-[#07111b]/78 shadow-[0_18px_55px_rgba(0,0,0,.32)]'>
+        <div className='overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_18px_55px_rgba(0,0,0,.32)]'>
             <div className='grid md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1.05fr]'>
-                <div className='border-b border-[#2c7bbe]/18 p-5 sm:p-6 md:border-r xl:border-b-0'>
+                <div className='border-b border-[#414A5D] p-5 sm:p-6 md:border-r xl:border-b-0'>
                     <h2 className='showcase-section-title text-[clamp(1.1rem,4vw,1.6rem)] text-white'>Simple Pricing. Maximum Value.</h2>
 
                     <div className='mt-5 space-y-3'>
                         {benefits.map((item) => (
                             <div key={item} className='flex items-center gap-3 text-sm text-white/72'>
-                                <Check className='h-5 w-5 shrink-0 text-[#4cc7e8]' strokeWidth={1.8} />
+                                <Check className='h-5 w-5 shrink-0 text-[#4333AF]' strokeWidth={1.8} />
                                 <span>{item}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className='flex flex-col items-center justify-center border-b border-[#2c7bbe]/18 p-5 text-center sm:p-6 md:border-r xl:border-b-0'>
+                <div className='flex flex-col items-center justify-center border-b border-[#414A5D] p-5 text-center sm:p-6 md:border-r xl:border-b-0'>
                     <p className='text-[11px] font-bold uppercase tracking-[.08em] text-white/78'>Monthly Plan</p>
 
                     <div className='mt-3 flex items-end justify-center gap-2'>
@@ -373,13 +381,13 @@ function SimplePricingStrip() {
 
                     <ComingSoonTrigger
                         ariaLabel='Start monthly free trial'
-                        className='mt-6 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-5 text-xs font-bold uppercase tracking-[.025em] text-[#031018] shadow-[0_0_24px_rgba(76,199,232,.12)] transition hover:brightness-110'
+                        className='mt-6 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
                     >
                         Start Free Trial
                     </ComingSoonTrigger>
                 </div>
 
-                <div className='flex flex-col items-center justify-center border-b border-[#2c7bbe]/18 p-5 text-center sm:p-6 md:border-b-0 md:border-r xl:border-b-0'>
+                <div className='flex flex-col items-center justify-center border-b border-[#414A5D] p-5 text-center sm:p-6 md:border-b-0 md:border-r xl:border-b-0'>
                     <p className='text-[11px] font-bold uppercase tracking-[.08em] text-white/78'>Annual Plan</p>
 
                     <div className='mt-3 flex items-end justify-center gap-2'>
@@ -387,11 +395,9 @@ function SimplePricingStrip() {
                         <span className='pb-1 text-sm text-white/72'>/year</span>
                     </div>
 
-                    <p className='mt-2 text-[10px] text-white/55'>Save 15% with annual billing</p>
-
                     <ComingSoonTrigger
                         ariaLabel='Start annual free trial'
-                        className='mt-5 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-5 text-xs font-bold uppercase tracking-[.025em] text-[#031018] shadow-[0_0_24px_rgba(76,199,232,.12)] transition hover:brightness-110'
+                        className='mt-5 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
                     >
                         Start Free Trial
                     </ComingSoonTrigger>
@@ -406,7 +412,7 @@ function SimplePricingStrip() {
                         className='h-[72px] w-[72px] object-contain sm:h-[84px] sm:w-[84px]'
                     />
 
-                    <p className='mt-3 text-[10px] font-bold uppercase leading-5 tracking-[.08em] text-[#4cc7e8] sm:text-[11px]'>
+                    <p className='mt-3 text-[10px] font-bold uppercase leading-5 tracking-[.08em] text-[#4333AF] sm:text-[11px]'>
                         Built for traders.
                         <br />
                         Backed by technology.
@@ -421,7 +427,7 @@ function SimplePricingStrip() {
 
 function PreviewShell({ slide, children }: { slide: ExecutionSlide; children: ReactNode }) {
     return (
-        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-white/[0.055] bg-black/10 p-4 sm:min-h-[320px] sm:p-5'>
+        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-black/10 p-4 sm:min-h-[320px] sm:p-5'>
             <div
                 className='pointer-events-none absolute inset-0 opacity-70'
                 style={{
@@ -457,14 +463,14 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Margin Used', '$0.00'],
                         ['Cash', '$100,000'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                             <p className='text-[9px] uppercase tracking-[0.1em] text-white/32'>{label}</p>
                             <p className='mt-1 text-xs font-semibold text-white/85'>{value}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[10px] font-semibold text-white/75'>Order Ticket</span>
                         <span className='rounded-full px-2 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
@@ -477,7 +483,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                             ['Side', 'BUY'],
                             ['Qty', '25'],
                         ].map(([label, value]) => (
-                            <div key={label} className='rounded-md border border-white/[0.06] px-2 py-2'>
+                            <div key={label} className='rounded-md border border-[#414A5D] px-2 py-2'>
                                 <p className='text-[8px] uppercase text-white/30'>{label}</p>
                                 <p className='mt-1 text-[10px] font-semibold text-white'>{value}</p>
                             </div>
@@ -514,7 +520,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ].map(([metric, op, value]) => (
                         <div
                             key={metric}
-                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-2.5 text-[9px] sm:text-[10px]'
+                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-2.5 text-[9px] sm:text-[10px]'
                         >
                             <span className='font-medium text-white/75'>{metric}</span>
                             <span className='text-white/38'>{op}</span>
@@ -541,7 +547,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </span>
                 </div>
 
-                <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+                <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
                     {[
                         ['NVDA', 'NVIDIA', '$950.02', '+7.42%'],
                         ['AAPL', 'Apple', '$182.63', '+1.35%'],
@@ -553,7 +559,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                             <span className='font-semibold text-white'>{symbol}</span>
                             <span className='truncate text-white/42'>{name}</span>
                             <span className='text-right text-white/72'>{price}</span>
-                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#ef6666]' : 'text-[#62db9b]'}`}>{change}</span>
+                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#ef6666]' : 'text-[#4333AF]'}`}>{change}</span>
                         </div>
                     ))}
                 </div>
@@ -575,12 +581,9 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['AMD', '+6.21%'],
                                 ['SMCI', '+5.18%'],
                             ].map(([symbol, change]) => (
-                                <div
-                                    key={symbol}
-                                    className='flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-3'
-                                >
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
-                                    <span className='text-[10px] font-semibold text-[#62db9b]'>{change}</span>
+                                    <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
                                 </div>
                             ))}
                         </div>
@@ -594,10 +597,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['PYPL', '-3.18%'],
                                 ['SNAP', '-2.89%'],
                             ].map(([symbol, change]) => (
-                                <div
-                                    key={symbol}
-                                    className='flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.018] px-3 py-3'
-                                >
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
                                     <span className='text-[10px] font-semibold text-[#ef6666]'>{change}</span>
                                 </div>
@@ -606,7 +606,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </div>
                 </div>
 
-                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Most Active</span>
                         <span className='text-[10px] font-semibold' style={{ color: accent }}>
@@ -631,11 +631,11 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Operational Efficiency', '87%', '+6%'],
                         ['New Markets', '24', '+4'],
                     ].map(([label, value, delta]) => (
-                        <div key={label} className='rounded-lg border border-white/[0.06] bg-white/[0.018] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                             <p className='text-[8px] uppercase leading-4 tracking-[0.08em] text-white/32'>{label}</p>
                             <div className='mt-2 flex items-end justify-between gap-2'>
                                 <span className='text-lg font-semibold text-white'>{value}</span>
-                                <span className='text-[9px] font-semibold text-[#62db9b]'>{delta}</span>
+                                <span className='text-[9px] font-semibold text-[#4333AF]'>{delta}</span>
                             </div>
                         </div>
                     ))}
@@ -682,7 +682,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Inflation', '2.4%'],
                         ['Unemployment', '5.1%'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-white/[0.06] bg-white/[0.018] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                             <p className='text-[8px] uppercase tracking-[0.08em] text-white/32'>{label}</p>
                             <p className='mt-2 text-sm font-semibold' style={{ color: accent }}>
                                 {value}
@@ -691,7 +691,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-white/[0.07] bg-white/[0.018] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
                     <p className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Model Structure</p>
                     <div className='mt-3 grid grid-cols-3 gap-2 text-center text-[9px]'>
                         {['Households', 'Markets', 'Central Bank'].map((item) => (
@@ -722,7 +722,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </span>
                 </div>
 
-                <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+                <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
                     {[
                         ['U.S. Economy', 'Inflation cooling', 'Neutral'],
                         ['Global Markets', 'Growth resilient', 'Positive'],
@@ -755,7 +755,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                 </span>
             </div>
 
-            <div className='mt-5 divide-y divide-white/[0.07] border-y border-white/[0.07]'>
+            <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
                 {[
                     ['May 16', 'Retail Sales (MoM)', 'HIGH'],
                     ['May 16', 'Industrial Production', 'MED'],
@@ -862,8 +862,8 @@ const PAPER_DESK_DATA: Record<PaperDeskPeriod, PaperDeskPeriodData> = {
 };
 
 const PAPER_DESK_ALLOCATIONS = [
-    { label: 'Stocks', percent: 72, color: '#3065ef' },
-    { label: 'ETFs', percent: 15, color: '#2ec9c1' },
+    { label: 'Stocks', percent: 72, color: '#4333AF' },
+    { label: 'ETFs', percent: 15, color: '#4333AF' },
     { label: 'Cash', percent: 10, color: '#9183dd' },
     { label: 'Options', percent: 3, color: '#aeb4cd' },
 ];
@@ -877,10 +877,10 @@ const PAPER_DESK_HOLDINGS = [
 ];
 
 const PAPER_DESK_SECTORS = [
-    { label: 'Technology', percent: 42, color: '#3065ef' },
-    { label: 'Financials', percent: 18, color: '#348afe' },
-    { label: 'Healthcare', percent: 14, color: '#42c1f1' },
-    { label: 'Consumer Cyclical', percent: 10, color: '#a97cdb' },
+    { label: 'Technology', percent: 42, color: '#4333AF' },
+    { label: 'Financials', percent: 18, color: '#4333AF' },
+    { label: 'Healthcare', percent: 14, color: '#4333AF' },
+    { label: 'Consumer Cyclical', percent: 10, color: '#4333AF' },
     { label: 'Other', percent: 16, color: '#9998ba' },
 ];
 
@@ -933,8 +933,8 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
         >
             <defs>
                 <linearGradient id='paper-desk-performance-fill' x1='0' y1='0' x2='0' y2='1'>
-                    <stop offset='0%' stopColor='#297eff' stopOpacity='.55' />
-                    <stop offset='100%' stopColor='#2079dd' stopOpacity='.015' />
+                    <stop offset='0%' stopColor='#4333AF' stopOpacity='.55' />
+                    <stop offset='100%' stopColor='#4333AF' stopOpacity='.015' />
                 </linearGradient>
                 <filter id='paper-desk-point-glow' x='-300%' y='-300%' width='700%' height='700%'>
                     <feGaussianBlur stdDeviation='3' />
@@ -946,7 +946,7 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
                     const value = ceiling - ((ceiling - floor) * index) / (tickCount - 1);
                     return (
                         <g key={`horizontal-${tickCount}-${index}`} className={tickCount === 4 ? 'hidden xl:block' : 'xl:hidden'}>
-                            <line x1={left} y1={y} x2={right} y2={y} stroke='#16344b' strokeOpacity='.46' strokeWidth='.8' />
+                            <line x1={left} y1={y} x2={right} y2={y} stroke='#4333AF' strokeOpacity='.46' strokeWidth='.8' />
                             <text x={left - 12} y={y + 4} textAnchor='end' fontSize='11' fill='#8493a8'>
                                 {`${Math.round(value / 1000)}K`}
                             </text>
@@ -958,7 +958,7 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
                 const x = left + (index / Math.max(labelCount - 1, 1)) * (right - left);
                 return (
                     <g key={`${label}-${index}`}>
-                        <line x1={x} y1={top} x2={x} y2={bottom} stroke='#16344b' strokeOpacity='.25' strokeWidth='.8' />
+                        <line x1={x} y1={top} x2={x} y2={bottom} stroke='#4333AF' strokeOpacity='.25' strokeWidth='.8' />
                         <text x={x} y='138' textAnchor='middle' fontSize={labelCount > 8 ? 10 : 11} fill='#8595aa'>
                             {label}
                         </text>
@@ -969,13 +969,13 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
             <path
                 d={strokePath}
                 fill='none'
-                stroke='#458bff'
+                stroke='#4333AF'
                 strokeWidth='2.5'
                 strokeLinejoin='round'
                 strokeLinecap='round'
                 vectorEffect='non-scaling-stroke'
             />
-            <circle cx={last.x} cy={last.y} r='8' fill='#42d5ff' opacity='.7' filter='url(#paper-desk-point-glow)' />
+            <circle cx={last.x} cy={last.y} r='8' fill='#4333AF' opacity='.7' filter='url(#paper-desk-point-glow)' />
             <circle cx={last.x} cy={last.y} r='3.5' fill='#65efff' stroke='#79dfff' strokeWidth='1.2' />
         </svg>
     );
@@ -987,7 +987,7 @@ function PaperDeskHoldingLogo({ symbol }: { symbol: string }) {
             <span className='grid h-[18px] w-[18px] shrink-0 xl:h-[12px] xl:w-[12px] grid-cols-2 gap-[2px] xl:gap-[1px]' aria-hidden='true'>
                 <span className='bg-[#f25022]' />
                 <span className='bg-[#7fba00]' />
-                <span className='bg-[#00a4ef]' />
+                <span className='bg-[#4333AF]' />
                 <span className='bg-[#ffb900]' />
             </span>
         );
@@ -1015,10 +1015,10 @@ function PaperDeskDashboard() {
     const selected = PAPER_DESK_DATA[period];
     const winRate = Math.round((selected.profitableTrades / selected.totalTrades) * 100);
     const panelClass =
-        'min-w-0 rounded-[13px] border border-[#0a3a51]/85 bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:h-[90px] xl:overflow-hidden xl:rounded-[8px] xl:p-[7px]';
+        'min-w-0 rounded-[13px] border border-[#4333AF]/85 bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:h-[90px] xl:overflow-hidden xl:rounded-[8px] xl:p-[7px]';
 
     return (
-        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#0b4160]/80 bg-[#020b14] p-2.5 text-white xl:h-[420px] xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(32,135,206,.075)] sm:p-3'>
+        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:h-[420px] xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
             <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_30%,rgba(12,50,90,.16),transparent_58%)]' />
             <div className='relative space-y-2.5 sm:space-y-3 lg:space-y-2 xl:space-y-[6px]'>
                 <div className='flex flex-wrap items-center justify-between gap-x-3 gap-y-3 px-2 py-2 sm:px-3 sm:py-2.5 xl:h-[36px] xl:flex-nowrap xl:gap-y-0 xl:px-2 xl:py-0'>
@@ -1034,7 +1034,7 @@ function PaperDeskDashboard() {
                             <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-white sm:text-[16px] xl:text-[12px]'>
                                 BLACK SNOW
                             </p>
-                            <p className='mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[.14em] text-[#35c4e7] sm:text-[12px] xl:text-[9px]'>
+                            <p className='mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[.14em] text-[#4333AF] sm:text-[12px] xl:text-[9px]'>
                                 PAPER DESK ANALYTICS
                             </p>
                         </div>
@@ -1047,10 +1047,10 @@ function PaperDeskDashboard() {
                                 aria-label={`Show ${range} account performance`}
                                 aria-pressed={period === range}
                                 onClick={() => setPeriod(range)}
-                                className={`flex h-7 min-w-7 items-center justify-center rounded-md border px-1.5 text-[8px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#45c9e9] sm:h-9 sm:min-w-9 sm:px-2 sm:text-[11px] xl:h-7 xl:min-w-7 xl:px-1 xl:text-[9px] ${
+                                className={`flex h-7 min-w-7 items-center justify-center rounded-md border px-1.5 text-[8px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] sm:h-9 sm:min-w-9 sm:px-2 sm:text-[11px] xl:h-7 xl:min-w-7 xl:px-1 xl:text-[9px] ${
                                     period === range
-                                        ? 'border-[#0c9ecd]/90 bg-[#0b2535] text-white shadow-[0_0_12px_rgba(39,191,239,.14)]'
-                                        : 'border-transparent text-[#8a93a6] hover:border-[#1e536a] hover:bg-[#0b2333] hover:text-white'
+                                        ? 'border-[#414A5D] bg-[#0b2535] text-white shadow-[0_0_12px_rgba(39,191,239,.14)]'
+                                        : 'border-transparent text-[#8a93a6] hover:border-[#414A5D] hover:bg-[#0b2333] hover:text-white'
                                 }`}
                             >
                                 {range}
@@ -1059,35 +1059,35 @@ function PaperDeskDashboard() {
                     </div>
                 </div>
 
-                <div className='grid grid-cols-3 rounded-[13px] border border-[#0a3a51]/85 bg-[#030e18]/80 px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
+                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
                     <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
                         <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
                         <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
                             {paperDeskMoney(PAPER_DESK_ACCOUNT_VALUE)}
                         </p>
                     </div>
-                    <div className='min-w-0 border-x border-[#0b3043]/75 px-2 sm:px-4 xl:px-3'>
+                    <div className='min-w-0 border-x border-[#414A5D] px-2 sm:px-4 xl:px-3'>
                         <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Total Return</p>
-                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#28dca9]'>
+                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
                             +18.42%
                         </p>
-                        <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#28dca9] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
+                        <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
                     </div>
                     <div className='min-w-0 px-2 sm:px-4 xl:px-3' aria-live='polite' aria-atomic='true'>
                         <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>{period === '1D' ? "Today's P&L" : `${period} P&L`}</p>
-                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#28dca9]'>
+                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
                             +{paperDeskMoney(selected.change)}
                         </p>
-                        <p className='mt-0.5 text-[10px] text-[#28dca9] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
+                        <p className='mt-0.5 text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
                     </div>
                 </div>
 
                 <div className={`${panelClass} xl:h-[106px]`}>
                     <div className='mb-1.5 flex items-center justify-between gap-3'>
-                        <h3 className='text-[12px] font-bold uppercase tracking-[.015em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                        <h3 className='text-[12px] font-bold uppercase tracking-[.015em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
                             Account Performance
                         </h3>
-                        <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#36c4ee] sm:h-5 sm:w-5 xl:h-3 xl:w-3' strokeWidth={1.8} aria-hidden='true' />
+                        <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] sm:h-5 sm:w-5 xl:h-3 xl:w-3' strokeWidth={1.8} aria-hidden='true' />
                     </div>
                     <PaperDeskPerformanceChart period={period} data={selected} />
                 </div>
@@ -1095,15 +1095,15 @@ function PaperDeskDashboard() {
                 <div className='grid gap-2.5 min-[520px]:grid-cols-2 sm:gap-3 lg:gap-2 xl:gap-[6px]'>
                     <div className={panelClass}>
                         <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
                                 Asset Allocation
                             </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
                         <div className='flex items-center justify-between gap-2'>
                             <div
                                 className='relative aspect-square w-[42%] max-w-[150px] shrink-0 rounded-full xl:w-[60px]'
-                                style={{ background: 'conic-gradient(#3065ef 0% 72%, #2ec9c1 72% 87%, #9183dd 87% 97%, #aeb4cd 97% 100%)' }}
+                                style={{ background: 'conic-gradient(#4333AF 0% 72%, #4333AF 72% 87%, #9183dd 87% 97%, #aeb4cd 97% 100%)' }}
                             >
                                 <div className='absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-[#05111c] text-center shadow-[inset_0_0_10px_rgba(0,0,0,.3)]'>
                                     <span className='text-[clamp(11px,1.65vw,17px)] font-bold xl:text-[9px]'>$125.7K</span>
@@ -1124,10 +1124,10 @@ function PaperDeskDashboard() {
 
                     <div className={panelClass}>
                         <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
                                 Top Holdings
                             </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
                         <div className='space-y-2 xl:space-y-[4px]'>
                             {PAPER_DESK_HOLDINGS.map(({ symbol, amount, change }, index) => (
@@ -1148,10 +1148,10 @@ function PaperDeskDashboard() {
 
                     <div className={panelClass}>
                         <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
                                 Sector Exposure
                             </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
                         <div className='space-y-2.5 xl:space-y-[4px]'>
                             {PAPER_DESK_SECTORS.map(({ label, percent, color }) => {
@@ -1195,10 +1195,10 @@ function PaperDeskDashboard() {
 
                     <div className={panelClass}>
                         <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#39c9ee] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
                                 Paper Trading Stats
                             </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#39c9ee] xl:h-3 xl:w-3' aria-hidden='true' />
+                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
                         <div
                             className='divide-y divide-[#153047]/55 text-[11px] sm:text-[12px] xl:text-[9px] xl:leading-[11px]'
@@ -1221,7 +1221,7 @@ function PaperDeskDashboard() {
                                     <span className='text-[#aab4c7]'>{label}</span>
                                     <span
                                         className={`font-medium tabular-nums ${
-                                            sentiment === 'positive' ? 'text-[#28dca9]' : sentiment === 'negative' ? 'text-[#fa5468]' : 'text-[#f2f6fd]'
+                                            sentiment === 'positive' ? 'text-[#4333AF]' : sentiment === 'negative' ? 'text-[#fa5468]' : 'text-[#f2f6fd]'
                                         }`}
                                     >
                                         {value}
@@ -1240,23 +1240,32 @@ function PaperDeskDashboard() {
 }
 
 export default function TradingPlatformShowcase() {
-    const [executionIndex, setExecutionIndex] = useState(0);
-    const [executionDetailIndex, setExecutionDetailIndex] = useState(0);
+    // Keep main slide and sub-slide indexes together to advance atomically.
+    const [executionPosition, setExecutionPosition] = useState({ executionIndex: 0, executionDetailIndex: 0 });
+    const { executionIndex, executionDetailIndex } = executionPosition;
 
     const activeExecutionSlide = executionSlides[executionIndex];
     const activeExecutionDetail = activeExecutionSlide.details[executionDetailIndex];
 
     useEffect(() => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const timer = window.setInterval(() => {
-            setExecutionDetailIndex((current) => (current + 1) % activeExecutionSlide.details.length);
+            setExecutionPosition((current) => {
+                const nextDetail = current.executionDetailIndex + 1;
+                if (nextDetail >= executionSlides[current.executionIndex].details.length) {
+                    return {
+                        executionIndex: (current.executionIndex + 1) % executionSlides.length,
+                        executionDetailIndex: 0,
+                    };
+                }
+                return { ...current, executionDetailIndex: nextDetail };
+            });
         }, 3600);
-
         return () => window.clearInterval(timer);
-    }, [executionIndex, activeExecutionSlide.details.length]);
+    }, []);
 
     const showExecutionSlide = (index: number) => {
-        setExecutionIndex(index);
-        setExecutionDetailIndex(0);
+        setExecutionPosition({ executionIndex: (index + executionSlides.length) % executionSlides.length, executionDetailIndex: 0 });
     };
 
     const previousExecutionSlide = () => {
@@ -1269,19 +1278,18 @@ export default function TradingPlatformShowcase() {
 
     return (
         <section className='trading-platform-showcase relative overflow-x-clip bg-[#050608] px-4 py-10 text-white sm:px-6 sm:py-16 md:px-8 lg:py-20'>
-            <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_6%,rgba(76,199,232,.08),transparent_24%),radial-gradient(circle_at_10%_42%,rgba(44,123,190,.07),transparent_30%),linear-gradient(180deg,#050608_0%,#07101a_48%,#050608_100%)]' />
+            <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_6%,rgba(67,51,175,.08),transparent_24%),radial-gradient(circle_at_10%_42%,rgba(67,51,175,.07),transparent_30%),linear-gradient(180deg,#050608_0%,#07101a_48%,#050608_100%)]' />
             <div className='relative mx-auto max-w-[1180px]'>
                 <div className='grid items-center gap-8 sm:gap-10 lg:grid-cols-[.82fr_1.18fr] lg:gap-10'>
                     <div>
-                        <div className='inline-flex max-w-full items-center gap-2 rounded-full border border-[#4cc7e8]/25 bg-[#4cc7e8]/[.045] px-3 py-2 text-[9px] font-bold uppercase tracking-[.1em] text-[#4cc7e8] sm:px-3.5 sm:text-[10px] sm:tracking-[.12em]'>
+                        <div className='inline-flex max-w-full items-center gap-2 rounded-full border border-[#414A5D] bg-[#0C0F18] px-3 py-2 text-[9px] font-bold uppercase tracking-[.1em] text-[#4333AF] sm:px-3.5 sm:text-[10px] sm:tracking-[.12em]'>
                             <Zap className='h-3.5 w-3.5' />
                             All-in-one trading intelligence platform
                         </div>
                         <h2 className='showcase-display mt-5 text-[clamp(1.5rem,8.5vw,2.3rem)] font-black leading-[1.15] tracking-[-.035em] text-white'>
                             Smarter Tools.
                             <br />
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#39a3cb] to-[#2c7bbe] bg-clip-text text-transparent'>Stronger</span>{' '}
-                            Decisions.
+                            <span className='text-[#4333AF]'>Stronger</span> Decisions.
                         </h2>
                         <p className='mt-4 max-w-xl text-sm leading-6 text-white/72 sm:mt-5 sm:text-base sm:leading-7'>
                             Black Snow gives you everything you need to analyze markets, test strategies, and stay ahead — all in one powerful dashboard.
@@ -1289,7 +1297,7 @@ export default function TradingPlatformShowcase() {
                         <div className='mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row'>
                             <ComingSoonTrigger
                                 ariaLabel='Start 30-day free trial'
-                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-6 text-sm font-black text-white shadow-[0_0_30px_rgba(76,199,232,.16)]'
+                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg px-6 text-sm font-black text-white shadow-[0_0_30px_rgba(67,51,175,.16)] bg-[#4333AF]'
                             >
                                 Start 30-Day Free Trial
                                 <ArrowRight className='h-4 w-4' />
@@ -1297,10 +1305,10 @@ export default function TradingPlatformShowcase() {
 
                             <ComingSoonTrigger
                                 ariaLabel='View live demo'
-                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg border border-[#4cc7e8]/35 bg-[#050608]/60 px-6 text-sm font-bold text-white'
+                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white'
                             >
                                 View Live Demo
-                                <Target className='h-4 w-4 text-[#4cc7e8]' />
+                                <Target className='h-4 w-4 text-[#4333AF]' />
                             </ComingSoonTrigger>
                         </div>
                         <div className='mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3'>
@@ -1313,10 +1321,10 @@ export default function TradingPlatformShowcase() {
                                 return (
                                     <div
                                         key={text as string}
-                                        className='flex items-center gap-3 rounded-lg border border-[#2c7bbe]/14 bg-white/[.015] px-3 py-2.5 sm:border-0 sm:bg-transparent sm:p-0'
+                                        className='flex items-center gap-3 rounded-lg border border-[#414A5D] bg-white/[.015] px-3 py-2.5 sm:border-0 sm:bg-transparent sm:p-0'
                                     >
-                                        <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#4cc7e8]/25 sm:h-9 sm:w-9'>
-                                            <I className='h-4 w-4 text-[#4cc7e8]' />
+                                        <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#414A5D] sm:h-9 sm:w-9'>
+                                            <I className='h-4 w-4 text-[#4333AF]' />
                                         </div>
                                         <p className='text-[11px] leading-4 text-white/65 sm:text-xs sm:leading-5'>{text as string}</p>
                                     </div>
@@ -1326,21 +1334,21 @@ export default function TradingPlatformShowcase() {
                     </div>
 
                     <div className='relative min-w-0'>
-                        <div className='pointer-events-none absolute -inset-8 rounded-full bg-[#2c7bbe]/8 blur-3xl' />
+                        <div className='pointer-events-none absolute -inset-8 rounded-full bg-[#4333AF]/8 blur-3xl' />
                         <PaperDeskDashboard />
                     </div>
                 </div>
 
                 <div id='black-snow-tools' className='mt-12 scroll-mt-24 sm:mt-16'>
                     <div className='flex items-center gap-4'>
-                        <div className='h-px flex-1 bg-gradient-to-r from-transparent to-[#2c7bbe]/40' />
+                        <div className='h-px flex-1  bg-[#4333AF]' />
                         <div className='text-center'>
                             <h2 className='showcase-section-title text-[clamp(1.35rem,5vw,2rem)] font-black text-white'>
                                 Eight Powerful Tools. One Unified Platform.
                             </h2>
                             <p className='mt-2 text-xs text-white/45 sm:text-sm'>Everything you need to research, simulate, and master the markets.</p>
                         </div>
-                        <div className='h-px flex-1 bg-gradient-to-l from-transparent to-[#2c7bbe]/40' />
+                        <div className='h-px flex-1  bg-[#4333AF]' />
                     </div>
                     <div className='mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3'>
                         {tools.map((tool, index) => {
@@ -1349,19 +1357,24 @@ export default function TradingPlatformShowcase() {
                                 <Link
                                     key={tool.title}
                                     href={tool.href}
-                                    className='group grid overflow-hidden rounded-xl border border-[#2c7bbe]/20 bg-[#07101a]/72 transition hover:-translate-y-1 hover:border-[#4cc7e8]/45 sm:min-h-[190px] md:grid-cols-[1.07fr_.93fr]'
+                                    className='group grid overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] transition hover:-translate-y-1 hover:border-[#4333AF] sm:min-h-[190px] md:grid-cols-[1.07fr_.93fr]'
                                 >
                                     <div className='flex flex-col p-4 sm:p-5'>
                                         <div className='flex items-center gap-3'>
-                                            <Icon className='h-6 w-6 text-[#4cc7e8] sm:h-7 sm:w-7' strokeWidth={1.45} />
+                                            <span
+                                                aria-hidden='true'
+                                                className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#414A5D]/70 bg-[#07090E]'
+                                            >
+                                                <Icon className='h-6 w-6 text-[#4333AF] sm:h-7 sm:w-7' strokeWidth={2} />
+                                            </span>
                                             <h3 className='showcase-subheading text-sm font-black uppercase tracking-[.02em] text-white'>{tool.title}</h3>
                                         </div>
                                         <p className='mt-3 text-xs leading-5 text-white/65 sm:text-sm sm:leading-6'>{tool.body}</p>
-                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#4cc7e8]'>
-                                            Learn More <ArrowRight className='h-3.5 w-3.5' />
+                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#4333AF]'>
+                                            Learn More <ArrowRight className='h-3.5 w-3.5 text-[#414A5D]' />
                                         </div>
                                     </div>
-                                    <div className='hidden min-h-[125px] items-center justify-center border-t border-[#2c7bbe]/10 bg-[#050a11]/70 p-4 sm:flex md:border-l md:border-t-0'>
+                                    <div className='hidden min-h-[125px] items-center justify-center border-t border-[#414A5D] bg-[#080A0F] p-4 sm:flex md:border-l md:border-t-0'>
                                         <Preview kind={tool.kind} id={`tool-${index}`} />
                                     </div>
                                 </Link>
@@ -1370,7 +1383,7 @@ export default function TradingPlatformShowcase() {
                     </div>
                 </div>
 
-                <div className='mt-9 rounded-2xl border border-[#2c7bbe]/28 bg-[#07101a]/50 p-4 sm:mt-12 sm:p-5'>
+                <div className='mt-9 rounded-2xl border border-[#414A5D] bg-[#0C0F18] p-4 sm:mt-12 sm:p-5'>
                     <div className='text-center'>
                         <h2 className='showcase-section-title text-[clamp(1.4rem,5vw,2rem)] font-black text-white'>Who Is Black Snow For?</h2>
                         <p className='mt-2 text-sm text-white/45'>Powerful tools for every type of market participant.</p>
@@ -1379,9 +1392,9 @@ export default function TradingPlatformShowcase() {
                         {audiences.map(({ icon: Icon, title, body }) => (
                             <article
                                 key={title}
-                                className='flex items-start gap-4 rounded-xl border border-[#2c7bbe]/25 bg-[#07101a]/62 px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
+                                className='flex items-start gap-4 rounded-xl border border-[#414A5D] bg-[#0C0F18] px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
                             >
-                                <Icon className='h-9 w-9 shrink-0 text-[#4cc7e8] sm:mx-auto sm:h-10 sm:w-10' strokeWidth={1.35} />
+                                <Icon className='h-9 w-9 shrink-0 text-[#4333AF] sm:mx-auto sm:h-10 sm:w-10' strokeWidth={1.35} />
                                 <div className='min-w-0'>
                                     <h3 className='showcase-subheading text-[12px] font-black uppercase leading-5 text-white sm:mt-4'>{title}</h3>
                                     <p className='mt-1.5 text-xs leading-5 text-white/58 sm:mt-3'>{body}</p>
@@ -1397,7 +1410,7 @@ export default function TradingPlatformShowcase() {
                         <p className='mt-2 text-sm text-white/45'>Explore the eight Black Snow tools through one unified market workflow.</p>
                     </div>
 
-                    <div className='relative mt-7 overflow-hidden rounded-[18px] border border-white/[0.12] bg-[#090b0f]/95 shadow-[0_26px_80px_rgba(0,0,0,.42)] sm:mt-8'>
+                    <div className='relative mt-7 overflow-hidden rounded-[18px] border border-[#414A5D] bg-[#090b0f] shadow-[0_26px_80px_rgba(0,0,0,.42)] sm:mt-8'>
                         <div
                             className='pointer-events-none absolute inset-0 opacity-70'
                             style={{
@@ -1421,24 +1434,20 @@ export default function TradingPlatformShowcase() {
                                 </div>
                             </div>
 
-                            <div className='mt-8 grid h-[610px] content-start gap-8 sm:h-[640px] lg:h-[360px] lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-10'>
-                                <div className='min-w-0'>
-                                    <h3
-                                        className={`showcase-display uppercase leading-[1.02] tracking-[-0.04em] text-white ${
-                                            activeExecutionSlide.compactTitle ? 'text-[clamp(1.75rem,6.8vw,3.65rem)]' : 'text-[clamp(2.1rem,8vw,4.65rem)]'
-                                        }`}
-                                    >
+                            <div className='mt-8 grid h-[610px] content-start gap-8 sm:h-[640px] lg:h-[360px] lg:grid-cols-[1.08fr_.92fr] lg:items-start lg:gap-10'>
+                                <div className='min-w-0 self-start'>
+                                    <h3 className='showcase-display showcase-execution-title block h-[104px] w-full text-[clamp(1.3rem,5.4vw,2.05rem)] uppercase leading-[1.28] tracking-[-0.02em] text-white sm:h-[110px] sm:text-[clamp(1.8rem,4vw,2.6rem)] lg:h-[112px] lg:text-[clamp(1.65rem,2.6vw,2.4rem)]'>
                                         {activeExecutionSlide.title}
                                     </h3>
 
                                     <p
-                                        className='mt-3 text-[clamp(1rem,3.7vw,1.35rem)] font-medium leading-snug'
+                                        className='mt-2 min-h-[48px] text-[clamp(.95rem,3.7vw,1.25rem)] font-medium leading-[1.35] sm:min-h-[50px]'
                                         style={{ color: activeExecutionSlide.accent }}
                                     >
                                         {activeExecutionSlide.subtitle}
                                     </p>
 
-                                    <div className='mt-7 min-h-[118px] sm:mt-8'>
+                                    <div className='mt-4 min-h-[118px]'>
                                         <div className='flex items-center justify-between gap-4'>
                                             <p className='text-[9px] font-medium uppercase tracking-[0.2em] text-white/36'>
                                                 {String(executionDetailIndex + 1).padStart(2, '0')} /{' '}
@@ -1450,20 +1459,27 @@ export default function TradingPlatformShowcase() {
                                                     type='button'
                                                     aria-label='Previous content'
                                                     onClick={() =>
-                                                        setExecutionDetailIndex(
-                                                            (executionDetailIndex - 1 + activeExecutionSlide.details.length) %
-                                                                activeExecutionSlide.details.length
-                                                        )
+                                                        setExecutionPosition((current) => ({
+                                                            ...current,
+                                                            executionDetailIndex:
+                                                                (current.executionDetailIndex - 1 + activeExecutionSlide.details.length) %
+                                                                activeExecutionSlide.details.length,
+                                                        }))
                                                     }
-                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white/55 transition hover:text-white'
+                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition hover:text-white'
                                                 >
                                                     <ChevronLeft className='h-3.5 w-3.5' />
                                                 </button>
                                                 <button
                                                     type='button'
                                                     aria-label='Next content'
-                                                    onClick={() => setExecutionDetailIndex((executionDetailIndex + 1) % activeExecutionSlide.details.length)}
-                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white/55 transition hover:text-white'
+                                                    onClick={() =>
+                                                        setExecutionPosition((current) => ({
+                                                            ...current,
+                                                            executionDetailIndex: (current.executionDetailIndex + 1) % activeExecutionSlide.details.length,
+                                                        }))
+                                                    }
+                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition hover:text-white'
                                                 >
                                                     <ChevronRight className='h-3.5 w-3.5' />
                                                 </button>
@@ -1474,7 +1490,7 @@ export default function TradingPlatformShowcase() {
                                             <h4 className='showcase-subheading text-sm font-semibold uppercase tracking-[0.03em] text-white sm:text-base'>
                                                 {activeExecutionDetail.title}
                                             </h4>
-                                            <p className='mt-2 max-w-xl text-xs leading-5 text-white/68 sm:text-sm sm:leading-6'>
+                                            <p className='mt-2 max-w-xl text-xs leading-[1.45rem] text-white/68 sm:text-sm sm:leading-[1.6rem]'>
                                                 {activeExecutionDetail.text}
                                             </p>
                                         </div>
@@ -1485,7 +1501,7 @@ export default function TradingPlatformShowcase() {
                                                     key={detail.title}
                                                     type='button'
                                                     aria-label={`Show ${detail.title}`}
-                                                    onClick={() => setExecutionDetailIndex(index)}
+                                                    onClick={() => setExecutionPosition((current) => ({ ...current, executionDetailIndex: index }))}
                                                     className='h-[3px] flex-1 rounded-full bg-white/15 transition-all'
                                                     style={{
                                                         backgroundColor: index === executionDetailIndex ? activeExecutionSlide.accent : 'rgba(255,255,255,.16)',
@@ -1500,11 +1516,11 @@ export default function TradingPlatformShowcase() {
                                 <ExecutionPreview slide={activeExecutionSlide} />
                             </div>
 
-                            <div className='mt-7 flex flex-col gap-5 border-t border-white/[0.08] pt-5 sm:flex-row sm:items-center sm:justify-between'>
+                            <div className='mt-7 flex flex-col gap-5 border-t border-[#414A5D] pt-5 sm:flex-row sm:items-center sm:justify-between'>
                                 <div className='grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[390px]'>
                                     <Link
                                         href={activeExecutionSlide.href}
-                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-white/18 px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-white transition hover:border-white/32 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] bg-[#4333AF] text-white transition hover:border-[#4333AF] min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
                                     >
                                         <span className='truncate text-[inherit] leading-none'>View {activeExecutionSlide.title}</span>
                                         <ArrowRight className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1' />
@@ -1512,10 +1528,10 @@ export default function TradingPlatformShowcase() {
 
                                     <ComingSoonTrigger
                                         ariaLabel={`Get started with ${activeExecutionSlide.title}`}
-                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-white transition hover:brightness-110 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-transparent px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-[#8D81ED] transition hover:bg-[#4333AF]/10 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
                                         style={{
-                                            background: activeExecutionSlide.accent,
-                                            boxShadow: `0 0 20px ${activeExecutionSlide.accent}30`,
+                                            background: 'transparent',
+                                            boxShadow: '0 0 18px rgba(67,51,175,0.12)',
                                         }}
                                     >
                                         <span className='text-[inherit] leading-none'>Get Started</span>
@@ -1528,7 +1544,7 @@ export default function TradingPlatformShowcase() {
                                         type='button'
                                         onClick={previousExecutionSlide}
                                         aria-label='Previous tool'
-                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/50 transition hover:border-white/25 hover:text-white'
+                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition hover:border-[#414A5D] hover:text-white'
                                     >
                                         <ChevronLeft className='h-4 w-4' />
                                     </button>
@@ -1554,7 +1570,7 @@ export default function TradingPlatformShowcase() {
                                         type='button'
                                         onClick={nextExecutionSlide}
                                         aria-label='Next tool'
-                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/50 transition hover:border-white/25 hover:text-white'
+                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition hover:border-[#414A5D] hover:text-white'
                                     >
                                         <ChevronRight className='h-4 w-4' />
                                     </button>
@@ -1565,15 +1581,17 @@ export default function TradingPlatformShowcase() {
                 </div>
 
                 {/* ─── DESKTOP & MOBILE SHOWCASE — directly below the execution carousel ─── */}
-                <PlatformAnywhereSection />
+                <div className='platform-anywhere-scope'>
+                    <PlatformAnywhereSection />
+                </div>
 
                 <div className='mt-8'>
                     <SimplePricingStrip />
                 </div>
 
-                <div className='mt-7 flex flex-col gap-5 rounded-xl border border-[#2c7bbe]/25 bg-[#07101a]/72 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7'>
+                <div className='mt-7 flex flex-col gap-5 rounded-xl border border-[#414A5D] bg-[#0C0F18] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7'>
                     <div className='flex items-start gap-4 sm:items-center'>
-                        <Rocket className='mt-0.5 h-9 w-9 shrink-0 text-[#4cc7e8] sm:mt-0 sm:h-10 sm:w-10' strokeWidth={1.35} />
+                        <Rocket className='mt-0.5 h-9 w-9 shrink-0 text-[#4333AF] sm:mt-0 sm:h-10 sm:w-10' strokeWidth={1.35} />
                         <div>
                             <h3 className='showcase-subheading text-lg font-black text-white'>Ready to Take Control of the Markets?</h3>
                             <p className='mt-1 text-xs leading-5 text-white/45 sm:text-sm'>Join traders using Black Snow to gain an edge every day.</p>
@@ -1581,7 +1599,7 @@ export default function TradingPlatformShowcase() {
                     </div>
                     <ComingSoonTrigger
                         ariaLabel='Start your 30-day free trial'
-                        className='flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] px-7 text-sm font-black text-white sm:w-auto'
+                        className='flex min-h-12 w-full items-center justify-center gap-3 rounded-lg px-7 text-sm font-black text-white sm:w-auto bg-[#4333AF]'
                     >
                         Start Your 30-Day Free Trial
                         <ArrowRight className='h-4 w-4' />
@@ -1613,7 +1631,7 @@ export default function TradingPlatformShowcase() {
                 }
 
                 .trading-platform-showcase ::-webkit-scrollbar-thumb {
-                    background: rgba(76, 199, 232, 0.28);
+                    background: rgba(67, 51, 175, 0.28);
                     border-radius: 999px;
                 }
 
@@ -1622,6 +1640,12 @@ export default function TradingPlatformShowcase() {
                         font-size: clamp(1.85rem, 8.5vw, 2.3rem) !important;
                         line-height: 1.18 !important;
                         letter-spacing: -0.015em !important;
+                    }
+
+                    .trading-platform-showcase .showcase-execution-title {
+                        font-size: clamp(1.3rem, 5.4vw, 2.05rem) !important;
+                        line-height: 1.3 !important;
+                        letter-spacing: -0.02em !important;
                     }
 
                     .trading-platform-showcase .showcase-section-title {

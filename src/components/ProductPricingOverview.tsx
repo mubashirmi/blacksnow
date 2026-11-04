@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 type ProductKey = 'business-invoice' | 'digital-billboard' | 'email-crm' | 'lightning-silver' | 'lightning-gold';
-type ThemeKey = 'blue' | 'silver' | 'gold';
+type ThemeKey = 'purple' | 'silver' | 'gold';
 
 type Highlight = {
     icon: LucideIcon;
@@ -37,7 +37,7 @@ type ProductOverview = {
 const PRODUCT_OVERVIEWS: Record<ProductKey, ProductOverview> = {
     'business-invoice': {
         name: 'Business Invoice',
-        theme: 'blue',
+        theme: 'purple',
         highlights: [
             { icon: Receipt, value: '$24.99 / mo', description: 'Unlimited invoices and contracts.', detail: 'Cancel anytime.' },
             { icon: LayoutDashboard, value: '1 Dashboard', description: 'Track invoices and payments.', detail: 'Included with the plan.' },
@@ -47,7 +47,7 @@ const PRODUCT_OVERVIEWS: Record<ProductKey, ProductOverview> = {
     },
     'digital-billboard': {
         name: 'Digital Billboard',
-        theme: 'blue',
+        theme: 'purple',
         highlights: [
             { icon: Monitor, value: '$149.99 / mo', description: 'Full digital billboard access.', detail: 'Cancel anytime.' },
             { icon: LayoutDashboard, value: '1 Dashboard', description: 'Manage your billboard campaigns.', detail: 'Included with the plan.' },
@@ -57,7 +57,7 @@ const PRODUCT_OVERVIEWS: Record<ProductKey, ProductOverview> = {
     },
     'email-crm': {
         name: 'Email CRM Lite',
-        theme: 'blue',
+        theme: 'purple',
         highlights: [
             { icon: Mail, value: '$249.99 / mo', description: '50,000 emails included.', detail: 'Cancel anytime.' },
             { icon: LayoutDashboard, value: '1 Dashboard', description: 'Track campaigns and performance.', detail: 'Included with the plan.' },
@@ -97,12 +97,12 @@ const THEMES: Record<
         button: string;
     }
 > = {
-    blue: {
-        label: 'text-[#4cc7e8]',
-        border: 'border-[#4cc7e8]/45',
-        icon: 'text-[#4cc7e8] bg-[#4cc7e8]/10 border-[#4cc7e8]/15',
-        underline: 'bg-[#4cc7e8]',
-        button: 'bg-gradient-to-r from-[#2c7bbe] to-[#18c3e7] text-white hover:from-[#4cc7e8] hover:to-[#2c7bbe] focus-visible:ring-[#4cc7e8]',
+    purple: {
+        label: 'text-[#4333AF]',
+        border: 'border-[#414A5D]',
+        icon: 'text-[#4333AF] bg-[#4333AF]/10 border-[#414A5D]',
+        underline: 'bg-[#4333AF]',
+        button: 'bg-[#4333AF] text-white hover:bg-[#37299A] focus-visible:ring-[#4333AF]',
     },
     silver: {
         label: 'text-[#aeb6d6]',
@@ -129,6 +129,7 @@ type ProductPricingOverviewProps = {
 export function ProductPricingOverview({ product, onGetStarted }: ProductPricingOverviewProps) {
     const config = PRODUCT_OVERVIEWS[product];
     const colors = THEMES[config.theme];
+    const isPurple = config.theme === 'purple';
 
     return (
         <section aria-label={`${config.name} pricing overview`} className='relative bg-[#050608] px-4 py-14 sm:px-6 sm:py-20 lg:px-8'>
@@ -148,7 +149,9 @@ export function ProductPricingOverview({ product, onGetStarted }: ProductPricing
                     {config.highlights.map(({ icon: Icon, value, description, detail }, index) => (
                         <article
                             key={`${product}-${index}`}
-                            className='flex h-full min-w-0 flex-col rounded-2xl border border-[#30343c] bg-[#17191e] px-5 py-6 sm:px-6 sm:py-7 lg:px-4 xl:px-5 2xl:px-6'
+                            className={`flex h-full min-w-0 flex-col rounded-2xl border px-5 py-6 sm:px-6 sm:py-7 lg:px-4 xl:px-5 2xl:px-6 ${
+                                isPurple ? 'border-[#414A5D] bg-[#0C0F18]' : 'border-[#30343c] bg-[#17191e]'
+                            }`}
                         >
                             <div className='flex min-h-12 min-w-0 items-center gap-3 lg:gap-2 xl:gap-3'>
                                 <span

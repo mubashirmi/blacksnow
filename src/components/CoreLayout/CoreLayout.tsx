@@ -9,7 +9,7 @@ import { HamburgerMenu } from '../hamburger-menu';
 function CoreLayout({ children }: { children: ReactNode }) {
     return (
         <AuthProvider>
-            <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#2c7bbe] min-h-[64px] sm:min-h-[80px] flex items-center'>
+            <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#414A5D] min-h-[64px] sm:min-h-[80px] flex items-center'>
                 <div className='container mx-auto px-4 sm:px-6 md:px-8 w-full'>
                     <div className='flex items-center justify-between relative'>
                         {/* Logo */}
@@ -46,7 +46,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
             <main className='pt-16 sm:pt-20'>{children}</main>
 
             {/* Footer */}
-            <footer className='relative bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-t border-[#2c7bbe]/20 pt-12 pb-7 px-4 sm:px-6 md:px-8 overflow-hidden'>
+            <footer className='relative bg-[#050608] border-t border-[#414A5D] pt-12 pb-7 px-4 sm:px-6 md:px-8 overflow-hidden'>
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     <div className='grid grid-cols-1 lg:grid-cols-[2fr_1.05fr_1.05fr_1.5fr_1.15fr] gap-8 sm:gap-12'>
                         <div className='space-y-8'>
@@ -96,16 +96,16 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={social.href}
-                                        className='w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-xl flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group transform hover:scale-110'
+                                        className='w-10 h-10 bg-[#0C0F18] rounded-xl flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group transform hover:scale-110'
                                     >
-                                        <social.icon className='w-4 h-4 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                                        <social.icon className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Company</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Company</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Market Intelligence Platform', href: '/about' },
@@ -120,7 +120,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={link.href}
-                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4333AF] transition-colors duration-300 font-semibold group'
                                     >
                                         <span className='flex min-w-0 items-center'>
                                             <span className='min-w-0 break-words'>{link.name}</span>
@@ -132,7 +132,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Resources</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Resources</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
@@ -145,7 +145,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={link.href}
-                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4333AF] transition-colors duration-300 font-semibold group'
                                     >
                                         <span className='flex min-w-0 items-center'>
                                             <span className='min-w-0 break-words'>{link.name}</span>
@@ -157,7 +157,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8] whitespace-nowrap'>Trading Tool Kit</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF] whitespace-nowrap'>Trading Tool Kit</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Paper Trading', href: '/paper-trading' },
@@ -172,7 +172,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                     <Link
                                         key={index}
                                         href={link.href}
-                                        className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                        className='block max-w-full break-words text-gray-300 hover:text-[#4333AF] transition-colors duration-300 font-semibold group'
                                     >
                                         <span className='flex min-w-0 items-center'>
                                             <span className='min-w-0 break-words'>{link.name}</span>
@@ -186,7 +186,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         <div className='min-w-0'>
                             <div className='lg:block'>
                                 <div className='min-w-0 space-y-5'>
-                                    <h4 className='text-lg sm:text-xl font-black text-[#4cc7e8]'>Legal</h4>
+                                    <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Legal</h4>
                                     <div className='space-y-3'>
                                         {[
                                             { name: 'Affiliate Agreement', href: '/affiliateagreement' },
@@ -203,7 +203,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                             <Link
                                                 key={index}
                                                 href={link.href}
-                                                className='block max-w-full break-words text-gray-300 hover:text-[#4cc7e8] transition-colors duration-300 font-semibold group'
+                                                className='block max-w-full break-words text-gray-300 hover:text-[#4333AF] transition-colors duration-300 font-semibold group'
                                             >
                                                 <span className='flex min-w-0 items-center'>
                                                     <span className='min-w-0 break-words'>{link.name}</span>
