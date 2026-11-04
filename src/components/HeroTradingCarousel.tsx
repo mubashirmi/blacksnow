@@ -117,31 +117,23 @@ type HeroTradingCarouselProps = {
 };
 
 export default function HeroTradingCarousel({ onSubscribe, disabled = false, checkingAccess = false }: HeroTradingCarouselProps) {
-    // Keep the tool and its four workflow steps in one state so autoplay
-    // advances to the next tool exactly when step four finishes.
-    const [position, setPosition] = useState({ slideIndex: 0, workflowIndex: 0 });
-    const { slideIndex, workflowIndex } = position;
+    const [slideIndex, setSlideIndex] = useState(0);
+    const [workflowIndex, setWorkflowIndex] = useState(0);
     const slide = slides[slideIndex];
 
+    // Like the larger showcase, rotate the description inside a selected tool.
+    // The eight main tools change only when the visitor navigates.
     useEffect(() => {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const timer = window.setInterval(() => {
-            setPosition((current) => {
-                const nextWorkflowIndex = current.workflowIndex + 1;
-                if (nextWorkflowIndex >= slides[current.slideIndex].workflow.length) {
-                    return {
-                        slideIndex: (current.slideIndex + 1) % slides.length,
-                        workflowIndex: 0,
-                    };
-                }
-                return { ...current, workflowIndex: nextWorkflowIndex };
-            });
+            setWorkflowIndex((index) => (index + 1) % slides[slideIndex].workflow.length);
         }, 4000);
         return () => window.clearInterval(timer);
-    }, []);
+    }, [slideIndex]);
 
     const selectSlide = (index: number) => {
-        setPosition({ slideIndex: (index + slides.length) % slides.length, workflowIndex: 0 });
+        setSlideIndex((index + slides.length) % slides.length);
+        setWorkflowIndex(0);
     };
 
     const words = slide.title.split(' ');
@@ -156,19 +148,19 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
             role='region'
             aria-roledescription='carousel'
             aria-label='Explore Black Snow trading tools'
-            className='relative w-full min-w-0 rounded-[20px] border border-[#414A5D] bg-[#0C0F18] px-4 py-3.5 text-white shadow-[0_14px_38px_rgba(0,0,0,.35)] sm:px-5 sm:py-4'
+            className='relative w-full min-w-0 overflow-hidden rounded-[20px] border-2 border-[#9430ed] bg-[#050508]/95 px-4 py-3.5 text-white shadow-[0_0_0_1px_rgba(148,48,237,.10),0_14px_38px_rgba(0,0,0,.35)] sm:px-5 sm:py-4'
         >
             <div aria-live='polite' aria-atomic='true' className='min-w-0'>
                 <h2
                     className={[
-                        'flex min-h-[46px] min-w-0 items-center whitespace-nowrap py-[6px] font-black uppercase leading-[1.2] tracking-[-0.045em]',
+                        'flex h-[34px] min-w-0 items-center overflow-hidden whitespace-nowrap font-black uppercase leading-none tracking-[-0.045em] sm:h-[36px]',
                         compactTitle
-                            ? 'text-[clamp(1.05rem,4.2vw,1.6rem)] min-[1100px]:text-[clamp(1.2rem,1.85vw,1.6rem)]'
-                            : 'text-[clamp(1.25rem,5vw,2.1rem)] min-[1100px]:text-[clamp(1.5rem,2.15vw,2.15rem)]',
+                            ? 'text-[clamp(1.08rem,4.65vw,1.7rem)] min-[1100px]:text-[clamp(1.2rem,1.95vw,1.7rem)]'
+                            : 'text-[clamp(1.55rem,5.8vw,2.4rem)] min-[1100px]:text-[clamp(1.72rem,2.45vw,2.3rem)]',
                     ].join(' ')}
                 >
                     {firstWords && <span className='shrink-0 text-white'>{firstWords}&nbsp;</span>}
-                    <span className='min-w-0 text-[#4333AF]'>{accentWord}</span>
+                    <span className='min-w-0 bg-gradient-to-b from-[#bb5bff] to-[#861bea] bg-clip-text text-transparent'>{accentWord}</span>
                 </h2>
                 <p className='mt-1 h-[36px] overflow-hidden text-[12px] font-semibold leading-[17px] text-[#f1eff6] sm:h-[22px] sm:text-[13px] sm:leading-[18px]'>
                     {slide.subtitle}
@@ -176,7 +168,7 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
             </div>
 
             <div className='mt-2'>
-                <p className='text-[10px] font-extrabold uppercase leading-4 tracking-[.16em] text-[#4333AF]'>Workflow</p>
+                <p className='text-[10px] font-extrabold uppercase leading-4 tracking-[.16em] text-[#a23bfa]'>Workflow</p>
                 <p className='mt-0.5 h-[48px] overflow-hidden text-[11px] leading-[16px] text-[#e2dfe8] sm:h-[32px] sm:text-[12px] min-[1100px]:h-[24px]'>
                     {slide.workflow[workflowIndex]}
                 </p>
@@ -185,18 +177,18 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
                         <button
                             key={index}
                             type='button'
-                            onClick={() => setPosition((current) => ({ ...current, workflowIndex: index }))}
+                            onClick={() => setWorkflowIndex(index)}
                             aria-label={`Show workflow step ${index + 1}: ${step}`}
                             aria-pressed={index === workflowIndex}
-                            className='h-[5px] rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
-                            style={{ backgroundColor: index === workflowIndex ? '#4333AF' : '#302d3c' }}
+                            className='h-[5px] rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ad50ff]'
+                            style={{ backgroundColor: index === workflowIndex ? '#9430ed' : '#302d3c' }}
                         />
                     ))}
                 </div>
             </div>
 
             <div className='mt-2.5'>
-                <p className='text-[10px] font-extrabold uppercase leading-4 tracking-[.16em] text-[#4333AF]'>Features</p>
+                <p className='text-[10px] font-extrabold uppercase leading-4 tracking-[.16em] text-[#a23bfa]'>Features</p>
                 <p className='mt-0.5 h-[48px] overflow-hidden text-[11px] leading-[16px] text-[#e2dfe8] sm:h-[32px] sm:text-[12px]'>
                     {slide.features.map((feature, index) => (
                         <span key={feature}>
@@ -212,7 +204,7 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
                     type='button'
                     onClick={() => selectSlide(slideIndex - 1)}
                     aria-label='Previous trading tool'
-                    className='flex h-10 w-11 shrink-0 items-center justify-center rounded-xl border border-[#414A5D] bg-[#0C0F18] text-white transition-colors hover:bg-[#4333AF]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
+                    className='flex h-10 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-[#9430ed] bg-[#100b16] text-white transition-colors hover:bg-[#22122e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ad50ff]'
                 >
                     <ChevronLeft className='h-5 w-5' strokeWidth={3} />
                 </button>
@@ -221,7 +213,7 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
                     type='button'
                     onClick={onSubscribe}
                     disabled={disabled}
-                    className='flex h-10 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-[#414A5D] bg-[#0C0F18] px-2 text-[13px] font-black uppercase tracking-[0.035em] text-white transition-colors hover:bg-[#4333AF]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] disabled:cursor-not-allowed disabled:opacity-60 sm:text-[15px]'
+                    className='flex h-10 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border-2 border-[#9430ed] bg-[#08060d] px-2 text-[13px] font-black uppercase tracking-[0.035em] text-white transition-colors hover:bg-[#21102d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ad50ff] disabled:cursor-not-allowed disabled:opacity-60 sm:text-[15px]'
                 >
                     {checkingAccess ? 'Checking…' : 'Subscribe'}
                     {!checkingAccess && <ArrowRight className='h-4 w-4' strokeWidth={3} />}
@@ -231,7 +223,7 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
                     type='button'
                     onClick={() => selectSlide(slideIndex + 1)}
                     aria-label='Next trading tool'
-                    className='flex h-10 w-11 shrink-0 items-center justify-center rounded-xl border border-[#414A5D] bg-[#0C0F18] text-white transition-colors hover:bg-[#4333AF]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
+                    className='flex h-10 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-[#9430ed] bg-[#100b16] text-white transition-colors hover:bg-[#22122e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ad50ff]'
                 >
                     <ChevronRight className='h-5 w-5' strokeWidth={3} />
                 </button>
@@ -245,8 +237,8 @@ export default function HeroTradingCarousel({ onSubscribe, disabled = false, che
                         onClick={() => selectSlide(index)}
                         aria-label={`Show ${item.title} (${index + 1} of ${slides.length})`}
                         aria-current={index === slideIndex ? 'true' : undefined}
-                        className='h-[6px] min-w-0 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
-                        style={{ backgroundColor: index === slideIndex ? '#4333AF' : '#302d3c' }}
+                        className='h-[6px] min-w-0 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ad50ff]'
+                        style={{ backgroundColor: index === slideIndex ? '#9430ed' : '#302d3c' }}
                     />
                 ))}
             </div>

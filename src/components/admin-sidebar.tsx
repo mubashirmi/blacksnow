@@ -152,7 +152,7 @@ export function AdminSidebar() {
             ],
         },
         { title: 'Sales', url: '/admin/dashboard/sales', icon: BarChart3 },
-        { title: 'Billing Cycles', url: '/admin/dashboard/billing', icon: ListRestart },
+        { title: 'Billing Cycles', url: '/admin/dashboard/billingCycles', icon: ListRestart },
         { title: 'Affiliates', url: '/admin/dashboard/affiliates', icon: Users },
         {
             title: 'Email CRM Lite',
