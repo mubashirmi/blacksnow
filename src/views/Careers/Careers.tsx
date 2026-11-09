@@ -1,3 +1,4 @@
+//  Career Options
 'use client';
 
 import { Badge } from '@/components/ui/badge';
@@ -300,19 +301,7 @@ function Careers() {
 
     return (
         <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
-            {/* Same layered ambient background as the Pricing page. */}
-            <div
-                aria-hidden='true'
-                className='pointer-events-none absolute inset-0 z-0'
-                style={{
-                    background: [
-                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
-                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
-                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
-                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
-                    ].join(', '),
-                }}
-            />
+            {/* Solid page background using the Black Snow surface hierarchy. */}
 
             {/* Alert */}
             {alert && (
@@ -327,15 +316,9 @@ function Careers() {
 
             {/* Header */}
             <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                {/* Diffused glow underneath the centered page heading. */}
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[420px] w-[720px] max-w-[125%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.20)_0%,rgba(26,94,157,0.12)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[540px] sm:w-[960px] lg:blur-[65px]'
-                />
-
                 <div className='container mx-auto max-w-7xl text-center relative z-10'>
                     <h1 className='text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 animate-slide-in-up delay-200'>
-                        <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Career </span>
+                        <span className=' text-[#4333AF] '>Career </span>
                         <span className='text-white'> Opportunities</span>
                     </h1>
 
@@ -346,12 +329,6 @@ function Careers() {
             </div>
 
             <div className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                {/* Pricing slider-style glow under the content. */}
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute left-1/2 top-0 z-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
-                />
-
                 <div className='container mx-auto max-w-7xl relative z-10'>
                     {isLoading ? (
                         <div className='flex justify-center items-center py-16'>
@@ -369,10 +346,10 @@ function Careers() {
                         <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
                             {formatJobs(jobs).map((job, index) => (
                                 <div key={job.id} className='group relative animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                    <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
+                                    <div className='absolute inset-0 bg-transparent rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
 
-                                    <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105 hover:-translate-y-2 shadow-lg shadow-[#2c7bbe]/10 group'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
+                                    <Card className='relative bg-[#0C0F18] backdrop-blur-2xl border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105 hover:-translate-y-2 shadow-lg shadow-[#4333AF]/10 group'>
+                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
 
                                         <div className='relative overflow-hidden'>
                                             <Image
@@ -390,7 +367,7 @@ function Careers() {
                                         </div>
 
                                         <CardHeader className='p-6'>
-                                            <CardTitle className='text-xl font-bold text-white mb-2 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                            <CardTitle className='text-xl font-bold text-white mb-2 group-hover:text-[#4333AF] transition-colors duration-300'>
                                                 {job.title}
                                             </CardTitle>
                                             <p className='text-gray-300 leading-relaxed text-sm line-clamp-2'>{job.description}</p>
@@ -399,36 +376,36 @@ function Careers() {
                                         <CardContent className='p-6 pt-0'>
                                             <div className='space-y-3 mb-6'>
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-lg flex items-center justify-center'>
-                                                        <MapPin className='w-4 h-4 text-[#4cc7e8]' />
+                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                        <MapPin className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-300'>{job.location}</span>
                                                 </div>
 
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-lg flex items-center justify-center'>
-                                                        <DollarSign className='w-4 h-4 text-[#4cc7e8]' />
+                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                        <DollarSign className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-300 font-semibold'>{job.salary}</span>
                                                 </div>
 
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-lg flex items-center justify-center'>
-                                                        <Users className='w-4 h-4 text-[#4cc7e8]' />
+                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                        <Users className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-400'>{job.applicants}</span>
                                                 </div>
                                             </div>
 
                                             <Button
-                                                className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] cursor-pointer text-white font-bold transition-all duration-300 group/btn'
+                                                className='w-full bg-[#4333AF] hover:bg-[#38299B] cursor-pointer text-white font-bold transition-all duration-300 group/btn'
                                                 onClick={() => handleApplyClick(job.id)}
                                             >
                                                 Apply Now
                                             </Button>
                                         </CardContent>
 
-                                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse'></div>
+                                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-[#4333AF] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse'></div>
                                     </Card>
                                 </div>
                             ))}
@@ -442,11 +419,11 @@ function Careers() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
-                            <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
+                            <Badge className='uppercase bg-[#4333AF] text-white mb-4 sm:mb-5 px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-xs sm:text-sm font-bold'>
                                 START YOUR CAMPAIGN TODAY
                             </Badge>
                             <h2 className='text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5'>
-                                Ready to <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Transform</span>
+                                Ready to <span className=' text-[#4333AF] '>Transform</span>
                                 <br />
                                 Your Marketing?
                             </h2>
@@ -458,7 +435,7 @@ function Careers() {
                                 <Link href={'/login'}>
                                     <Button
                                         size='lg'
-                                        className='group border-2 box-border border-[#4cc7e8] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
+                                        className='group border-2 box-border border-[#414A5D] bg-[#4333AF] hover:bg-[#38299B] text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg shadow-[#4333AF]/40 transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px]'
                                     >
                                         Join Now
                                     </Button>
@@ -467,7 +444,7 @@ function Careers() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 border-[#4cc7e8] text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
+                                        className='border-2 border-[#414A5D] text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                     >
                                         Learn More
                                     </Button>
@@ -477,8 +454,8 @@ function Careers() {
 
                         <div className='flex justify-center'>
                             <div className='relative'>
-                                <div className='absolute inset-0 w-96 h-96 bg-gradient-to-br from-[#2c7bbe]/10 to-[#4cc7e8]/10 rounded-full blur-2xl'></div>
-                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center shadow-2xl backdrop-blur-xl p-8'>
+                                <div className='absolute inset-0 w-96 h-96 bg-transparent rounded-full blur-2xl'></div>
+                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 bg-[#0C0F18] rounded-3xl border border-[#414A5D] flex items-center justify-center shadow-2xl backdrop-blur-xl p-8'>
                                     <LottieAnimation src='/animations/emailmarketingicon.json' loop={true} autoplay={true} />
                                 </div>
                             </div>
@@ -489,9 +466,9 @@ function Careers() {
 
             {/* Application Modal */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className='bg-[#050608] border-2 border-[#2c7bbe]/40 text-white'>
+                <DialogContent className='bg-[#050608] border-2 border-[#414A5D] text-white'>
                     <DialogHeader>
-                        <DialogTitle className='text-2xl font-bold text-[#4cc7e8]'>Apply for Job</DialogTitle>
+                        <DialogTitle className='text-2xl font-bold text-[#4333AF]'>Apply for Job</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleFormSubmit} className='space-y-4'>
                         <div>
@@ -504,7 +481,7 @@ function Careers() {
                                 name='firstName'
                                 value={formData.firstName}
                                 onChange={handleInputChange}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/40 text-white'
+                                className='bg-[#0C0F18] border-[#414A5D] text-white'
                                 required
                             />
                         </div>
@@ -518,7 +495,7 @@ function Careers() {
                                 name='lastName'
                                 value={formData.lastName}
                                 onChange={handleInputChange}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/40 text-white'
+                                className='bg-[#0C0F18] border-[#414A5D] text-white'
                                 required
                             />
                         </div>
@@ -533,7 +510,7 @@ function Careers() {
                                 type='email'
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/40 text-white'
+                                className='bg-[#0C0F18] border-[#414A5D] text-white'
                                 required
                             />
                         </div>
@@ -547,7 +524,7 @@ function Careers() {
                                 name='phone'
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                className='bg-[#0a0b0f] border-[#2c7bbe]/40 text-white'
+                                className='bg-[#0C0F18] border-[#414A5D] text-white'
                                 required
                             />
                         </div>
@@ -572,7 +549,7 @@ function Careers() {
                             {/* Custom Button */}
                             <label
                                 htmlFor='resume'
-                                className='inline-flex items-center justify-start px-4 py-2 rounded-md bg-[#0a0b0f] border border-[#2c7bbe]/40 text-[#4cc7e8] font-semibold w-full text-sm cursor-pointer hover:bg-[#10131a] transition'
+                                className='inline-flex items-center justify-start px-4 py-2 rounded-md bg-[#0C0F18] border border-[#414A5D] text-[#4333AF] font-semibold w-full text-sm cursor-pointer hover:bg-[#0C0F18] transition'
                             >
                                 Choose File
                             </label>
@@ -621,14 +598,14 @@ function Careers() {
                                 type='button'
                                 variant='outline'
                                 onClick={() => setIsModalOpen(false)}
-                                className='border-[#2c7bbe] text-[#4cc7e8] hover:bg-[#2c7bbe]/20 cursor-pointer'
+                                className='border-[#414A5D] text-[#4333AF] hover:bg-[#4333AF]/20 cursor-pointer'
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type='submit'
                                 disabled={isSubmitting || isUploadingResume || !resumeUrl}
-                                className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] cursor-pointer hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white disabled:opacity-60'
+                                className='bg-[#4333AF] cursor-pointer hover:bg-[#38299B] text-white disabled:opacity-60'
                             >
                                 {isSubmitting ? (
                                     <svg className='animate-spin w-5 h-5 mr-2' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
@@ -649,18 +626,15 @@ function Careers() {
 
             {/* Success Modal */}
             <Dialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
-                <DialogContent className='bg-[#050608] border-2 border-[#2c7bbe]/40 text-white'>
+                <DialogContent className='bg-[#050608] border-2 border-[#414A5D] text-white'>
                     <DialogHeader>
-                        <DialogTitle className='text-2xl font-bold text-[#4cc7e8]'>Application Submitted Successfully</DialogTitle>
+                        <DialogTitle className='text-2xl font-bold text-[#4333AF]'>Application Submitted Successfully</DialogTitle>
                     </DialogHeader>
                     <p className='text-gray-300'>
                         Thank you for submitting your application. We will review your details and inform you by email regarding the further procedure.
                     </p>
                     <DialogFooter>
-                        <Button
-                            onClick={() => setSuccessModalOpen(false)}
-                            className='bg-gradient-to-r cursor-pointer from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white'
-                        >
+                        <Button onClick={() => setSuccessModalOpen(false)} className='bg-[#4333AF] cursor-pointer hover:bg-[#38299B] text-white'>
                             Close
                         </Button>
                     </DialogFooter>

@@ -99,10 +99,10 @@ function BlogDirectory() {
                     {/* underline = exact heading width */}
                     <div className='inline-block'>
                         <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Blog&nbsp;</span>
+                            <span className=' text-[#4333AF] '>Blog&nbsp;</span>
                             <span className='text-white'>Directory</span>
                         </h1>
-                        {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full'></div> */}
+                        {/* <div className='w-full h-1 sm:h-2 bg-[#4333AF] rounded-full'></div> */}
                     </div>
                 </div>
             </section>
@@ -119,8 +119,8 @@ function BlogDirectory() {
                         <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
                             {blogs.map((blog: any, index) => (
                                 <div key={blog.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                    <Card className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.03] hover:-translate-y-1'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
+                                    <Card className='bg-[#0C0F18] border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.03] hover:-translate-y-1'>
+                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
 
                                         {/* Blog Image */}
                                         <div className='relative h-48 overflow-hidden'>
@@ -135,7 +135,7 @@ function BlogDirectory() {
 
                                             {/* Category Badge */}
                                             <div className='absolute top-4 left-4'>
-                                                <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white font-bold text-xs px-3 py-1 rounded-full'>
+                                                <Badge className='uppercase bg-[#4333AF] text-white font-bold text-xs px-3 py-1 rounded-full'>
                                                     {blog.category || 'INSIGHTS'}
                                                 </Badge>
                                             </div>
@@ -148,7 +148,7 @@ function BlogDirectory() {
                                         </div>
 
                                         <CardHeader className='p-6 sm:p-7'>
-                                            <CardTitle className='text-lg sm:text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                            <CardTitle className='text-lg sm:text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-[#4333AF] transition-colors duration-300'>
                                                 {blog.title}
                                             </CardTitle>
                                             <CardDescription className='text-sm sm:text-base text-gray-400 line-clamp-3 leading-relaxed'>
@@ -174,7 +174,7 @@ function BlogDirectory() {
                                             {/* CTA Button */}
                                             <Button
                                                 asChild
-                                                className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-5 sm:py-6 text-base transition-all duration-300 transform hover:scale-105 rounded-2xl shadow-lg shadow-[#2c7bbe]/40'
+                                                className='w-full bg-[#4333AF] hover:bg-[#38299B] text-white font-bold py-5 sm:py-6 text-base transition-all duration-300 transform hover:scale-105 rounded-2xl shadow-lg shadow-[#4333AF]/40'
                                             >
                                                 <Link href={`/blog/${blog.id}`} className='flex items-center justify-center'>
                                                     Read Full Article
@@ -183,7 +183,7 @@ function BlogDirectory() {
                                         </CardContent>
 
                                         {/* Hover Glow */}
-                                        <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-3xl'></div>
+                                        <div className='absolute inset-0 bg-[#4333AF]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-3xl'></div>
                                     </Card>
                                 </div>
                             ))}

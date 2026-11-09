@@ -179,7 +179,7 @@ function Affiliate() {
                     </div>
 
                     <div className='grid md:grid-cols-3 gap-6 sm:gap-8'>
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
                                     <Users className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -191,7 +191,7 @@ function Affiliate() {
                             </CardContent>
                         </Card>
 
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
                                     <Rocket className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -203,7 +203,7 @@ function Affiliate() {
                             </CardContent>
                         </Card>
 
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
                                     <BarChart3 className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -234,7 +234,7 @@ function Affiliate() {
                     <div className='grid md:grid-cols-4 gap-6 sm:gap-8'>
                         {whyJoin.map((feature, index) => (
                             <div key={feature.title} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-[#0C0F18]'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#4333AF] hover:bg-[#372990]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -286,7 +286,7 @@ function Affiliate() {
                         </div>
 
                         <div className='flex items-center justify-center'>
-                            <div className='w-full h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-[#0C0F18]'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-black'>
                                 <LottieAnimation src='/animations/dividendicon.json' loop={true} autoplay={true} className='w-full h-full' />
                             </div>
                         </div>

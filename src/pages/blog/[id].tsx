@@ -1,3 +1,4 @@
+// Single blog
 import ShareBanner from '@/components/ShareBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -97,10 +98,7 @@ export default function BlogPostPage() {
         return (
             <div className='min-h-screen bg-[#050608] flex items-center justify-center'>
                 <div className='text-red-400 text-lg font-semibold p-6'>{error || 'Blog post not found'}</div>
-                <Button
-                    asChild
-                    className='bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold transition-all duration-300'
-                >
+                <Button asChild className='bg-[#4333AF] hover:bg-[#38299B] text-white font-bold transition-all duration-300'>
                     <Link href='/blogdirectory'>Back to Blog</Link>
                 </Button>
             </div>
@@ -113,19 +111,16 @@ export default function BlogPostPage() {
             <ShareBanner />
             <div className='relative z-10 pt-24 pb-12 px-6'>
                 <div className='container mx-auto max-w-4xl'>
-                    <Button
-                        asChild
-                        className='mb-6 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold transition-all duration-300'
-                    >
+                    <Button asChild className='mb-6 bg-[#4333AF] hover:bg-[#38299B] text-white font-bold transition-all duration-300'>
                         <Link href='/blogdirectory'>
                             <ArrowLeft className='w-4 h-4 mr-2' />
                             Back to Blog
                         </Link>
                     </Button>
 
-                    <Card className='relative bg-gradient-to-br from-[#050608]/95 via-[#0a0b0f]/90 to-[#050608]/95 backdrop-blur-2xl border-2 border-[#2c7bbe]/20 hover:border-[#4cc7e8]/40 transition-all duration-500 rounded-3xl overflow-hidden shadow-xl shadow-[#2c7bbe]/10'>
+                    <Card className='relative bg-[#0C0F18] backdrop-blur-2xl border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-xl shadow-[#4333AF]/10'>
                         {/* Top Border */}
-                        <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
+                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
 
                         {/* Blog Image */}
                         {blogPost.headerImage && (
@@ -135,9 +130,7 @@ export default function BlogPostPage() {
 
                                 {/* Category Badge */}
                                 <div className='absolute top-4 left-4'>
-                                    <Badge className='uppercase bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] text-white border-0 font-bold'>
-                                        {blogPost.category}
-                                    </Badge>
+                                    <Badge className='uppercase bg-[#4333AF] text-white border-0 font-bold'>{blogPost.category}</Badge>
                                 </div>
 
                                 {/* Views Badge */}
@@ -164,12 +157,12 @@ export default function BlogPostPage() {
                             </div>
                         </CardHeader>
 
-                        <CardContent className='p-6 prose prose-invert prose-headings:text-white prose-p:text-gray-300 prose-a:text-[#4cc7e8] max-w-none'>
+                        <CardContent className='p-6 prose prose-invert prose-headings:text-white prose-p:text-gray-300 prose-a:text-[#4333AF] max-w-none'>
                             <p className='text-gray-300'>{blogPost.postContent}</p>
                         </CardContent>
 
                         {/* Floating Elements */}
-                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse'></div>
+                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-[#4333AF] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse'></div>
                     </Card>
                 </div>
             </div>

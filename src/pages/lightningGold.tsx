@@ -177,7 +177,7 @@ function LightningGold() {
                             <div className='relative flex items-center justify-center w-full h-full'>
                                 <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
                                     <div className='w-[90%] aspect-square sm:w-full'>
-                                        <LottieAnimation src='/animations/lightning-gold-cloud.json' className='w-full h-full' loop autoplay />
+                                        <LottieAnimation src='/animations/lightningGoldherosection.json' className='w-full h-full' loop autoplay />
                                     </div>
                                 </div>
                             </div>

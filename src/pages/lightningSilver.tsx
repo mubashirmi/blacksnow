@@ -263,7 +263,7 @@ function LightningSilver() {
 
                         <div className='flex items-center justify-center'>
                             <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
-                                <LottieAnimation src='/animations/lightningSilverctasection.json' loop autoplay className='w-full h-full' />
+                                <LottieAnimation src='/animations/lightning-silver-cloud.json' loop autoplay className='w-full h-full' />
                             </div>
                         </div>
                     </div>

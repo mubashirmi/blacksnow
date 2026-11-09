@@ -73,7 +73,7 @@ function Pricing() {
 
                 icon: Newspaper,
 
-                color: 'bg-[#2c7bbe]',
+                color: 'bg-[#4333AF]',
 
                 available: true,
 
@@ -111,7 +111,7 @@ function Pricing() {
 
                 icon: FilePen,
 
-                color: 'bg-[#2c7bbe]',
+                color: 'bg-[#4333AF]',
 
                 available: true,
 
@@ -149,7 +149,7 @@ function Pricing() {
 
                 icon: Monitor,
 
-                color: 'bg-[#2c7bbe]',
+                color: 'bg-[#4333AF]',
 
                 available: true,
 
@@ -187,7 +187,7 @@ function Pricing() {
 
                 icon: MessageSquare,
 
-                color: 'bg-[#2c7bbe]',
+                color: 'bg-[#4333AF]',
 
                 available: true,
 
@@ -264,19 +264,7 @@ function Pricing() {
 
     return (
         <div className='relative min-h-screen isolate overflow-hidden bg-[#050608] text-white'>
-            {/* Subtle atmospheric lighting inspired by the previous pricing design. */}
-            <div
-                aria-hidden='true'
-                className='pointer-events-none absolute inset-0 z-0'
-                style={{
-                    background: [
-                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
-                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
-                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
-                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
-                    ].join(', '),
-                }}
-            />
+            {/* Solid page background; glow is restricted to the hero card. */}
 
             {/* ── Hero Section ─────────────────────────────────────────── */}
 
@@ -284,18 +272,12 @@ function Pricing() {
                 <div className='mx-auto max-w-[1380px]'>
                     <div className='grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14'>
                         <div className='relative isolate z-10 animate-slide-in-left'>
-                            {/* Gentle, widely diffused blue lighting behind the hero copy. */}
-                            <div
-                                aria-hidden='true'
-                                className='pointer-events-none absolute -left-[18%] top-[46%] -z-10 h-[390px] w-[530px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(40,121,195,0.14)_0%,rgba(30,96,165,0.08)_42%,rgba(5,6,8,0)_78%)] blur-[46px] sm:h-[470px] sm:w-[650px] lg:-left-[24%] lg:h-[540px] lg:w-[720px]'
-                            />
-
                             <h1
                                 className={`${michroma.className} max-w-3xl text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white`}
                             >
                                 <span className='block lg:whitespace-nowrap'>Simple Pricing.</span>
 
-                                <span className='block text-[#4cc7e8] lg:whitespace-nowrap'>Powerful Value.</span>
+                                <span className='block text-[#4333AF] lg:whitespace-nowrap'>Powerful Value.</span>
                             </h1>
 
                             <p className='mt-7 max-w-xl text-base leading-8 text-gray-300 sm:text-lg'>
@@ -307,19 +289,19 @@ function Pricing() {
                                 <button
                                     type='button'
                                     onClick={handleBillingPeriodToggle}
-                                    className='group flex h-14 items-center gap-4 rounded-full border border-[#2c7bbe]/30 bg-[#0a0b0f] px-5 transition-colors duration-300 hover:border-[#4cc7e8]/55'
+                                    className='group flex h-14 items-center gap-4 rounded-full border border-[#414A5D] bg-[#0C0F18] px-5 transition-colors duration-300 hover:border-[#4333AF]/50'
                                     aria-label={`Switch to ${billingPeriod === 'monthly' ? 'yearly' : 'monthly'} billing`}
                                 >
                                     <span
                                         className={`text-base font-semibold transition-colors duration-300 ${
-                                            billingPeriod === 'monthly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                            billingPeriod === 'monthly' ? 'text-[#4333AF]' : 'text-gray-400'
                                         }`}
                                     >
                                         Monthly
                                     </span>
 
-                                    <span className='relative h-10 w-[76px] rounded-full border border-[#2c7bbe]/40 bg-[#0a0b0f] p-1'>
-                                        <span className='absolute inset-0 rounded-full bg-[#0e2747]'></span>
+                                    <span className='relative h-10 w-[76px] rounded-full border border-[#414A5D] bg-[#0C0F18] p-1'>
+                                        <span className='absolute inset-0 rounded-full bg-[#4333AF]'></span>
 
                                         <span
                                             className={`relative block h-8 w-8 rounded-full bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -330,7 +312,7 @@ function Pricing() {
 
                                     <span
                                         className={`text-base font-semibold transition-colors duration-300 ${
-                                            billingPeriod === 'yearly' ? 'text-[#4cc7e8]' : 'text-gray-400'
+                                            billingPeriod === 'yearly' ? 'text-[#4333AF]' : 'text-gray-400'
                                         }`}
                                     >
                                         Yearly
@@ -340,16 +322,16 @@ function Pricing() {
                         </div>
 
                         <div className='relative min-h-[300px] overflow-visible animate-slide-in-right sm:min-h-[420px] lg:min-h-[470px]'>
-                            {/* Soft blue halo, fading naturally into the page background. */}
+                            {/* Localized purple halo behind the pricing hero card. */}
                             <div
                                 aria-hidden='true'
-                                className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[490px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.24)_0%,rgba(26,94,157,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:left-[60%] lg:top-[52%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
+                                className='pointer-events-none absolute left-1/2 top-[48%] z-0 h-[490px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(67,51,175,0.24)_0%,rgba(67,51,175,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:left-[60%] lg:top-[52%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
                             />
 
-                            <div className='pricing-hero-card relative z-20 top-4 mx-auto h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#4cc7e8]/30 bg-[linear-gradient(150deg,#101a23_0%,#090d12_49%,#0b1720_100%)] shadow-[0_32px_110px_-38px_rgba(25,112,168,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)] sm:top-6 sm:h-[310px] sm:max-w-[470px] lg:absolute lg:left-1/2 lg:top-16 lg:h-[335px] lg:w-[530px] lg:max-w-none'>
+                            <div className='pricing-hero-card relative z-20 top-4 mx-auto h-[255px] w-full max-w-[350px] rounded-[28px] border border-[#414A5D] bg-[#0C0F18] shadow-[0_32px_110px_-38px_rgba(67,51,175,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)] sm:top-6 sm:h-[310px] sm:max-w-[470px] lg:absolute lg:left-1/2 lg:top-16 lg:h-[335px] lg:w-[530px] lg:max-w-none'>
                                 <div
                                     aria-hidden='true'
-                                    className='pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(145,220,255,0.13),inset_0_0_65px_rgba(35,106,150,0.05)]'
+                                    className='pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(67,51,175,0.13),inset_0_0_65px_rgba(67,51,175,0.05)]'
                                 />
                                 {/* Center the logo against the entire card, not the space below the chip. */}
                                 <div className='absolute inset-0 flex items-center justify-center'>
@@ -401,12 +383,8 @@ function Pricing() {
             {/* ── Animated Product Slider ───────────────────────────────── */}
 
             <section className='relative z-10 overflow-hidden px-4 pb-10 sm:px-6 md:px-8'>
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute left-1/2 top-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
-                />
                 <div className='relative mx-auto max-w-[1380px]'>
-                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#2c7bbe]/35 bg-[linear-gradient(120deg,#0b1117_0%,#090b0f_55%,#0a1119_100%)] shadow-[0_28px_110px_-40px_rgba(30,111,165,0.25),0_20px_65px_-35px_rgba(0,0,0,0.8)]'>
+                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#414A5D] bg-[#0C0F18] shadow-[0_28px_110px_-40px_rgba(67,51,175,0.25),0_20px_65px_-35px_rgba(0,0,0,0.8)]'>
                         <div
                             className='pricing-slider-track relative z-10 flex w-full min-w-0'
                             style={{
@@ -422,8 +400,8 @@ function Pricing() {
                                     <div key={product.id} className='w-full min-w-full shrink-0 overflow-hidden'>
                                         <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[1.6fr_0.6fr] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:px-12'>
                                             <div className='grid min-w-0 gap-5 md:grid-cols-[104px_1fr] md:gap-6'>
-                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#4cc7e8]/35 bg-[#0a0b0f] transition-colors duration-300 hover:border-[#4cc7e8]/60 sm:h-24 sm:w-24 md:mx-0'>
-                                                    <ProductIcon className='h-9 w-9 text-[#4cc7e8] sm:h-11 sm:w-11' strokeWidth={1.8} />
+                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#414A5D] bg-black transition-colors duration-300 hover:border-[#4333AF]/50 sm:h-24 sm:w-24 md:mx-0'>
+                                                    <ProductIcon className='h-9 w-9 text-[#4333AF] sm:h-11 sm:w-11' strokeWidth={1.8} />
                                                 </div>
 
                                                 <div className='min-w-0 text-center md:text-left'>
@@ -441,10 +419,10 @@ function Pricing() {
                                                         {product.features.map((feature, i) => (
                                                             <div
                                                                 key={i}
-                                                                className='flex min-w-0 items-start gap-3 rounded-xl border border-[#2c7bbe]/15 bg-white/[0.025] px-3 py-2.5 transition-all duration-300 hover:border-[#4cc7e8]/35 hover:bg-[#4cc7e8]/[0.04]'
+                                                                className='flex min-w-0 items-start gap-3 rounded-xl border border-[#414A5D] bg-black px-3 py-2.5 transition-all duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18]'
                                                             >
-                                                                <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#4cc7e8]/50 bg-transparent'>
-                                                                    <CheckCircle className='h-4 w-4 text-[#4cc7e8]' />
+                                                                <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#414A5D] bg-transparent'>
+                                                                    <CheckCircle className='h-4 w-4 text-[#4333AF]' />
                                                                 </span>
 
                                                                 <span className='min-w-0 break-words text-left text-sm leading-6 text-gray-100 sm:text-base'>
@@ -456,7 +434,7 @@ function Pricing() {
                                                 </div>
                                             </div>
 
-                                            <div className='flex w-full min-w-0 flex-col justify-center rounded-[24px] border border-[#2c7bbe]/24 bg-[#050608] p-4 shadow-[0_12px_48px_-26px_rgba(44,123,190,0.13)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
+                                            <div className='flex w-full min-w-0 flex-col justify-center rounded-[24px] border border-[#414A5D] bg-black p-4 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
                                                 <div className='flex min-w-0 flex-nowrap items-baseline gap-1 whitespace-nowrap sm:gap-2'>
                                                     <span
                                                         className={`${michroma.className} text-[clamp(1.65rem,7.5vw,2.7rem)] leading-none tracking-[-0.06em] text-white sm:text-5xl lg:text-[clamp(1.3rem,2.2vw,2.4rem)] xl:text-[clamp(2rem,2.6vw,3rem)]`}
@@ -470,7 +448,7 @@ function Pricing() {
                                                 </div>
 
                                                 {billingPeriod === 'yearly' && product.hasSubscription && savings > 0 && (
-                                                    <p className='mt-3 text-sm font-semibold text-[#4cc7e8]'>Save {savings}% with yearly billing</p>
+                                                    <p className='mt-3 text-sm font-semibold text-[#4333AF]'>Save {savings}% with yearly billing</p>
                                                 )}
 
                                                 {product.available && <p className='mt-4 text-sm text-gray-400'>VAT & local taxes may apply</p>}
@@ -478,7 +456,7 @@ function Pricing() {
                                                 {product.available ? (
                                                     <Button
                                                         size='lg'
-                                                        className={`mt-6 h-14 w-full cursor-pointer rounded-2xl ${product.color} text-sm font-black text-white transition-colors duration-300 hover:bg-[#3189c4] sm:h-16 sm:text-lg`}
+                                                        className={`mt-6 h-14 w-full cursor-pointer rounded-2xl ${product.color} text-sm font-black text-white transition-colors duration-300 hover:bg-[#38299B] sm:h-16 sm:text-lg`}
                                                         onClick={() => goToProduct(product.redirectRoute)}
                                                     >
                                                         Get Started
@@ -494,7 +472,7 @@ function Pricing() {
                                                 )}
 
                                                 <div className='mt-4 flex min-w-0 items-start gap-3 text-sm text-gray-400'>
-                                                    <LockKeyhole className='h-5 w-5 text-[#4cc7e8]' />
+                                                    <LockKeyhole className='h-5 w-5 text-[#4333AF]' />
 
                                                     <span className='min-w-0 break-words leading-6'>Secure payments. Cancel anytime.</span>
                                                 </div>
@@ -509,10 +487,10 @@ function Pricing() {
                             <button
                                 type='button'
                                 onClick={handlePrevProduct}
-                                className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#4cc7e8]/35 bg-[#050608] text-gray-200 transition-colors duration-300 hover:border-[#4cc7e8]/70 hover:bg-[#0a0b0f] hover:text-white'
+                                className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#414A5D] bg-[#050608] text-gray-200 transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18] hover:text-white'
                                 aria-label={`Show ${previousProduct.name}`}
                             >
-                                <ChevronLeft className='h-5 w-5 text-[#4cc7e8]' />
+                                <ChevronLeft className='h-5 w-5 text-[#4333AF]' />
                             </button>
 
                             <div className='pointer-events-auto hidden items-center justify-center gap-2 sm:flex'>
@@ -522,7 +500,7 @@ function Pricing() {
                                         type='button'
                                         onClick={() => setActiveProductIndex(index)}
                                         className={`h-2 rounded-full transition-all duration-300 ${
-                                            activeProductIndex === index ? 'w-8 bg-[#4cc7e8]' : 'w-2 bg-[#2c7bbe]/45 hover:bg-[#4cc7e8]/70'
+                                            activeProductIndex === index ? 'w-8 bg-[#4333AF]' : 'w-2 bg-[#4333AF]/45 hover:bg-[#4333AF]/70'
                                         }`}
                                         aria-label={`Show ${item.name}`}
                                     ></button>
@@ -532,21 +510,21 @@ function Pricing() {
                             <button
                                 type='button'
                                 onClick={handleNextProduct}
-                                className='pointer-events-auto flex h-10 items-center gap-1 rounded-full border border-[#4cc7e8]/35 bg-[#050608] px-4 text-sm font-semibold text-gray-200 transition-colors duration-300 hover:border-[#4cc7e8]/70 hover:bg-[#0a0b0f] hover:text-white'
+                                className='pointer-events-auto flex h-10 items-center gap-1 rounded-full border border-[#414A5D] bg-[#050608] px-4 text-sm font-semibold text-gray-200 transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18] hover:text-white'
                                 aria-label={`Show ${nextProduct.name}`}
                             >
                                 Next
-                                <ChevronRight className='h-4 w-4 text-[#4cc7e8]' />
+                                <ChevronRight className='h-4 w-4 text-[#4333AF]' />
                             </button>
                         </div>
                     </div>
 
                     <div className='mt-10 flex items-center gap-4'>
-                        <div className='h-px flex-1 bg-[#2c7bbe]/35'></div>
+                        <div className='h-px flex-1 bg-[#4333AF]/35'></div>
 
-                        <p className={`${michroma.className} text-center text-[11px] uppercase tracking-[0.5em] text-[#4cc7e8]`}>Built For Serious Traders</p>
+                        <p className={`${michroma.className} text-center text-[11px] uppercase tracking-[0.5em] text-[#4333AF]`}>Built For Serious Traders</p>
 
-                        <div className='h-px flex-1 bg-[#2c7bbe]/35'></div>
+                        <div className='h-px flex-1 bg-[#4333AF]/35'></div>
                     </div>
 
                     <div className='mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
@@ -585,10 +563,10 @@ function Pricing() {
                         ].map((item) => (
                             <Card
                                 key={item.title}
-                                className='rounded-2xl border border-[#2c7bbe]/20 bg-[#0a0b0f] shadow-[0_14px_55px_-30px_rgba(44,123,190,0.16)] transition-colors duration-300 hover:border-[#4cc7e8]/45 hover:bg-[#0a0b0f]/80'
+                                className='rounded-2xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_14px_55px_-30px_rgba(67,51,175,0.16)] transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18]/80'
                             >
                                 <CardContent className='flex items-center gap-5 p-6'>
-                                    <item.icon className='h-12 w-12 shrink-0 text-[#4cc7e8]' />
+                                    <item.icon className='h-12 w-12 shrink-0 text-[#4333AF]' />
 
                                     <div>
                                         <h3 className={`${michroma.className} text-sm leading-6 text-white`}>{item.title}</h3>

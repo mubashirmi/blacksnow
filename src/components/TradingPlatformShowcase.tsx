@@ -463,14 +463,14 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Margin Used', '$0.00'],
                         ['Cash', '$100,000'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
                             <p className='text-[9px] uppercase tracking-[0.1em] text-white/32'>{label}</p>
                             <p className='mt-1 text-xs font-semibold text-white/85'>{value}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[10px] font-semibold text-white/75'>Order Ticket</span>
                         <span className='rounded-full px-2 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
@@ -520,7 +520,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ].map(([metric, op, value]) => (
                         <div
                             key={metric}
-                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-2.5 text-[9px] sm:text-[10px]'
+                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-black px-3 py-2.5 text-[9px] sm:text-[10px]'
                         >
                             <span className='font-medium text-white/75'>{metric}</span>
                             <span className='text-white/38'>{op}</span>
@@ -581,7 +581,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['AMD', '+6.21%'],
                                 ['SMCI', '+5.18%'],
                             ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-3'>
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-black px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
                                     <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
                                 </div>
@@ -597,7 +597,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['PYPL', '-3.18%'],
                                 ['SNAP', '-2.89%'],
                             ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-3'>
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-black px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
                                     <span className='text-[10px] font-semibold text-[#ef6666]'>{change}</span>
                                 </div>
@@ -606,7 +606,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </div>
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Most Active</span>
                         <span className='text-[10px] font-semibold' style={{ color: accent }}>
@@ -631,7 +631,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Operational Efficiency', '87%', '+6%'],
                         ['New Markets', '24', '+4'],
                     ].map(([label, value, delta]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
                             <p className='text-[8px] uppercase leading-4 tracking-[0.08em] text-white/32'>{label}</p>
                             <div className='mt-2 flex items-end justify-between gap-2'>
                                 <span className='text-lg font-semibold text-white'>{value}</span>
@@ -682,7 +682,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Inflation', '2.4%'],
                         ['Unemployment', '5.1%'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
                             <p className='text-[8px] uppercase tracking-[0.08em] text-white/32'>{label}</p>
                             <p className='mt-2 text-sm font-semibold' style={{ color: accent }}>
                                 {value}
@@ -691,7 +691,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
                     <p className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Model Structure</p>
                     <div className='mt-3 grid grid-cols-3 gap-2 text-center text-[9px]'>
                         {['Households', 'Markets', 'Central Bank'].map((item) => (
@@ -1059,7 +1059,7 @@ function PaperDeskDashboard() {
                     </div>
                 </div>
 
-                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
+                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-black px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
                     <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
                         <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
                         <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
@@ -1392,7 +1392,7 @@ export default function TradingPlatformShowcase() {
                         {audiences.map(({ icon: Icon, title, body }) => (
                             <article
                                 key={title}
-                                className='flex items-start gap-4 rounded-xl border border-[#414A5D] bg-[#0C0F18] px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
+                                className='flex items-start gap-4 rounded-xl border border-[#414A5D] bg-black px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
                             >
                                 <Icon className='h-9 w-9 shrink-0 text-[#4333AF] sm:mx-auto sm:h-10 sm:w-10' strokeWidth={1.35} />
                                 <div className='min-w-0'>

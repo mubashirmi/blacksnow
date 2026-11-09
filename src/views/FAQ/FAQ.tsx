@@ -1,3 +1,4 @@
+// FAQ
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,12 +55,12 @@ function FAQ() {
                 <div className='container mx-auto max-w-7xl text-center'>
                     <div className='inline-block'>
                         <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                            <span className='bg-gradient-to-r from-[#4cc7e8] via-[#2c7bbe] to-[#2a8dcc] bg-clip-text text-transparent'>Frequently</span>
+                            <span className=' text-[#4333AF] '>Frequently</span>
                             <br />
                             <span className='text-white'>Asked Questions</span>
                         </h1>
 
-                        {/* <div className='w-full h-1 sm:h-2 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc] rounded-full mx-auto mb-4 mb:5'></div> */}
+                        {/* <div className='w-full h-1 sm:h-2 bg-[#4333AF] rounded-full mx-auto mb-4 mb:5'></div> */}
                     </div>
 
                     <p className='text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -87,24 +88,24 @@ function FAQ() {
                         <div className='space-y-6'>
                             {faqs.map((faq, index) => (
                                 <div key={faq.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                    <Card className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 border-2 border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.02]'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2c7bbe] via-[#4cc7e8] to-[#2a8dcc]'></div>
+                                    <Card className='bg-[#0C0F18] border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.02]'>
+                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
 
                                         <CardHeader className='p-6 sm:p-8 cursor-pointer' onClick={() => toggleItem(faq.id)}>
                                             <div className='flex items-center justify-between'>
                                                 <div className='flex items-center space-x-4'>
-                                                    <div className='w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
+                                                    <div className='w-14 h-14 sm:w-16 sm:h-16 bg-[#4333AF] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
                                                         <HelpCircle className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                                     </div>
-                                                    <CardTitle className='text-lg sm:text-xl font-bold text-white group-hover:text-[#4cc7e8] transition-colors duration-300'>
+                                                    <CardTitle className='text-lg sm:text-xl font-bold text-white group-hover:text-[#4333AF] transition-colors duration-300'>
                                                         {faq.title}
                                                     </CardTitle>
                                                 </div>
-                                                <div className='w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300'>
+                                                <div className='w-10 h-10 bg-[#4333AF]/15 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300'>
                                                     {openItems.includes(faq.id) ? (
-                                                        <ChevronUp className='w-5 h-5 sm:w-6 sm:h-6 text-[#4cc7e8]' />
+                                                        <ChevronUp className='w-5 h-5 sm:w-6 sm:h-6 text-[#4333AF]' />
                                                     ) : (
-                                                        <ChevronDown className='w-5 h-5 sm:w-6 sm:h-6 text-[#4cc7e8]' />
+                                                        <ChevronDown className='w-5 h-5 sm:w-6 sm:h-6 text-[#4333AF]' />
                                                     )}
                                                 </div>
                                             </div>
@@ -113,7 +114,7 @@ function FAQ() {
                                         {openItems.includes(faq.id) && (
                                             <CardContent className='px-6 sm:px-8 pb-6 sm:pb-8 pt-0'>
                                                 <div className='ml-0 sm:ml-20'>
-                                                    <div className='bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 rounded-2xl p-5 sm:p-6 border border-[#2c7bbe]/20 group-hover:border-[#4cc7e8]/30 transition-all duration-300'>
+                                                    <div className='bg-black rounded-2xl p-5 sm:p-6 border border-[#414A5D] group-hover:border-[#4333AF]/50 transition-all duration-300'>
                                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{faq.text}</p>
                                                     </div>
                                                 </div>
@@ -121,7 +122,7 @@ function FAQ() {
                                         )}
 
                                         {/* Subtle hover glow */}
-                                        <div className='absolute inset-0 bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl blur-3xl'></div>
+                                        <div className='absolute inset-0 bg-[#4333AF]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl blur-3xl'></div>
                                     </Card>
                                 </div>
                             ))}
@@ -136,7 +137,7 @@ function FAQ() {
                     <p className='text-lg sm:text-xl text-gray-300 mb-4 sm:mb-5'>Still have questions?</p>
                     <button
                         onClick={() => (window.location.href = '/support')}
-                        className='inline-flex items-center bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105'
+                        className='inline-flex items-center bg-[#4333AF] hover:bg-[#38299B] text-white font-bold py-4 px-10 rounded-lg shadow-2xl shadow-[#4333AF]/40 transition-all duration-300 transform hover:scale-105'
                     >
                         Contact Support
                     </button>

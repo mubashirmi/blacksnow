@@ -144,7 +144,7 @@ type TermsSlide = {
 const TERMS_SLIDES: TermsSlide[] = [
     {
         id: 'terms',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Terms & Conditions',
         titleGrad: 'Terms',
@@ -156,7 +156,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'privacy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Privacy Policy',
         titleGrad: 'Privacy',
@@ -226,7 +226,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                 <DialogTitle className='sr-only'>{badge}</DialogTitle>
 
                 <div
-                    className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#07090d]'
+                    className='relative rounded-[32px] border overflow-hidden flex flex-col bg-[#0C0F18]'
                     style={{
                         minHeight: UNIFIED_CARD_HEIGHT,
                         height: UNIFIED_CARD_HEIGHT,
@@ -234,10 +234,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                         boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
                     }}
                 >
-                    <div
-                        className='absolute inset-0 pointer-events-none'
-                        style={{ background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)` }}
-                    />
+                    <div className='absolute inset-0 pointer-events-none' style={{ backgroundColor: 'transparent' }} />
 
                     <button
                         type='button'
@@ -262,13 +259,13 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                    <span className='text-[#4333AF] ' style={{ color: '#4333AF' }}>
                                         {titleGrad}
                                     </span>
                                 </>
                             ) : (
                                 <>
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
+                                    <span className='text-[#4333AF] ' style={{ color: '#4333AF' }}>
                                         {titleGrad}
                                     </span>
                                     {titlePlain}
@@ -347,7 +344,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                                     onClick={handleNext}
                                     className='h-9 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all hover:scale-105'
                                     style={{
-                                        background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                        backgroundColor: accent,
                                         border: `1px solid ${accent}60`,
                                         boxShadow: `0 2px 12px ${accent}30`,
                                     }}
@@ -537,34 +534,11 @@ function CareersTitle() {
 
     return (
         <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
-            {/* Same layered ambient background as the Pricing page. */}
-            <div
-                aria-hidden='true'
-                className='pointer-events-none absolute inset-0 z-0'
-                style={{
-                    background: [
-                        'radial-gradient(ellipse 62% 36% at 81% 19%, rgba(24, 119, 158, 0.20), transparent 76%)',
-                        'radial-gradient(ellipse 48% 38% at 5% 43%, rgba(25, 75, 137, 0.16), transparent 77%)',
-                        'radial-gradient(ellipse 65% 38% at 54% 75%, rgba(22, 69, 125, 0.14), transparent 80%)',
-                        'linear-gradient(135deg, #050608 0%, #08111a 49%, #050608 100%)',
-                    ].join(', '),
-                }}
-            />
+            {/* Solid page background using the Black Snow surface hierarchy. */}
 
             <TermsSlideModal open={isTermsModalOpen} onOpenChange={setIsTermsModalOpen} onComplete={handleTermsComplete} />
             {/* Job Seekers Section */}
             <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                {/* Gentle blue illumination behind the hero text, matching Pricing. */}
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute -left-[18%] top-[46%] z-0 h-[390px] w-[530px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(40,121,195,0.14)_0%,rgba(30,96,165,0.08)_42%,rgba(5,6,8,0)_78%)] blur-[46px] sm:h-[470px] sm:w-[650px] lg:-left-[24%] lg:h-[540px] lg:w-[720px]'
-                />
-                {/* Wide, soft halo behind the hero artwork/card, matching Pricing. */}
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute right-[-22%] top-[46%] z-0 h-[490px] w-[620px] -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(38,129,191,0.24)_0%,rgba(26,94,157,0.16)_36%,rgba(5,6,8,0)_77%)] blur-[52px] sm:h-[620px] sm:w-[790px] lg:right-[-18%] lg:h-[660px] lg:w-[900px] lg:blur-[65px]'
-                />
-
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='animate-slide-in-left'>
@@ -584,13 +558,13 @@ function CareersTitle() {
                                 </p>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     Our Recruiters work diligently to match your experience and credentials to jobs in{' '}
-                                    <span className='text-[#4cc7e8] font-semibold'>Sales, Finance, Trucking, Warehouse, Medicine</span>,{' '}
-                                    <span className='text-[#2c7bbe] font-semibold'>Dental, Nursing, Pharmacy, Web Development</span>,{' '}
-                                    <span className='text-[#4cc7e8] font-semibold'>A.I., Retail</span> and much more.
+                                    <span className='text-[#4333AF] font-semibold'>Sales, Finance, Trucking, Warehouse, Medicine</span>,{' '}
+                                    <span className='text-[#4333AF] font-semibold'>Dental, Nursing, Pharmacy, Web Development</span>,{' '}
+                                    <span className='text-[#4333AF] font-semibold'>A.I., Retail</span> and much more.
                                 </p>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
                                     We are a growing global organization prioritizing{' '}
-                                    <span className='text-[#4cc7e8] font-semibold'>Full-time remote careers</span> with our company and job opportunities with
+                                    <span className='text-[#4333AF] font-semibold'>Full-time remote careers</span> with our company and job opportunities with
                                     our contracted customers.
                                 </p>
                             </div>
@@ -599,7 +573,7 @@ function CareersTitle() {
                                 <Link href={'/careeroptions'}>
                                     <Button
                                         size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Career Opportunities
                                     </Button>
@@ -608,19 +582,19 @@ function CareersTitle() {
                         </div>
 
                         <div className='relative animate-slide-in-right'>
-                            <div className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl p-10 border border-[#2c7bbe]/30 shadow-xl shadow-[#2c7bbe]/20 backdrop-blur-2xl'>
+                            <div className='bg-[#0C0F18] rounded-3xl p-10 border border-[#414A5D] shadow-xl shadow-[#4333AF]/20 backdrop-blur-2xl'>
                                 <h3 className='text-2xl font-bold text-white mb-8 flex items-center leading-[1.28]'>
-                                    <Globe className='w-8 h-8 text-[#4cc7e8] mr-3' />
+                                    <Globe className='w-8 h-8 text-[#4333AF] mr-3' />
                                     Global Opportunities
                                 </h3>
 
                                 <div className='grid grid-cols-2 gap-6 mb-8'>
                                     <div className='text-center'>
-                                        <div className='text-4xl font-black text-[#4cc7e8] mb-2'>50+</div>
+                                        <div className='text-4xl font-black text-[#4333AF] mb-2'>50+</div>
                                         <div className='text-gray-400 font-semibold'>States Covered</div>
                                     </div>
                                     <div className='text-center'>
-                                        <div className='text-4xl font-black text-[#2c7bbe] mb-2'>15+</div>
+                                        <div className='text-4xl font-black text-[#4333AF] mb-2'>15+</div>
                                         <div className='text-gray-400 font-semibold'>Industries</div>
                                     </div>
                                 </div>
@@ -628,14 +602,11 @@ function CareersTitle() {
                                 <div className='space-y-4'>
                                     {[
                                         { icon: CheckCircle, text: 'Remote-First Opportunities', color: 'text-green-400' },
-                                        { icon: Star, text: 'Competitive Compensation', color: 'text-yellow-400' },
-                                        { icon: Award, text: 'Career Growth Programs', color: 'text-[#4cc7e8]' },
-                                        { icon: Users, text: 'Global Team Collaboration', color: 'text-[#2c7bbe]' },
+                                        { icon: Star, text: 'Competitive Compensation', color: 'text-[#4333AF]' },
+                                        { icon: Award, text: 'Career Growth Programs', color: 'text-[#4333AF]' },
+                                        { icon: Users, text: 'Global Team Collaboration', color: 'text-[#4333AF]' },
                                     ].map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className='flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-[#2c7bbe]/5 to-[#4cc7e8]/5 border border-[#2c7bbe]/20'
-                                        >
+                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-black border border-[#414A5D]'>
                                             <item.icon className={`w-5 h-5 ${item.color}`} />
                                             <span className='text-gray-300 font-medium'>{item.text}</span>
                                         </div>
@@ -646,7 +617,7 @@ function CareersTitle() {
                                 <Link href={'/careeroptions'}>
                                     <Button
                                         size='lg'
-                                        className='group bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Career Opportunities
                                     </Button>
@@ -659,12 +630,6 @@ function CareersTitle() {
 
             {/* Recruitment Agency Section */}
             <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                {/* Pricing slider-style glow under the content. */}
-                <div
-                    aria-hidden='true'
-                    className='pointer-events-none absolute left-1/2 top-0 z-0 h-[440px] w-[1100px] max-w-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,103,153,0.15)_0%,rgba(17,55,104,0.07)_51%,transparent_79%)] blur-[65px]'
-                />
-
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
                         <div className='animate-slide-in-right'>
@@ -672,7 +637,7 @@ function CareersTitle() {
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
                                     <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22] sm:leading-tight'>
-                                        <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Recruitment Agency</span>
+                                        <span className=' text-[#4333AF] '>Recruitment Agency</span>
                                         <br className='sm:block hidden' />
                                         &nbsp;Inquiry
                                     </h2>
@@ -685,11 +650,11 @@ function CareersTitle() {
                                     as well as finding candidates that match your company criteria, work experience, and credentials.
                                 </p>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Whether you are a <span className='text-[#4cc7e8] font-semibold'>small business or corporation</span> we provide quality
-                                    candidates with a complimentary <span className='text-[#2c7bbe] font-semibold'>30-day guarantee</span>.
+                                    Whether you are a <span className='text-[#4333AF] font-semibold'>small business or corporation</span> we provide quality
+                                    candidates with a complimentary <span className='text-[#4333AF] font-semibold'>30-day guarantee</span>.
                                 </p>
                                 <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Our industry-leading team of <span className='text-[#4cc7e8] font-semibold'>global HR experts</span> can help you enter new
+                                    Our industry-leading team of <span className='text-[#4333AF] font-semibold'>global HR experts</span> can help you enter new
                                     markets in minutes, search for candidates, and hire international employees all while maintaining full compliance. Take
                                     advantage of some of the competitive rates that we have to offer today.
                                 </p>
@@ -698,7 +663,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Opportunities
                                     </Button>
@@ -706,7 +671,7 @@ function CareersTitle() {
                                 <Link href={'/consultation'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
                                         Consultation
                                     </Button>
@@ -714,19 +679,19 @@ function CareersTitle() {
                             </div>
                         </div>
                         <div className='relative animate-slide-in-left'>
-                            <div className='bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#4cc7e8]/30 shadow-2xl shadow-[#4cc7e8]/20 backdrop-blur-2xl'>
+                            <div className='bg-[#0C0F18] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#414A5D] shadow-2xl shadow-[#4333AF]/20 backdrop-blur-2xl'>
                                 <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center leading-[1.28]'>
-                                    <Target className='w-6 h-6 sm:w-8 sm:h-8 text-[#4cc7e8] mr-3' />
+                                    <Target className='w-6 h-6 sm:w-8 sm:h-8 text-[#4333AF] mr-3' />
                                     Recruitment Excellence
                                 </h3>
 
                                 <div className='grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8'>
                                     <div className='text-center'>
-                                        <div className='text-3xl sm:text-4xl font-black text-[#4cc7e8] mb-2'>30</div>
+                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>30</div>
                                         <div className='text-sm sm:text-base text-gray-400 font-semibold'>Day Guarantee</div>
                                     </div>
                                     <div className='text-center'>
-                                        <div className='text-3xl sm:text-4xl font-black text-[#2c7bbe] mb-2'>24/7</div>
+                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>24/7</div>
                                         <div className='text-sm sm:text-base text-gray-400 font-semibold'>Global Support</div>
                                     </div>
                                 </div>
@@ -734,14 +699,11 @@ function CareersTitle() {
                                 <div className='space-y-3 sm:space-y-4'>
                                     {[
                                         { icon: UserCheck, text: 'Quality Candidate Matching', color: 'text-green-400' },
-                                        { icon: Zap, text: 'Rapid Market Entry', color: 'text-yellow-400' },
-                                        { icon: Globe, text: 'International Hiring', color: 'text-[#4cc7e8]' },
-                                        { icon: Award, text: 'Full Compliance Support', color: 'text-[#2c7bbe]' },
+                                        { icon: Zap, text: 'Rapid Market Entry', color: 'text-[#4333AF]' },
+                                        { icon: Globe, text: 'International Hiring', color: 'text-[#4333AF]' },
+                                        { icon: Award, text: 'Full Compliance Support', color: 'text-[#4333AF]' },
                                     ].map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className='flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-[#4cc7e8]/5 to-[#2c7bbe]/5 border border-[#4cc7e8]/20'
-                                        >
+                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-black border border-[#414A5D]'>
                                             <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color}`} />
                                             <span className='text-sm sm:text-base text-gray-300 font-medium'>{item.text}</span>
                                         </div>
@@ -752,7 +714,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
+                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
                                     >
                                         See Opportunities
                                     </Button>
@@ -760,7 +722,7 @@ function CareersTitle() {
                                 <Link href={'/consultation'}>
                                     <Button
                                         size='lg'
-                                        className='group cursor-pointer bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] hover:from-[#2c7bbe] hover:to-[#2a8dcc] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
+                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
                                     >
                                         Consultation
                                     </Button>
@@ -774,7 +736,7 @@ function CareersTitle() {
             {/* Talent Acquisition / BPO Section */}
             <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='rounded-[2rem] border border-[#2c7bbe]/25 bg-gradient-to-br from-[#050608] via-[#070b10] to-[#020304] p-4 sm:p-6 md:p-10 shadow-2xl shadow-[#2c7bbe]/10'>
+                    <div className='rounded-[2rem] border border-[#414A5D] bg-[#0C0F18] p-4 sm:p-6 md:p-10 shadow-2xl shadow-[#4333AF]/10'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8'>
                             {talentTabs.map((tab) => {
                                 const isActive = activeTalentTab === tab.key;
@@ -786,8 +748,8 @@ function CareersTitle() {
                                         onClick={() => setActiveTalentTab(tab.key)}
                                         className={`rounded-xl border px-5 py-3 text-sm sm:text-base font-bold transition-all duration-300 ${
                                             isActive
-                                                ? 'border-[#4cc7e8]/50 bg-gradient-to-r from-[#1e4f85] to-[#0e2747] text-white shadow-sm shadow-[#2c7bbe]/15'
-                                                : 'border-white/10 bg-transparent text-gray-300 hover:border-[#4cc7e8]/40 hover:text-white'
+                                                ? 'border-[#414A5D] bg-[#4333AF] text-white shadow-sm shadow-[#4333AF]/15'
+                                                : 'border-white/10 bg-transparent text-gray-300 hover:border-[#4333AF]/50 hover:text-white'
                                         }`}
                                     >
                                         {tab.label}
@@ -798,7 +760,7 @@ function CareersTitle() {
 
                         <div className='grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
                             <div>
-                                <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>{activeTalentService.eyebrow}</p>
+                                <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
                                 <h2 className='mb-6 max-w-2xl text-xl sm:text-4xl lg:text-5xl font-black leading-[1.22] text-white'>
                                     {activeTalentService.headline}
                                 </h2>
@@ -819,7 +781,7 @@ function CareersTitle() {
                                     <div className='grid sm:grid-cols-2 gap-3'>
                                         {activeTalentService.keyPoints.map((point) => (
                                             <div key={point} className='flex items-start gap-3 text-sm font-semibold text-gray-200'>
-                                                <CheckCircle2 className='mt-0.5 h-5 w-5 shrink-0 text-[#4cc7e8]' />
+                                                <CheckCircle2 className='mt-0.5 h-5 w-5 shrink-0 text-[#4333AF]' />
                                                 <span>{point}</span>
                                             </div>
                                         ))}
@@ -843,14 +805,14 @@ function CareersTitle() {
                                         return (
                                             <span
                                                 key={index}
-                                                className='absolute h-8 w-8 rounded-full border-4 border-white bg-[#050608] shadow-lg shadow-[#4cc7e8]/20'
+                                                className='absolute h-8 w-8 rounded-full border-4 border-white bg-[#050608] shadow-lg shadow-[#4333AF]/20'
                                                 style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`, transform: 'translate(-50%, -50%)' }}
                                             />
                                         );
                                     })}
                                 </div>
 
-                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-black/20 p-6 shadow-xl shadow-[#2c7bbe]/20'>
+                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-black p-6 shadow-xl shadow-[#4333AF]/20'>
                                     <h3 className='mb-3 text-lg font-extrabold text-white'>{activeTalentService.pricingTitle}</h3>
                                     <div className='mb-5 space-y-2'>
                                         {activeTalentService.pricing.map((priceItem) => (
@@ -863,7 +825,7 @@ function CareersTitle() {
                                     <Button
                                         type='button'
                                         onClick={openConsultationModal}
-                                        className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] py-5 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(44,123,190,0.16)] transition-all duration-300 hover:from-[#4cc7e8] hover:to-[#2a8dcc]'
+                                        className='w-full bg-[#4333AF] py-5 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 hover:bg-[#38299B] '
                                     >
                                         {activeTalentService.buttonLabel}
                                     </Button>
@@ -881,24 +843,7 @@ function CareersTitle() {
                                 className='relative overflow-hidden rounded-[1.75rem] border p-4 sm:p-6 md:p-12'
                                 style={{
                                     borderColor: 'rgba(255,255,255,0.1)',
-                                    background: `
-    linear-gradient(
-      180deg,
-      rgba(8, 11, 15, 0.68) 0%,
-      rgba(16, 19, 23, 0.72) 100%
-    ),
-    radial-gradient(
-      circle at 50% 115%,
-      rgba(255, 255, 255, 0.09) 0%,
-      rgba(255, 255, 255, 0.025) 34%,
-      transparent 62%
-    ),
-    radial-gradient(
-      circle at 50% -10%,
-      rgba(0, 194, 255, 0.08) 0%,
-      transparent 42%
-    )
-  `,
+                                    backgroundColor: '#0C0F18',
                                     WebkitBackdropFilter: 'blur(20px) saturate(160%)',
                                     backdropFilter: 'blur(20px) saturate(160%)',
                                     boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
@@ -913,11 +858,11 @@ function CareersTitle() {
                                     <X className='h-4 w-4' />
                                 </button>
 
-                                <div className='pointer-events-none absolute inset-0 bg-gradient-to-br from-[#4cc7e8]/10 via-transparent to-[#2c7bbe]/10' />
+                                <div className='pointer-events-none absolute inset-0 bg-transparent' />
 
                                 <div className='relative z-10 grid gap-8 lg:grid-cols-[0.75fr_1.55fr] lg:gap-10 lg:items-center'>
                                     <div className='text-center lg:text-left'>
-                                        <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4cc7e8]'>{activeTalentService.eyebrow}</p>
+                                        <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
                                         <h2 className='text-4xl sm:text-5xl font-black leading-[1.22] text-white'>
                                             Schedule
                                             <br />
@@ -942,7 +887,7 @@ function CareersTitle() {
                                                         value={consultationForm.companyName}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Company Name'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.companyName ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -960,7 +905,7 @@ function CareersTitle() {
                                                         value={consultationForm.location}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Location'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.location ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -976,7 +921,7 @@ function CareersTitle() {
                                                         value={consultationForm.jobTitle}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Your Job Title'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.jobTitle ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -992,7 +937,7 @@ function CareersTitle() {
                                                         value={consultationForm.fullName}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Full Name'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.fullName ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -1009,7 +954,7 @@ function CareersTitle() {
                                                         value={consultationForm.email}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Work Email'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.email ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -1026,7 +971,7 @@ function CareersTitle() {
                                                         value={consultationForm.phone}
                                                         onChange={handleConsultationChange}
                                                         placeholder='Phone Number'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.phone ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -1041,15 +986,15 @@ function CareersTitle() {
                                                         name='numOfPositions'
                                                         value={consultationForm.numOfPositions}
                                                         onChange={handleConsultationChange}
-                                                        className={`w-full appearance-none rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full appearance-none rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.numOfPositions ? 'border-red-400/70' : 'border-white/10'
                                                         } ${consultationForm.numOfPositions ? 'text-white' : 'text-gray-500'}`}
                                                     >
-                                                        <option value='' className='bg-[#0a0b0f] text-gray-300'>
+                                                        <option value='' className='bg-[#0C0F18] text-gray-300'>
                                                             Number of positions
                                                         </option>
                                                         {[1, 2, 3, 4, 5, 10, 15, 20].map((positionCount) => (
-                                                            <option key={positionCount} value={positionCount} className='bg-[#0a0b0f] text-white'>
+                                                            <option key={positionCount} value={positionCount} className='bg-[#0C0F18] text-white'>
                                                                 {positionCount}
                                                             </option>
                                                         ))}
@@ -1068,7 +1013,7 @@ function CareersTitle() {
                                                         name='dateTime'
                                                         value={consultationForm.dateTime}
                                                         onChange={handleConsultationChange}
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4cc7e8] focus:ring-2 focus:ring-[#4cc7e8]/20 ${
+                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
                                                             consultationErrors.dateTime ? 'border-red-400/70' : 'border-white/10'
                                                         }`}
                                                     />
@@ -1084,14 +1029,14 @@ function CareersTitle() {
                                                     name='termsAccepted'
                                                     checked={consultationForm.termsAccepted}
                                                     onChange={handleConsultationCheckboxChange}
-                                                    className='mt-1 h-4 w-4 rounded border-white/20 bg-white/5 accent-[#4cc7e8]'
+                                                    className='mt-1 h-4 w-4 rounded border-white/20 bg-white/5 accent-[#4333AF]'
                                                 />
                                                 <span>
                                                     I agree to the{' '}
                                                     <button
                                                         type='button'
                                                         onClick={() => setIsTermsModalOpen(true)}
-                                                        className='text-white underline decoration-[#4cc7e8]/70 underline-offset-4 transition hover:text-[#4cc7e8]'
+                                                        className='text-white underline decoration-[#4333AF]/70 underline-offset-4 transition hover:text-[#4333AF]'
                                                     >
                                                         Terms and Conditions
                                                     </button>
@@ -1109,7 +1054,7 @@ function CareersTitle() {
                                             <Button
                                                 type='submit'
                                                 disabled={isSubmittingConsultation}
-                                                className='w-full sm:w-auto min-w-[250px] bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] px-8 py-6 text-base font-extrabold text-[#050608] shadow-[0_4px_14px_rgba(44,123,190,0.16)] cursor-pointer transition-all duration-300 hover:from-[#72d8f0] hover:to-[#4cc7e8] disabled:cursor-not-allowed disabled:opacity-70'
+                                                className='w-full sm:w-auto min-w-[250px] bg-[#4333AF] px-8 py-6 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(67,51,175,0.16)] cursor-pointer transition-all duration-300 hover:bg-[#38299B] disabled:cursor-not-allowed disabled:opacity-70'
                                             >
                                                 {isSubmittingConsultation ? (
                                                     <>
@@ -1138,7 +1083,7 @@ function CareersTitle() {
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                Join the <span className='bg-gradient-to-r from-[#4cc7e8] to-[#2c7bbe] bg-clip-text text-transparent'>Black Snow</span>
+                                Join the <span className=' text-[#4333AF] '>Black Snow</span>
                                 <br className='hidden sm:block' />
                                 &nbsp;Revolution
                             </h2>
@@ -1148,14 +1093,14 @@ function CareersTitle() {
                             </p>
                             <div className='flex flex-col sm:flex-row gap-6 pt-8'>
                                 <Link href={'/careeroptions'}>
-                                    <Button className='border-2 box-border border-[#2c7bbe] bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
+                                    <Button className='border-2 box-border border-[#414A5D] bg-[#4333AF] hover:bg-[#38299B] text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
                                         Browse Jobs
                                     </Button>
                                 </Link>
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-2 box-border border-[#4cc7e8] cursor-pointer text-[#4cc7e8] hover:bg-[#4cc7e8] hover:text-[#050608] px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(44,123,190,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         Hire Talent
                                     </Button>
@@ -1165,7 +1110,7 @@ function CareersTitle() {
 
                         {/* Lottie Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-[#0C0F18] rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/careericon.json' loop={true} autoplay={true} />
                             </div>
                         </div>

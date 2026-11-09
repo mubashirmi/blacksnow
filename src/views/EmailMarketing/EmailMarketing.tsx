@@ -371,7 +371,7 @@ function EmailMarketingDashboard() {
                             value={range}
                             onChange={(event) => updateRange(event.target.value as DashboardRange)}
                             style={{ colorScheme: 'dark' }}
-                            className='h-9 max-w-[120px] cursor-pointer appearance-none rounded-[9px] border border-[#414A5D] bg-[#0C0F18] py-2 pl-2 pr-6 text-[9px] text-[#d7e6f4] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:max-w-none sm:pl-3 sm:pr-7 sm:text-[11px] lg:text-[10px] xl:box-border xl:h-9 xl:min-w-[142px] xl:py-0 xl:text-[11px] xl:leading-5'
+                            className='h-9 max-w-[120px] cursor-pointer appearance-none rounded-[9px] border border-[#414A5D] bg-black py-2 pl-2 pr-6 text-[9px] text-[#d7e6f4] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:max-w-none sm:pl-3 sm:pr-7 sm:text-[11px] lg:text-[10px] xl:box-border xl:h-9 xl:min-w-[142px] xl:py-0 xl:text-[11px] xl:leading-5'
                         >
                             {DASHBOARD_RANGES.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -391,7 +391,7 @@ function EmailMarketingDashboard() {
                         return (
                             <div
                                 key={metric.label}
-                                className='min-w-0 rounded-[9px] border border-[#414A5D] bg-[#0C0F18] px-[5px] py-[8px] sm:rounded-xl sm:px-3 sm:py-3 lg:px-2 xl:px-[10px] xl:py-[8px]'
+                                className='min-w-0 rounded-[9px] border border-[#414A5D] bg-black px-[5px] py-[8px] sm:rounded-xl sm:px-3 sm:py-3 lg:px-2 xl:px-[10px] xl:py-[8px]'
                             >
                                 <div className='mb-1 flex items-start justify-between gap-0.5 xl:mb-[3px]'>
                                     <span className='whitespace-nowrap text-[7px] leading-[1.1] text-[#a1b0c0] sm:text-[10px] lg:text-[8px] xl:text-[9px]'>
@@ -440,7 +440,7 @@ function EmailMarketingDashboard() {
                     sits beside subscriber growth, with campaigns running across the bottom. */}
 
                 <div className='xl:grid xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] xl:items-stretch xl:gap-2.5'>
-                    <div className='mb-2 min-w-0 rounded-[10px] border border-[#414A5D] bg-[#0C0F18] px-[7px] pb-1 pt-2 sm:mb-3 sm:rounded-xl sm:px-3 sm:pt-3 lg:px-2 xl:col-start-1 xl:row-start-1 xl:mb-0 xl:flex xl:flex-col xl:justify-between xl:px-[10px] xl:pb-0 xl:pt-[8px]'>
+                    <div className='mb-2 min-w-0 rounded-[10px] border border-[#414A5D] bg-black px-[7px] pb-1 pt-2 sm:mb-3 sm:rounded-xl sm:px-3 sm:pt-3 lg:px-2 xl:col-start-1 xl:row-start-1 xl:mb-0 xl:flex xl:flex-col xl:justify-between xl:px-[10px] xl:pb-0 xl:pt-[8px]'>
                         <div className='flex min-w-0 items-center justify-between gap-1.5'>
                             <h3 className='whitespace-nowrap text-[10px] font-bold text-[#edf5ff] sm:text-[13px] lg:text-[11px] xl:text-[12px]'>
                                 Campaign Performance
@@ -483,7 +483,7 @@ function EmailMarketingDashboard() {
                                             setSelectedIndex(null);
                                         }}
                                         style={{ colorScheme: 'dark' }}
-                                        className='w-[64px] cursor-pointer appearance-none rounded-md border border-[#414A5D] bg-[#0C0F18] py-1 pl-1.5 pr-4 text-[8px] text-[#c5d7e7] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:w-[77px] sm:text-[9px] lg:w-[65px] lg:text-[8px]'
+                                        className='w-[64px] cursor-pointer appearance-none rounded-md border border-[#414A5D] bg-black py-1 pl-1.5 pr-4 text-[8px] text-[#c5d7e7] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:w-[77px] sm:text-[9px] lg:w-[65px] lg:text-[8px]'
                                     >
                                         {DASHBOARD_INTERVALS[range].map((choice) => (
                                             <option key={choice} value={choice}>
@@ -617,7 +617,7 @@ function EmailMarketingDashboard() {
                     </div>
 
                     <div className='grid min-w-0 grid-cols-2 gap-2 sm:gap-3 xl:contents'>
-                        <div className='min-w-0 rounded-[10px] border border-[#414A5D] bg-[#0C0F18] p-[7px] sm:rounded-xl sm:p-3 lg:p-2 xl:col-span-2 xl:row-start-2 xl:p-[9px]'>
+                        <div className='min-w-0 rounded-[10px] border border-[#414A5D] bg-black p-[7px] sm:rounded-xl sm:p-3 lg:p-2 xl:col-span-2 xl:row-start-2 xl:p-[9px]'>
                             <div className='mb-1.5 flex items-center justify-between gap-1 xl:mb-1'>
                                 <h3 className='truncate text-[10px] font-bold text-white sm:text-[13px] lg:text-[11px] xl:text-[12px]'>Top Campaigns</h3>
 
@@ -659,7 +659,7 @@ function EmailMarketingDashboard() {
                             </div>
                         </div>
 
-                        <div className='min-w-0 rounded-[10px] border border-[#414A5D] bg-[#0C0F18] p-[7px] sm:rounded-xl sm:p-3 lg:p-2 xl:col-start-2 xl:row-start-1 xl:flex xl:flex-col xl:justify-between xl:p-[9px]'>
+                        <div className='min-w-0 rounded-[10px] border border-[#414A5D] bg-black p-[7px] sm:rounded-xl sm:p-3 lg:p-2 xl:col-start-2 xl:row-start-1 xl:flex xl:flex-col xl:justify-between xl:p-[9px]'>
                             <div className='flex items-center justify-between gap-1'>
                                 <h3 className='truncate text-[10px] font-bold text-white sm:text-[13px] lg:text-[11px] xl:text-[12px]'>Subscriber Growth</h3>
 
@@ -1031,7 +1031,7 @@ function EmailMarketing() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8= items-stretch'>
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
-                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#4333AF]/15 bg-[#0C0F18]'>
+                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#4333AF]/15 bg-black'>
                                     <div className={`absolute top-0 left-0 w-full h-[3px] ${feature.color} opacity-60`} />
 
                                     <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#4333AF]/10' />
@@ -1079,7 +1079,7 @@ function EmailMarketing() {
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
                         {additionalFeatures.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-[#0C0F18]'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8 text-center'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#4333AF] hover:bg-[#372990]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -1137,7 +1137,7 @@ function EmailMarketing() {
                             <div className='relative'>
                                 <div className='absolute inset-0 w-96 h-96 rounded-full blur-2xl'></div>
 
-                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center shadow-2xl backdrop-blur-xl p-8 bg-[#0C0F18]'>
+                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center shadow-2xl backdrop-blur-xl p-8 bg-black'>
                                     <LottieAnimation src='/animations/emailmarketingicon.json' loop={true} autoplay={true} />
                                 </div>
                             </div>
