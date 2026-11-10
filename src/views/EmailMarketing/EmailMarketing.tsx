@@ -257,13 +257,13 @@ function EmailMarketingDashboard() {
     const changePercent = (now: number, before: number) => `${now >= before ? '+' : ''}${(before ? (now / before - 1) * 100 : 0).toFixed(1)}%`;
 
     const metricCards = [
-        { label: 'Emails Sent', value: dashboardNumber(sent), growth: changePercent(sent, oldSent), icon: Send, color: '#4333AF' },
+        { label: 'Emails Sent', value: dashboardNumber(sent), growth: changePercent(sent, oldSent), icon: Send, color: '#8350E0' },
 
-        { label: 'Open Rate', value: `${openRate.toFixed(1)}%`, growth: changePercent(openRate, oldOpenRate), icon: MailOpen, color: '#4333AF' },
+        { label: 'Open Rate', value: `${openRate.toFixed(1)}%`, growth: changePercent(openRate, oldOpenRate), icon: MailOpen, color: '#8350E0' },
 
-        { label: 'Click Rate', value: `${clickRate.toFixed(1)}%`, growth: changePercent(clickRate, oldClickRate), icon: MousePointer2, color: '#4333AF' },
+        { label: 'Click Rate', value: `${clickRate.toFixed(1)}%`, growth: changePercent(clickRate, oldClickRate), icon: MousePointer2, color: '#8350E0' },
 
-        { label: 'Conversions', value: dashboardNumber(conversions), growth: changePercent(conversions, oldConversions), icon: Users, color: '#4333AF' },
+        { label: 'Conversions', value: dashboardNumber(conversions), growth: changePercent(conversions, oldConversions), icon: Users, color: '#8350E0' },
     ];
 
     const maximum = Math.max(1, ...buckets.flatMap((bucket) => [visibleSeries.sent ? bucket.sent : 0, visibleSeries.opens ? bucket.opens : 0]));
@@ -341,14 +341,14 @@ function EmailMarketingDashboard() {
     return (
         <div
             aria-label='Interactive sample email marketing dashboard'
-            className='relative w-full min-w-0 max-w-[650px] rounded-[24px] border border-[#414A5D] bg-[#0C0F18] p-[7px] shadow-[0_0_30px_rgba(67,51,175,0.12),inset_0_0_0_1px_rgba(67,51,175,0.09)] sm:p-[10px] lg:max-w-none xl:mr-auto xl:w-[82%] xl:p-[7px]'
+            className='relative w-full min-w-0 max-w-[650px] rounded-[24px] border border-[#414A5D] bg-[#0C0F18] p-[7px] shadow-[0_0_30px_rgba(131,80,224,0.12),inset_0_0_0_1px_rgba(131,80,224,0.09)] sm:p-[10px] lg:max-w-none xl:mr-auto xl:w-[82%] xl:p-[7px]'
         >
             <div className='min-w-0 rounded-[19px] border border-[#414A5D] bg-[#0C0F18] p-[9px] sm:p-[15px] xl:p-[11px]'>
                 {/* Native dropdown: keyboard and touch accessible; changes all demo statistics. */}
 
                 <div className='mb-3 flex min-w-0 items-center justify-between gap-2 sm:mb-4 xl:mb-2.5'>
                     <div className='flex min-w-0 items-center gap-2 sm:gap-3 xl:gap-2'>
-                        <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] shadow-[0_0_16px_rgba(67,51,175,0.14)] sm:h-11 sm:w-11 xl:h-10 xl:w-10 bg-[#4333AF]'>
+                        <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] shadow-[0_0_16px_rgba(131,80,224,0.14)] sm:h-11 sm:w-11 xl:h-10 xl:w-10 bg-[#8350E0]'>
                             <Mail aria-hidden='true' className='h-5 w-5 text-white sm:h-6 sm:w-6 xl:h-5 xl:w-5' strokeWidth={1.7} />
                         </div>
 
@@ -357,7 +357,7 @@ function EmailMarketingDashboard() {
                                 Email Marketing
                             </h2>
 
-                            <p className='mt-0.5 truncate text-[7px] font-bold uppercase leading-tight tracking-[0.17em] text-[#4333AF] sm:text-[9px] lg:text-[8px] xl:text-[8px]'>
+                            <p className='mt-0.5 truncate text-[7px] font-bold uppercase leading-tight tracking-[0.17em] text-[#8350E0] sm:text-[9px] lg:text-[8px] xl:text-[8px]'>
                                 Campaign Performance
                             </p>
                         </div>
@@ -371,7 +371,7 @@ function EmailMarketingDashboard() {
                             value={range}
                             onChange={(event) => updateRange(event.target.value as DashboardRange)}
                             style={{ colorScheme: 'dark' }}
-                            className='h-9 max-w-[120px] cursor-pointer appearance-none rounded-[9px] border border-[#414A5D] bg-black py-2 pl-2 pr-6 text-[9px] text-[#d7e6f4] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:max-w-none sm:pl-3 sm:pr-7 sm:text-[11px] lg:text-[10px] xl:box-border xl:h-9 xl:min-w-[142px] xl:py-0 xl:text-[11px] xl:leading-5'
+                            className='h-9 max-w-[120px] cursor-pointer appearance-none rounded-[9px] border border-[#414A5D] bg-black py-2 pl-2 pr-6 text-[9px] text-[#d7e6f4] outline-none focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:max-w-none sm:pl-3 sm:pr-7 sm:text-[11px] lg:text-[10px] xl:box-border xl:h-9 xl:min-w-[142px] xl:py-0 xl:text-[11px] xl:leading-5'
                         >
                             {DASHBOARD_RANGES.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -380,7 +380,7 @@ function EmailMarketingDashboard() {
                             ))}
                         </select>
 
-                        <ChevronDown aria-hidden='true' className='pointer-events-none absolute right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[#4333AF]' />
+                        <ChevronDown aria-hidden='true' className='pointer-events-none absolute right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[#8350E0]' />
                     </label>
                 </div>
 
@@ -451,22 +451,22 @@ function EmailMarketingDashboard() {
                                     type='button'
                                     aria-pressed={visibleSeries.sent}
                                     onClick={() => toggleSeries('sent')}
-                                    className={`flex items-center gap-1 whitespace-nowrap rounded text-[7px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF] sm:text-[9px] lg:text-[8px] ${
-                                        visibleSeries.sent ? 'text-[#b9c8d8]' : 'text-[#4333AF]'
+                                    className={`flex items-center gap-1 whitespace-nowrap rounded text-[7px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8350E0] sm:text-[9px] lg:text-[8px] ${
+                                        visibleSeries.sent ? 'text-[#b9c8d8]' : 'text-[#8350E0]'
                                     }`}
                                 >
-                                    <span className='h-[5px] w-[5px] rounded-full bg-[#4333AF] sm:h-[7px] sm:w-[7px]' /> Emails Sent
+                                    <span className='h-[5px] w-[5px] rounded-full bg-[#8350E0] sm:h-[7px] sm:w-[7px]' /> Emails Sent
                                 </button>
 
                                 <button
                                     type='button'
                                     aria-pressed={visibleSeries.opens}
                                     onClick={() => toggleSeries('opens')}
-                                    className={`flex items-center gap-1 whitespace-nowrap rounded text-[7px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF] sm:text-[9px] lg:text-[8px] ${
-                                        visibleSeries.opens ? 'text-[#b9c8d8]' : 'text-[#4333AF]'
+                                    className={`flex items-center gap-1 whitespace-nowrap rounded text-[7px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8350E0] sm:text-[9px] lg:text-[8px] ${
+                                        visibleSeries.opens ? 'text-[#b9c8d8]' : 'text-[#8350E0]'
                                     }`}
                                 >
-                                    <span className='h-[5px] w-[5px] rounded-full bg-[#4333AF] sm:h-[7px] sm:w-[7px]' /> Opens
+                                    <span className='h-[5px] w-[5px] rounded-full bg-[#8350E0] sm:h-[7px] sm:w-[7px]' /> Opens
                                 </button>
 
                                 <label className='relative hidden min-[390px]:block'>
@@ -483,7 +483,7 @@ function EmailMarketingDashboard() {
                                             setSelectedIndex(null);
                                         }}
                                         style={{ colorScheme: 'dark' }}
-                                        className='w-[64px] cursor-pointer appearance-none rounded-md border border-[#414A5D] bg-black py-1 pl-1.5 pr-4 text-[8px] text-[#c5d7e7] outline-none focus-visible:ring-2 focus-visible:ring-[#4333AF] sm:w-[77px] sm:text-[9px] lg:w-[65px] lg:text-[8px]'
+                                        className='w-[64px] cursor-pointer appearance-none rounded-md border border-[#414A5D] bg-black py-1 pl-1.5 pr-4 text-[8px] text-[#c5d7e7] outline-none focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:w-[77px] sm:text-[9px] lg:w-[65px] lg:text-[8px]'
                                     >
                                         {DASHBOARD_INTERVALS[range].map((choice) => (
                                             <option key={choice} value={choice}>
@@ -494,14 +494,14 @@ function EmailMarketingDashboard() {
 
                                     <ChevronDown
                                         aria-hidden='true'
-                                        className='pointer-events-none absolute right-1 top-1/2 h-2.5 w-2.5 -translate-y-1/2 text-[#4333AF]'
+                                        className='pointer-events-none absolute right-1 top-1/2 h-2.5 w-2.5 -translate-y-1/2 text-[#8350E0]'
                                     />
                                 </label>
                             </div>
                         </div>
 
                         <svg
-                            className='block h-auto w-full touch-pan-y focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF] xl:h-[142px] 2xl:h-[148px]'
+                            className='block h-auto w-full touch-pan-y focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8350E0] xl:h-[142px] 2xl:h-[148px]'
                             viewBox='0 0 600 163'
                             preserveAspectRatio='none'
                             role='img'
@@ -524,15 +524,15 @@ function EmailMarketingDashboard() {
                         >
                             <defs>
                                 <linearGradient id='email-crm-demo-area-blue' x1='0' y1='0' x2='0' y2='1'>
-                                    <stop offset='0%' stopColor='#4333AF' stopOpacity='0.34' />
+                                    <stop offset='0%' stopColor='#8350E0' stopOpacity='0.34' />
 
-                                    <stop offset='100%' stopColor='#4333AF' stopOpacity='0.015' />
+                                    <stop offset='100%' stopColor='#8350E0' stopOpacity='0.015' />
                                 </linearGradient>
 
                                 <linearGradient id='email-crm-demo-area-purple' x1='0' y1='0' x2='0' y2='1'>
-                                    <stop offset='0%' stopColor='#4333AF' stopOpacity='0.28' />
+                                    <stop offset='0%' stopColor='#8350E0' stopOpacity='0.28' />
 
-                                    <stop offset='100%' stopColor='#4333AF' stopOpacity='0.015' />
+                                    <stop offset='100%' stopColor='#8350E0' stopOpacity='0.015' />
                                 </linearGradient>
                             </defs>
 
@@ -572,7 +572,7 @@ function EmailMarketingDashboard() {
                                 <>
                                     <path d={sentArea} fill='url(#email-crm-demo-area-blue)' />
 
-                                    <path d={sentPath} fill='none' stroke='#4333AF' strokeWidth='2.6' strokeLinecap='round' />
+                                    <path d={sentPath} fill='none' stroke='#8350E0' strokeWidth='2.6' strokeLinecap='round' />
                                 </>
                             )}
 
@@ -580,18 +580,18 @@ function EmailMarketingDashboard() {
                                 <>
                                     <path d={opensArea} fill='url(#email-crm-demo-area-purple)' />
 
-                                    <path d={opensPath} fill='none' stroke='#4333AF' strokeWidth='2.25' strokeLinecap='round' />
+                                    <path d={opensPath} fill='none' stroke='#8350E0' strokeWidth='2.25' strokeLinecap='round' />
                                 </>
                             )}
 
                             <line x1={selectedX} y1='27' x2={selectedX} y2='131' stroke='#c0eaff' strokeWidth='1' strokeDasharray='4 5' opacity='0.6' />
 
                             {visibleSeries.sent && (
-                                <circle cx={selectedX} cy={sentPoints[displayedIndex].y} r='4.5' fill='#4333AF' stroke='#e6faff' strokeWidth='1.5' />
+                                <circle cx={selectedX} cy={sentPoints[displayedIndex].y} r='4.5' fill='#8350E0' stroke='#e6faff' strokeWidth='1.5' />
                             )}
 
                             {visibleSeries.opens && (
-                                <circle cx={selectedX} cy={opensPoints[displayedIndex].y} r='4' fill='#4333AF' stroke='#e6dbff' strokeWidth='1.3' />
+                                <circle cx={selectedX} cy={opensPoints[displayedIndex].y} r='4' fill='#8350E0' stroke='#e6dbff' strokeWidth='1.3' />
                             )}
 
                             <g transform={`translate(${tooltipX}, 18)`}>
@@ -601,13 +601,13 @@ function EmailMarketingDashboard() {
                                     {dashboardBucketLabel(highlighted, interval)}
                                 </text>
 
-                                <circle cx='13' cy='32' r='4' fill='#4333AF' />
+                                <circle cx='13' cy='32' r='4' fill='#8350E0' />
 
                                 <text x='24' y='36' fill='#e2f0fb' fontSize='11'>
                                     {dashboardNumber(highlighted.sent)} Sent
                                 </text>
 
-                                <circle cx='13' cy='53' r='4' fill='#4333AF' />
+                                <circle cx='13' cy='53' r='4' fill='#8350E0' />
 
                                 <text x='24' y='57' fill='#e2f0fb' fontSize='11'>
                                     {dashboardNumber(highlighted.opens)} Opens
@@ -621,7 +621,7 @@ function EmailMarketingDashboard() {
                             <div className='mb-1.5 flex items-center justify-between gap-1 xl:mb-1'>
                                 <h3 className='truncate text-[10px] font-bold text-white sm:text-[13px] lg:text-[11px] xl:text-[12px]'>Top Campaigns</h3>
 
-                                <ChevronRight aria-hidden='true' className='h-3.5 w-3.5 shrink-0 text-[#4333AF]' />
+                                <ChevronRight aria-hidden='true' className='h-3.5 w-3.5 shrink-0 text-[#8350E0]' />
                             </div>
 
                             <div className='space-y-1.5 sm:space-y-2 xl:grid xl:grid-cols-3 xl:gap-x-2.5 xl:gap-y-0 xl:space-y-0'>
@@ -633,7 +633,7 @@ function EmailMarketingDashboard() {
                                             <div
                                                 className={`relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-[5px] border border-[#414A5D] sm:h-9 sm:w-9 lg:h-7 lg:w-7 xl:h-[30px] xl:w-[30px] ${
                                                     campaign.theme === 'blue' ? ' ' : campaign.theme === 'purple' ? ' ' : ' '
-                                                } bg-[#4333AF]`}
+                                                } bg-[#8350E0]`}
                                             >
                                                 <div className='absolute inset-1 rounded-[3px] border border-[#414A5D]' />
 
@@ -663,7 +663,7 @@ function EmailMarketingDashboard() {
                             <div className='flex items-center justify-between gap-1'>
                                 <h3 className='truncate text-[10px] font-bold text-white sm:text-[13px] lg:text-[11px] xl:text-[12px]'>Subscriber Growth</h3>
 
-                                <ChevronRight aria-hidden='true' className='h-3.5 w-3.5 shrink-0 text-[#4333AF]' />
+                                <ChevronRight aria-hidden='true' className='h-3.5 w-3.5 shrink-0 text-[#8350E0]' />
                             </div>
 
                             <div className='mt-1 flex items-end justify-between gap-1'>
@@ -703,7 +703,7 @@ function EmailMarketingDashboard() {
                                             style={{
                                                 height: `${height}%`,
 
-                                                background: `linear-gradient(to top, #4333AF, ${index > 10 ? '#4333AF' : index > 6 ? '#4333AF' : '#4333AF'})`,
+                                                background: `linear-gradient(to top, #8350E0, ${index > 10 ? '#8350E0' : index > 6 ? '#8350E0' : '#8350E0'})`,
                                             }}
                                         />
                                     ))}
@@ -846,7 +846,7 @@ function EmailMarketing() {
 
             icon: Edit3,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Drag-and-drop email builder', 'Professional templates library', 'Mobile-responsive designs', 'Brand customization tools'],
         },
@@ -858,7 +858,7 @@ function EmailMarketing() {
 
             icon: Send,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Mass email distribution', 'SMS campaign management', 'Contact list segmentation', 'Delivery optimization'],
         },
@@ -870,7 +870,7 @@ function EmailMarketing() {
 
             icon: Calendar,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Advanced scheduling options', 'Time zone optimization', 'Automated drip campaigns', 'Behavioral triggers'],
         },
@@ -882,7 +882,7 @@ function EmailMarketing() {
 
             icon: Users,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Team collaboration tools', 'Role-based permissions', 'Shared campaign access', 'No user limits'],
         },
@@ -894,7 +894,7 @@ function EmailMarketing() {
 
             icon: Users,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Team collaboration tools', 'Role-based permissions', 'Shared campaign access', 'No user limits'],
         },
@@ -906,7 +906,7 @@ function EmailMarketing() {
 
             icon: Users,
 
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
 
             benefits: ['Team collaboration tools', 'Role-based permissions', 'Shared campaign access', 'No user limits'],
         },
@@ -973,7 +973,7 @@ function EmailMarketing() {
 
                         <div className='min-w-0 animate-slide-in-left'>
                             <h1 className='mb-5 text-[clamp(1.55rem,6.2vw,2.2rem)] font-black leading-[1.2] tracking-tight text-white sm:mb-7 sm:text-4xl md:text-5xl lg:text-4xl xl:mb-4 xl:text-[2.55rem]'>
-                                Email <span className='text-[#4333AF]'>CRM Lite</span>
+                                Email <span className='text-[#8350E0]'>CRM Lite</span>
                             </h1>
 
                             <EmailMarketingDashboard />
@@ -984,7 +984,7 @@ function EmailMarketing() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    className='h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 px-5 text-base font-bold transition-all duration-300 hover:scale-[1.02] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                    className='h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 px-5 text-base font-bold transition-all duration-300 hover:scale-[1.02] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                 >
                                     Purchase
                                 </Button>
@@ -992,7 +992,7 @@ function EmailMarketing() {
                                 <Button
                                     onClick={() => setSlideshowOpen(true)}
                                     size='lg'
-                                    className='group h-12 w-full min-w-0 flex-1 rounded-lg px-5 text-base font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                    className='group h-12 w-full min-w-0 flex-1 rounded-lg px-5 text-base font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                 >
                                     Learn more
                                 </Button>
@@ -1018,7 +1018,7 @@ function EmailMarketing() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Powerful <span className='text-[#4333AF]'>Email CRM</span>
+                            Powerful <span className='text-[#8350E0]'>Email CRM</span>
                             <br />
                             Lite Capabilities
                         </h2>
@@ -1031,10 +1031,10 @@ function EmailMarketing() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8= items-stretch'>
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
-                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#4333AF]/15 bg-black'>
+                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-black'>
                                     <div className={`absolute top-0 left-0 w-full h-[3px] ${feature.color} opacity-60`} />
 
-                                    <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#4333AF]/10' />
+                                    <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
 
                                     {/* TOP (Icon + Title) */}
 
@@ -1045,7 +1045,7 @@ function EmailMarketing() {
                                             <feature.icon className='w-8 h-8 sm:w-9 sm:h-9 text-white' />
                                         </div>
 
-                                        <CardTitle className='mt-6 text-2xl sm:text-3xl font-black text-white group-hover:text-[#4333AF] transition-colors duration-300 leading-tight'>
+                                        <CardTitle className='mt-6 text-2xl sm:text-3xl font-black text-white group-hover:text-[#8350E0] transition-colors duration-300 leading-tight'>
                                             {feature.title}
                                         </CardTitle>
                                     </CardHeader>
@@ -1068,7 +1068,7 @@ function EmailMarketing() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Why Choose Our Digital <span className='text-[#4333AF]'>Email CRM Lite</span>
+                            Why Choose Our Digital <span className='text-[#8350E0]'>Email CRM Lite</span>
                         </h2>
 
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
@@ -1079,13 +1079,13 @@ function EmailMarketing() {
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
                         {additionalFeatures.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8 text-center'>
-                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#4333AF] hover:bg-[#372990]'>
+                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
 
-                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
 
@@ -1105,7 +1105,7 @@ function EmailMarketing() {
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                Start <span className='text-[#4333AF]'>Automating</span>
+                                Start <span className='text-[#8350E0]'>Automating</span>
                                 <br />
                                 Today
                             </h2>
@@ -1118,7 +1118,7 @@ function EmailMarketing() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                    className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                 >
                                     Purchase
                                 </Button>
@@ -1126,7 +1126,7 @@ function EmailMarketing() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                    className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                 >
                                     Learn More
                                 </Button>

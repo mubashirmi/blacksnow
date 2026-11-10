@@ -28,7 +28,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
 
                             {/* Text - perfectly centered on mobile */}
                             <div className='h-8 md:h-9 flex items-center absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0'>
-                                <span className='text-[28px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#f4f4f4] fontArchivoBlack whitespace-nowrap leading-none'>
+                                <span className='text-[28px] md:text-[30px] lg:text-[44px] uppercase font-extralight md:font-light text-[#6D83B2] fontArchivoBlack whitespace-nowrap leading-none'>
                                     Black Snow
                                 </span>
                             </div>
@@ -105,7 +105,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Company</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#6D83B2]'>Company</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Market Intelligence Platform', href: '/about' },
@@ -132,7 +132,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Resources</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#6D83B2]'>Resources</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Affiliate Program', href: '/affiliate' },
@@ -157,7 +157,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
 
                         <div className='space-y-5 min-w-0'>
-                            <h4 className='text-lg sm:text-xl font-black text-[#4333AF] whitespace-nowrap'>Trading Tool Kit</h4>
+                            <h4 className='text-lg sm:text-xl font-black text-[#6D83B2] whitespace-nowrap'>Trading Tool Kit</h4>
                             <div className='space-y-3'>
                                 {[
                                     { name: 'Paper Trading', href: '/paper-trading' },
@@ -186,7 +186,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         <div className='min-w-0'>
                             <div className='lg:block'>
                                 <div className='min-w-0 space-y-5'>
-                                    <h4 className='text-lg sm:text-xl font-black text-[#4333AF]'>Legal</h4>
+                                    <h4 className='text-lg sm:text-xl font-black text-[#6D83B2]'>Legal</h4>
                                     <div className='space-y-3'>
                                         {[
                                             { name: 'Affiliate Agreement', href: '/affiliateagreement' },

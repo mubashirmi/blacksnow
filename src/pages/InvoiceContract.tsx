@@ -123,37 +123,37 @@ export default function InvoiceContractPage() {
             icon: Star,
             title: 'Professional Custom Invoices',
             description: 'Send clean, branded invoices that make you look established and trustworthy. No design skills or formatting required.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
         {
             icon: Upload,
             title: 'Email Delivery Options',
             description: 'Send invoices instantly through email so clients receive them quickly and can make payments without delays.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
         {
             icon: Zap,
             title: 'Automatic Payment Reminders',
             description: 'The system follows up for you so you don’t have to. More reminders mean more on-time payments without awkward conversations.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
         {
             icon: LinkIcon,
             title: 'Create Invoice Contracts',
             description: 'Upload simple invoice-based contracts clients can review before paying. Keep all terms and signatures.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
         {
             icon: Pen,
             title: 'Create Recurring Invoices',
             description: 'Set up weekly, monthly, or annual billing that sends itself. Perfect for subscription services or long-term clients.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
         {
             icon: BarChart3,
             title: 'Add Multiple Users',
             description: 'Invite assistants or team members to help manage billing. Access controls ensure the right people see the right information.',
-            color: 'bg-[#4333AF]',
+            color: 'bg-[#8350E0]',
         },
     ];
 
@@ -241,7 +241,7 @@ export default function InvoiceContractPage() {
                             <div>
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                                        <span className='text-[#4333AF]'>Business </span>
+                                        <span className='text-[#8350E0]'>Business </span>
                                         &nbsp;Invoice
                                     </h1>
                                 </div>
@@ -251,7 +251,7 @@ export default function InvoiceContractPage() {
                                     you always know where your money stands. Clients receive clear, polished invoices that make paying simple and stress-free.
                                     The platform is designed for speed, efficiency, and total accuracy. Create unlimited invoices and contracts for customers on
                                     {'   '}
-                                    <span className='text-[#4333AF] font-semibold'> a single dashboard.</span>
+                                    <span className='text-[#8350E0] font-semibold'> a single dashboard.</span>
                                 </p>
                             </div>
 
@@ -260,14 +260,14 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    className='border-2 cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                    className='border-2 cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                 >
                                     Purchase
                                 </Button>
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                 >
                                     Learn More
                                 </Button>
@@ -304,27 +304,27 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            How It <span className='text-[#4333AF]'>Works</span>
+                            How It <span className='text-[#8350E0]'>Works</span>
                         </h2>
-                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 rounded-full mb-4 sm:mb-5 mx-auto bg-[#4333AF]'></div> */}
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 rounded-full mb-4 sm:mb-5 mx-auto bg-[#8350E0]'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Get started in four simple steps</p>
                     </div>
 
                     <div className='relative'>
                         {/* Connection Line */}
-                        <div className='hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-[#4333AF]'></div>
+                        <div className='hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-[#8350E0]'></div>
 
                         <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'>
                             {steps.map((item, index) => (
                                 <div key={index} className='relative group'>
-                                    <div className='relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#4333AF] hover:shadow-lg hover:shadow-[#4333AF]/15 hover:-translate-y-2 bg-[#0C0F18]'>
+                                    <div className='relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#8350E0] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-2 bg-[#0C0F18]'>
                                         {/* Step Number Badge */}
-                                        <div className='absolute -top-4 -right-4 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#4333AF]/15 group-hover:scale-110 transition-transform duration-300 bg-[#4333AF] hover:bg-[#372990]'>
+                                        <div className='absolute -top-4 -right-4 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#8350E0]/15 group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <span className='text-lg sm:text-xl font-black text-white'>{item.step}</span>
                                         </div>
 
                                         <div className='mt-6 sm:mt-8'>
-                                            <h3 className='text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                            <h3 className='text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                                 {item.title}
                                             </h3>
                                             <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{item.description}</p>
@@ -333,7 +333,7 @@ export default function InvoiceContractPage() {
                                         {/* Arrow Indicator */}
                                         {index < steps.length - 1 && (
                                             <div className='hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 z-10'>
-                                                <div className='w-8 h-8 rounded-full flex items-center justify-center shadow-md bg-[#4333AF]'>
+                                                <div className='w-8 h-8 rounded-full flex items-center justify-center shadow-md bg-[#8350E0]'>
                                                     <ArrowRight className='w-4 h-4 text-white' />
                                                 </div>
                                             </div>
@@ -351,9 +351,9 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Professional Custom <span className='text-[#4333AF]'>Invoices </span>
+                            Professional Custom <span className='text-[#8350E0]'>Invoices </span>
                         </h2>
-                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 rounded-full mb-4 sm:mb-5 mx-auto bg-[#4333AF]'></div> */}
+                        {/* <div className='w-64 sm:w-80 md:w-96 h-1 sm:h-2 rounded-full mb-4 sm:mb-5 mx-auto bg-[#8350E0]'></div> */}
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>
                             Send clean, branded invoices that make you look established and trustworthy. No design skills or formatting required.
                         </p>
@@ -363,7 +363,7 @@ export default function InvoiceContractPage() {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#4333AF] hover:shadow-xl hover:shadow-[#4333AF]/15 hover:-translate-y-1 bg-black'
+                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#8350E0] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
                             >
                                 {/* Top gradient line */}
                                 <div className={`absolute top-0 left-0 right-0 h-1 ${feature.color}`}></div>
@@ -371,14 +371,14 @@ export default function InvoiceContractPage() {
                                 <div className='p-6 sm:p-8 flex items-start gap-4 sm:gap-6'>
                                     {/* Icon */}
                                     <div
-                                        className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 ${feature.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 hover:bg-[#372990]`}
+                                        className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 ${feature.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 hover:bg-[#693DB6]`}
                                     >
                                         <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                     </div>
 
                                     {/* Content */}
                                     <div className='flex-1 min-w-0'>
-                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{feature.description}</p>
@@ -386,7 +386,7 @@ export default function InvoiceContractPage() {
                                 </div>
 
                                 {/* Hover effect overlay */}
-                                <div className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[#4333AF]/10'></div>
+                                <div className='absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[#8350E0]/10'></div>
                             </div>
                         ))}
                     </div>
@@ -400,7 +400,7 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Why Choose Our <span className='text-[#4333AF]'> Digital Solution</span>
+                            Why Choose Our <span className='text-[#8350E0]'> Digital Solution</span>
                         </h2>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Transform your document workflow</p>
                     </div>
@@ -409,21 +409,21 @@ export default function InvoiceContractPage() {
                         {benefits.map((benefit, index) => (
                             <div
                                 key={index}
-                                className='group relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#4333AF] hover:shadow-lg hover:shadow-[#4333AF]/15 hover:-translate-y-1 bg-[#0C0F18]'
+                                className='group relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#8350E0] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-[#0C0F18]'
                             >
                                 {/* Icon */}
-                                <div className='w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-md mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 bg-[#4333AF] hover:bg-[#372990]'>
+                                <div className='w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-md mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                     <benefit.icon className='w-6 h-6 sm:w-7 sm:h-7 text-white' />
                                 </div>
 
                                 {/* Content */}
-                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                     {benefit.title}
                                 </h3>
                                 <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{benefit.description}</p>
 
                                 {/* Decorative element */}
-                                <div className='absolute top-0 right-0 w-20 h-20  rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[#4333AF] hover:bg-[#372990]'></div>
+                                <div className='absolute top-0 right-0 w-20 h-20  rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[#8350E0] hover:bg-[#693DB6]'></div>
                             </div>
                         ))}
                     </div>
@@ -435,7 +435,7 @@ export default function InvoiceContractPage() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Perfect For Every <span className='text-[#4333AF]'>Business</span>
+                            Perfect For Every <span className='text-[#8350E0]'>Business</span>
                         </h2>
                         <p className='text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto'>Discover how our platform adapts to your needs</p>
                     </div>
@@ -446,55 +446,55 @@ export default function InvoiceContractPage() {
                                 icon: FileText,
                                 title: 'Business Contracts',
                                 description: 'Manage service agreements, NDAs, and partnership contracts with secure digital signatures.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                             {
                                 icon: BarChart3,
                                 title: 'Invoice Management',
                                 description: 'Create, send, and track professional invoices directly from your signed contracts.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                             {
                                 icon: Users,
                                 title: 'Client Onboarding',
                                 description: 'Streamline client onboarding with digital forms, agreements, and instant document signing.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                             {
                                 icon: CheckCircle,
                                 title: 'Legal Documentation',
                                 description: 'Manage legal documents with audit trails and compliance-ready record keeping.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                             {
                                 icon: Share2,
                                 title: 'Vendor Agreements',
                                 description: 'Collaborate with vendors using secure document sharing and multi-party signing.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                             {
                                 icon: Shield,
                                 title: 'Finance Operations',
                                 description: 'Automate financial workflows with secure document management and invoice generation.',
-                                color: 'bg-[#4333AF]',
+                                color: 'bg-[#8350E0]',
                             },
                         ].map((useCase, index) => (
                             <div key={index} className='group relative'>
                                 {/* Card */}
-                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#4333AF] hover:shadow-xl hover:shadow-[#4333AF]/15 hover:-translate-y-2 h-full bg-black'>
+                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#8350E0] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
                                     {/* Gradient accent */}
-                                    <div className={`absolute top-0 left-0 right-0 h-1 ${useCase.color} bg-[#4333AF]`}></div>
+                                    <div className={`absolute top-0 left-0 right-0 h-1 ${useCase.color} bg-[#8350E0]`}></div>
 
                                     <div className='p-6 sm:p-8 text-center'>
                                         {/* Icon */}
                                         <div
-                                            className={`inline-flex w-14 h-14 sm:w-16 sm:h-16 ${useCase.color} rounded-xl items-center justify-center shadow-lg mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 bg-[#4333AF] hover:bg-[#372990]`}
+                                            className={`inline-flex w-14 h-14 sm:w-16 sm:h-16 ${useCase.color} rounded-xl items-center justify-center shadow-lg mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 bg-[#8350E0] hover:bg-[#693DB6]`}
                                         >
                                             <useCase.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
 
                                         {/* Content */}
-                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                        <h3 className='text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                             {useCase.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{useCase.description}</p>
@@ -502,7 +502,7 @@ export default function InvoiceContractPage() {
 
                                     {/* Background glow effect */}
                                     <div
-                                        className={`absolute inset-0 ${useCase.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none bg-[#4333AF] hover:bg-[#372990]`}
+                                        className={`absolute inset-0 ${useCase.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none bg-[#8350E0] hover:bg-[#693DB6]`}
                                     ></div>
                                 </div>
                             </div>
@@ -517,7 +517,7 @@ export default function InvoiceContractPage() {
                         <div className='space-y-8'>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Create New <br className='inline sm:hidden' />
-                                <span className='text-[#4333AF]'>&nbsp;Transactions</span>
+                                <span className='text-[#8350E0]'>&nbsp;Transactions</span>
                                 <br />
                             </h2>
                             <p className='text-xl text-gray-300 leading-relaxed'>
@@ -527,14 +527,14 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
-                                    className='cursor-pointer border-2 px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                    className='cursor-pointer border-2 px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                 >
                                     Purchase
                                 </Button>
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                 >
                                     Learn More
                                 </Button>

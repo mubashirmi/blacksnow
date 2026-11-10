@@ -90,7 +90,7 @@ function Affiliate() {
                             <div>
                                 <div className='inline-block'>
                                     <h1 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                                        <span className='text-[#4333AF]'>Lightning</span> Affiliate
+                                        <span className='text-[#8350E0]'>Lightning</span> Affiliate
                                     </h1>
                                 </div>
 
@@ -105,7 +105,7 @@ function Affiliate() {
                                 <Button
                                     onClick={() => setIsAffiliatePopupOpen(true)}
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                 >
                                     Learn More
                                 </Button>
@@ -113,7 +113,7 @@ function Affiliate() {
                                 <Button
                                     onClick={handleScrollToEarnBig}
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                 >
                                     Join Now
                                 </Button>
@@ -123,7 +123,7 @@ function Affiliate() {
                                         <Button
                                             size='lg'
                                             variant='outline'
-                                            className='border-2 cursor-pointer border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
+                                            className='border-2 cursor-pointer border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px]'
                                         >
                                             View Earnings
                                         </Button>
@@ -150,11 +150,11 @@ function Affiliate() {
                 </div>
             </section>
 
-            <section ref={earnBigRef} className='relative pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section ref={earnBigRef} className='relative flow-root pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-14 sm:mb-16'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Earn <span className='text-[#4333AF]'>Big</span> Commissions
+                            Earn <span className='text-[#8350E0]'>Big</span> Commissions
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Lightning affiliates earn recurring lifetime commissions on every subscription they refer. Commissions are paid on both monthly and
@@ -169,7 +169,7 @@ function Affiliate() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-10 sm:mb-14'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Referral <span className='text-[#4333AF]'>Program</span>
+                            Referral <span className='text-[#8350E0]'>Program</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Lightning also offers a recurring referral bonus that increases total monthly earnings. Affiliates earn $100 per month for every 10
@@ -181,7 +181,7 @@ function Affiliate() {
                     <div className='grid md:grid-cols-3 gap-6 sm:gap-8'>
                         <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
-                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
+                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <Users className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
                                 <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>$100 / month bonus</h3>
@@ -193,7 +193,7 @@ function Affiliate() {
 
                         <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
-                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
+                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <Rocket className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
                                 <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>Stacks with commissions</h3>
@@ -205,7 +205,7 @@ function Affiliate() {
 
                         <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
                             <CardContent className='p-6 sm:p-8'>
-                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#4333AF]'>
+                                <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <BarChart3 className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                 </div>
                                 <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28]'>Built for long-term growth</h3>
@@ -222,7 +222,7 @@ function Affiliate() {
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                            Why Join Our <span className='whitespace-nowrap text-[#4333AF]'>Affiliate Program</span>
+                            Why Join Our <span className='whitespace-nowrap text-[#8350E0]'>Affiliate Program</span>
                         </h2>
                         <p className='text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                             Lightning combines real products, automation, and analytics into one affiliate ecosystem. <br />
@@ -234,12 +234,12 @@ function Affiliate() {
                     <div className='grid md:grid-cols-4 gap-6 sm:gap-8'>
                         {whyJoin.map((feature, index) => (
                             <div key={feature.title} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8'>
-                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#4333AF] hover:bg-[#372990]'>
+                                        <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
                                         </div>
-                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#4333AF] transition-colors duration-300'>
+                                        <h3 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
                                             {feature.title}
                                         </h3>
                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{feature.description}</p>
@@ -256,7 +256,7 @@ function Affiliate() {
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
                             <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                Choose Your <span className='whitespace-nowrap text-[#4333AF]'>Affiliate</span> Level
+                                Choose Your <span className='whitespace-nowrap text-[#8350E0]'>Affiliate</span> Level
                             </h2>
                             <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed'>
                                 Choose the affiliate level that fits your goals and earning strategy. Both options include the same tools, tracking, and
@@ -267,7 +267,7 @@ function Affiliate() {
                                 <Link href='/lightningSilver'>
                                     <Button
                                         size='lg'
-                                        className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer border-[#4333AF] bg-[#4333AF] text-white hover:bg-[#372990] hover:text-white hover:border-[#372990]'
+                                        className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] cursor-pointer border-[#8350E0] bg-[#8350E0] text-white hover:bg-[#693DB6] hover:text-white hover:border-[#693DB6]'
                                     >
                                         Lightning Silver
                                     </Button>
@@ -277,7 +277,7 @@ function Affiliate() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] border-[#4333AF] bg-transparent text-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] hover:border-[#4333AF] shadow-[0_0_18px_rgba(67,51,175,0.12)]'
+                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
                                     >
                                         Lightning Gold
                                     </Button>

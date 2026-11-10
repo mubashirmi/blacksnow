@@ -295,7 +295,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 style={{ width: MATCHED_ELEMENT_HEIGHT, height: MATCHED_ELEMENT_HEIGHT }}
                             />
                             <span
-                                className='flex shrink-0 items-center whitespace-nowrap text-[30px] font-bold text-white'
+                                className='flex shrink-0 items-center whitespace-nowrap text-[30px] font-bold text-[#6D83B2]'
                                 style={{ height: MATCHED_ELEMENT_HEIGHT, lineHeight: `${MATCHED_ELEMENT_HEIGHT}px` }}
                             >
                                 Black Snow
@@ -318,10 +318,10 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                         transitionDelay: isOpen ? `${300 + sectionIndex * 100}ms` : '0ms',
                                     }}
                                 >
-                                    <h3 className='relative mb-4 text-lg font-black text-[#4333AF]'>
+                                    <h3 className='relative mb-4 text-lg font-black text-[#6D83B2]'>
                                         {section.category}
 
-                                        <div className='absolute -bottom-1 left-0 h-0.5 w-8 rounded-full bg-[#4333AF]' />
+                                        <div className='absolute -bottom-1 left-0 h-0.5 w-8 rounded-full bg-[#6D83B2]' />
                                     </h3>
 
                                     <div className='space-y-2'>

@@ -1398,7 +1398,7 @@ function SignIn() {
 
                     scrollbar-width: thin;
 
-                    scrollbar-color: rgba(76,199,232,0.42) rgba(255,255,255,0.035);
+                    scrollbar-color: rgba(67,51,175,0.42) rgba(255,255,255,0.035);
 
                 }
 
@@ -1426,19 +1426,19 @@ function SignIn() {
 
                 .glassy-scrollbar::-webkit-scrollbar-thumb {
 
-                    background: linear-gradient(180deg, rgba(76,199,232,0.52), rgba(44,123,190,0.30));
+                    background: linear-gradient(180deg, rgba(67,51,175,0.52), rgba(67,51,175,0.30));
 
                     border: 2px solid rgba(7,9,13,0.72);
 
                     border-radius: 999px;
 
-                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 0 14px rgba(76,199,232,0.18);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 0 14px rgba(67,51,175,0.18);
 
                 }
 
                 .glassy-scrollbar::-webkit-scrollbar-thumb:hover {
 
-                    background: linear-gradient(180deg, rgba(76,199,232,0.72), rgba(44,123,190,0.45));
+                    background: linear-gradient(180deg, rgba(67,51,175,0.72), rgba(67,51,175,0.45));
 
                 }
 
@@ -1483,7 +1483,7 @@ function SignIn() {
                         backdropFilter: 'blur(7px) saturate(145%)',
 
                         boxShadow:
-                            '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(44,123,190,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                            '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(67,51,175,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
                     }}
                 >
                     <div
@@ -1528,8 +1528,8 @@ function SignIn() {
                                 <div className='min-h-0 overflow-visible pr-0'>
                                     {showVerification ? (
                                         <div className='space-y-2'>
-                                            <div className='rounded-2xl border border-[#2c7bbe]/25 bg-[#050608]/45 p-2.5 text-left'>
-                                                <p className='text-[11px] font-bold uppercase tracking-[0.18em] text-[#4cc7e8] mb-1.5'>Verify your account</p>
+                                            <div className='rounded-2xl border border-[#414A5D] bg-[#050608]/45 p-2.5 text-left'>
+                                                <p className='text-[11px] font-bold uppercase tracking-[0.18em] text-[#4333AF] mb-1.5'>Verify your account</p>
 
                                                 <h3 className='text-base font-black text-white mb-1'>Choose a verification method</h3>
 
@@ -1551,16 +1551,16 @@ function SignIn() {
                                                     }}
                                                     className='rounded-2xl border p-2.5 text-left transition-all duration-300 hover:scale-[1.01]'
                                                     style={{
-                                                        backgroundColor: verificationMethod === 'email' ? 'rgba(76,199,232,0.13)' : 'rgba(5,6,8,0.45)',
+                                                        backgroundColor: verificationMethod === 'email' ? 'rgba(67,51,175,0.13)' : 'rgba(5,6,8,0.45)',
 
-                                                        borderColor: verificationMethod === 'email' ? 'rgba(76,199,232,0.58)' : 'rgba(255,255,255,0.10)',
+                                                        borderColor: verificationMethod === 'email' ? 'rgba(67,51,175,0.58)' : 'rgba(65,74,93,0.7)',
                                                     }}
                                                 >
-                                                    <Mail className='w-4 h-4 text-[#4cc7e8] mb-1.5' />
+                                                    <Mail className='w-4 h-4 text-[#4333AF] mb-1.5' />
 
                                                     <p className='text-white font-bold text-sm leading-tight'>Email</p>
 
-                                                    <p className='text-[#4cc7e8] text-xs mt-0.5'>OTP verification</p>
+                                                    <p className='text-[#4333AF] text-xs mt-0.5'>OTP verification</p>
                                                 </button>
 
                                                 <button
@@ -1574,16 +1574,16 @@ function SignIn() {
                                                     }}
                                                     className='rounded-2xl border p-2.5 text-left transition-all duration-300 hover:scale-[1.01]'
                                                     style={{
-                                                        backgroundColor: verificationMethod === 'sms' ? 'rgba(76,199,232,0.13)' : 'rgba(5,6,8,0.45)',
+                                                        backgroundColor: verificationMethod === 'sms' ? 'rgba(67,51,175,0.13)' : 'rgba(5,6,8,0.45)',
 
-                                                        borderColor: verificationMethod === 'sms' ? 'rgba(76,199,232,0.58)' : 'rgba(255,255,255,0.10)',
+                                                        borderColor: verificationMethod === 'sms' ? 'rgba(67,51,175,0.58)' : 'rgba(65,74,93,0.7)',
                                                     }}
                                                 >
-                                                    <MessageSquare className='w-4 h-4 text-[#4cc7e8] mb-1.5' />
+                                                    <MessageSquare className='w-4 h-4 text-[#4333AF] mb-1.5' />
 
                                                     <p className='text-white font-bold text-sm leading-tight'>SMS</p>
 
-                                                    <p className='text-[#4cc7e8] text-xs mt-0.5'>OTP verification</p>
+                                                    <p className='text-[#4333AF] text-xs mt-0.5'>OTP verification</p>
                                                 </button>
                                             </div>
 
@@ -1602,7 +1602,7 @@ function SignIn() {
 
                                                             setOtpSent(false);
                                                         }}
-                                                        className='h-11 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 px-4 rounded-2xl transition-all duration-300'
+                                                        className='h-11 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#414A5D] focus:border-[#4333AF] text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 px-4 rounded-2xl transition-all duration-300'
                                                     />
 
                                                     <p className='text-[11px] text-white/45'>Use E.164 format, for example +923001234567.</p>
@@ -1616,7 +1616,7 @@ function SignIn() {
                                                 className='w-full cursor-pointer rounded-2xl border h-11 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                                 style={{
                                                     background:
-                                                        'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
+                                                        'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(67,51,175,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(67,51,175,0.14) 0%, transparent 42%)',
 
                                                     borderColor: 'rgba(255,255,255,0.10)',
 
@@ -1653,11 +1653,11 @@ function SignIn() {
                                                             placeholder='Enter OTP'
                                                             value={otp}
                                                             onChange={(event) => setOtp(event.target.value)}
-                                                            className='h-11 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
+                                                            className='h-11 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 border-[#414A5D] focus:border-[#4333AF] text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300'
                                                         />
 
                                                         <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                            <Shield className='w-5 h-5 text-[#4cc7e8]' />
+                                                            <Shield className='w-5 h-5 text-[#4333AF]' />
                                                         </div>
                                                     </div>
 
@@ -1667,11 +1667,11 @@ function SignIn() {
                                                         disabled={otpVerifying || otpSending || !otp.trim()}
                                                         className='w-full cursor-pointer rounded-2xl border h-11 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99]'
                                                         style={{
-                                                            background: 'linear-gradient(135deg, #4cc7e8cc, #2c7bbe99)',
+                                                            background: 'linear-gradient(135deg, #4333AFcc, #4333AF99)',
 
-                                                            borderColor: 'rgba(76,199,232,0.46)',
+                                                            borderColor: 'rgba(67,51,175,0.46)',
 
-                                                            boxShadow: '0 14px 34px rgba(76,199,232,0.18)',
+                                                            boxShadow: '0 14px 34px rgba(67,51,175,0.18)',
                                                         }}
                                                     >
                                                         {otpVerifying ? (
@@ -1711,14 +1711,12 @@ function SignIn() {
                                                             validate: validateEmail,
                                                         })}
                                                         className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 rounded-2xl transition-all duration-300 ${
-                                                            errors.email
-                                                                ? 'border-red-500/80 focus:border-red-500'
-                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                            errors.email ? 'border-red-500/80 focus:border-red-500' : 'border-[#414A5D] focus:border-[#4333AF]'
                                                         }`}
                                                     />
 
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                        <Mail className='w-5 h-5 text-[#4cc7e8]' />
+                                                        <Mail className='w-5 h-5 text-[#4333AF]' />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1737,18 +1735,18 @@ function SignIn() {
                                                         className={`h-12 bg-gradient-to-r from-[#050608]/50 to-[#0a0b0f]/50 border-2 text-white placeholder:text-gray-400 backdrop-blur-sm font-semibold text-sm py-0 pl-12 pr-12 rounded-2xl transition-all duration-300 ${
                                                             errors.password
                                                                 ? 'border-red-500/80 focus:border-red-500'
-                                                                : 'border-[#2c7bbe]/30 focus:border-[#4cc7e8]/60'
+                                                                : 'border-[#414A5D] focus:border-[#4333AF]'
                                                         }`}
                                                     />
 
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                        <Lock className='w-5 h-5 text-[#4cc7e8]' />
+                                                        <Lock className='w-5 h-5 text-[#4333AF]' />
                                                     </div>
 
                                                     <button
                                                         type='button'
                                                         onClick={() => setShowPassword(!showPassword)}
-                                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'
+                                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4333AF] hover:text-[#8D81ED] transition-colors duration-300'
                                                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                                                     >
                                                         {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
@@ -1762,7 +1760,7 @@ function SignIn() {
                                                 className='w-full cursor-pointer rounded-2xl border h-12 py-0 text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed text-white/75 backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] group'
                                                 style={{
                                                     background:
-                                                        'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(44,123,190,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(76,199,232,0.14) 0%, transparent 42%)',
+                                                        'linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, rgba(67,51,175,0.18) 0%, transparent 45%), radial-gradient(circle at bottom right, rgba(67,51,175,0.14) 0%, transparent 42%)',
 
                                                     borderColor: 'rgba(255,255,255,0.10)',
 
@@ -1794,7 +1792,7 @@ function SignIn() {
                                             <div className='text-center'>
                                                 <button type='button' onClick={() => router.push('/signup')} className='text-white text-sm font-semibold'>
                                                     Don&apos;t have an account?{' '}
-                                                    <span className='cursor-pointer text-[#4cc7e8] hover:text-[#2c7bbe] transition-colors duration-300'>
+                                                    <span className='cursor-pointer text-[#4333AF] hover:text-[#8D81ED] transition-colors duration-300'>
                                                         Sign Up
                                                     </span>
                                                 </button>
