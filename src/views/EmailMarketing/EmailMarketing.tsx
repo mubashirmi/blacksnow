@@ -1031,8 +1031,8 @@ function EmailMarketing() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8= items-stretch'>
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
-                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-black'>
-                                    <div className={`absolute top-0 left-0 w-full h-[3px] ${feature.color} opacity-60`} />
+                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-black'>
+                                    <div className='absolute top-0 left-0 w-full h-[3px] bg-[#414A5D] opacity-60' />
 
                                     <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
 
@@ -1079,7 +1079,7 @@ function EmailMarketing() {
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
                         {additionalFeatures.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8 text-center'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />

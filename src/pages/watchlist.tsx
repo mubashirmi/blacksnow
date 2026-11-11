@@ -49,13 +49,13 @@ type AlertRow = {
     chart?: number[];
 };
 
-const ORANGE = '#f25a20';
-const ORANGE_BRIGHT = '#ff671f';
-const ORANGE_LIGHT = '#ff8a4c';
-const GREEN = '#78b84b';
-const RED = '#e4473d';
-const PAGE_BG = '#050607';
-const BORDER = 'rgba(242,90,32,0.21)';
+const ORANGE = '#4333AF';
+const ORANGE_BRIGHT = '#4333AF';
+const ORANGE_LIGHT = '#4333AF';
+const GREEN = '#4333AF';
+const RED = '#4333AF';
+const PAGE_BG = '#0C0F18';
+const BORDER = '#414A5D';
 
 const watchlistRows: WatchlistRow[] = [
     {
@@ -66,8 +66,8 @@ const watchlistRows: WatchlistRow[] = [
         positive: true,
         volume: '68.4M',
         badge: 'N',
-        badgeBg: '#76b900',
-        badgeColor: '#071005',
+        badgeBg: '#4333AF',
+        badgeColor: '#0C0F18',
         chart: [21, 24, 22, 29, 27, 33, 30, 35, 37, 34, 39, 42],
         alert: true,
     },
@@ -92,7 +92,7 @@ const watchlistRows: WatchlistRow[] = [
         positive: true,
         volume: '28.7M',
         badge: 'M',
-        badgeBg: '#2589d8',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
         chart: [24, 22, 26, 24, 27, 28, 26, 31, 29, 33, 32, 35],
         alert: false,
@@ -105,7 +105,7 @@ const watchlistRows: WatchlistRow[] = [
         positive: false,
         volume: '112.6M',
         badge: 'T',
-        badgeBg: '#d8453e',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
         chart: [39, 37, 34, 35, 32, 31, 29, 30, 27, 28, 25, 23],
         alert: true,
@@ -131,8 +131,8 @@ const watchlistRows: WatchlistRow[] = [
         positive: true,
         volume: '64.2M',
         badge: 'S',
-        badgeBg: '#d7ba83',
-        badgeColor: '#5f431e',
+        badgeBg: '#4333AF',
+        badgeColor: '#4333AF',
         chart: [20, 22, 23, 23, 26, 25, 28, 28, 30, 31, 32, 34],
         alert: false,
     },
@@ -220,8 +220,8 @@ const alertRows: AlertRow[] = [
         time: 'Just now',
         positive: true,
         badge: 'N',
-        badgeBg: '#76b900',
-        badgeColor: '#071005',
+        badgeBg: '#4333AF',
+        badgeColor: '#0C0F18',
         chart: [20, 22, 25, 24, 29, 31, 30, 35, 38, 39, 42],
     },
     {
@@ -231,7 +231,7 @@ const alertRows: AlertRow[] = [
         time: '15m ago',
         positive: false,
         badge: 'T',
-        badgeBg: '#d8453e',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
         chart: [42, 39, 40, 36, 34, 32, 30, 29, 26, 25, 23],
     },
@@ -252,8 +252,8 @@ const alertRows: AlertRow[] = [
         time: '2h ago',
         positive: true,
         badge: 'S',
-        badgeBg: '#d7ba83',
-        badgeColor: '#65471f',
+        badgeBg: '#4333AF',
+        badgeColor: '#4333AF',
         chart: [20, 22, 24, 23, 25, 27, 29, 30, 29, 32, 34],
     },
 ];
@@ -264,7 +264,7 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             className={`overflow-hidden rounded-[12px] border ${className}`}
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(9,10,10,0.98) 0%, rgba(6,7,7,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02), 0 18px 42px rgba(0,0,0,0.22)',
             }}
         >
@@ -284,12 +284,12 @@ function SectionIntro({ number, title, description, children }: { number: string
                 <span
                     className='mt-1 h-px w-9'
                     style={{
-                        background: `linear-gradient(90deg, ${ORANGE}, rgba(242,90,32,0.22))`,
+                        background: `linear-gradient(90deg, ${ORANGE}, rgba(67,51,175,0.22))`,
                     }}
                 />
             </div>
 
-            <h2 className='watchlist-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='watchlist-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f4f1ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[280px] text-[13px] leading-[1.55] text-[#d0d0ce] sm:text-[14px]'>{description}</p>
 
@@ -316,7 +316,7 @@ function HeroArtwork() {
             <div
                 className='pointer-events-none absolute inset-[5%] blur-3xl'
                 style={{
-                    background: 'radial-gradient(ellipse, rgba(242,90,32,0.11), rgba(242,90,32,0.025) 52%, transparent 76%)',
+                    background: 'radial-gradient(ellipse, rgba(67,51,175,0.11), rgba(67,51,175,0.025) 52%, transparent 76%)',
                 }}
             />
 
@@ -330,8 +330,8 @@ function HeroArtwork() {
                 className='relative z-10 object-contain object-center'
             />
 
-            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[2%] bg-gradient-to-r from-[#050607] to-transparent' />
-            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#050607] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[2%] bg-gradient-to-r from-[#0C0F18] to-transparent' />
+            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#0C0F18] to-transparent' />
         </div>
     );
 }
@@ -384,15 +384,18 @@ function WatchlistTable() {
                     </p>
 
                     <div className='flex items-center gap-2'>
-                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-white/[0.10]'>
+                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#000000]'>
                             <Grid2X2 className='h-4 w-4 text-[#c9cac6]' />
                         </button>
 
-                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-white/[0.10]'>
+                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#000000]'>
                             <List className='h-4 w-4 text-[#c9cac6]' />
                         </button>
 
-                        <button type='button' className='flex h-8 items-center gap-4 rounded-[4px] border border-white/[0.10] px-3 text-[9px] text-[#d2d2cf]'>
+                        <button
+                            type='button'
+                            className='flex h-8 items-center gap-4 rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px] text-[#d2d2cf]'
+                        >
                             Custom View
                             <ChevronDown className='h-3 w-3' />
                         </button>
@@ -402,7 +405,7 @@ function WatchlistTable() {
                 </div>
 
                 <div className='mt-3 hidden lg:block'>
-                    <div className='grid border-y border-white/[0.07] py-2 text-[9px] text-[#a2a39f]' style={{ gridTemplateColumns: columns }}>
+                    <div className='grid border-y border-[#414A5D] py-2 text-[9px] text-[#a2a39f]' style={{ gridTemplateColumns: columns }}>
                         <span>Symbol</span>
                         <span>Company</span>
                         <span>Price</span>
@@ -415,7 +418,7 @@ function WatchlistTable() {
                     {watchlistRows.map((row) => (
                         <div
                             key={row.symbol}
-                            className='grid min-h-[46px] items-center border-b border-white/[0.06] text-[10px] text-[#d9dad6]'
+                            className='grid min-h-[46px] items-center border-b border-[#414A5D] text-[10px] text-[#d9dad6]'
                             style={{ gridTemplateColumns: columns }}
                         >
                             <div className='flex items-center gap-2'>
@@ -454,7 +457,7 @@ function WatchlistTable() {
 
                 <div className='mt-2 lg:hidden'>
                     {watchlistRows.map((row) => (
-                        <div key={row.symbol} className='border-b border-white/[0.07] py-3 last:border-b-0'>
+                        <div key={row.symbol} className='border-b border-[#414A5D] py-3 last:border-b-0'>
                             <div className='flex items-center justify-between gap-4'>
                                 <div className='flex items-center gap-2'>
                                     <CompanyBadge badge={row.badge} background={row.badgeBg} color={row.badgeColor} />
@@ -534,9 +537,9 @@ function WatchlistCard({
         <div
             className='rounded-[8px] border px-4 py-4'
             style={{
-                borderColor: active ? ORANGE : 'rgba(255,255,255,0.10)',
-                background: active ? 'linear-gradient(180deg,rgba(242,90,32,0.055),rgba(9,10,10,0.98))' : '#090a0a',
-                boxShadow: active ? '0 0 18px rgba(242,90,32,0.08)' : 'none',
+                borderColor: BORDER,
+                background: '#000000',
+                boxShadow: active ? '0 0 18px rgba(67,51,175,0.08)' : 'none',
             }}
         >
             <div className='flex items-center gap-2'>
@@ -601,7 +604,7 @@ function AlertsPanel() {
                     {alertRows.map((row) => (
                         <div
                             key={row.title}
-                            className='grid min-h-[58px] grid-cols-[minmax(0,1fr)_65px] items-center gap-4 border-b border-white/[0.07] last:border-b-0 sm:grid-cols-[1.3fr_.65fr_.3fr_10px]'
+                            className='grid min-h-[58px] grid-cols-[minmax(0,1fr)_65px] items-center gap-4 border-b border-[#414A5D] last:border-b-0 sm:grid-cols-[1.3fr_.65fr_.3fr_10px]'
                         >
                             <div className='flex min-w-0 items-center gap-3'>
                                 <AlertStatusIcon event={row.event} positive={row.positive} />
@@ -629,7 +632,7 @@ function AlertsPanel() {
                                 className='hidden h-[8px] w-[8px] rounded-full sm:block'
                                 style={{
                                     background: ORANGE,
-                                    boxShadow: '0 0 8px rgba(242,90,32,0.65)',
+                                    boxShadow: '0 0 8px rgba(67,51,175,0.65)',
                                 }}
                             />
                         </div>
@@ -645,22 +648,16 @@ const WatchlistPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='watchlist-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 75% 9%,rgba(242,90,32,0.04),transparent 27%),linear-gradient(180deg,#040505 0%,#060707 52%,#040505 100%)',
-                }}
-            >
+            <main className='watchlist-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
-                <section id='overview' className='relative overflow-hidden border-b border-white/[0.10]'>
+                <section id='overview' className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.40fr_0.60fr] lg:gap-2 lg:px-9'>
                         <div className='relative z-10'>
                             <p className='text-[11px] font-medium uppercase tracking-[0.055em]' style={{ color: ORANGE_LIGHT }}>
                                 Track what matters.
                             </p>
 
-                            <h1 className='watchlist-serif page-hero-title mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
+                            <h1 className='watchlist-serif page-hero-title mt-3 text-[56px] leading-[1.23] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
                                 <span style={{ color: ORANGE_BRIGHT }}>Watchlist.</span>
 
                                 <br />
@@ -686,7 +683,7 @@ const WatchlistPage: NextPage = () => {
                                             />
                                         </div>
 
-                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[140px] text-[10px] leading-[1.45] text-[#aaaba7]'>{body}</p>
                                     </div>
@@ -702,7 +699,7 @@ const WatchlistPage: NextPage = () => {
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
                     {/* SECTION 01 */}
-                    <section id='features' className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section id='features' className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='01'
                             title='Real-Time Monitoring'
@@ -729,7 +726,7 @@ const WatchlistPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 02 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='02' title='Organize & Customize' description='Create watchlists that fit your strategy and stay organized.'>
                             <ul className='mt-5 space-y-2'>
                                 <CheckItem>Create multiple watchlists</CheckItem>
@@ -794,7 +791,7 @@ const WatchlistPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 03 */}
-                    <section id='alerts' className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section id='alerts' className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='03' title='Smart Alerts' description='Set intelligent alerts and never miss important market events.'>
                             <div className='mt-8 grid max-w-[285px] grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-3'>
                                 {alertTools.map(({ icon: Icon, title }) => (
@@ -845,7 +842,7 @@ const WatchlistPage: NextPage = () => {
 
                                         <p className='mt-2 text-[9px] text-[#bdbeba]'>{number}</p>
 
-                                        <h3 className='mt-1 text-[10px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-1 text-[10px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[140px] text-[8px] leading-[1.45] text-[#a0a19d]'>{body}</p>
                                     </div>
@@ -857,7 +854,7 @@ const WatchlistPage: NextPage = () => {
                             className='mt-5 flex flex-col gap-5 rounded-[11px] border px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6'
                             style={{
                                 borderColor: BORDER,
-                                background: 'linear-gradient(180deg,rgba(9,9,9,0.98),rgba(5,6,6,0.98))',
+                                background: '#0C0F18',
                             }}
                         >
                             <div className='flex items-center gap-4'>
@@ -877,7 +874,7 @@ const WatchlistPage: NextPage = () => {
 
                             <ComingSoonTrigger
                                 ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#f25a20] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(242,90,32,0.24)] transition-all duration-200 hover:bg-[#ff6a2d]'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.24)] transition-all duration-200 hover:bg-[#4333AF]'
                             >
                                 Get Started
                                 <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -932,7 +929,7 @@ const WatchlistPage: NextPage = () => {
 
                     .watchlist-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -944,7 +941,7 @@ const WatchlistPage: NextPage = () => {
 
                     .watchlist-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -966,7 +963,7 @@ const WatchlistPage: NextPage = () => {
                     .watchlist-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .watchlist-page .page-hero-features p {

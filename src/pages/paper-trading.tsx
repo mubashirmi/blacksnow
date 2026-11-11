@@ -29,12 +29,12 @@ type StrategyRow = {
     profitFactor: string;
 };
 
-const GREEN = '#7fbd3f';
-const GREEN_BRIGHT = '#88c844';
-const GOLD = '#e2ad3c';
-const GOLD_LIGHT = '#f0c55d';
-const PAGE_BG = '#050705';
-const BORDER = 'rgba(224,173,60,0.20)';
+const GREEN = '#4333AF';
+const GREEN_BRIGHT = '#4333AF';
+const GOLD = '#4333AF';
+const GOLD_LIGHT = '#4333AF';
+const PAGE_BG = '#0C0F18';
+const BORDER = '#414A5D';
 
 const strategyRows: StrategyRow[] = [
     {
@@ -174,12 +174,12 @@ function SectionIntro({ number, title, description, children }: { number: string
                 <span
                     className='mt-1 h-px w-9'
                     style={{
-                        background: `linear-gradient(90deg, ${GOLD}, rgba(226,173,60,0.3))`,
+                        background: `linear-gradient(90deg, ${GOLD}, rgba(67,51,175,0.3))`,
                     }}
                 />
             </div>
 
-            <h2 className='paper-serif mt-1 text-[27px] leading-[1.06] tracking-[-0.025em] text-[#f5f3ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='page-section-title paper-serif mt-1 text-[27px] leading-[1.32] tracking-[-0.025em] text-[#f5f3ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[275px] text-[13px] leading-[1.6] text-[#d0d0cd] sm:text-[14px]'>{description}</p>
 
@@ -194,7 +194,7 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             className={`overflow-hidden rounded-[13px] border ${className}`}
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(9,11,9,0.98) 0%, rgba(6,8,7,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.025), 0 18px 45px rgba(0,0,0,0.20)',
             }}
         >
@@ -209,12 +209,12 @@ function HeroArtwork() {
             <div
                 className='pointer-events-none absolute inset-[8%] blur-3xl'
                 style={{
-                    background: 'radial-gradient(ellipse at center, rgba(110,171,54,0.11), rgba(223,170,58,0.04) 43%, transparent 72%)',
+                    background: 'radial-gradient(ellipse at center, rgba(67,51,175,0.11), rgba(67,51,175,0.04) 43%, transparent 72%)',
                 }}
             />
 
             <Image
-                src='/images/paper-trading-hero-map.webp'
+                src='/images/paper-trading-hero-purple.png'
                 alt='Global paper trading market simulation'
                 fill
                 priority
@@ -223,9 +223,9 @@ function HeroArtwork() {
                 className='relative z-10 object-contain object-center'
             />
 
-            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[3%] bg-gradient-to-r from-[#050705] to-transparent' />
-            <div className='pointer-events-none absolute inset-y-0 right-0 z-20 w-[2%] bg-gradient-to-l from-[#050705] to-transparent' />
-            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[4%] bg-gradient-to-t from-[#050705] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[3%] bg-gradient-to-r from-[#0C0F18] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 right-0 z-20 w-[2%] bg-gradient-to-l from-[#0C0F18] to-transparent' />
+            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[4%] bg-gradient-to-t from-[#0C0F18] to-transparent' />
         </div>
     );
 }
@@ -303,7 +303,7 @@ function PerformanceChart() {
                     [562, 43],
                     [596, 49],
                 ].map(([cx, cy]) => (
-                    <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r='4' fill='#10150d' stroke='#a9d975' strokeWidth='1.5' />
+                    <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r='4' fill='#0C0F18' stroke='#4333AF' strokeWidth='1.5' />
                 ))}
             </svg>
 
@@ -335,9 +335,9 @@ function AccountOverview() {
                     Paper Account Overview
                 </p>
 
-                <div className='mt-3 border-t border-white/[0.09] pt-3'>
+                <div className='mt-3 border-t border-[#414A5D] pt-3'>
                     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0'>
-                        <div className='sm:border-r sm:border-white/[0.10] sm:pr-7'>
+                        <div className='sm:border-r sm:border-[#414A5D] sm:pr-7'>
                             <p className='text-[11px] text-[#b9bbb7]'>Account Balance</p>
 
                             <p className='mt-1 text-[25px] font-light tracking-[-0.025em] text-[#f5f3ef] sm:text-[27px]'>$100,000.00</p>
@@ -352,7 +352,7 @@ function AccountOverview() {
                         </div>
                     </div>
 
-                    <div className='mt-3 grid grid-cols-2 border-y border-white/[0.09] py-3 sm:grid-cols-4'>
+                    <div className='mt-3 grid grid-cols-2 border-y border-[#414A5D] py-3 sm:grid-cols-4'>
                         {[
                             ['Buying Power', '$100,000.00'],
                             ['Net Liq', '$100,000.00'],
@@ -361,9 +361,7 @@ function AccountOverview() {
                         ].map(([label, value], index) => (
                             <div
                                 key={label}
-                                className={`min-w-0 py-1 ${index !== 3 ? 'sm:border-r sm:border-white/[0.09]' : ''} ${
-                                    index % 2 === 0 ? 'pr-3' : 'pl-3 sm:px-4'
-                                }`}
+                                className={`min-w-0 py-1 ${index !== 3 ? 'sm:border-r sm:border-[#414A5D]' : ''} ${index % 2 === 0 ? 'pr-3' : 'pl-3 sm:px-4'}`}
                             >
                                 <p className='text-[10px] text-[#aeb1ac]'>{label}</p>
                                 <p className='mt-1 text-[12px] text-[#ecece8]'>{value}</p>
@@ -391,7 +389,7 @@ function StrategyPanel() {
                 </p>
 
                 <div className='mt-3 hidden sm:block'>
-                    <div className='grid border-y border-white/[0.08] py-2 text-[11px] text-[#c0c0bd]' style={{ gridTemplateColumns: columns }}>
+                    <div className='grid border-y border-[#414A5D] py-2 text-[11px] text-[#c0c0bd]' style={{ gridTemplateColumns: columns }}>
                         <div>Strategy</div>
                         <div>Total P&amp;L</div>
                         <div>Win Rate</div>
@@ -402,14 +400,14 @@ function StrategyPanel() {
                     {strategyRows.map((row) => (
                         <div
                             key={row.strategy}
-                            className='grid min-h-[39px] items-center border-b border-white/[0.07] text-[12px] text-[#dededb]'
+                            className='grid min-h-[39px] items-center border-b border-[#414A5D] text-[12px] text-[#dededb]'
                             style={{ gridTemplateColumns: columns }}
                         >
                             <div>{row.strategy}</div>
 
                             <div
                                 style={{
-                                    color: row.positive ? GREEN_BRIGHT : '#d14949',
+                                    color: row.positive ? GREEN_BRIGHT : '#4333AF',
                                 }}
                             >
                                 {row.pnl}
@@ -424,14 +422,14 @@ function StrategyPanel() {
 
                 <div className='mt-2 sm:hidden'>
                     {strategyRows.map((row) => (
-                        <div key={row.strategy} className='border-b border-white/[0.08] py-3 last:border-b-0'>
+                        <div key={row.strategy} className='border-b border-[#414A5D] py-3 last:border-b-0'>
                             <div className='flex items-center justify-between gap-3'>
                                 <p className='text-[13px] text-[#efefeb]'>{row.strategy}</p>
 
                                 <p
                                     className='text-[12px]'
                                     style={{
-                                        color: row.positive ? GREEN_BRIGHT : '#d14949',
+                                        color: row.positive ? GREEN_BRIGHT : '#4333AF',
                                     }}
                                 >
                                     {row.pnl}
@@ -478,15 +476,9 @@ const PaperTradingPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='paper-trading-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 76% 8%, rgba(99,139,42,0.045), transparent 26%), linear-gradient(180deg, #050705 0%, #060806 50%, #040604 100%)',
-                }}
-            >
+            <main className='paper-trading-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
-                <section className='relative overflow-hidden border-b border-white/[0.10]'>
+                <section className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div
                         className='pointer-events-none absolute inset-0 opacity-[0.14]'
                         style={{
@@ -502,7 +494,7 @@ const PaperTradingPage: NextPage = () => {
                                 Practice. Learn. Trade confidently.
                             </p>
 
-                            <h1 className='paper-serif page-hero-title mt-3 text-[51px] leading-[0.95] tracking-[-0.045em] sm:text-[64px] lg:text-[67px]'>
+                            <h1 className='paper-serif page-hero-title mt-3 text-[51px] leading-[1.23] tracking-[-0.045em] sm:text-[64px] lg:text-[67px]'>
                                 <span style={{ color: GREEN }}>Paper</span> <span className='text-[#f5f3ed]'>Trading</span>
                             </h1>
 
@@ -517,13 +509,13 @@ const PaperTradingPage: NextPage = () => {
                                 {heroFeatures.map(({ icon: Icon, title, description }, index) => (
                                     <div
                                         key={title}
-                                        className={`min-w-0 ${index > 0 ? 'sm:border-l sm:border-white/[0.13] sm:pl-8' : ''} ${index < 2 ? 'sm:pr-8' : ''}`}
+                                        className={`min-w-0 ${index > 0 ? 'sm:border-l sm:border-[#414A5D] sm:pl-8' : ''} ${index < 2 ? 'sm:pr-8' : ''}`}
                                     >
                                         <div className='flex h-[55px] w-[55px] items-center justify-center rounded-full border' style={{ borderColor: GOLD }}>
                                             <Icon className='h-7 w-7' strokeWidth={1.65} style={{ color: GOLD_LIGHT }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[14px] font-medium' style={{ color: GOLD_LIGHT }}>
+                                        <h3 className='mt-3 text-[14px] font-medium leading-[1.42]' style={{ color: GOLD_LIGHT }}>
                                             {title}
                                         </h3>
 
@@ -541,7 +533,7 @@ const PaperTradingPage: NextPage = () => {
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
                     {/* SECTION 1 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='01'
                             title='Real Market Experience'
@@ -574,7 +566,7 @@ const PaperTradingPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 2 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='02'
                             title='Test & Refine Strategies'
@@ -591,7 +583,7 @@ const PaperTradingPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 3 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[295px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='03'
                             title='Build Confidence'
@@ -602,11 +594,11 @@ const PaperTradingPage: NextPage = () => {
                             {confidenceBenefits.map(({ icon: Icon, title, description }) => (
                                 <div
                                     key={title}
-                                    className='page-compact-card flex min-h-[180px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
+                                    className='page-compact-card flex min-h-[180px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-[#414A5D] lg:border-b-0'
                                 >
                                     <Icon className='h-12 w-12' strokeWidth={1.25} style={{ color: GREEN_BRIGHT }} />
 
-                                    <h3 className='mt-4 text-[11px] font-semibold uppercase tracking-[0.025em]' style={{ color: GOLD_LIGHT }}>
+                                    <h3 className='mt-4 text-[11px] font-semibold uppercase tracking-[0.025em] leading-[1.42]' style={{ color: GOLD_LIGHT }}>
                                         {title}
                                     </h3>
 
@@ -631,7 +623,7 @@ const PaperTradingPage: NextPage = () => {
                                 {startSteps.map(({ icon: Icon, number, title, description }) => (
                                     <div key={number} className='relative flex flex-col items-center text-center'>
                                         <div
-                                            className='relative z-10 flex h-[76px] w-[76px] items-center justify-center rounded-full border bg-[#060806]'
+                                            className='relative z-10 flex h-[76px] w-[76px] items-center justify-center rounded-full border bg-[#000000]'
                                             style={{ borderColor: GREEN }}
                                         >
                                             <Icon className='h-9 w-9' strokeWidth={1.35} style={{ color: GREEN_BRIGHT }} />
@@ -641,7 +633,7 @@ const PaperTradingPage: NextPage = () => {
                                             {number}
                                         </p>
 
-                                        <h3 className='mt-1 text-[13px] font-medium text-[#f1f0ec]'>{title}</h3>
+                                        <h3 className='mt-1 text-[13px] font-medium text-[#f1f0ec] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[175px] text-[10px] leading-[1.45] text-[#babbb7]'>{description}</p>
                                     </div>
@@ -655,8 +647,8 @@ const PaperTradingPage: NextPage = () => {
                         <div
                             className='flex flex-col gap-5 rounded-[13px] border px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7'
                             style={{
-                                borderColor: 'rgba(181,170,82,0.35)',
-                                background: 'linear-gradient(180deg, rgba(10,12,9,0.98), rgba(6,8,6,0.98))',
+                                borderColor: 'rgba(67,51,175,0.35)',
+                                background: '#0C0F18',
                             }}
                         >
                             <div className='flex items-center gap-5'>
@@ -675,7 +667,7 @@ const PaperTradingPage: NextPage = () => {
 
                             <ComingSoonTrigger
                                 ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#72b83f] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(114,184,63,0.20)] transition-all duration-200 hover:bg-[#83c94d]'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.20)] transition-all duration-200 hover:bg-[#4333AF]'
                             >
                                 Get Started
                                 <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -730,7 +722,7 @@ const PaperTradingPage: NextPage = () => {
 
                     .paper-trading-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -742,7 +734,7 @@ const PaperTradingPage: NextPage = () => {
 
                     .paper-trading-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -764,7 +756,7 @@ const PaperTradingPage: NextPage = () => {
                     .paper-trading-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .paper-trading-page .page-hero-features p {

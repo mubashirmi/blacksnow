@@ -55,11 +55,11 @@ interface EarningsRow {
     marketCap: string;
 }
 
-const ACCENT = '#ef4d8b';
-const ACCENT_SOFT = '#ff75a8';
-const PAGE_BACKGROUND = '#060709';
-// const PANEL_BACKGROUND = '#090b0e';
-const BORDER = 'rgba(255,255,255,0.17)';
+const ACCENT = '#4333AF';
+const ACCENT_SOFT = '#4333AF';
+const PAGE_BACKGROUND = '#0C0F18';
+// const PANEL_BACKGROUND = '#0C0F18';
+const BORDER = '#414A5D';
 
 const economicRows: EconomicRow[] = [
     {
@@ -310,10 +310,10 @@ function SectionIntro({ number, title, description, bullets }: { number: string;
                 <span className='calendar-serif page-section-number text-[43px] leading-none tracking-[-0.03em]' style={{ color: ACCENT }}>
                     {number}
                 </span>
-                <span className='mt-1 h-px w-8 bg-[#ef4d8b]/85 sm:w-10' />
+                <span className='mt-1 h-px w-8 bg-[#4333AF]/85 sm:w-10' />
             </div>
 
-            <h2 className='calendar-serif page-section-title mt-1 text-[28px] leading-[1.04] tracking-[-0.025em] text-[#f6f4f4] sm:text-[31px]'>{title}</h2>
+            <h2 className='calendar-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f6f4f4] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[250px] text-[13px] leading-[1.45] text-[#d3d3d6] sm:text-[14px]'>{description}</p>
 
@@ -332,7 +332,7 @@ function Panel({ title, children, cta }: { title: string; children: ReactNode; c
             className='overflow-hidden rounded-[13px] border'
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(11,13,16,0.98) 0%, rgba(7,9,12,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.015)',
             }}
         >
@@ -363,9 +363,9 @@ function ImpactBadge({ impact }: { impact: Impact }) {
         <span
             className='inline-flex rounded-[4px] border px-2 py-[2px] text-[10px] leading-4'
             style={{
-                color: impact === 'High' ? '#ff6b9f' : '#d982f1',
-                borderColor: impact === 'High' ? 'rgba(239,77,139,0.44)' : 'rgba(187,95,212,0.38)',
-                background: impact === 'High' ? 'rgba(239,77,139,0.09)' : 'rgba(160,70,190,0.08)',
+                color: impact === 'High' ? '#4333AF' : '#4333AF',
+                borderColor: impact === 'High' ? 'rgba(67,51,175,0.44)' : 'rgba(67,51,175,0.38)',
+                background: impact === 'High' ? 'rgba(67,51,175,0.09)' : 'rgba(67,51,175,0.08)',
             }}
         >
             {impact}
@@ -376,7 +376,7 @@ function ImpactBadge({ impact }: { impact: Impact }) {
 function DesktopTable({ headings, children, gridTemplate }: { headings: string[]; children: ReactNode; gridTemplate: string }) {
     return (
         <div className='hidden sm:block'>
-            <div className='grid items-center border-b border-white/[0.08] px-2 py-2 text-[11px] text-[#b8b8bd]' style={{ gridTemplateColumns: gridTemplate }}>
+            <div className='grid items-center border-b border-[#414A5D] px-2 py-2 text-[11px] text-[#b8b8bd]' style={{ gridTemplateColumns: gridTemplate }}>
                 {headings.map((heading) => (
                     <div key={heading} className='min-w-0 px-1'>
                         {heading}
@@ -391,7 +391,7 @@ function DesktopTable({ headings, children, gridTemplate }: { headings: string[]
 function DesktopRow({ children, gridTemplate }: { children: ReactNode; gridTemplate: string }) {
     return (
         <div
-            className='grid min-h-[35px] items-center border-b border-white/[0.07] px-2 py-1.5 text-[11px] leading-[1.2] text-[#d4d4d7] last:border-b-0'
+            className='grid min-h-[35px] items-center border-b border-[#414A5D] px-2 py-1.5 text-[11px] leading-[1.2] text-[#d4d4d7] last:border-b-0'
             style={{ gridTemplateColumns: gridTemplate }}
         >
             {children}
@@ -412,7 +412,7 @@ function MobileDataCard({
     }>;
 }) {
     return (
-        <div className='border-b border-white/[0.08] px-1 py-3 last:border-b-0'>
+        <div className='border-b border-[#414A5D] px-1 py-3 last:border-b-0'>
             <dl className='grid grid-cols-2 gap-x-4 gap-y-2.5'>
                 {fields.map((field) => (
                     <div key={field.label} className='min-w-0'>
@@ -433,16 +433,16 @@ function HeroArtwork() {
             <div
                 className='absolute left-[3%] top-[5%] h-[73%] w-[73%] rounded-full opacity-70 blur-3xl'
                 style={{
-                    background: 'radial-gradient(circle, rgba(239,77,139,0.17) 0%, rgba(239,77,139,0.02) 48%, transparent 72%)',
+                    background: 'radial-gradient(circle, rgba(67,51,175,0.17) 0%, rgba(67,51,175,0.02) 48%, transparent 72%)',
                 }}
             />
 
             <svg viewBox='0 0 620 500' className='absolute inset-0 h-full w-full overflow-visible' aria-hidden='true'>
                 <defs>
                     <radialGradient id='calendarGlobe' cx='44%' cy='42%' r='58%'>
-                        <stop offset='0%' stopColor='#ef4d8b' stopOpacity='0.22' />
-                        <stop offset='70%' stopColor='#ef4d8b' stopOpacity='0.045' />
-                        <stop offset='100%' stopColor='#ef4d8b' stopOpacity='0' />
+                        <stop offset='0%' stopColor='#4333AF' stopOpacity='0.22' />
+                        <stop offset='70%' stopColor='#4333AF' stopOpacity='0.045' />
+                        <stop offset='100%' stopColor='#4333AF' stopOpacity='0' />
                     </radialGradient>
 
                     <filter id='pinkGlow' x='-100%' y='-100%' width='300%' height='300%'>
@@ -458,7 +458,7 @@ function HeroArtwork() {
                     </clipPath>
 
                     <pattern id='dotPattern' width='6' height='6' patternUnits='userSpaceOnUse'>
-                        <circle cx='1.4' cy='1.4' r='1.1' fill='#ff8db7' fillOpacity='0.76' />
+                        <circle cx='1.4' cy='1.4' r='1.1' fill='#4333AF' fillOpacity='0.76' />
                     </pattern>
                 </defs>
 
@@ -468,31 +468,31 @@ function HeroArtwork() {
                     rx='245'
                     ry='151'
                     fill='none'
-                    stroke='#ef4d8b'
+                    stroke='#4333AF'
                     strokeOpacity='0.38'
                     strokeWidth='1.2'
                     transform='rotate(-16 273 218)'
                 />
-                <ellipse cx='278' cy='220' rx='250' ry='93' fill='none' stroke='#ef4d8b' strokeOpacity='0.24' strokeWidth='1' transform='rotate(11 278 220)' />
+                <ellipse cx='278' cy='220' rx='250' ry='93' fill='none' stroke='#4333AF' strokeOpacity='0.24' strokeWidth='1' transform='rotate(11 278 220)' />
                 <ellipse
                     cx='274'
                     cy='215'
                     rx='199'
                     ry='255'
                     fill='none'
-                    stroke='#ef4d8b'
+                    stroke='#4333AF'
                     strokeOpacity='0.32'
                     strokeWidth='1.2'
                     transform='rotate(61 274 215)'
                 />
 
-                <circle cx='260' cy='218' r='142' fill='url(#calendarGlobe)' stroke='#f46d9f' strokeOpacity='0.45' strokeWidth='1.2' />
+                <circle cx='260' cy='218' r='142' fill='url(#calendarGlobe)' stroke='#4333AF' strokeOpacity='0.45' strokeWidth='1.2' />
 
                 <g clipPath='url(#globeClip)'>
-                    <ellipse cx='260' cy='218' rx='138' ry='48' fill='none' stroke='#f787af' strokeOpacity='0.26' />
-                    <ellipse cx='260' cy='218' rx='138' ry='93' fill='none' stroke='#f787af' strokeOpacity='0.18' />
-                    <ellipse cx='260' cy='218' rx='68' ry='142' fill='none' stroke='#f787af' strokeOpacity='0.2' />
-                    <ellipse cx='260' cy='218' rx='116' ry='142' fill='none' stroke='#f787af' strokeOpacity='0.15' />
+                    <ellipse cx='260' cy='218' rx='138' ry='48' fill='none' stroke='#4333AF' strokeOpacity='0.26' />
+                    <ellipse cx='260' cy='218' rx='138' ry='93' fill='none' stroke='#4333AF' strokeOpacity='0.18' />
+                    <ellipse cx='260' cy='218' rx='68' ry='142' fill='none' stroke='#4333AF' strokeOpacity='0.2' />
+                    <ellipse cx='260' cy='218' rx='116' ry='142' fill='none' stroke='#4333AF' strokeOpacity='0.15' />
 
                     <path
                         d='M149 146c19-23 46-41 77-53l19 9 13 19 25 5 7 21-12 12-20-7-13 14-11 32-22 13-23-15-12-27-23-7-19-17 14-3zm145-49 28 12 21 23 23 10 7 23-15 24-30 4-18-13-23 1-15-21 10-24-5-21 17-18zm-88 148 28-13 30 10 20 21-4 28-25 10-14 35-27 8-25-25 5-31-12-21 24-22zm117 20 25-16 30 6 16 27-8 23-23 5-18 26-29-8-3-35 10-28z'
@@ -514,43 +514,43 @@ function HeroArtwork() {
                 ].map(([cx, cy]) => (
                     <g key={`${cx}-${cy}`} filter='url(#pinkGlow)'>
                         <circle cx={cx} cy={cy} r='3.3' fill='#fff' />
-                        <circle cx={cx} cy={cy} r='7.5' fill='#ef4d8b' fillOpacity='0.26' />
+                        <circle cx={cx} cy={cy} r='7.5' fill='#4333AF' fillOpacity='0.26' />
                     </g>
                 ))}
             </svg>
 
             <div
-                className='absolute bottom-[7%] right-[0%] h-[70%] w-[53%] origin-bottom-right rotate-[7deg] rounded-[10px] border border-[#cc668c]/60 p-[7px]'
+                className='absolute bottom-[7%] right-[0%] h-[70%] w-[53%] origin-bottom-right rotate-[7deg] rounded-[10px] border border-[#414A5D] p-[7px]'
                 style={{
-                    background: 'linear-gradient(145deg, #32151f 0%, #141217 36%, #090b0e 100%)',
-                    boxShadow: '-16px 18px 35px rgba(0,0,0,0.68), 0 0 25px rgba(239,77,139,0.12), inset 0 1px 0 rgba(255,255,255,0.09)',
+                    background: '#000000',
+                    boxShadow: '-16px 18px 35px rgba(0,0,0,0.68), 0 0 25px rgba(67,51,175,0.12), inset 0 1px 0 rgba(255,255,255,0.09)',
                 }}
             >
-                <div className='absolute -bottom-[3%] -right-[12%] h-[60%] w-[16%] -skew-y-[18deg] border-b border-r border-[#754453]/65 bg-[#121014]' />
+                <div className='absolute -bottom-[3%] -right-[12%] h-[60%] w-[16%] -skew-y-[18deg] border-b border-r border-[#4333AF]/65 bg-[#121014]' />
 
                 <div className='absolute -top-[10px] left-[7%] right-[7%] flex justify-between'>
                     {Array.from({ length: 8 }, (_, index) => (
                         <div
                             key={index}
-                            className='relative h-[28px] w-[9px] rounded-full border border-[#d8a0b3]/70'
+                            className='relative h-[28px] w-[9px] rounded-full border border-[#4333AF]/70'
                             style={{
-                                background: 'linear-gradient(90deg,#171318,#5a3b47,#151217)',
+                                background: '#0C0F18',
                                 boxShadow: '0 2px 3px rgba(0,0,0,0.6)',
                             }}
                         />
                     ))}
                 </div>
 
-                <div className='h-full rounded-[6px] border border-white/[0.045] bg-[#121216]/95 px-[6%] pb-[7%] pt-[14%]'>
-                    <div className='grid grid-cols-7 text-center text-[6px] font-medium uppercase text-[#e0a9bc] sm:text-[7px]'>
+                <div className='h-full rounded-[6px] border border-[#414A5D] bg-[#000000] px-[6%] pb-[7%] pt-[14%]'>
+                    <div className='grid grid-cols-7 text-center text-[6px] font-medium uppercase text-[#4333AF] sm:text-[7px]'>
                         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
                             <span key={day}>{day}</span>
                         ))}
                     </div>
 
-                    <div className='mt-[5%] grid h-[76%] grid-cols-7 grid-rows-5 border-l border-t border-white/[0.07]'>
+                    <div className='mt-[5%] grid h-[76%] grid-cols-7 grid-rows-5 border-l border-t border-[#414A5D]'>
                         {calendarCells.map((cell) => (
-                            <div key={cell} className='relative border-b border-r border-white/[0.07]'>
+                            <div key={cell} className='relative border-b border-r border-[#414A5D]'>
                                 {cell === 7 && (
                                     <CalendarDays
                                         className='absolute left-1/2 top-1/2 h-[13px] w-[13px] -translate-x-1/2 -translate-y-1/2'
@@ -736,14 +736,8 @@ const MarketMovingCalendarsPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='market-calendars-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 72% 11%, rgba(239,77,139,0.035), transparent 24%), linear-gradient(180deg, #050609 0%, #07090c 48%, #050608 100%)',
-                }}
-            >
-                <section className='relative overflow-hidden border-b border-white/[0.09]'>
+            <main className='market-calendars-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
+                <section className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div
                         className='pointer-events-none absolute inset-0 opacity-30'
                         style={{
@@ -759,7 +753,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                                 Know the date. Know the impact.
                             </p>
 
-                            <h1 className='calendar-serif page-hero-title mt-2 max-w-[530px] text-[47px] leading-[0.93] tracking-[-0.045em] text-[#f5f3f3] sm:text-[61px] lg:text-[64px]'>
+                            <h1 className='calendar-serif page-hero-title mt-2 max-w-[530px] text-[47px] leading-[1.23] tracking-[-0.045em] text-[#f5f3f3] sm:text-[61px] lg:text-[64px]'>
                                 Calendars
                             </h1>
 
@@ -780,7 +774,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.8} style={{ color: ACCENT }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[13px] font-medium sm:text-[14px]' style={{ color: ACCENT_SOFT }}>
+                                        <h3 className='mt-3 text-[13px] font-medium sm:text-[14px] leading-[1.42]' style={{ color: ACCENT_SOFT }}>
                                             {title}
                                         </h3>
 
@@ -797,7 +791,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                 </section>
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='01'
                             title='Economic Calendar'
@@ -807,7 +801,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                         <EconomicPanel />
                     </section>
 
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='02'
                             title='Dividend Calendar'
@@ -822,7 +816,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                         <DividendPanel />
                     </section>
 
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[270px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='03'
                             title='IPO Calendar'
@@ -844,7 +838,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                 </div>
 
                 <section className='mx-auto w-full max-w-[1180px] px-5 pb-6 sm:px-8 lg:px-9'>
-                    <div className='border-y border-white/[0.09] py-5'>
+                    <div className='border-y border-[#414A5D] py-5'>
                         <p className='mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.025em] sm:text-[12px]' style={{ color: ACCENT_SOFT }}>
                             Better information. Better timing. Better results.
                         </p>
@@ -853,7 +847,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                             {bottomBenefits.map(({ icon: Icon, title, body }, index) => (
                                 <div
                                     key={title}
-                                    className={`flex min-w-0 gap-3 lg:px-5 ${index !== bottomBenefits.length - 1 ? 'lg:border-r lg:border-white/[0.1]' : ''}`}
+                                    className={`flex min-w-0 gap-3 lg:px-5 ${index !== bottomBenefits.length - 1 ? 'lg:border-r lg:border-[#414A5D]' : ''}`}
                                 >
                                     <div
                                         className='flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full border'
@@ -863,7 +857,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                                     </div>
 
                                     <div className='min-w-0'>
-                                        <h3 className='text-[11px] font-medium leading-[1.25]' style={{ color: ACCENT_SOFT }}>
+                                        <h3 className='text-[11px] font-medium leading-[1.42]' style={{ color: ACCENT_SOFT }}>
                                             {title}
                                         </h3>
                                         <p className='mt-1 text-[9px] leading-[1.4] text-[#a8a8ad] sm:text-[10px]'>{body}</p>
@@ -877,7 +871,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                         className='mt-5 flex flex-col gap-4 rounded-[13px] border px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6'
                         style={{
                             borderColor: BORDER,
-                            background: 'linear-gradient(180deg, rgba(10,12,15,0.96), rgba(7,9,11,0.96))',
+                            background: '#0C0F18',
                         }}
                     >
                         <div className='flex items-center gap-4'>
@@ -895,7 +889,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
 
                         <ComingSoonTrigger
                             ariaLabel='Get started'
-                            className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e44786] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(228,71,134,0.20)] transition-all duration-200 hover:bg-[#f05294]'
+                            className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.20)] transition-all duration-200 hover:bg-[#4333AF]'
                         >
                             Get Started
                             <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -949,7 +943,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
 
                     .market-calendars-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -961,7 +955,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
 
                     .market-calendars-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -983,7 +977,7 @@ const MarketMovingCalendarsPage: NextPage = () => {
                     .market-calendars-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .market-calendars-page .page-hero-features p {

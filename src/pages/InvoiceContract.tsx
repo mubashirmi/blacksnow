@@ -317,7 +317,7 @@ export default function InvoiceContractPage() {
                         <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'>
                             {steps.map((item, index) => (
                                 <div key={index} className='relative group'>
-                                    <div className='relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#8350E0] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-2 bg-[#0C0F18]'>
+                                    <div className='relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#414A5D] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-2 bg-[#0C0F18]'>
                                         {/* Step Number Badge */}
                                         <div className='absolute -top-4 -right-4 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#8350E0]/15 group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <span className='text-lg sm:text-xl font-black text-white'>{item.step}</span>
@@ -363,10 +363,10 @@ export default function InvoiceContractPage() {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#8350E0] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
+                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
                             >
                                 {/* Top gradient line */}
-                                <div className={`absolute top-0 left-0 right-0 h-1 ${feature.color}`}></div>
+                                <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div>
 
                                 <div className='p-6 sm:p-8 flex items-start gap-4 sm:gap-6'>
                                     {/* Icon */}
@@ -409,7 +409,7 @@ export default function InvoiceContractPage() {
                         {benefits.map((benefit, index) => (
                             <div
                                 key={index}
-                                className='group relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#8350E0] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-[#0C0F18]'
+                                className='group relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#414A5D] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-[#0C0F18]'
                             >
                                 {/* Icon */}
                                 <div className='w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-md mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
@@ -481,9 +481,9 @@ export default function InvoiceContractPage() {
                         ].map((useCase, index) => (
                             <div key={index} className='group relative'>
                                 {/* Card */}
-                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#8350E0] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
+                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
                                     {/* Gradient accent */}
-                                    <div className={`absolute top-0 left-0 right-0 h-1 ${useCase.color} bg-[#8350E0]`}></div>
+                                    <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div>
 
                                     <div className='p-6 sm:p-8 text-center'>
                                         {/* Icon */}

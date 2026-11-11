@@ -40,14 +40,14 @@ type ScenarioRow = {
     debt: string;
 };
 
-const PURPLE = '#7038d7';
-const PURPLE_BRIGHT = '#9a5cff';
-const PURPLE_SOFT = '#ba88ff';
-const GOLD = '#d7a247';
-const GOLD_LIGHT = '#e7bd67';
-const GREEN = '#53b879';
+const PURPLE = '#4333AF';
+const PURPLE_BRIGHT = '#4333AF';
+const PURPLE_SOFT = '#4333AF';
+const GOLD = '#4333AF';
+const GOLD_LIGHT = '#4333AF';
+const GREEN = '#4333AF';
 const PAGE_BG = '#050608';
-const BORDER = 'rgba(147,91,222,0.25)';
+const BORDER = '#414A5D';
 
 const modelLeft: ModelNode[] = [
     { icon: UserRound, label: 'Households' },
@@ -145,7 +145,7 @@ const decisionTools: Array<{
 const scenarioRows: ScenarioRow[] = [
     {
         name: 'Baseline',
-        color: '#783dde',
+        color: '#4333AF',
         growth: '2.3',
         inflation: '2.1',
         unemployment: '5.3',
@@ -153,7 +153,7 @@ const scenarioRows: ScenarioRow[] = [
     },
     {
         name: 'Expansionary Policy',
-        color: '#a35ffc',
+        color: 'rgba(67,51,175,0.78)',
         growth: '3.8',
         inflation: '2.4',
         unemployment: '5.1',
@@ -161,7 +161,7 @@ const scenarioRows: ScenarioRow[] = [
     },
     {
         name: 'Austerity',
-        color: '#d39b37',
+        color: 'rgba(67,51,175,0.55)',
         growth: '0.7',
         inflation: '1.6',
         unemployment: '6.2',
@@ -169,7 +169,7 @@ const scenarioRows: ScenarioRow[] = [
     },
     {
         name: 'Recession Shock',
-        color: '#919196',
+        color: '#414A5D',
         growth: '-2.1',
         inflation: '1.2',
         unemployment: '7.8',
@@ -188,12 +188,12 @@ function SectionIntro({ number, title, description, children }: { number: string
                 <span
                     className='mt-1 h-px w-10'
                     style={{
-                        background: `linear-gradient(90deg, ${PURPLE_BRIGHT}, rgba(154,92,255,0.18))`,
+                        background: `linear-gradient(90deg, ${PURPLE_BRIGHT}, rgba(67,51,175,0.18))`,
                     }}
                 />
             </div>
 
-            <h2 className='simulator-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f1ee] sm:text-[31px]'>{title}</h2>
+            <h2 className='simulator-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f4f1ee] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[285px] text-[13px] leading-[1.55] text-[#d0d0d2] sm:text-[14px]'>{description}</p>
 
@@ -208,7 +208,7 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             className={`overflow-hidden rounded-[12px] border ${className}`}
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(10,10,13,0.98) 0%, rgba(6,7,9,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02), 0 18px 42px rgba(0,0,0,0.22)',
             }}
         >
@@ -235,7 +235,7 @@ function HeroArtwork() {
             <div
                 className='pointer-events-none absolute inset-[6%] blur-3xl'
                 style={{
-                    background: 'radial-gradient(ellipse, rgba(111,56,215,0.10), rgba(215,162,71,0.025) 48%, transparent 75%)',
+                    background: 'radial-gradient(ellipse, rgba(67,51,175,0.10), rgba(67,51,175,0.025) 48%, transparent 75%)',
                 }}
             />
 
@@ -257,7 +257,7 @@ function HeroArtwork() {
 
 function ModelBox({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
     return (
-        <div className='flex min-h-[48px] items-center gap-2 rounded-[6px] border border-white/[0.12] bg-[#0c0b10] px-2 lg:min-h-[55px] lg:gap-3 lg:px-4'>
+        <div className='flex min-h-[48px] items-center gap-2 rounded-[6px] border border-[#414A5D] bg-[#000000] px-2 lg:min-h-[55px] lg:gap-3 lg:px-4'>
             <Icon className='h-6 w-6 shrink-0' strokeWidth={1.35} style={{ color: PURPLE_SOFT }} />
 
             <span className='text-[12px] text-[#e7e5e8]'>{label}</span>
@@ -299,7 +299,7 @@ function ModelStructure() {
                     </div>
 
                     <div className='flex items-center'>
-                        <div className='flex min-h-[125px] w-full flex-col items-center justify-center rounded-[8px] border border-white/[0.15] bg-[#0c0b10] px-4 text-center'>
+                        <div className='flex min-h-[125px] w-full flex-col items-center justify-center rounded-[8px] border border-[#414A5D] bg-[#000000] px-4 text-center'>
                             <ShoppingCart className='h-8 w-8' strokeWidth={1.3} style={{ color: PURPLE_SOFT }} />
 
                             <p className='mt-2 text-[11px] font-medium' style={{ color: PURPLE_SOFT }}>
@@ -346,7 +346,7 @@ function ScenarioChart() {
                 <polyline
                     points='45,119 91,82 137,75 183,70 229,58 275,58 321,45 367,42 413,32 459,40 505,36 540,26'
                     fill='none'
-                    stroke='#783dde'
+                    stroke='#4333AF'
                     strokeWidth='2'
                     vectorEffect='non-scaling-stroke'
                 />
@@ -354,7 +354,7 @@ function ScenarioChart() {
                 <polyline
                     points='45,119 91,67 137,55 183,52 229,45 275,45 321,33 367,30 413,22 459,28 505,24 540,17'
                     fill='none'
-                    stroke='#a35ffc'
+                    stroke='#4333AF'
                     strokeWidth='2'
                     vectorEffect='non-scaling-stroke'
                 />
@@ -362,7 +362,7 @@ function ScenarioChart() {
                 <polyline
                     points='45,119 91,112 137,110 183,111 229,114 275,116 321,119 367,121 413,123 459,124 505,124 540,124'
                     fill='none'
-                    stroke='#d39b37'
+                    stroke='#4333AF'
                     strokeWidth='2'
                     vectorEffect='non-scaling-stroke'
                 />
@@ -377,7 +377,7 @@ function ScenarioChart() {
 
                 {[
                     [
-                        '#783dde',
+                        '#4333AF',
                         [
                             [45, 119],
                             [91, 82],
@@ -394,7 +394,7 @@ function ScenarioChart() {
                         ],
                     ],
                     [
-                        '#a35ffc',
+                        '#4333AF',
                         [
                             [45, 119],
                             [91, 67],
@@ -411,7 +411,7 @@ function ScenarioChart() {
                         ],
                     ],
                     [
-                        '#d39b37',
+                        '#4333AF',
                         [
                             [45, 119],
                             [91, 112],
@@ -481,7 +481,7 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Scenario</span>
 
-                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-white/[0.12] px-3 text-[9px] text-[#e4e3e5]'>
+                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px] text-[#e4e3e5]'>
                             Expansionary Policy
                             <span>⌄</span>
                         </div>
@@ -490,30 +490,30 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Fiscal Stimulus</span>
 
-                        <div className='grid grid-cols-[1fr_75px] overflow-hidden rounded-[4px] border border-white/[0.12]'>
+                        <div className='grid grid-cols-[1fr_75px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
                             <div className='flex min-h-[35px] items-center px-3 text-[10px]'>2.0</div>
 
-                            <div className='flex items-center justify-center border-l border-white/[0.12] text-[8px] text-[#bdbcc0]'>% of GDP</div>
+                            <div className='flex items-center justify-center border-l border-[#414A5D] text-[8px] text-[#bdbcc0]'>% of GDP</div>
                         </div>
                     </label>
 
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Interest Rate Change</span>
 
-                        <div className='grid grid-cols-[1fr_40px] overflow-hidden rounded-[4px] border border-white/[0.12]'>
+                        <div className='grid grid-cols-[1fr_40px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
                             <div className='flex min-h-[35px] items-center justify-between px-3 text-[10px]'>
                                 -1.00
                                 <span>⌄</span>
                             </div>
 
-                            <div className='flex items-center justify-center border-l border-white/[0.12] text-[8px] text-[#bdbcc0]'>pp</div>
+                            <div className='flex items-center justify-center border-l border-[#414A5D] text-[8px] text-[#bdbcc0]'>pp</div>
                         </div>
                     </label>
 
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Simulation Horizon</span>
 
-                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-white/[0.12] px-3 text-[9px]'>
+                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px]'>
                             10 Years
                             <span>⌄</span>
                         </div>
@@ -523,8 +523,8 @@ function ScenarioControls() {
                         type='button'
                         className='mt-1 min-h-[42px] w-full rounded-[4px] text-[10px] font-medium uppercase tracking-[0.025em] text-white'
                         style={{
-                            background: 'linear-gradient(90deg,#5e28be 0%,#7b38d7 100%)',
-                            boxShadow: '0 0 18px rgba(112,56,215,0.2)',
+                            background: 'linear-gradient(90deg,#4333AF 0%,#4333AF 100%)',
+                            boxShadow: '0 0 18px rgba(67,51,175,0.2)',
                         }}
                     >
                         Run Simulation
@@ -557,7 +557,7 @@ function IndicatorCard({
     points: string;
 }) {
     return (
-        <div className='min-w-0 border-b border-white/[0.08] px-4 py-4 sm:border-b-0 sm:border-r sm:last:border-r-0'>
+        <div className='min-w-0 border-b border-[#414A5D] px-4 py-4 sm:border-b-0 sm:border-r sm:last:border-r-0'>
             <p className='text-[8px] uppercase tracking-[0.02em] text-[#c3c2c6]'>{label}</p>
 
             <p className='mt-2 text-[24px] leading-none text-[#eeeeeb]'>{value}</p>
@@ -614,7 +614,7 @@ function ResultsPanel() {
                     />
                 </div>
 
-                <div className='overflow-x-auto border-t border-white/[0.08]'>
+                <div className='overflow-x-auto border-t border-[#414A5D]'>
                     <div className='min-w-[610px]'>
                         <div className='grid grid-cols-[1.7fr_repeat(4,.8fr)] py-2 text-[8px] uppercase text-[#9b9a9e]'>
                             <span>Scenario</span>
@@ -650,22 +650,16 @@ const EconomicSimulatorPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='economic-simulator-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 76% 9%,rgba(112,56,215,0.045),transparent 28%),linear-gradient(180deg,#040506 0%,#060609 52%,#040506 100%)',
-                }}
-            >
+            <main className='economic-simulator-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
-                <section id='overview' className='relative overflow-hidden border-b border-white/[0.10]'>
+                <section id='overview' className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.41fr_0.59fr] lg:gap-2 lg:px-9'>
                         <div className='relative z-10'>
                             <p className='text-[11px] font-medium uppercase tracking-[0.055em]' style={{ color: GOLD_LIGHT }}>
                                 Model. Simulate. Understand.
                             </p>
 
-                            <h1 className='simulator-serif page-hero-title mt-3 text-[56px] leading-[0.91] tracking-[-0.05em] sm:text-[72px] lg:text-[75px]'>
+                            <h1 className='simulator-serif page-hero-title mt-3 text-[56px] leading-[1.23] tracking-[-0.05em] sm:text-[72px] lg:text-[75px]'>
                                 <span className='text-[#f3f0ed]'>Economic</span>
                                 <br />
                                 <span style={{ color: PURPLE_BRIGHT }}>Simulator</span>
@@ -700,7 +694,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.45} style={{ color: PURPLE_SOFT }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeecef]'>{title}</h3>
+                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeecef] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[145px] text-[10px] leading-[1.45] text-[#a9a8ac]'>{body}</p>
                                     </div>
@@ -716,7 +710,7 @@ const EconomicSimulatorPage: NextPage = () => {
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
                     {/* SECTION 01 */}
-                    <section id='features' className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-15'>
+                    <section id='features' className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-15'>
                         <SectionIntro
                             number='01'
                             title='Build Your Economy'
@@ -727,7 +721,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                     <div key={title} className='text-center'>
                                         <Icon className='mx-auto h-8 w-8' strokeWidth={1.35} style={{ color: PURPLE_SOFT }} />
 
-                                        <h3 className='mt-2 text-[9px] font-medium text-[#ededee]'>{title}</h3>
+                                        <h3 className='mt-2 text-[9px] font-medium text-[#ededee] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1 text-[7px] leading-[1.4] text-[#99989c]'>{body}</p>
                                     </div>
@@ -739,7 +733,7 @@ const EconomicSimulatorPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 02 */}
-                    <section id='scenarios' className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section id='scenarios' className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='02'
                             title='Simulate Scenarios'
@@ -780,7 +774,7 @@ const EconomicSimulatorPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 03 */}
-                    <section id='results' className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section id='results' className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='03'
                             title='Analyze Results'
@@ -791,7 +785,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                     <div key={title} className='text-center'>
                                         <Icon className='mx-auto h-8 w-8' strokeWidth={1.3} style={{ color: PURPLE_SOFT }} />
 
-                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeef]'>{title}</h3>
+                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeef] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1 text-[7px] leading-[1.4] text-[#99989c]'>{body}</p>
                                     </div>
@@ -818,7 +812,7 @@ const EconomicSimulatorPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.4} style={{ color: PURPLE_SOFT }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[10px] font-medium text-[#efedef]'>{title}</h3>
+                                        <h3 className='mt-3 text-[10px] font-medium text-[#efedef] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-2 max-w-[145px] text-[8px] leading-[1.45] text-[#a4a3a7]'>{body}</p>
                                     </div>
@@ -830,7 +824,7 @@ const EconomicSimulatorPage: NextPage = () => {
                             className='mt-5 flex flex-col gap-5 rounded-[11px] border px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6'
                             style={{
                                 borderColor: BORDER,
-                                background: 'linear-gradient(180deg,rgba(10,9,12,0.98),rgba(6,6,8,0.98))',
+                                background: '#0C0F18',
                             }}
                         >
                             <div className='flex items-center gap-4'>
@@ -852,7 +846,7 @@ const EconomicSimulatorPage: NextPage = () => {
 
                             <ComingSoonTrigger
                                 ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#7038d7] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(112,56,215,0.24)] transition-all duration-200 hover:bg-[#8b4bea]'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.24)] transition-all duration-200 hover:bg-[#4333AF]'
                             >
                                 Get Started
                                 <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -907,7 +901,7 @@ const EconomicSimulatorPage: NextPage = () => {
 
                     .economic-simulator-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -919,7 +913,7 @@ const EconomicSimulatorPage: NextPage = () => {
 
                     .economic-simulator-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -941,7 +935,7 @@ const EconomicSimulatorPage: NextPage = () => {
                     .economic-simulator-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .economic-simulator-page .page-hero-features p {

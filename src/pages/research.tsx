@@ -5,11 +5,11 @@ import type { NextPage } from 'next';
 import type { ReactNode } from 'react';
 
 // const ACCENT = '#f2f2f0';
-// const GREEN = '#82b94b';
-// const ORANGE = '#b17a49';
-const PAGE_BG = '#05080d';
-// const PANEL_BG = '#071018';
-const BORDER = 'rgba(255,255,255,0.15)';
+// const GREEN = '#4333AF';
+// const ORANGE = '#4333AF';
+const PAGE_BG = '#0C0F18';
+// const PANEL_BG = '#0C0F18';
+const BORDER = '#414A5D';
 
 interface ResearchSnapshotRow {
     topic: string;
@@ -228,8 +228,8 @@ const researchTools: Array<{
 function CheckItem({ children }: { children: ReactNode }) {
     return (
         <li className='flex items-start gap-2.5 text-[13px] leading-[1.45] text-[#d3d8de] sm:text-[14px]'>
-            <span className='mt-[1px] flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full border border-[#dce2e8]/80'>
-                <Check className='h-[10px] w-[10px]' strokeWidth={2.5} />
+            <span className='mt-[1px] flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full border border-[#4333AF]'>
+                <Check className='h-[10px] w-[10px] text-[#4333AF]' strokeWidth={2.5} />
             </span>
             <span>{children}</span>
         </li>
@@ -240,11 +240,11 @@ function SectionIntro({ number, title, description, bullets }: { number: string;
     return (
         <div className='min-w-0 lg:pr-5'>
             <div className='flex items-center gap-3'>
-                <span className='research-serif page-section-number text-[43px] leading-none tracking-[-0.03em] text-[#eceae8]'>{number}</span>
-                <span className='mt-1 h-px w-9 bg-[#d9d9d9]/70' />
+                <span className='research-serif page-section-number text-[43px] leading-none tracking-[-0.03em] text-[#4333AF]'>{number}</span>
+                <span className='mt-1 h-px w-9 bg-[#4333AF]' />
             </div>
 
-            <h2 className='research-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f4f0] sm:text-[31px]'>{title}</h2>
+            <h2 className='research-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f7f4f0] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[270px] text-[13px] leading-[1.5] text-[#c6c9cd] sm:text-[14px]'>{description}</p>
 
@@ -263,7 +263,7 @@ function Panel({ title, children, cta }: { title?: string; children: ReactNode; 
             className='overflow-hidden rounded-[12px] border'
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(8,17,25,0.98) 0%, rgba(5,11,17,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.018), 0 18px 35px rgba(0,0,0,0.15)',
             }}
         >
@@ -279,7 +279,7 @@ function Panel({ title, children, cta }: { title?: string; children: ReactNode; 
                 <div className='flex justify-center px-4 pb-3 pt-2'>
                     <button
                         type='button'
-                        className='group flex items-center gap-2 text-[12px] text-[#e5e5e4] transition-opacity hover:opacity-75 sm:text-[13px]'
+                        className='group flex items-center gap-2 text-[12px] text-[#4333AF] transition-opacity hover:opacity-75 sm:text-[13px]'
                     >
                         {cta}
                         <ArrowRight className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-1' />
@@ -298,16 +298,16 @@ function BrandMark({ brand }: { brand: CompanyRow['brand'] | EarningsRow['brand'
     if (brand === 'microsoft') {
         return (
             <span className='grid h-[15px] w-[15px] grid-cols-2 gap-[1px]'>
-                <span className='bg-[#f35325]' />
-                <span className='bg-[#81bc06]' />
-                <span className='bg-[#05a6f0]' />
-                <span className='bg-[#ffba08]' />
+                <span className='bg-[#4333AF]' />
+                <span className='bg-[#4333AF]' />
+                <span className='bg-[#4333AF]' />
+                <span className='bg-[#4333AF]' />
             </span>
         );
     }
 
     if (brand === 'nvidia') {
-        return <span className='flex h-[16px] w-[18px] items-center justify-center rounded-[2px] bg-[#78a943] text-[8px] font-bold text-black'>N</span>;
+        return <span className='flex h-[16px] w-[18px] items-center justify-center rounded-[2px] bg-[#4333AF] text-[8px] font-bold text-white'>N</span>;
     }
 
     if (brand === 'amazon') {
@@ -315,11 +315,11 @@ function BrandMark({ brand }: { brand: CompanyRow['brand'] | EarningsRow['brand'
     }
 
     if (brand === 'meta') {
-        return <span className='flex h-5 w-6 items-center justify-center text-[15px] font-bold text-[#477ad8]'>∞</span>;
+        return <span className='flex h-5 w-6 items-center justify-center text-[15px] font-bold text-[#4333AF]'>∞</span>;
     }
 
     if (brand === 'tesla') {
-        return <span className='flex h-5 w-5 items-center justify-center text-[16px] font-bold text-[#db3236]'>T</span>;
+        return <span className='flex h-5 w-5 items-center justify-center text-[16px] font-bold text-[#4333AF]'>T</span>;
     }
 
     return null;
@@ -330,9 +330,9 @@ function OutlookBadge({ outlook }: { outlook: ResearchSnapshotRow['outlook'] }) 
         <span
             className='inline-flex rounded-[3px] px-1.5 py-[2px] text-[10px] leading-[1.2]'
             style={{
-                color: outlook === 'Positive' ? '#8bc34a' : '#d2d2d2',
-                background: outlook === 'Positive' ? 'rgba(112,165,65,0.09)' : 'rgba(255,255,255,0.05)',
-                border: outlook === 'Positive' ? '1px solid rgba(112,165,65,0.22)' : '1px solid rgba(255,255,255,0.10)',
+                color: outlook === 'Positive' ? '#4333AF' : '#d2d2d2',
+                background: outlook === 'Positive' ? 'rgba(67,51,175,0.09)' : 'rgba(255,255,255,0.05)',
+                border: outlook === 'Positive' ? '1px solid rgba(67,51,175,0.22)' : '1px solid rgba(255,255,255,0.10)',
             }}
         >
             {outlook}
@@ -343,7 +343,7 @@ function OutlookBadge({ outlook }: { outlook: ResearchSnapshotRow['outlook'] }) 
 function DesktopRow({ children, columns }: { children: ReactNode; columns: string }) {
     return (
         <div
-            className='grid min-h-[35px] items-center border-b border-white/[0.07] px-2 py-1.5 text-[11px] leading-[1.25] text-[#d6d9dc] last:border-b-0'
+            className='grid min-h-[35px] items-center border-b border-[#414A5D] bg-[#000000] px-2 py-1.5 text-[11px] leading-[1.25] text-[#d6d9dc] last:border-b-0'
             style={{ gridTemplateColumns: columns }}
         >
             {children}
@@ -357,7 +357,7 @@ function Cell({ children, className = '' }: { children: ReactNode; className?: s
 
 function MobileDataCard({ fields }: { fields: Array<{ label: string; value: ReactNode }> }) {
     return (
-        <div className='border-b border-white/[0.08] px-1 py-3 last:border-b-0'>
+        <div className='border-b border-[#414A5D] bg-[#000000] px-1 py-3 last:border-b-0'>
             <dl className='grid grid-cols-2 gap-x-4 gap-y-2.5'>
                 {fields.map((field) => (
                     <div key={field.label} className='min-w-0'>
@@ -390,14 +390,14 @@ function WorldMapArtwork() {
             <div
                 className='absolute inset-[8%] opacity-80 blur-3xl'
                 style={{
-                    background: 'radial-gradient(ellipse, rgba(66,107,145,0.18) 0%, rgba(17,34,50,0.05) 50%, transparent 75%)',
+                    background: 'radial-gradient(ellipse, rgba(67,51,175,0.18) 0%, rgba(67,51,175,0.05) 50%, transparent 75%)',
                 }}
             />
 
             <svg viewBox='0 0 640 350' className='absolute inset-0 h-full w-full' aria-hidden='true'>
                 <defs>
                     <pattern id='researchDots' width='5' height='5' patternUnits='userSpaceOnUse'>
-                        <circle cx='1.2' cy='1.2' r='1' fill='#8a9daf' fillOpacity='0.55' />
+                        <circle cx='1.2' cy='1.2' r='1' fill='#4333AF' fillOpacity='0.55' />
                     </pattern>
 
                     <filter id='researchGlow' x='-100%' y='-100%' width='300%' height='300%'>
@@ -415,16 +415,16 @@ function WorldMapArtwork() {
                     opacity='0.9'
                 />
 
-                <path d='M101 137 Q210 34 323 138' fill='none' stroke='#a8c2d8' strokeOpacity='0.28' strokeWidth='1' />
-                <path d='M127 111 Q315 10 502 177' fill='none' stroke='#a8c2d8' strokeOpacity='0.24' strokeWidth='1' />
-                <path d='M160 157 Q315 69 451 126' fill='none' stroke='#a8c2d8' strokeOpacity='0.28' strokeWidth='1' />
-                <path d='M286 94 Q420 70 552 132' fill='none' stroke='#a8c2d8' strokeOpacity='0.25' strokeWidth='1' />
-                <path d='M92 138 Q230 190 401 161' fill='none' stroke='#a8c2d8' strokeOpacity='0.2' strokeWidth='1' />
+                <path d='M101 137 Q210 34 323 138' fill='none' stroke='#4333AF' strokeOpacity='0.28' strokeWidth='1' />
+                <path d='M127 111 Q315 10 502 177' fill='none' stroke='#4333AF' strokeOpacity='0.24' strokeWidth='1' />
+                <path d='M160 157 Q315 69 451 126' fill='none' stroke='#4333AF' strokeOpacity='0.28' strokeWidth='1' />
+                <path d='M286 94 Q420 70 552 132' fill='none' stroke='#4333AF' strokeOpacity='0.25' strokeWidth='1' />
+                <path d='M92 138 Q230 190 401 161' fill='none' stroke='#4333AF' strokeOpacity='0.2' strokeWidth='1' />
 
                 {cities.map(([cx, cy]) => (
                     <g key={`${cx}-${cy}`} filter='url(#researchGlow)'>
                         <circle cx={cx} cy={cy} r='2.6' fill='#ffffff' />
-                        <circle cx={cx} cy={cy} r='6.5' fill='#8ec5f2' fillOpacity='0.18' />
+                        <circle cx={cx} cy={cy} r='6.5' fill='#4333AF' fillOpacity='0.18' />
                     </g>
                 ))}
             </svg>
@@ -438,7 +438,7 @@ function SnapshotPanel() {
     return (
         <Panel title='Market Research Snapshot' cta='View Full Market Research'>
             <div className='hidden sm:block'>
-                <div className='grid border-b border-white/[0.08] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
+                <div className='grid border-b border-[#414A5D] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
                     <Cell>Topic</Cell>
                     <Cell>View</Cell>
                     <Cell>Latest Insight</Cell>
@@ -485,7 +485,7 @@ function CompanyPanel() {
     return (
         <Panel title='Top Researched Companies' cta='View All Company Research'>
             <div className='hidden sm:block'>
-                <div className='grid border-b border-white/[0.08] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
+                <div className='grid border-b border-[#414A5D] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
                     {['Company', 'Ticker', 'Rating', 'Price', 'Target', 'Upside'].map((heading) => (
                         <Cell key={heading}>{heading}</Cell>
                     ))}
@@ -500,10 +500,10 @@ function CompanyPanel() {
                             </div>
                         </Cell>
                         <Cell>{row.ticker}</Cell>
-                        <Cell className={row.rating === 'Buy' ? 'text-[#82b94b]' : 'text-[#b17a49]'}>{row.rating}</Cell>
+                        <Cell className={row.rating === 'Buy' ? 'text-[#4333AF]' : 'text-[#4333AF]'}>{row.rating}</Cell>
                         <Cell>{row.price}</Cell>
                         <Cell>{row.target}</Cell>
-                        <Cell className='text-[#82b94b]'>{row.upside}</Cell>
+                        <Cell className='text-[#4333AF]'>{row.upside}</Cell>
                     </DesktopRow>
                 ))}
             </div>
@@ -525,13 +525,13 @@ function CompanyPanel() {
                             { label: 'Ticker', value: row.ticker },
                             {
                                 label: 'Rating',
-                                value: <span className={row.rating === 'Buy' ? 'text-[#82b94b]' : 'text-[#b17a49]'}>{row.rating}</span>,
+                                value: <span className={row.rating === 'Buy' ? 'text-[#4333AF]' : 'text-[#4333AF]'}>{row.rating}</span>,
                             },
                             { label: 'Price', value: row.price },
                             { label: 'Target', value: row.target },
                             {
                                 label: 'Upside',
-                                value: <span className='text-[#82b94b]'>{row.upside}</span>,
+                                value: <span className='text-[#4333AF]'>{row.upside}</span>,
                             },
                         ]}
                     />
@@ -547,7 +547,7 @@ function EarningsPanel() {
     return (
         <Panel title='Upcoming Earnings' cta='View Full Earnings Calendar'>
             <div className='hidden sm:block'>
-                <div className='grid border-b border-white/[0.08] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
+                <div className='grid border-b border-[#414A5D] px-2 py-2 text-[11px] text-[#b8bec4]' style={{ gridTemplateColumns: columns }}>
                     {['Company', 'Ticker', 'Date', 'EPS Est.', 'Revenue Est.', 'Time'].map((heading) => (
                         <Cell key={heading}>{heading}</Cell>
                     ))}
@@ -602,14 +602,8 @@ const ResearchPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='research-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 70% 8%, rgba(41,73,99,0.08), transparent 28%), linear-gradient(180deg, #04070b 0%, #071019 48%, #04070b 100%)',
-                }}
-            >
-                <section className='relative overflow-hidden border-b border-white/[0.09]'>
+            <main className='research-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
+                <section className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div
                         className='pointer-events-none absolute inset-0 opacity-20'
                         style={{
@@ -621,15 +615,15 @@ const ResearchPage: NextPage = () => {
 
                     <div className='relative mx-auto grid w-full max-w-[1180px] items-start gap-7 px-5 pb-5 pt-8 sm:px-8 sm:pt-10 lg:grid-cols-[0.41fr_0.59fr] lg:gap-3 lg:px-9'>
                         <div className='relative z-10'>
-                            <p className='text-[11px] font-medium uppercase tracking-[0.03em] text-[#f1f2f1] sm:text-[12px]'>
+                            <p className='text-[11px] font-medium uppercase tracking-[0.03em] text-[#4333AF] sm:text-[12px]'>
                                 Deeper research. Better insights. Smarter decisions.
                             </p>
 
-                            <h1 className='page-hero-title mt-3 text-[60px] font-semibold leading-[0.92] tracking-[-0.055em] text-[#f7f6f4] sm:text-[75px] lg:text-[78px]'>
+                            <h1 className='research-serif page-hero-title mt-3 text-[60px] font-semibold leading-[1.23] tracking-[-0.055em] text-[#f7f6f4] sm:text-[75px] lg:text-[78px]'>
                                 Research
                             </h1>
 
-                            <div className='mt-5 h-[3px] w-[58px] bg-[#e8e8e5]' />
+                            <div className='mt-5 h-[3px] w-[58px] bg-[#4333AF]' />
 
                             <p className='mt-5 max-w-[420px] text-[16px] leading-[1.55] text-[#d7dade] sm:text-[18px]'>
                                 Institutional-grade research and intelligence
@@ -639,11 +633,11 @@ const ResearchPage: NextPage = () => {
                             <div className='page-hero-features mt-7 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-3 lg:grid-cols-5'>
                                 {researchPillars.map(({ icon: Icon, title, body }) => (
                                     <div key={title} className='min-w-0'>
-                                        <div className='flex h-[56px] w-[56px] items-center justify-center rounded-full border border-[#d7dce1]/80'>
-                                            <Icon className='h-7 w-7 text-[#f2f4f6]' strokeWidth={1.6} />
+                                        <div className='flex h-[56px] w-[56px] items-center justify-center rounded-full border border-[#4333AF]'>
+                                            <Icon className='h-7 w-7 text-[#4333AF]' strokeWidth={1.6} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[11px] font-medium leading-[1.25] text-[#f2f2f1]'>{title}</h3>
+                                        <h3 className='mt-3 text-[11px] font-medium leading-[1.42] text-[#f2f2f1]'>{title}</h3>
 
                                         <p className='mt-2 max-w-[125px] text-[9px] leading-[1.45] text-[#aeb4ba] sm:text-[10px]'>{body}</p>
                                     </div>
@@ -658,7 +652,7 @@ const ResearchPage: NextPage = () => {
                 </section>
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='01'
                             title='Market Research'
@@ -673,7 +667,7 @@ const ResearchPage: NextPage = () => {
                         <SnapshotPanel />
                     </section>
 
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='02'
                             title='Company Research'
@@ -688,7 +682,7 @@ const ResearchPage: NextPage = () => {
                         <CompanyPanel />
                     </section>
 
-                    <section className='grid gap-6 border-b border-white/[0.09] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-6 border-b border-[#414A5D] py-5 sm:py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='03'
                             title='Earnings & Events'
@@ -717,11 +711,11 @@ const ResearchPage: NextPage = () => {
                                     {researchTools.map(({ icon: Icon, title, body }) => (
                                         <div
                                             key={title}
-                                            className='page-compact-card flex min-h-[150px] flex-col items-center px-5 py-5 text-center sm:border-b sm:border-white/[0.08] lg:border-b-0'
+                                            className='page-compact-card flex min-h-[150px] flex-col items-center bg-[#000000] px-5 py-5 text-center sm:border-b sm:border-[#414A5D] lg:border-b-0'
                                         >
-                                            <Icon className='h-10 w-10 text-[#f1f3f4]' strokeWidth={1.4} />
+                                            <Icon className='h-10 w-10 text-[#4333AF]' strokeWidth={1.4} />
 
-                                            <h3 className='mt-4 text-[12px] font-medium text-[#f4f4f2]'>{title}</h3>
+                                            <h3 className='mt-4 text-[12px] font-medium text-[#f4f4f2] leading-[1.42]'>{title}</h3>
 
                                             <p className='mt-2 max-w-[140px] text-[10px] leading-[1.45] text-[#aab0b5]'>{body}</p>
                                         </div>
@@ -733,14 +727,14 @@ const ResearchPage: NextPage = () => {
                                 className='mt-5 flex flex-col gap-4 rounded-[12px] border px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6'
                                 style={{
                                     borderColor: BORDER,
-                                    background: 'linear-gradient(180deg, rgba(8,17,25,0.98), rgba(5,11,17,0.98))',
+                                    background: '#0C0F18',
                                 }}
                             >
                                 <div className='flex items-center gap-4'>
-                                    <BarChart3 className='h-9 w-9 shrink-0 text-[#f0f2f3]' strokeWidth={1.5} />
+                                    <BarChart3 className='h-9 w-9 shrink-0 text-[#4333AF]' strokeWidth={1.5} />
 
                                     <div>
-                                        <p className='research-serif text-[19px] leading-[1.1] text-[#f5f3ef]'>
+                                        <p className='research-serif text-[19px] leading-[1.35] text-[#f5f3ef]'>
                                             Better Research. Better Insights. Better Results.
                                         </p>
                                         <p className='mt-1 text-[11px] text-[#aeb3b8]'>Research smarter and gain the edge you need to stay ahead.</p>
@@ -749,7 +743,7 @@ const ResearchPage: NextPage = () => {
 
                                 <ComingSoonTrigger
                                     ariaLabel='Get started'
-                                    className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#2c7bbe] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(44,123,190,0.20)] transition-all duration-200 hover:bg-[#4cc7e8]'
+                                    className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.20)] transition-all duration-200 hover:bg-[#4333AF]'
                                 >
                                     Get Started
                                     <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -805,7 +799,7 @@ const ResearchPage: NextPage = () => {
 
                     .research-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -817,7 +811,7 @@ const ResearchPage: NextPage = () => {
 
                     .research-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -839,7 +833,7 @@ const ResearchPage: NextPage = () => {
                     .research-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .research-page .page-hero-features p {

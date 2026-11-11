@@ -234,7 +234,7 @@ function Affiliate() {
                     <div className='grid md:grid-cols-4 gap-6 sm:gap-8'>
                         {whyJoin.map((feature, index) => (
                             <div key={feature.title} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
                                     <CardContent className='p-6 sm:p-8'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />

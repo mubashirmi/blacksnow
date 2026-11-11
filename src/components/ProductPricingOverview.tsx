@@ -98,11 +98,11 @@ const THEMES: Record<
     }
 > = {
     purple: {
-        label: 'text-[#4333AF]',
+        label: 'text-[#8350E0]',
         border: 'border-[#414A5D]',
-        icon: 'text-[#4333AF] bg-[#4333AF]/10 border-[#414A5D]',
-        underline: 'bg-[#4333AF]',
-        button: 'bg-[#4333AF] text-white hover:bg-[#37299A] focus-visible:ring-[#4333AF]',
+        icon: 'text-[#8350E0] bg-[#8350E0]/10 border-[#414A5D]',
+        underline: 'bg-[#8350E0]',
+        button: 'bg-[#8350E0] text-white hover:bg-[#6F39CD] focus-visible:ring-[#8350E0]',
     },
     silver: {
         label: 'text-[#aeb6d6]',

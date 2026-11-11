@@ -380,7 +380,7 @@ function DataAnalyticsSection() {
                                 boxShadow: '0 18px 40px rgba(0,0,0,0.35)',
                             }}
                         >
-                            <div className='absolute top-0 left-0 right-0 h-[1px]' style={{ background: '#4333AF' }} />
+                            {/* <div className='absolute top-0 left-0 right-0 h-[1px]' style={{ background: '#4333AF' }} /> */}
 
                             <div className='flex items-center gap-4 mb-5'>
                                 <div

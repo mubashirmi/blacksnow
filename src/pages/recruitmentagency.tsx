@@ -323,7 +323,7 @@ function Page() {
                                     <div className='absolute inset-0 bg-transparent rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
 
                                     <Card className='relative bg-[#0C0F18] backdrop-blur-2xl border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105 hover:-translate-y-2 shadow-lg shadow-[#4333AF]/10 group'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
+                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#414A5D]'></div>
 
                                         <div className='relative overflow-hidden'>
                                             <Image

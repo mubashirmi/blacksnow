@@ -317,7 +317,12 @@ function FeatureStrip({ items, accent, mobile }: { items: Feature[]; accent: str
                             index > 0 ? 'border-l border-[#414A5D]/65' : ''
                         }`}
                     >
-                        <Icon className='h-5 w-5 sm:h-7 sm:w-7' color={accent} fill={mobile && index !== 3 ? accent : 'none'} strokeWidth={mobile ? 2 : 2.5} />
+                        <Icon
+                            className='h-5 w-5 sm:h-7 sm:w-7'
+                            color={CARD_BORDER}
+                            fill={mobile && index !== 3 ? CARD_BORDER : 'none'}
+                            strokeWidth={mobile ? 2 : 2.5}
+                        />
                         <span className='flex min-h-[36px] max-w-[90px] items-start justify-center text-[9px] leading-[1.25] text-white/90 sm:text-[10px]'>
                             {label}
                         </span>
@@ -340,7 +345,7 @@ function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
                         key={label}
                         className='grid grid-cols-[17px_minmax(0,1fr)_minmax(70px,.8fr)] items-center gap-2 text-[9px] sm:grid-cols-[18px_minmax(0,1.15fr)_minmax(75px,1.25fr)_minmax(0,.95fr)] sm:text-[10px]'
                     >
-                        <div className='flex h-[17px] w-[17px] items-center justify-center rounded-full' style={{ background: accent }}>
+                        <div className='flex h-[17px] w-[17px] items-center justify-center rounded-full' style={{ background: CARD_BORDER }}>
                             <Check className='h-3 w-3 text-white' strokeWidth={3} />
                         </div>
                         <span className='truncate text-white/90' title={label}>
@@ -351,8 +356,8 @@ function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
                                 className='h-full rounded-full'
                                 style={{
                                     width: `${progress}%`,
-                                    background: accent,
-                                    boxShadow: '0 0 6px rgba(67,51,175,.22)',
+                                    background: CARD_BORDER,
+                                    boxShadow: '0 0 6px rgba(65,74,93,.22)',
                                 }}
                             />
                         </div>

@@ -39,11 +39,11 @@ type ResultRow = {
     range: number;
 };
 
-const GOLD = '#f4c225';
-const GOLD_LIGHT = '#ffd95a';
-const PAGE_BG = '#050708';
-// const PANEL_BG = '#080a0b';
-const BORDER = 'rgba(244,194,37,0.18)';
+const GOLD = '#4333AF';
+const GOLD_LIGHT = '#4333AF';
+const PAGE_BG = '#0C0F18';
+// const PANEL_BG = '#050608';
+const BORDER = '#414A5D';
 
 const resultRows: ResultRow[] = [
     {
@@ -228,12 +228,12 @@ function SectionIntro({ number, title, description, children }: { number: string
                 <span
                     className='mt-1 h-px w-9'
                     style={{
-                        background: `linear-gradient(90deg, ${GOLD}, rgba(244,194,37,0.25))`,
+                        background: `linear-gradient(90deg, ${GOLD}, rgba(67,51,175,0.25))`,
                     }}
                 />
             </div>
 
-            <h2 className='screener-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f7f5ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='screener-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f7f5ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[280px] text-[13px] leading-[1.55] text-[#d0d0cd] sm:text-[14px]'>{description}</p>
 
@@ -248,7 +248,7 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             className={`overflow-hidden rounded-[12px] border ${className}`}
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(8,10,11,0.98) 0%, rgba(5,7,8,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02), 0 18px 40px rgba(0,0,0,0.20)',
             }}
         >
@@ -263,7 +263,7 @@ function HeroArtwork() {
             <div
                 className='pointer-events-none absolute inset-[5%] blur-3xl'
                 style={{
-                    background: 'radial-gradient(circle, rgba(244,194,37,0.08) 0%, rgba(244,194,37,0.025) 50%, transparent 75%)',
+                    background: 'radial-gradient(circle, rgba(67,51,175,0.08) 0%, rgba(67,51,175,0.025) 50%, transparent 75%)',
                 }}
             />
 
@@ -277,29 +277,29 @@ function HeroArtwork() {
                 className='relative z-10 object-contain object-center'
             />
 
-            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[3%] bg-gradient-to-r from-[#050708] to-transparent' />
-            <div className='pointer-events-none absolute inset-y-0 right-0 z-20 w-[2%] bg-gradient-to-l from-[#050708] to-transparent' />
-            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#050708] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[3%] bg-gradient-to-r from-[#0C0F18] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 right-0 z-20 w-[2%] bg-gradient-to-l from-[#0C0F18] to-transparent' />
+            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#0C0F18] to-transparent' />
         </div>
     );
 }
 
 function ScreenField({ label, operator, value }: { label: string; operator: string; value: string }) {
     return (
-        <div className='grid grid-cols-[1.35fr_1.15fr_0.9fr_28px] overflow-hidden rounded-[4px] border border-white/[0.09] bg-[#090b0c]'>
+        <div className='grid grid-cols-[1.35fr_1.15fr_0.9fr_28px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
             <div className='flex min-h-[37px] items-center px-3 text-[10px] text-[#d5d5d2]'>{label}</div>
 
-            <button type='button' className='flex min-h-[37px] items-center justify-between border-l border-white/[0.08] px-3 text-[10px] text-[#d7d7d3]'>
+            <button type='button' className='flex min-h-[37px] items-center justify-between border-l border-[#414A5D] px-3 text-[10px] text-[#d7d7d3]'>
                 {operator}
                 <ChevronDown className='h-3 w-3 text-[#8e8e88]' />
             </button>
 
-            <button type='button' className='flex min-h-[37px] items-center justify-between border-l border-white/[0.08] px-3 text-[10px] text-[#e5e5df]'>
+            <button type='button' className='flex min-h-[37px] items-center justify-between border-l border-[#414A5D] px-3 text-[10px] text-[#e5e5df]'>
                 {value}
                 <ChevronDown className='h-3 w-3 text-[#8e8e88]' />
             </button>
 
-            <button type='button' aria-label={`Remove ${label} filter`} className='flex items-center justify-center border-l border-white/[0.08]'>
+            <button type='button' aria-label={`Remove ${label} filter`} className='flex items-center justify-center border-l border-[#414A5D]'>
                 <X className='h-3 w-3' style={{ color: GOLD }} />
             </button>
         </div>
@@ -325,10 +325,10 @@ function ScreenBuilder() {
 
                     <button
                         type='button'
-                        className='mt-3 flex min-h-[34px] items-center gap-2 rounded-[4px] border px-3 text-[10px]'
+                        className='mt-3 flex min-h-[34px] items-center gap-2 rounded-[4px] border bg-[#000000] px-3 text-[10px]'
                         style={{
                             color: GOLD_LIGHT,
-                            borderColor: 'rgba(244,194,37,0.28)',
+                            borderColor: 'rgba(67,51,175,0.28)',
                         }}
                     >
                         <span className='text-[17px] leading-none'>+</span>
@@ -354,11 +354,11 @@ function ScreenBuilder() {
                         </div>
 
                         <div className='relative mt-4 h-[18px]'>
-                            <div className='absolute left-0 right-0 top-1/2 border-t border-dashed border-[#f4c225]/35' />
+                            <div className='absolute left-0 right-0 top-1/2 border-t border-dashed border-[#4333AF]/35' />
                             {[5, 28, 50, 73, 95].map((position) => (
                                 <span
                                     key={position}
-                                    className='absolute top-1/2 h-[4px] w-[4px] -translate-y-1/2 rotate-45 bg-[#f4c225]'
+                                    className='absolute top-1/2 h-[4px] w-[4px] -translate-y-1/2 rotate-45 bg-[#4333AF]'
                                     style={{ left: `${position}%` }}
                                 />
                             ))}
@@ -381,7 +381,7 @@ function ScreenBuilder() {
                                 <button
                                     key={label}
                                     type='button'
-                                    className='flex min-h-[30px] w-full items-center gap-2 border-b border-white/[0.05] text-left text-[10px] text-[#d5d5d2] last:border-b-0'
+                                    className='flex min-h-[30px] w-full items-center gap-2 border-b border-[#414A5D] text-left text-[10px] text-[#d5d5d2] last:border-b-0'
                                 >
                                     <Icon className='h-3.5 w-3.5' style={{ color: GOLD }} />
                                     {label}
@@ -398,12 +398,12 @@ function ScreenBuilder() {
 function RangeBar({ value }: { value: number }) {
     return (
         <div className='relative h-[14px] w-[58px]'>
-            <div className='absolute left-0 right-0 top-1/2 h-px bg-[#f4c225]/80' />
+            <div className='absolute left-0 right-0 top-1/2 h-px bg-[#4333AF]/80' />
 
-            <div className='absolute top-1/2 h-[5px] w-[5px] -translate-y-1/2 rounded-full bg-[#f4c225]' style={{ left: `${Math.max(8, value - 10)}%` }} />
+            <div className='absolute top-1/2 h-[5px] w-[5px] -translate-y-1/2 rounded-full bg-[#4333AF]' style={{ left: `${Math.max(8, value - 10)}%` }} />
 
             <div
-                className='absolute top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border border-[#f4c225] bg-[#080a0b]'
+                className='absolute top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border border-[#4333AF] bg-[#000000]'
                 style={{ left: `${value}%` }}
             />
         </div>
@@ -421,7 +421,7 @@ function ResultsPanel() {
                 </p>
 
                 <div className='mt-3 hidden lg:block'>
-                    <div className='grid border-y border-white/[0.08] py-2 text-[9px] uppercase text-[#a6a7a2]' style={{ gridTemplateColumns: columns }}>
+                    <div className='grid border-y border-[#414A5D] py-2 text-[9px] uppercase text-[#a6a7a2]' style={{ gridTemplateColumns: columns }}>
                         <div>Symbol</div>
                         <div>Company</div>
                         <div>Price</div>
@@ -436,7 +436,7 @@ function ResultsPanel() {
                     {resultRows.map((row) => (
                         <div
                             key={row.symbol}
-                            className='grid min-h-[39px] items-center border-b border-white/[0.06] text-[10px] text-[#d6d7d3]'
+                            className='grid min-h-[39px] items-center border-b border-[#414A5D] text-[10px] text-[#d6d7d3]'
                             style={{ gridTemplateColumns: columns }}
                         >
                             <div className='font-semibold' style={{ color: GOLD }}>
@@ -456,7 +456,7 @@ function ResultsPanel() {
 
                 <div className='mt-2 lg:hidden'>
                     {resultRows.map((row) => (
-                        <div key={row.symbol} className='border-b border-white/[0.07] py-3 last:border-b-0'>
+                        <div key={row.symbol} className='border-b border-[#414A5D] py-3 last:border-b-0'>
                             <div className='flex items-start justify-between gap-4'>
                                 <div>
                                     <p className='text-[13px] font-semibold' style={{ color: GOLD }}>
@@ -510,11 +510,11 @@ function CircularGauge() {
             <div
                 className='absolute inset-0 rounded-full'
                 style={{
-                    background: 'conic-gradient(#f4c225 0deg 313deg, rgba(244,194,37,0.12) 313deg 360deg)',
+                    background: 'conic-gradient(#4333AF 0deg 313deg, rgba(67,51,175,0.12) 313deg 360deg)',
                 }}
             />
 
-            <div className='absolute inset-[10px] flex flex-col items-center justify-center rounded-full bg-[#080a0b]'>
+            <div className='absolute inset-[10px] flex flex-col items-center justify-center rounded-full bg-[#000000]'>
                 <span className='text-[27px] leading-none text-[#f4f3ee]'>8.7</span>
                 <span className='mt-1 text-[9px] text-[#b5b6b2]'>/10</span>
             </div>
@@ -524,8 +524,8 @@ function CircularGauge() {
 
 function PerformanceRing() {
     return (
-        <div className='relative mx-auto h-[82px] w-[82px] rounded-full border-[7px] border-[#f4c225]/15'>
-            <div className='absolute inset-[-7px] rounded-full border-[7px] border-transparent border-r-[#f4c225] border-t-[#f4c225]' />
+        <div className='relative mx-auto h-[82px] w-[82px] rounded-full border-[7px] border-[#4333AF]/15'>
+            <div className='absolute inset-[-7px] rounded-full border-[7px] border-transparent border-r-[#4333AF] border-t-[#4333AF]' />
         </div>
     );
 }
@@ -533,7 +533,7 @@ function PerformanceRing() {
 function AnalysisPanel() {
     return (
         <Panel>
-            <div className='border-b border-white/[0.08] px-4 sm:px-5'>
+            <div className='border-b border-[#414A5D] px-4 sm:px-5'>
                 <div className='flex gap-5 overflow-x-auto'>
                     {['Overview', 'Financials', 'Charts', 'Ratios', 'Earnings', 'Ownership'].map((tab, index) => (
                         <button
@@ -625,22 +625,16 @@ const StockScreenerPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='stock-screener-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 72% 7%, rgba(244,194,37,0.035), transparent 25%), linear-gradient(180deg, #040607 0%, #050708 52%, #040607 100%)',
-                }}
-            >
+            <main className='stock-screener-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
-                <section className='relative overflow-hidden border-b border-white/[0.10]'>
+                <section className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-7 px-5 pb-7 pt-5 sm:px-8 sm:pb-10 sm:pt-8 lg:grid-cols-[0.43fr_0.57fr] lg:gap-3 lg:px-9'>
                         <div className='relative z-10'>
                             <p className='text-[11px] font-medium uppercase tracking-[0.045em]' style={{ color: GOLD }}>
                                 Screen. Analyze. Invest.
                             </p>
 
-                            <h1 className='screener-serif page-hero-title mt-3 text-[55px] leading-[0.88] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
+                            <h1 className='screener-serif page-hero-title mt-3 text-[55px] leading-[1.23] tracking-[-0.05em] sm:text-[71px] lg:text-[74px]'>
                                 <span style={{ color: GOLD }}>Stock</span>
                                 <br />
                                 <span className='text-[#f4f3ed]'>Screener</span>
@@ -659,7 +653,7 @@ const StockScreenerPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.5} style={{ color: GOLD }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[14px] font-medium text-[#f0f0ec]'>{title}</h3>
+                                        <h3 className='mt-3 text-[14px] font-medium text-[#f0f0ec] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[135px] text-[10px] leading-[1.45] text-[#aaaBA7]'>{body}</p>
                                     </div>
@@ -675,7 +669,7 @@ const StockScreenerPage: NextPage = () => {
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
                     {/* 01 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14'>
                         <SectionIntro
                             number='01'
                             title='Build Your Screen'
@@ -686,7 +680,7 @@ const StockScreenerPage: NextPage = () => {
                                     <div key={title} className='text-center'>
                                         <Icon className='mx-auto h-8 w-8' strokeWidth={1.35} style={{ color: GOLD }} />
 
-                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1 text-[7px] leading-[1.4] text-[#989994]'>{body}</p>
                                     </div>
@@ -698,7 +692,7 @@ const StockScreenerPage: NextPage = () => {
                     </section>
 
                     {/* 02 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='02' title='Explore Results' description='Instantly view matching stocks with key metrics and visual insights.'>
                             <ul className='mt-5 space-y-2'>
                                 <CheckItem>Real-time data &amp; metrics</CheckItem>
@@ -712,7 +706,7 @@ const StockScreenerPage: NextPage = () => {
                     </section>
 
                     {/* 03 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro
                             number='03'
                             title='Analyze & Compare'
@@ -723,7 +717,7 @@ const StockScreenerPage: NextPage = () => {
                                     <div key={title} className='text-center'>
                                         <Icon className='mx-auto h-8 w-8' strokeWidth={1.35} style={{ color: GOLD }} />
 
-                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-2 text-[9px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1 text-[7px] leading-[1.4] text-[#989994]'>{body}</p>
                                     </div>
@@ -750,7 +744,7 @@ const StockScreenerPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.4} style={{ color: GOLD }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[10px] font-medium text-[#f1f1ed]'>{title}</h3>
+                                        <h3 className='mt-3 text-[10px] font-medium text-[#f1f1ed] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-2 max-w-[150px] text-[8px] leading-[1.45] text-[#a3a49f]'>{body}</p>
                                     </div>
@@ -762,7 +756,7 @@ const StockScreenerPage: NextPage = () => {
                             className='mt-4 flex flex-col gap-5 rounded-[10px] border px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between'
                             style={{
                                 borderColor: BORDER,
-                                background: 'linear-gradient(180deg, rgba(9,11,11,0.98), rgba(6,8,8,0.98))',
+                                background: '#0C0F18',
                             }}
                         >
                             <div className='flex items-center gap-4'>
@@ -778,7 +772,7 @@ const StockScreenerPage: NextPage = () => {
 
                             <ComingSoonTrigger
                                 ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e4ae25] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-[#15130a] shadow-[0_0_24px_rgba(228,174,37,0.22)] transition-all duration-200 hover:bg-[#f2bd32]'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(228,174,37,0.22)] transition-all duration-200 hover:bg-[#4333AF]'
                             >
                                 Get Started
                                 <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -833,7 +827,7 @@ const StockScreenerPage: NextPage = () => {
 
                     .stock-screener-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -845,7 +839,7 @@ const StockScreenerPage: NextPage = () => {
 
                     .stock-screener-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -867,7 +861,7 @@ const StockScreenerPage: NextPage = () => {
                     .stock-screener-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .stock-screener-page .page-hero-features p {

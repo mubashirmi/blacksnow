@@ -41,13 +41,13 @@ type AlertRow = {
     chart: number[];
 };
 
-const RED = '#e54848';
-const RED_BRIGHT = '#ff5151';
-const ORANGE = '#d69b51';
-const ORANGE_LIGHT = '#e3ae67';
-// const GREEN = '#72b447';
-const PAGE_BG = '#050606';
-const BORDER = 'rgba(214,155,81,0.20)';
+const RED = '#4333AF';
+const RED_BRIGHT = '#4333AF';
+const ORANGE = '#4333AF';
+const ORANGE_LIGHT = '#4333AF';
+// const GREEN = '#4333AF';
+const PAGE_BG = '#050608';
+const BORDER = '#414A5D';
 
 const gainers: MoverRow[] = [
     {
@@ -58,8 +58,8 @@ const gainers: MoverRow[] = [
         volume: '68.4M',
         positive: true,
         badge: 'N',
-        badgeBg: '#76b900',
-        badgeColor: '#071004',
+        badgeBg: '#4333AF',
+        badgeColor: '#0C0F18',
     },
     {
         symbol: 'AMD',
@@ -81,7 +81,7 @@ const gainers: MoverRow[] = [
         positive: true,
         badge: 'S',
         badgeBg: '#e9eef4',
-        badgeColor: '#315f8f',
+        badgeColor: '#4333AF',
     },
     {
         symbol: 'MU',
@@ -91,7 +91,7 @@ const gainers: MoverRow[] = [
         volume: '28.6M',
         positive: true,
         badge: 'M',
-        badgeBg: '#315f9c',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
     },
     {
@@ -103,7 +103,7 @@ const gainers: MoverRow[] = [
         positive: true,
         badge: 'T',
         badgeBg: '#f6f6f6',
-        badgeColor: '#cf2b2b',
+        badgeColor: '#4333AF',
     },
 ];
 
@@ -116,8 +116,8 @@ const losers: MoverRow[] = [
         volume: '12.7M',
         positive: false,
         badge: 'S',
-        badgeBg: '#1ed760',
-        badgeColor: '#061109',
+        badgeBg: '#4333AF',
+        badgeColor: '#0C0F18',
     },
     {
         symbol: 'PYPL',
@@ -127,7 +127,7 @@ const losers: MoverRow[] = [
         volume: '15.3M',
         positive: false,
         badge: 'P',
-        badgeBg: '#1677c8',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
     },
     {
@@ -138,7 +138,7 @@ const losers: MoverRow[] = [
         volume: '18.9M',
         positive: false,
         badge: 'S',
-        badgeBg: '#fffc00',
+        badgeBg: '#4333AF',
         badgeColor: '#111111',
     },
     {
@@ -149,7 +149,7 @@ const losers: MoverRow[] = [
         volume: '24.5M',
         positive: false,
         badge: 'F',
-        badgeBg: '#1d4f8f',
+        badgeBg: '#4333AF',
         badgeColor: '#ffffff',
     },
     {
@@ -160,8 +160,8 @@ const losers: MoverRow[] = [
         volume: '21.3M',
         positive: false,
         badge: 'R',
-        badgeBg: '#9a6e18',
-        badgeColor: '#fff0b9',
+        badgeBg: '#4333AF',
+        badgeColor: '#4333AF',
     },
 ];
 
@@ -285,12 +285,12 @@ function SectionIntro({ number, title, description, children }: { number: string
                 <span
                     className='mt-1 h-px w-9'
                     style={{
-                        background: `linear-gradient(90deg, ${ORANGE}, rgba(214,155,81,0.22))`,
+                        background: `linear-gradient(90deg, ${ORANGE}, rgba(67,51,175,0.22))`,
                     }}
                 />
             </div>
 
-            <h2 className='movers-serif page-section-title mt-1 text-[28px] leading-[1.05] tracking-[-0.025em] text-[#f4f2ed] sm:text-[31px]'>{title}</h2>
+            <h2 className='movers-serif page-section-title mt-1 text-[28px] leading-[1.32] tracking-[-0.025em] text-[#f4f2ed] sm:text-[31px]'>{title}</h2>
 
             <p className='mt-3 max-w-[270px] text-[13px] leading-[1.55] text-[#d0d0ce] sm:text-[14px]'>{description}</p>
 
@@ -305,7 +305,7 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
             className={`overflow-hidden rounded-[12px] border ${className}`}
             style={{
                 borderColor: BORDER,
-                background: 'linear-gradient(180deg, rgba(8,9,9,0.98) 0%, rgba(5,6,6,0.98) 100%)',
+                background: '#0C0F18',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.018), 0 18px 40px rgba(0,0,0,0.22)',
             }}
         >
@@ -331,7 +331,7 @@ function HeroArtwork() {
             <div
                 className='pointer-events-none absolute inset-[8%] blur-3xl'
                 style={{
-                    background: 'radial-gradient(ellipse, rgba(230,54,54,0.14) 0%, rgba(230,54,54,0.03) 48%, transparent 75%)',
+                    background: 'radial-gradient(ellipse, rgba(67,51,175,0.14) 0%, rgba(67,51,175,0.03) 48%, transparent 75%)',
                 }}
             />
 
@@ -345,8 +345,8 @@ function HeroArtwork() {
                 className='relative z-10 object-contain object-center'
             />
 
-            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[2%] bg-gradient-to-r from-[#050606] to-transparent' />
-            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#050606] to-transparent' />
+            <div className='pointer-events-none absolute inset-y-0 left-0 z-20 w-[2%] bg-gradient-to-r from-[#050608] to-transparent' />
+            <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[3%] bg-gradient-to-t from-[#050608] to-transparent' />
         </div>
     );
 }
@@ -382,7 +382,7 @@ function MoverTable({ title, rows, positive }: { title: string; rows: MoverRow[]
                 </span>
             </div>
 
-            <div className='mt-3 grid grid-cols-[1.55fr_.7fr_.72fr_.65fr] border-b border-white/[0.07] pb-2 text-[9px] text-[#a9aaa7]'>
+            <div className='mt-3 grid grid-cols-[1.55fr_.7fr_.72fr_.65fr] border-b border-[#414A5D] pb-2 text-[9px] text-[#a9aaa7]'>
                 <span>Symbol</span>
                 <span>Price</span>
                 <span>Change %</span>
@@ -390,10 +390,7 @@ function MoverTable({ title, rows, positive }: { title: string; rows: MoverRow[]
             </div>
 
             {rows.map((row) => (
-                <div
-                    key={row.symbol}
-                    className='grid min-h-[44px] grid-cols-[1.55fr_.7fr_.72fr_.65fr] items-center border-b border-white/[0.06] last:border-b-0'
-                >
+                <div key={row.symbol} className='grid min-h-[44px] grid-cols-[1.55fr_.7fr_.72fr_.65fr] items-center border-b border-[#414A5D] last:border-b-0'>
                     <div className='flex min-w-0 items-center gap-2'>
                         <CompanyBadge row={row} />
 
@@ -424,7 +421,7 @@ function MoversPanel() {
                 <MoverTable title='Top Losers' rows={losers} positive={false} />
             </div>
 
-            <div className='flex justify-center border-t border-white/[0.07] py-2.5'>
+            <div className='flex justify-center border-t border-[#414A5D] py-2.5'>
                 <button type='button' className='group flex items-center gap-2 text-[11px]' style={{ color: RED }}>
                     View Full Market Movers
                     <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />
@@ -530,7 +527,7 @@ function DriverCard({
                     </div>
                 </div>
 
-                <div className='mt-4 flex items-center justify-between border-b border-white/[0.07] pb-3'>
+                <div className='mt-4 flex items-center justify-between border-b border-[#414A5D] pb-3'>
                     <span className='text-[19px] text-[#ededE9]'>{price}</span>
 
                     <span className='text-[18px]' style={{ color: RED }}>
@@ -538,7 +535,7 @@ function DriverCard({
                     </span>
                 </div>
 
-                <div className='grid grid-cols-2 border-b border-white/[0.07] py-3'>
+                <div className='grid grid-cols-2 border-b border-[#414A5D] py-3'>
                     <div>
                         <p className='text-[8px] text-[#858682]'>Volume</p>
                         <p className='mt-1 text-[12px] text-[#e2e2de]'>{volume}</p>
@@ -585,7 +582,7 @@ function AlertsPanel() {
                     {alertRows.map((alert) => (
                         <div
                             key={alert.title}
-                            className='grid min-h-[56px] grid-cols-[minmax(0,1fr)_100px] items-center gap-3 border-b border-white/[0.07] last:border-b-0 sm:grid-cols-[1.5fr_1fr_.45fr_20px]'
+                            className='grid min-h-[56px] grid-cols-[minmax(0,1fr)_100px] items-center gap-3 border-b border-[#414A5D] last:border-b-0 sm:grid-cols-[1.5fr_1fr_.45fr_20px]'
                         >
                             <div className='flex min-w-0 items-center gap-3'>
                                 <AlertIcon alert={alert} />
@@ -605,12 +602,12 @@ function AlertsPanel() {
                                 <p className='mt-0.5 text-[8px] text-[#8f908c]'>{alert.time}</p>
                             </div>
 
-                            <span className='hidden h-[8px] w-[8px] rounded-full bg-[#f33939] shadow-[0_0_9px_rgba(243,57,57,0.7)] sm:block' />
+                            <span className='hidden h-[8px] w-[8px] rounded-full bg-[#4333AF] shadow-[0_0_9px_rgba(67,51,175,0.7)] sm:block' />
                         </div>
                     ))}
                 </div>
 
-                <div className='flex justify-center border-t border-white/[0.05] py-2'>
+                <div className='flex justify-center border-t border-[#414A5D] py-2'>
                     <button type='button' className='group flex items-center gap-2 text-[10px]' style={{ color: RED }}>
                         View All Alerts
                         <ArrowRight className='h-3.5 w-3.5 transition-transform group-hover:translate-x-1' />
@@ -626,22 +623,16 @@ const MarketMoversPage: NextPage = () => {
         <>
             <HeroSection />
 
-            <main
-                className='market-movers-page min-h-screen overflow-hidden text-white'
-                style={{
-                    background:
-                        'radial-gradient(circle at 77% 10%, rgba(180,27,27,0.045), transparent 27%), linear-gradient(180deg, #040505 0%, #060707 52%, #040505 100%)',
-                }}
-            >
+            <main className='market-movers-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
-                <section className='relative overflow-hidden border-b border-white/[0.10]'>
+                <section className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.42fr_0.58fr] lg:gap-2 lg:px-9'>
                         <div className='relative z-10'>
                             <p className='text-[11px] font-medium uppercase tracking-[0.055em]' style={{ color: ORANGE_LIGHT }}>
                                 Track what moves the market.
                             </p>
 
-                            <h1 className='movers-serif page-hero-title mt-3 text-[52px] leading-[0.94] tracking-[-0.045em] sm:text-[67px] lg:text-[70px]'>
+                            <h1 className='movers-serif page-hero-title mt-3 text-[52px] leading-[1.23] tracking-[-0.045em] sm:text-[67px] lg:text-[70px]'>
                                 <span style={{ color: RED }}>Market Movers.</span>
                                 <br />
                                 <span className='text-[#f4f2ed]'>Stay informed.</span>
@@ -659,7 +650,7 @@ const MarketMoversPage: NextPage = () => {
                                             <Icon className='h-6 w-6' strokeWidth={1.5} style={{ color: ORANGE_LIGHT }} />
                                         </div>
 
-                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-3 text-[13px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[140px] text-[10px] leading-[1.45] text-[#aaaba7]'>{body}</p>
                                     </div>
@@ -675,7 +666,7 @@ const MarketMoversPage: NextPage = () => {
 
                 <div className='mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-9'>
                     {/* SECTION 01 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='01' title="Today's Market Movers" description='See the stocks making the biggest moves right now.'>
                             <div className='mt-8 grid max-w-[280px] grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-3'>
                                 {sectionOneTools.map(({ icon: Icon, title }) => (
@@ -697,7 +688,7 @@ const MarketMoversPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 02 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='02' title='Understand the Move' description="Explore what's driving the biggest market moves.">
                             <ul className='mt-5 space-y-2'>
                                 <CheckItem>Price change and percentage</CheckItem>
@@ -719,8 +710,8 @@ const MarketMoversPage: NextPage = () => {
                                 average='+215%'
                                 catalyst='Strong earnings beat and raised guidance.'
                                 badge='N'
-                                badgeBg='#76b900'
-                                badgeColor='#071004'
+                                badgeBg='#4333AF'
+                                badgeColor='#0C0F18'
                                 chart={[20, 23, 22, 26, 27, 31, 33, 35, 38, 41, 48]}
                             />
 
@@ -735,8 +726,8 @@ const MarketMoversPage: NextPage = () => {
                                 average='+138%'
                                 catalyst='Missed revenue estimates and lowered outlook.'
                                 badge='S'
-                                badgeBg='#1ed760'
-                                badgeColor='#061109'
+                                badgeBg='#4333AF'
+                                badgeColor='#0C0F18'
                                 chart={[45, 43, 40, 41, 37, 35, 32, 30, 28, 25, 23]}
                             />
 
@@ -751,7 +742,7 @@ const MarketMoversPage: NextPage = () => {
                                 average='+189%'
                                 catalyst='High options activity and market momentum.'
                                 badge='T'
-                                badgeBg='#d64040'
+                                badgeBg='#4333AF'
                                 badgeColor='#ffffff'
                                 chart={[20, 27, 23, 31, 28, 35, 26, 37, 30, 34, 29]}
                                 bars
@@ -760,7 +751,7 @@ const MarketMoversPage: NextPage = () => {
                     </section>
 
                     {/* SECTION 03 */}
-                    <section className='grid gap-7 border-b border-white/[0.10] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
+                    <section className='grid gap-7 border-b border-[#414A5D] py-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:gap-16'>
                         <SectionIntro number='03' title='Custom Alerts' description='Set custom alerts for moves that matter most to you.'>
                             <div className='mt-8 grid max-w-[280px] grid-cols-2 gap-5 sm:grid-cols-4 sm:gap-3'>
                                 {alertTools.map(({ icon: Icon, title }) => (
@@ -790,7 +781,7 @@ const MarketMoversPage: NextPage = () => {
 
                                         <p className='mt-2 text-[9px] text-[#bdbeba]'>{number}</p>
 
-                                        <h3 className='mt-1 text-[10px] font-medium text-[#eeeeea]'>{title}</h3>
+                                        <h3 className='mt-1 text-[10px] font-medium text-[#eeeeea] leading-[1.42]'>{title}</h3>
 
                                         <p className='mt-1.5 max-w-[130px] text-[8px] leading-[1.4] text-[#a0a19d]'>{body}</p>
                                     </div>
@@ -802,7 +793,7 @@ const MarketMoversPage: NextPage = () => {
                             className='mt-5 flex flex-col gap-5 rounded-[11px] border px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6'
                             style={{
                                 borderColor: BORDER,
-                                background: 'linear-gradient(180deg, rgba(9,9,9,0.98), rgba(5,6,6,0.98))',
+                                background: '#0C0F18',
                             }}
                         >
                             <div className='flex items-center gap-4'>
@@ -819,7 +810,7 @@ const MarketMoversPage: NextPage = () => {
 
                             <ComingSoonTrigger
                                 ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#e54848] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(229,72,72,0.22)] transition-all duration-200 hover:bg-[#ff5151]'
+                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.22)] transition-all duration-200 hover:bg-[#4333AF]'
                             >
                                 Get Started
                                 <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -874,7 +865,7 @@ const MarketMoversPage: NextPage = () => {
 
                     .market-movers-page .page-hero-title {
                         font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                        line-height: 1.13 !important;
+                        line-height: 1.26 !important;
                         letter-spacing: -0.02em !important;
                     }
 
@@ -886,7 +877,7 @@ const MarketMoversPage: NextPage = () => {
 
                     .market-movers-page .page-section-title {
                         font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                        line-height: 1.3 !important;
+                        line-height: 1.36 !important;
                         letter-spacing: -0.01em !important;
                     }
 
@@ -908,7 +899,7 @@ const MarketMoversPage: NextPage = () => {
                     .market-movers-page .page-hero-features h3 {
                         margin-top: 0.55rem !important;
                         font-size: 0.64rem !important;
-                        line-height: 1.35 !important;
+                        line-height: 1.43 !important;
                     }
 
                     .market-movers-page .page-hero-features p {

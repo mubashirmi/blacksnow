@@ -84,15 +84,16 @@ const roleDashboardMap: Record<
 
 const ROLE_PRIORITY: (keyof typeof roleDashboardMap)[] = ['Sales', 'DigitalBillboard', 'EmailMarketing', 'InvoiceTool', 'LightningSilver', 'LightningGold'];
 
-// One shared size for the logo, heading box, and footer actions.
+// Keep the sidebar logo and heading at the same size. Footer actions are taller for easier tapping.
 const MATCHED_ELEMENT_HEIGHT = 32;
+const SIDEBAR_ACTION_HEIGHT = 48;
 
 // Use a real light-weight system font for footer actions. This also avoids
 // an app-wide font that may only have its bold weight loaded.
 const footerButtonStyle = {
-    height: MATCHED_ELEMENT_HEIGHT,
-    minHeight: MATCHED_ELEMENT_HEIGHT,
-    maxHeight: MATCHED_ELEMENT_HEIGHT,
+    height: SIDEBAR_ACTION_HEIGHT,
+    minHeight: SIDEBAR_ACTION_HEIGHT,
+    maxHeight: SIDEBAR_ACTION_HEIGHT,
     fontSize: '18px',
     fontWeight: 700,
     lineHeight: '22px',
@@ -350,10 +351,10 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                         </div>
                     </div>
 
-                    {/* Footer stays exactly 96px high when it is shown. */}
+                    {/* Footer is at least 96px high and expands if two dashboard buttons are shown. */}
                     {shouldShowFooter && (
                         <div
-                            className={`flex h-24 shrink-0 items-center justify-center border-t border-[#414A5D] bg-[#0C0F18] px-6 transform transition-all duration-700 delay-500 ${
+                            className={`flex min-h-24 shrink-0 items-center justify-center border-t border-[#414A5D] bg-[#0C0F18] px-6 py-4 transform transition-all duration-700 delay-500 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                             }`}
                         >
@@ -361,7 +362,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {hasProductDashboard && (
                                     <Button
                                         onClick={handleDashboardClick}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#4333AF] hover:bg-[#382B96] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#6D83B2] hover:bg-[#5A709E] px-4 py-2 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         Dashboard
@@ -372,7 +373,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                     <Button
                                         variant='outline'
                                         onClick={() => goToDashboard(roleDashboardMap.Admin.path)}
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#4333AF] bg-transparent px-4 py-0 !text-[18px] !font-light !text-[#4333AF] transition-all duration-300 hover:bg-[#4333AF]/10 hover:text-[#4333AF]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg border-[#6D83B2] bg-[#6D83B2] px-4 py-2 !text-[18px] !font-light !text-white transition-all duration-300 hover:bg-[#5A709E] hover:!text-white'
                                         style={footerButtonStyle}
                                     >
                                         {roleDashboardMap.Admin.label}
@@ -382,7 +383,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                                 {!isLoggedIn && (
                                     <Button
                                         asChild
-                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#4333AF] hover:bg-[#382B96] px-4 py-0 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
+                                        className='w-full max-w-[272px] cursor-pointer rounded-lg bg-[#6D83B2] hover:bg-[#5A709E] px-4 py-2 !text-[18px] !font-light text-white transition-all duration-300 hover:scale-[1.02]'
                                         style={footerButtonStyle}
                                     >
                                         <Link href='/login' onClick={() => setIsOpen(false)}>

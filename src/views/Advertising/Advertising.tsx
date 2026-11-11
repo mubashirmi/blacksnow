@@ -393,7 +393,7 @@ function Advertising() {
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#414A5D] p-5 sm:p-6 transition-all duration-300 hover:border-[#8350E0] hover:translate-y-[-2px] bg-black '
+                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#414A5D] p-5 sm:p-6 transition-all duration-300 hover:border-[#414A5D] hover:translate-y-[-2px] bg-black '
                             >
                                 {/* glow */}
                                 <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
@@ -464,7 +464,7 @@ function Advertising() {
                         ].map((feature, index) => (
                             <Card
                                 key={index}
-                                className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 bg-[#0C0F18]'
+                                className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 bg-[#0C0F18]'
                             >
                                 <CardContent className='p-8'>
                                     <div className='w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-[#8350E0]'>

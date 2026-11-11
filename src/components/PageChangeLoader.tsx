@@ -169,7 +169,7 @@ export default function PageChangeLoader({ logoSrc = '/logocolored.png', duratio
                     {/* Actual progress */}
                     <div
                         key={animationKey}
-                        className='absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#011430] via-[#012b69] to-[#02328b] shadow-[0_0_22px_rgba(76,199,232,0.75)] will-change-transform'
+                        className='absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#6D83B2] to-[#2B358D] shadow-[0_0_22px_rgba(76,199,232,0.75)] will-change-transform'
                         style={{
                             animation: `loadBar ${duration}ms linear forwards`,
                         }}

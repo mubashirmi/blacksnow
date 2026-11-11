@@ -120,7 +120,7 @@ function BlogDirectory() {
                             {blogs.map((blog: any, index) => (
                                 <div key={blog.id} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
                                     <Card className='bg-[#0C0F18] border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-2xl transform hover:scale-[1.03] hover:-translate-y-1'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
+                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#414A5D]'></div>
 
                                         {/* Blog Image */}
                                         <div className='relative h-48 overflow-hidden'>

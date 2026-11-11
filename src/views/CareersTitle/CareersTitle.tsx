@@ -601,7 +601,7 @@ function CareersTitle() {
 
                                 <div className='space-y-4'>
                                     {[
-                                        { icon: CheckCircle, text: 'Remote-First Opportunities', color: 'text-green-400' },
+                                        { icon: CheckCircle, text: 'Remote-First Opportunities', color: 'text-[#4333AF]' },
                                         { icon: Star, text: 'Competitive Compensation', color: 'text-[#4333AF]' },
                                         { icon: Award, text: 'Career Growth Programs', color: 'text-[#4333AF]' },
                                         { icon: Users, text: 'Global Team Collaboration', color: 'text-[#4333AF]' },
@@ -636,7 +636,7 @@ function CareersTitle() {
                             <div>
                                 {/* ✅ wrapper makes width = heading text width */}
                                 <div className='inline-block'>
-                                    <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 sm:mb-5 leading-[1.22] sm:leading-tight'>
+                                    <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                         <span className=' text-[#4333AF] '>Recruitment Agency</span>
                                         <br className='sm:block hidden' />
                                         &nbsp;Inquiry
@@ -698,7 +698,7 @@ function CareersTitle() {
 
                                 <div className='space-y-3 sm:space-y-4'>
                                     {[
-                                        { icon: UserCheck, text: 'Quality Candidate Matching', color: 'text-green-400' },
+                                        { icon: UserCheck, text: 'Quality Candidate Matching', color: 'text-[#4333AF]' },
                                         { icon: Zap, text: 'Rapid Market Entry', color: 'text-[#4333AF]' },
                                         { icon: Globe, text: 'International Hiring', color: 'text-[#4333AF]' },
                                         { icon: Award, text: 'Full Compliance Support', color: 'text-[#4333AF]' },
@@ -761,7 +761,7 @@ function CareersTitle() {
                         <div className='grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
                             <div>
                                 <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
-                                <h2 className='mb-6 max-w-2xl text-xl sm:text-4xl lg:text-5xl font-black leading-[1.22] text-white'>
+                                <h2 className='mb-6 max-w-2xl text-xl sm:text-2xl md:text-3xl lg:text-[2rem] xl:text-[2.25rem] font-black leading-[1.45] text-white'>
                                     {activeTalentService.headline}
                                 </h2>
 
@@ -1082,7 +1082,7 @@ function CareersTitle() {
                 <div className='container mx-auto max-w-8xl relative z-10'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         <div className='space-y-8'>
-                            <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
+                            <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
                                 Join the <span className=' text-[#4333AF] '>Black Snow</span>
                                 <br className='hidden sm:block' />
                                 &nbsp;Revolution

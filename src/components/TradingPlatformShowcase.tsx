@@ -117,7 +117,7 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Paper Trading',
         subtitle: 'Practice the market. Build confidence before capital.',
         href: '/paper-trading',
-        accent: '#72B83F',
+        accent: '#4333AF',
         tag: 'Paper floor',
         details: [
             { title: 'Workflow', text: 'Build complete paper tickets with size, side, entries, exits, and risk controls.' },
@@ -138,7 +138,7 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Stock Screener',
         subtitle: 'Filter the noise. Surface the setups that matter.',
         href: '/stock-screener',
-        accent: '#E4AE25',
+        accent: '#4333AF',
         tag: 'Screen builder',
         details: [
             { title: 'Screen', text: 'Filter thousands of stocks using fundamental, technical, valuation, and ownership criteria.' },
@@ -159,7 +159,7 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Watchlist',
         subtitle: 'Keep the right names close and the right alerts closer.',
         href: '/watchlist',
-        accent: '#F25A20',
+        accent: '#4333AF',
         tag: 'Live watch',
         details: [
             { title: 'Track', text: 'Monitor favorite assets with live prices, compact charts, volume, and daily change.' },
@@ -180,7 +180,7 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Market Movers',
         subtitle: 'See what is moving now—and understand why.',
         href: '/market-movers',
-        accent: '#E54848',
+        accent: '#4333AF',
         tag: 'Live movers',
         details: [
             { title: 'Scan', text: 'Surface the strongest gainers, losers, unusual volume, and most active names in real time.' },
@@ -265,7 +265,7 @@ const executionSlides: ExecutionSlide[] = [
         title: 'Calendars',
         subtitle: 'Know the date. Know the event. Know the impact.',
         href: '/market-moving-calenders',
-        accent: '#E44786',
+        accent: '#4333AF',
         tag: 'Event calendar',
         compactTitle: true,
         details: [
@@ -412,7 +412,7 @@ function SimplePricingStrip() {
                         className='h-[72px] w-[72px] object-contain sm:h-[84px] sm:w-[84px]'
                     />
 
-                    <p className='mt-3 text-[10px] font-bold uppercase leading-5 tracking-[.08em] text-[#4333AF] sm:text-[11px]'>
+                    <p className='mt-3 text-[10px] font-bold uppercase leading-5 tracking-[.08em] text-white sm:text-[11px]'>
                         Built for traders.
                         <br />
                         Backed by technology.
@@ -427,7 +427,7 @@ function SimplePricingStrip() {
 
 function PreviewShell({ slide, children }: { slide: ExecutionSlide; children: ReactNode }) {
     return (
-        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-black/10 p-4 sm:min-h-[320px] sm:p-5'>
+        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-black p-4 sm:min-h-[320px] sm:p-5'>
             <div
                 className='pointer-events-none absolute inset-0 opacity-70'
                 style={{
@@ -452,7 +452,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </div>
                     <div className='text-right'>
                         <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Day P&amp;L</p>
-                        <p className='mt-1 text-sm font-semibold text-[#72B83F]'>+$1,250.00</p>
+                        <p className='mt-1 text-sm font-semibold text-[#4333AF]'>+$1,250.00</p>
                     </div>
                 </div>
 
@@ -559,7 +559,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                             <span className='font-semibold text-white'>{symbol}</span>
                             <span className='truncate text-white/42'>{name}</span>
                             <span className='text-right text-white/72'>{price}</span>
-                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#ef6666]' : 'text-[#4333AF]'}`}>{change}</span>
+                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#4333AF]' : 'text-[#4333AF]'}`}>{change}</span>
                         </div>
                     ))}
                 </div>
@@ -590,7 +590,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </div>
 
                     <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-[#ef6666]'>Top Losers</p>
+                        <p className='text-[9px] uppercase tracking-[0.16em] text-[#4333AF]'>Top Losers</p>
                         <div className='mt-3 space-y-2'>
                             {[
                                 ['SPOT', '-4.21%'],
@@ -599,7 +599,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                             ].map(([symbol, change]) => (
                                 <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-black px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
-                                    <span className='text-[10px] font-semibold text-[#ef6666]'>{change}</span>
+                                    <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
                                 </div>
                             ))}
                         </div>
@@ -733,7 +733,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         <div key={topic} className='grid grid-cols-[1fr_1.25fr_.65fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
                             <span className='font-medium text-white/82'>{topic}</span>
                             <span className='truncate text-white/42'>{insight}</span>
-                            <span className='text-right font-semibold' style={{ color: outlook === 'Positive' ? '#72B83F' : accent }}>
+                            <span className='text-right font-semibold' style={{ color: outlook === 'Positive' ? '#4333AF' : accent }}>
                                 {outlook}
                             </span>
                         </div>
@@ -877,18 +877,11 @@ const PAPER_DESK_HOLDINGS = [
 ];
 
 const PAPER_DESK_SECTORS = [
-    { label: 'Technology', percent: 42, color: '#4333AF' },
-    { label: 'Financials', percent: 18, color: '#4333AF' },
-    { label: 'Healthcare', percent: 14, color: '#4333AF' },
-    { label: 'Consumer Cyclical', percent: 10, color: '#4333AF' },
-    { label: 'Other', percent: 16, color: '#9998ba' },
+    { label: 'Technology', percent: 42, color: '#414A5D' },
+    { label: 'Financials', percent: 18, color: '#414A5D' },
+    { label: 'Healthcare', percent: 14, color: '#414A5D' },
+    { label: 'Other', percent: 26, color: '#414A5D' },
 ];
-
-// Combine the last two categories on wide screens so all four bars still total 100%.
-const PAPER_DESK_DESKTOP_OTHER_PERCENT = PAPER_DESK_SECTORS.filter(({ label }) => label === 'Consumer Cyclical' || label === 'Other').reduce(
-    (sum, { percent }) => sum + percent,
-    0
-);
 
 function paperDeskMoney(amount: number) {
     return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -933,8 +926,8 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
         >
             <defs>
                 <linearGradient id='paper-desk-performance-fill' x1='0' y1='0' x2='0' y2='1'>
-                    <stop offset='0%' stopColor='#4333AF' stopOpacity='.55' />
-                    <stop offset='100%' stopColor='#4333AF' stopOpacity='.015' />
+                    <stop offset='0%' stopColor='#414A5D' stopOpacity='.55' />
+                    <stop offset='100%' stopColor='#414A5D' stopOpacity='.015' />
                 </linearGradient>
                 <filter id='paper-desk-point-glow' x='-300%' y='-300%' width='700%' height='700%'>
                     <feGaussianBlur stdDeviation='3' />
@@ -946,7 +939,7 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
                     const value = ceiling - ((ceiling - floor) * index) / (tickCount - 1);
                     return (
                         <g key={`horizontal-${tickCount}-${index}`} className={tickCount === 4 ? 'hidden xl:block' : 'xl:hidden'}>
-                            <line x1={left} y1={y} x2={right} y2={y} stroke='#4333AF' strokeOpacity='.46' strokeWidth='.8' />
+                            <line x1={left} y1={y} x2={right} y2={y} stroke='#414A5D' strokeOpacity='.46' strokeWidth='.8' />
                             <text x={left - 12} y={y + 4} textAnchor='end' fontSize='11' fill='#8493a8'>
                                 {`${Math.round(value / 1000)}K`}
                             </text>
@@ -958,7 +951,7 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
                 const x = left + (index / Math.max(labelCount - 1, 1)) * (right - left);
                 return (
                     <g key={`${label}-${index}`}>
-                        <line x1={x} y1={top} x2={x} y2={bottom} stroke='#4333AF' strokeOpacity='.25' strokeWidth='.8' />
+                        <line x1={x} y1={top} x2={x} y2={bottom} stroke='#414A5D' strokeOpacity='.25' strokeWidth='.8' />
                         <text x={x} y='138' textAnchor='middle' fontSize={labelCount > 8 ? 10 : 11} fill='#8595aa'>
                             {label}
                         </text>
@@ -969,14 +962,14 @@ function PaperDeskPerformanceChart({ period, data }: { period: PaperDeskPeriod; 
             <path
                 d={strokePath}
                 fill='none'
-                stroke='#4333AF'
+                stroke='#414A5D'
                 strokeWidth='2.5'
                 strokeLinejoin='round'
                 strokeLinecap='round'
                 vectorEffect='non-scaling-stroke'
             />
-            <circle cx={last.x} cy={last.y} r='8' fill='#4333AF' opacity='.7' filter='url(#paper-desk-point-glow)' />
-            <circle cx={last.x} cy={last.y} r='3.5' fill='#65efff' stroke='#79dfff' strokeWidth='1.2' />
+            <circle cx={last.x} cy={last.y} r='8' fill='#414A5D' opacity='.7' filter='url(#paper-desk-point-glow)' />
+            <circle cx={last.x} cy={last.y} r='3.5' fill='#414A5D' stroke='#414A5D' strokeWidth='1.2' />
         </svg>
     );
 }
@@ -1014,11 +1007,10 @@ function PaperDeskDashboard() {
     const [period, setPeriod] = useState<PaperDeskPeriod>('1D');
     const selected = PAPER_DESK_DATA[period];
     const winRate = Math.round((selected.profitableTrades / selected.totalTrades) * 100);
-    const panelClass =
-        'min-w-0 rounded-[13px] border border-[#4333AF]/85 bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:h-[90px] xl:overflow-hidden xl:rounded-[8px] xl:p-[7px]';
+    const panelClass = 'min-w-0 h-full rounded-[13px] border border-[#414A5D] bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:rounded-[8px] xl:p-[7px]';
 
     return (
-        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:h-[420px] xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
+        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:min-h-[430px] xl:h-auto xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
             <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_30%,rgba(12,50,90,.16),transparent_58%)]' />
             <div className='relative space-y-2.5 sm:space-y-3 lg:space-y-2 xl:space-y-[6px]'>
                 <div className='flex flex-wrap items-center justify-between gap-x-3 gap-y-3 px-2 py-2 sm:px-3 sm:py-2.5 xl:h-[36px] xl:flex-nowrap xl:gap-y-0 xl:px-2 xl:py-0'>
@@ -1059,7 +1051,7 @@ function PaperDeskDashboard() {
                     </div>
                 </div>
 
-                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-black px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
+                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
                     <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
                         <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
                         <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
@@ -1092,7 +1084,7 @@ function PaperDeskDashboard() {
                     <PaperDeskPerformanceChart period={period} data={selected} />
                 </div>
 
-                <div className='grid gap-2.5 min-[520px]:grid-cols-2 sm:gap-3 lg:gap-2 xl:gap-[6px]'>
+                <div className='grid auto-rows-fr items-stretch gap-2.5 min-[520px]:grid-cols-2 sm:gap-3 lg:gap-2 xl:gap-[6px]'>
                     <div className={panelClass}>
                         <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
                             <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
@@ -1130,12 +1122,10 @@ function PaperDeskDashboard() {
                             <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
                         <div className='space-y-2 xl:space-y-[4px]'>
-                            {PAPER_DESK_HOLDINGS.map(({ symbol, amount, change }, index) => (
+                            {PAPER_DESK_HOLDINGS.slice(0, 4).map(({ symbol, amount, change }) => (
                                 <div
                                     key={symbol}
-                                    className={`grid grid-cols-[19px_minmax(0,1fr)_auto_auto] items-center gap-x-2.5 text-[10px] sm:text-[11px] xl:grid-cols-[13px_minmax(0,1fr)_auto_auto] xl:gap-x-1.5 xl:text-[9px] xl:leading-[12px] ${
-                                        index === 4 ? 'xl:hidden' : ''
-                                    }`}
+                                    className='grid grid-cols-[19px_minmax(0,1fr)_auto_auto] items-center gap-x-2.5 text-[10px] sm:text-[11px] xl:grid-cols-[13px_minmax(0,1fr)_auto_auto] xl:gap-x-1.5 xl:text-[9px] xl:leading-[12px]'
                                 >
                                     <PaperDeskHoldingLogo symbol={symbol} />
                                     <span className='font-medium text-[#e0e7f3]'>{symbol}</span>
@@ -1153,43 +1143,19 @@ function PaperDeskDashboard() {
                             </h3>
                             <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
                         </div>
-                        <div className='space-y-2.5 xl:space-y-[4px]'>
-                            {PAPER_DESK_SECTORS.map(({ label, percent, color }) => {
-                                const isDesktopOther = label === 'Other';
-                                const desktopPercent = isDesktopOther ? PAPER_DESK_DESKTOP_OTHER_PERCENT : percent;
-                                return (
-                                    <div
-                                        key={label}
-                                        className={`grid grid-cols-[minmax(0,1fr)_minmax(46px,1.1fr)_32px] items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px] ${
-                                            label === 'Consumer Cyclical' ? 'xl:hidden' : ''
-                                        }`}
-                                    >
-                                        <span className='truncate text-[#aab4c7]'>{label}</span>
-                                        <span className='h-3 overflow-hidden rounded-full bg-[#162b3c] xl:h-[6px]'>
-                                            <span
-                                                className={`h-full rounded-full ${isDesktopOther ? 'block xl:hidden' : 'block'}`}
-                                                style={{ width: `${percent}%`, backgroundColor: color }}
-                                            />
-                                            {isDesktopOther && (
-                                                <span
-                                                    className='hidden h-full rounded-full xl:block'
-                                                    style={{ width: `${desktopPercent}%`, backgroundColor: color }}
-                                                />
-                                            )}
-                                        </span>
-                                        <span className='text-right tabular-nums text-[#e9edf6]'>
-                                            {isDesktopOther ? (
-                                                <>
-                                                    <span className='xl:hidden'>{percent}%</span>
-                                                    <span className='hidden xl:inline'>{desktopPercent}%</span>
-                                                </>
-                                            ) : (
-                                                `${percent}%`
-                                            )}
-                                        </span>
-                                    </div>
-                                );
-                            })}
+                        <div className='space-y-2 xl:space-y-[4px]'>
+                            {PAPER_DESK_SECTORS.map(({ label, percent, color }) => (
+                                <div
+                                    key={label}
+                                    className='grid grid-cols-[minmax(0,1fr)_minmax(46px,1.1fr)_32px] items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'
+                                >
+                                    <span className='truncate text-[#aab4c7]'>{label}</span>
+                                    <span className='h-3 overflow-hidden rounded-full bg-[#162b3c] xl:h-[6px]'>
+                                        <span className='block h-full rounded-full' style={{ width: `${percent}%`, backgroundColor: color }} />
+                                    </span>
+                                    <span className='text-right tabular-nums text-[#e9edf6]'>{percent}%</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -1210,14 +1176,8 @@ function PaperDeskDashboard() {
                                 ['Total Trades', `${selected.totalTrades}`, 'normal'],
                                 ['Profitable Trades', `${selected.profitableTrades}`, 'normal'],
                                 ['Avg. Gain', selected.avgGain, 'positive'],
-                                ['Avg. Loss', selected.avgLoss, 'negative'],
                             ].map(([label, value, sentiment]) => (
-                                <div
-                                    key={label}
-                                    className={`flex items-center justify-between gap-3 py-[5px] first:pt-0 last:pb-0 xl:py-[3px] ${
-                                        label === 'Profitable Trades' ? 'xl:hidden' : ''
-                                    }`}
-                                >
+                                <div key={label} className='flex items-center justify-between gap-3 py-[5px] first:pt-0 last:pb-0 xl:py-[3px]'>
                                     <span className='text-[#aab4c7]'>{label}</span>
                                     <span
                                         className={`font-medium tabular-nums ${
@@ -1410,7 +1370,7 @@ export default function TradingPlatformShowcase() {
                         <p className='mt-2 text-sm text-white/45'>Explore the eight Black Snow tools through one unified market workflow.</p>
                     </div>
 
-                    <div className='relative mt-7 overflow-hidden rounded-[18px] border border-[#414A5D] bg-[#090b0f] shadow-[0_26px_80px_rgba(0,0,0,.42)] sm:mt-8'>
+                    <div className='relative mt-7 overflow-hidden rounded-[18px] border border-[#414A5D] bg-[#0C0F18] shadow-[0_26px_80px_rgba(0,0,0,.42)] sm:mt-8'>
                         <div
                             className='pointer-events-none absolute inset-0 opacity-70'
                             style={{
@@ -1528,7 +1488,7 @@ export default function TradingPlatformShowcase() {
 
                                     <ComingSoonTrigger
                                         ariaLabel={`Get started with ${activeExecutionSlide.title}`}
-                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-transparent px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-[#8D81ED] transition hover:bg-[#4333AF]/10 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-transparent px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-[#4333AF] transition hover:bg-[#4333AF]/10 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
                                         style={{
                                             background: 'transparent',
                                             boxShadow: '0 0 18px rgba(67,51,175,0.12)',

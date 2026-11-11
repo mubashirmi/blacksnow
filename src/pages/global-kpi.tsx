@@ -5,19 +5,19 @@ import type { NextPage } from 'next';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
-const BLUE = '#1768ff';
-const BLUE_BRIGHT = '#2d7cff';
-const GOLD = '#e6a91e';
-const GOLD_LIGHT = '#f2ba2e';
-// const GREEN = '#26a65b';
-const PAGE_BG = '#040506';
+const BLUE = '#4333AF';
+const BLUE_BRIGHT = '#4333AF';
+const GOLD = '#4333AF';
+const GOLD_LIGHT = '#4333AF';
+// const GREEN = '#4333AF';
+const PAGE_BG = '#0C0F18';
 
 function SectionNumber({ number }: { number: string }) {
     return (
         <div>
-            <div className='h-[3px] w-11 rounded-full bg-[#1768ff]' />
+            <div className='h-[3px] w-11 rounded-full bg-[#4333AF]' />
 
-            <p className='page-section-number mt-2 text-[49px] font-light leading-none tracking-[-0.045em] text-[#1768ff] sm:text-[55px]'>{number}</p>
+            <p className='page-section-number mt-2 text-[49px] font-light leading-none tracking-[-0.045em] text-[#4333AF] sm:text-[55px]'>{number}</p>
         </div>
     );
 }
@@ -25,7 +25,7 @@ function SectionNumber({ number }: { number: string }) {
 function MetricIncrease({ value, text }: { value: string; text: string }) {
     return (
         <div className='flex items-center gap-2'>
-            <ArrowUp className='h-5 w-5 fill-[#26a65b] text-[#26a65b]' strokeWidth={1} />
+            <ArrowUp className='h-5 w-5 fill-[#4333AF] text-[#4333AF]' strokeWidth={1} />
 
             <div>
                 <p className='text-[17px] leading-none text-[#eeeeeb]'>{value}</p>
@@ -105,19 +105,19 @@ function SatisfactionChart() {
                 <div
                     className='absolute inset-0 rounded-full'
                     style={{
-                        background: 'conic-gradient(#e6a91e 0deg 331deg, #1768ff 331deg 353deg, #aeb1b7 353deg 360deg)',
+                        background: 'conic-gradient(#4333AF 0deg 331deg, rgba(67,51,175,0.48) 331deg 353deg, #414A5D 353deg 360deg)',
                     }}
                 />
 
-                <div className='absolute inset-[29px] flex items-center justify-center rounded-full bg-[#050607]'>
+                <div className='absolute inset-[29px] flex items-center justify-center rounded-full bg-[#000000]'>
                     <div className='text-center'>
                         <div className='mx-auto h-11 w-11 rounded-t-full border-2 border-white border-b-0' />
                         <div className='mx-auto -mt-1 h-7 w-20 rounded-t-full border-2 border-white border-b-0' />
 
                         <div className='mt-1 flex justify-center'>
-                            <Star className='h-7 w-7 text-[#1768ff]' />
-                            <Star className='-ml-2 h-7 w-7 text-[#1768ff]' />
-                            <Star className='-ml-2 h-7 w-7 text-[#1768ff]' />
+                            <Star className='h-7 w-7 text-[#4333AF]' />
+                            <Star className='-ml-2 h-7 w-7 text-[#4333AF]' />
+                            <Star className='-ml-2 h-7 w-7 text-[#4333AF]' />
                         </div>
                     </div>
                 </div>
@@ -126,8 +126,8 @@ function SatisfactionChart() {
             <div className='space-y-5'>
                 {[
                     { value: '92%', label: 'Satisfied', color: GOLD },
-                    { value: '6%', label: 'Neutral', color: BLUE },
-                    { value: '2%', label: 'Dissatisfied', color: '#aeb1b7' },
+                    { value: '6%', label: 'Neutral', color: 'rgba(67,51,175,0.48)' },
+                    { value: '2%', label: 'Dissatisfied', color: '#414A5D' },
                 ].map((item) => (
                     <div key={item.label} className='flex items-start gap-4'>
                         <span className='mt-1.5 h-4 w-4 shrink-0 rounded-full' style={{ background: item.color }} />
@@ -146,21 +146,21 @@ function SatisfactionChart() {
 function EfficiencyRow({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
     return (
         <div className='grid grid-cols-[42px_92px_minmax(0,1fr)_48px] items-center gap-3'>
-            <div className='flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#1768ff]'>{icon}</div>
+            <div className='flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#4333AF]'>{icon}</div>
 
             <p className='text-[15px] text-[#e5e5e2]'>{label}</p>
 
-            <div className='relative h-[18px] rounded-[4px] bg-[#101218]'>
+            <div className='relative h-[18px] rounded-[4px] bg-[#000000]'>
                 <div
                     className='absolute inset-y-0 left-0 rounded-[4px]'
                     style={{
                         width: `${value}%`,
-                        background: 'linear-gradient(90deg,#d99210,#f1b522)',
-                        boxShadow: '5px 0 12px rgba(23,104,255,0.55)',
+                        background: '#4333AF',
+                        boxShadow: '5px 0 12px rgba(67,51,175,0.55)',
                     }}
                 />
 
-                <div className='absolute -right-2 top-1/2 h-[25px] w-[18px] -translate-y-1/2 bg-[#1768ff]/15 blur-[5px]' />
+                <div className='absolute -right-2 top-1/2 h-[25px] w-[18px] -translate-y-1/2 bg-[#4333AF]/15 blur-[5px]' />
             </div>
 
             <p className='text-right text-[16px] text-[#eeeeea]'>{value}%</p>
@@ -170,26 +170,20 @@ function EfficiencyRow({ icon, label, value }: { icon: ReactNode; label: string;
 
 function GlobalKpiPageContent() {
     return (
-        <main
-            className='global-kpi-page min-h-screen overflow-hidden text-white'
-            style={{
-                background:
-                    'radial-gradient(circle at 70% 8%,rgba(23,104,255,0.035),transparent 25%),linear-gradient(180deg,#040506 0%,#050607 55%,#030405 100%)',
-            }}
-        >
+        <main className='global-kpi-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
             {/* HERO */}
-            <section className='border-b border-white/[0.12]'>
+            <section className='border-b border-[#414A5D]'>
                 <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-8 sm:px-8 sm:pb-9 sm:pt-10 lg:grid-cols-[0.39fr_0.61fr] lg:gap-3 lg:px-9'>
                     <div>
                         <p className='text-[11px] font-medium uppercase tracking-[0.06em] sm:text-[12px]' style={{ color: GOLD_LIGHT }}>
                             Performance Overview
                         </p>
 
-                        <h1 className='page-hero-title mt-3 text-[56px] font-semibold leading-[0.95] tracking-[-0.045em] text-[#f4f3ef] sm:text-[68px] lg:text-[71px]'>
+                        <h1 className='page-hero-title mt-3 text-[56px] font-semibold leading-[1.23] tracking-[-0.045em] text-[#f4f3ef] sm:text-[68px] lg:text-[71px]'>
                             GLOBAL <span style={{ color: BLUE }}>KPI</span>
                         </h1>
 
-                        <div className='mt-5 h-[3px] w-[70px] bg-[#e6a91e]' />
+                        <div className='mt-5 h-[3px] w-[70px] bg-[#4333AF]' />
 
                         <p className='mt-6 max-w-[380px] text-[17px] leading-[1.55] text-[#dcdcd8] sm:text-[19px]'>
                             Key performance metrics driving
@@ -197,7 +191,7 @@ function GlobalKpiPageContent() {
                         </p>
 
                         <div className='mt-8 flex items-center gap-5'>
-                            <div className='flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-full border border-[#1768ff]'>
+                            <div className='flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-full border border-[#4333AF]'>
                                 <BarChart3 className='h-7 w-7 text-white' strokeWidth={1.5} />
                             </div>
 
@@ -214,7 +208,7 @@ function GlobalKpiPageContent() {
                         <div
                             className='pointer-events-none absolute inset-[8%] blur-3xl'
                             style={{
-                                background: 'radial-gradient(ellipse,rgba(23,104,255,0.10),transparent 70%)',
+                                background: 'radial-gradient(ellipse,rgba(67,51,175,0.10),transparent 70%)',
                             }}
                         />
 
@@ -232,12 +226,12 @@ function GlobalKpiPageContent() {
             </section>
 
             {/* REVENUE */}
-            <section className='border-b border-white/[0.12]'>
+            <section className='border-b border-[#414A5D]'>
                 <div className='mx-auto grid w-full max-w-[1180px] gap-8 px-5 py-7 sm:px-8 lg:grid-cols-[0.36fr_0.64fr] lg:gap-12 lg:px-9'>
                     <div>
                         <SectionNumber number='01' />
 
-                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[28px]'>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[28px] leading-[1.32]'>
                             Revenue Growth
                         </h2>
 
@@ -261,12 +255,12 @@ function GlobalKpiPageContent() {
             </section>
 
             {/* SATISFACTION */}
-            <section className='border-b border-white/[0.12]'>
+            <section className='border-b border-[#414A5D]'>
                 <div className='mx-auto grid w-full max-w-[1180px] gap-8 px-5 py-7 sm:px-8 lg:grid-cols-[0.36fr_0.64fr] lg:gap-12 lg:px-9'>
                     <div>
                         <SectionNumber number='02' />
 
-                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.015em] text-[#f0f0ec] sm:text-[27px]'>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.015em] text-[#f0f0ec] sm:text-[27px] leading-[1.32]'>
                             Customer Satisfaction
                         </h2>
 
@@ -290,12 +284,12 @@ function GlobalKpiPageContent() {
             </section>
 
             {/* EFFICIENCY */}
-            <section className='border-b border-white/[0.12]'>
+            <section className='border-b border-[#414A5D]'>
                 <div className='mx-auto grid w-full max-w-[1180px] gap-8 px-5 py-7 sm:px-8 lg:grid-cols-[0.36fr_0.64fr] lg:gap-12 lg:px-9'>
                     <div>
                         <SectionNumber number='03' />
 
-                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.018em] text-[#f0f0ec] sm:text-[27px]'>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.018em] text-[#f0f0ec] sm:text-[27px] leading-[1.32]'>
                             Operational Efficiency
                         </h2>
 
@@ -323,7 +317,7 @@ function GlobalKpiPageContent() {
 
                         <EfficiencyRow icon={<Truck className='h-5 w-5 text-white' strokeWidth={1.5} />} label='Delivery' value={85} />
 
-                        <div className='ml-[145px] mr-[47px] mt-1 flex justify-between border-t border-white/[0.25] pt-2 text-[14px] text-[#dededb]'>
+                        <div className='ml-[145px] mr-[47px] mt-1 flex justify-between border-t border-[#414A5D] pt-2 text-[14px] text-[#dededb]'>
                             <span>0%</span>
                             <span>50%</span>
                             <span>100%</span>
@@ -338,7 +332,7 @@ function GlobalKpiPageContent() {
                     <div>
                         <SectionNumber number='04' />
 
-                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[27px]'>
+                        <h2 className='page-section-title mt-3 text-[25px] font-semibold uppercase tracking-[0.025em] text-[#f0f0ec] sm:text-[27px] leading-[1.32]'>
                             Market Expansion
                         </h2>
 
@@ -375,7 +369,7 @@ function GlobalKpiPageContent() {
 
                 <div className='mx-auto flex w-full max-w-[1180px] flex-col items-center justify-between gap-5 px-5 pb-7 sm:px-8 md:flex-row lg:px-9'>
                     <div className='flex items-center gap-4'>
-                        <div className='flex h-10 w-10 items-center justify-center rounded-full border border-[#1768ff]'>
+                        <div className='flex h-10 w-10 items-center justify-center rounded-full border border-[#4333AF]'>
                             <Globe2 className='h-5 w-5 text-white' strokeWidth={1.4} />
                         </div>
 
@@ -386,7 +380,7 @@ function GlobalKpiPageContent() {
 
                     <ComingSoonTrigger
                         ariaLabel='Get started'
-                        className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#1768ff] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(23,104,255,0.22)] transition-all duration-200 hover:bg-[#2d7cff]'
+                        className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.22)] transition-all duration-200 hover:bg-[#4333AF]'
                     >
                         Get Started
                         <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
@@ -442,7 +436,7 @@ const GlobalKpiPage: NextPage = () => (
 
                 .global-kpi-page .page-hero-title {
                     font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                    line-height: 1.13 !important;
+                    line-height: 1.26 !important;
                     letter-spacing: -0.02em !important;
                 }
 
@@ -454,7 +448,7 @@ const GlobalKpiPage: NextPage = () => (
 
                 .global-kpi-page .page-section-title {
                     font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                    line-height: 1.3 !important;
+                    line-height: 1.36 !important;
                     letter-spacing: -0.01em !important;
                 }
 
@@ -476,7 +470,7 @@ const GlobalKpiPage: NextPage = () => (
                 .global-kpi-page .page-hero-features h3 {
                     margin-top: 0.55rem !important;
                     font-size: 0.64rem !important;
-                    line-height: 1.35 !important;
+                    line-height: 1.43 !important;
                 }
 
                 .global-kpi-page .page-hero-features p {
