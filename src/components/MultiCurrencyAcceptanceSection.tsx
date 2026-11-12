@@ -117,16 +117,16 @@ export function MultiCurrencyAcceptanceSection() {
                     {multiCurrencyCards.map(({ label, title, icon: Icon, body }) => (
                         <div
                             key={title}
-                            className='relative rounded-2xl border border-white/10 p-6 sm:p-7 transition-all duration-300 hover:border-white/15'
+                            className='relative rounded-2xl border border-[#414A5D] p-6 sm:p-7 transition-all duration-300 hover:border-white/15'
                             style={{
                                 background: 'linear-gradient(180deg, rgba(13,17,23,0.98) 0%, rgba(11,19,32,0.98) 100%)',
                                 boxShadow: '0 18px 40px rgba(0,0,0,0.35)',
                             }}
                         >
-                            <div
+                            {/* <div
                                 className='absolute top-0 left-0 right-0 h-[1px]'
                                 style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                            />
+                            /> */}
 
                             <div className='flex items-center gap-4 mb-5'>
                                 <div

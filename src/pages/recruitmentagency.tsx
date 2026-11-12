@@ -323,8 +323,6 @@ function Page() {
                                     <div className='absolute inset-0 bg-transparent rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-60'></div>
 
                                     <Card className='relative bg-[#0C0F18] backdrop-blur-2xl border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden transform hover:scale-105 hover:-translate-y-2 shadow-lg shadow-[#4333AF]/10 group'>
-                                        <div className='absolute top-0 left-0 w-full h-1 bg-[#414A5D]'></div>
-
                                         <div className='relative overflow-hidden'>
                                             <Image
                                                 src={job.image || '/placeholder.svg'}
@@ -418,7 +416,7 @@ function Page() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 border-[#414A5D] text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
+                                        className='border-2 border-[#414A5D] text-white hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                     >
                                         Learn More
                                     </Button>

@@ -51,7 +51,16 @@ function About() {
 
                         <div className='relative w-full'>
                             <div className='relative w-full sm:w-96 h-96 rounded-3xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_32px_110px_-38px_rgba(67,51,175,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)] backdrop-blur-xl flex items-center justify-center mx-auto'>
-                                <Image width={100} height={100} src='/logocolored.png' alt='Black Snow Logo' className='w-[90%]' />
+                                <div className='relative h-[90%] w-[90%]'>
+                                    <Image
+                                        src='/logocolored.png'
+                                        alt='Black Snow Logo'
+                                        fill
+                                        sizes='(max-width: 640px) 90vw, 346px'
+                                        className='object-contain'
+                                        priority
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

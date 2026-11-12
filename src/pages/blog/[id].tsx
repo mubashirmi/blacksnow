@@ -120,7 +120,6 @@ export default function BlogPostPage() {
 
                     <Card className='relative bg-[#0C0F18] backdrop-blur-2xl border-2 border-[#414A5D] hover:border-[#4333AF]/50 transition-all duration-500 rounded-3xl overflow-hidden shadow-xl shadow-[#4333AF]/10'>
                         {/* Top Border */}
-                        <div className='absolute top-0 left-0 w-full h-1 bg-[#4333AF]'></div>
 
                         {/* Blog Image */}
                         {blogPost.headerImage && (

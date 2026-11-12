@@ -582,7 +582,7 @@ function CareersTitle() {
                         </div>
 
                         <div className='relative animate-slide-in-right'>
-                            <div className='bg-[#0C0F18] rounded-3xl p-10 border border-[#414A5D] shadow-xl shadow-[#4333AF]/20 backdrop-blur-2xl'>
+                            <div className='bg-[#0C0F18] rounded-3xl p-10 border border-[#414A5D] shadow-xl shadow-black/30 backdrop-blur-2xl'>
                                 <h3 className='text-2xl font-bold text-white mb-8 flex items-center leading-[1.28]'>
                                     <Globe className='w-8 h-8 text-[#4333AF] mr-3' />
                                     Global Opportunities
@@ -679,7 +679,7 @@ function CareersTitle() {
                             </div>
                         </div>
                         <div className='relative animate-slide-in-left'>
-                            <div className='bg-[#0C0F18] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#414A5D] shadow-2xl shadow-[#4333AF]/20 backdrop-blur-2xl'>
+                            <div className='bg-[#0C0F18] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#414A5D] shadow-2xl shadow-black/30 backdrop-blur-2xl'>
                                 <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center leading-[1.28]'>
                                     <Target className='w-6 h-6 sm:w-8 sm:h-8 text-[#4333AF] mr-3' />
                                     Recruitment Excellence
@@ -736,7 +736,7 @@ function CareersTitle() {
             {/* Talent Acquisition / BPO Section */}
             <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
                 <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='rounded-[2rem] border border-[#414A5D] bg-[#0C0F18] p-4 sm:p-6 md:p-10 shadow-2xl shadow-[#4333AF]/10'>
+                    <div className='rounded-[2rem] border border-[#414A5D] bg-[#0C0F18] p-4 sm:p-6 md:p-10 shadow-2xl shadow-black/30'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8'>
                             {talentTabs.map((tab) => {
                                 const isActive = activeTalentTab === tab.key;
@@ -761,7 +761,7 @@ function CareersTitle() {
                         <div className='grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
                             <div>
                                 <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
-                                <h2 className='mb-6 max-w-2xl text-xl sm:text-2xl md:text-3xl lg:text-[2rem] xl:text-[2.25rem] font-black leading-[1.45] text-white'>
+                                <h2 className='mb-6 max-w-2xl text-xl sm:text-2xl md:text-3xl lg:text-[2rem] xl:text-[2.25rem] font-black leading-[1.22] text-white'>
                                     {activeTalentService.headline}
                                 </h2>
 
@@ -805,14 +805,14 @@ function CareersTitle() {
                                         return (
                                             <span
                                                 key={index}
-                                                className='absolute h-8 w-8 rounded-full border-4 border-white bg-[#050608] shadow-lg shadow-[#4333AF]/20'
+                                                className='absolute h-8 w-8 rounded-full border-4 border-white bg-[#050608] shadow-lg shadow-black/30'
                                                 style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`, transform: 'translate(-50%, -50%)' }}
                                             />
                                         );
                                     })}
                                 </div>
 
-                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-black p-6 shadow-xl shadow-[#4333AF]/20'>
+                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-black p-6 shadow-xl shadow-black/30'>
                                     <h3 className='mb-3 text-lg font-extrabold text-white'>{activeTalentService.pricingTitle}</h3>
                                     <div className='mb-5 space-y-2'>
                                         {activeTalentService.pricing.map((priceItem) => (
@@ -1100,7 +1100,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-white hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         Hire Talent
                                     </Button>

@@ -1,4 +1,5 @@
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
+import { LottieAnimation } from '@/components/lottie-animation';
 import { AuthProvider } from '@/lib/auth';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
@@ -65,13 +66,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
 
                                 <ComingSoonTrigger ariaLabel='Black Snow Headphones Coming Soon' className='relative group cursor-pointer'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
-                                        <Image
-                                            src='/BlacksnowHeadphoneIcon.png'
-                                            alt='Black Snow Headphone Logo'
-                                            width={170}
-                                            height={170}
-                                            className='object-contain drop-shadow-2xl'
-                                        />
+                                        <LottieAnimation src='/animations/headphone.json' className='w-[170px] h-[170px]' loop autoplay />
                                     </div>
                                 </ComingSoonTrigger>
 
@@ -98,7 +93,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                         href={social.href}
                                         className='w-10 h-10 bg-[#0C0F18] rounded-xl flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group transform hover:scale-110'
                                     >
-                                        <social.icon className='w-4 h-4 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
+                                        <social.icon className='w-4 h-4 text-[#414A5D] transition-colors duration-300' />
                                     </Link>
                                 ))}
                             </div>

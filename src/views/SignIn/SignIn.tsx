@@ -12,6 +12,8 @@ import axios from 'axios';
 
 import {
     ArrowRight,
+    BookOpen,
+    CalendarDays,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
@@ -191,7 +193,7 @@ function Snowflakes() {
 
                             opacity: f.opacity,
 
-                            color: '#a8d8f0',
+                            color: '#9DB2BF',
 
                             '--drift': `${f.drift}px`,
                         } as React.CSSProperties
@@ -206,77 +208,72 @@ function Snowflakes() {
 
 // ── Existing signin carousel data ─────────────────────────────
 
+// The main authentication carousel showcases all eight trading tools.
+// Two new slides use Lucide placeholders until the matching Lordicon JSON files are supplied.
 const SLIDES = [
     {
         lottie: '/animations/papertradingicon.json',
-
-        accent: '#5EDC7A',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
         label: 'Paper Trading',
-
         subtitle: 'Stock Market Simulator',
-
         desc: 'Practice with real market data — zero risk, maximum learning.',
     },
-
     {
         lottie: '/animations/stockscreenericon.json',
-
-        accent: '#FACC15',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
         label: 'Stock Screener',
-
         subtitle: 'Market Analysis Tool',
-
-        desc: 'Filter thousands of stocks and find your next winning trade.',
+        desc: 'Filter thousands of stocks and discover opportunities using your own criteria.',
     },
-
     {
         lottie: '/animations/watchlisticon.json',
-
-        accent: '#F97316',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
         label: 'Watchlist',
-
         subtitle: 'Track Stock Performance',
-
-        desc: 'Monitor your favourite stocks and never miss a move.',
+        desc: 'Monitor your favourite stocks and stay on top of price changes.',
     },
-
     {
         lottie: '/animations/marketmover.json',
-
-        accent: '#EF4444',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
         label: 'Market Movers',
-
         subtitle: 'Market at a Glance',
-
-        desc: 'Track major indices, capital rotation, and market sentiment ahead.',
+        desc: 'Track major indices, capital rotation, and broader market sentiment.',
     },
-
     {
         lottie: '/animations/globaleconomicindicatoricon.json',
-
-        accent: '#4A90D9',
-
-        label: 'Global Economic Indicators',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
+        label: 'Global KPI',
         subtitle: 'World Economic KPI Dashboard',
-
-        desc: 'Stay informed on key economic metrics from across the globe.',
+        desc: 'Explore GDP, inflation, employment, and key global economic metrics.',
     },
-
     {
         lottie: '/animations/economicsimulator.json',
-
-        accent: '#7C3AED',
-
+        FallbackIcon: null,
+        accent: '#4333AF',
         label: 'Economic Simulator',
-
         subtitle: 'Supply and Demand',
-
-        desc: 'Explore interactive economic models with dynamic charts and rigorous theory.',
+        desc: 'Explore economic models through interactive charts and simulations.',
+    },
+    {
+        lottie: '/animations/researchicon.json',
+        FallbackIcon: BookOpen,
+        accent: '#4333AF',
+        label: 'Research',
+        subtitle: 'Market Research & Insights',
+        desc: 'Explore market research and structured insights to support your decisions.',
+    },
+    {
+        lottie: '/animations/calendericon1.json',
+        FallbackIcon: CalendarDays,
+        accent: '#4333AF',
+        label: 'Calendars',
+        subtitle: 'Important Market Events',
+        desc: 'Stay organized around upcoming economic releases and market events.',
     },
 ];
 
@@ -682,7 +679,7 @@ function ProductCarousel() {
         return () => clearInterval(timer);
     }, []);
 
-    const { lottie, accent, label, subtitle, desc } = SLIDES[current];
+    const { lottie, FallbackIcon, accent, label, subtitle, desc } = SLIDES[current];
 
     return (
         <div className='relative w-full h-full flex flex-col items-center justify-center px-10 py-12 select-none overflow-hidden'>
@@ -716,12 +713,16 @@ function ProductCarousel() {
                 <div
                     className='mb-6 flex items-center justify-center'
                     style={{
-                        filter: `drop-shadow(0 0 24px ${accent}66)`,
+                        filter: 'drop-shadow(0 8px 22px rgba(0,0,0,0.28))',
 
                         transition: 'filter 0.6s ease',
                     }}
                 >
-                    <LottieAnimation src={lottie} className='w-28 h-28' loop autoplay />
+                    {lottie ? (
+                        <LottieAnimation src={lottie} className='w-28 h-28' loop autoplay />
+                    ) : FallbackIcon ? (
+                        <FallbackIcon className='h-28 w-28 text-[#4333AF]' strokeWidth={1.35} aria-hidden='true' />
+                    ) : null}
                 </div>
 
                 <h2 className='text-3xl font-black text-white leading-tight mb-2'>{label}</h2>
@@ -1470,20 +1471,19 @@ function SignIn() {
 
             <div className='relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6'>
                 <div
-                    className='relative flex rounded-3xl overflow-hidden border border-white/10 shadow-2xl backdrop-blur-[7px]'
+                    className='relative flex rounded-3xl overflow-hidden border border-[#414A5D] shadow-2xl backdrop-blur-[7px]'
                     style={{
                         height: showPostSignupSlideshow ? UNIFIED_CARD_HEIGHT : AUTH_CARD_HEIGHT,
 
                         minHeight: showPostSignupSlideshow ? UNIFIED_CARD_HEIGHT : AUTH_CARD_HEIGHT,
 
-                        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+                        background: '#0C0F18',
 
                         WebkitBackdropFilter: 'blur(7px) saturate(145%)',
 
                         backdropFilter: 'blur(7px) saturate(145%)',
 
-                        boxShadow:
-                            '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(67,51,175,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
                     }}
                 >
                     <div
@@ -1716,7 +1716,7 @@ function SignIn() {
                                                     />
 
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                        <Mail className='w-5 h-5 text-[#4333AF]' />
+                                                        <Mail className='w-5 h-5 text-[#414A5D]' />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1740,13 +1740,13 @@ function SignIn() {
                                                     />
 
                                                     <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                                                        <Lock className='w-5 h-5 text-[#4333AF]' />
+                                                        <Lock className='w-5 h-5 text-[#414A5D]' />
                                                     </div>
 
                                                     <button
                                                         type='button'
                                                         onClick={() => setShowPassword(!showPassword)}
-                                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#4333AF] hover:text-[#8D81ED] transition-colors duration-300'
+                                                        className='absolute right-4 top-1/2 -translate-y-1/2 text-[#414A5D] hover:text-[#526D82] transition-colors duration-300'
                                                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                                                     >
                                                         {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}

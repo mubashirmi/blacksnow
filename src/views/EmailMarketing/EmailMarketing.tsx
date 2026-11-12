@@ -968,19 +968,21 @@ function EmailMarketing() {
 
             <section className='relative px-4 py-10 sm:px-6 sm:py-16 md:px-8 lg:py-11 xl:py-10'>
                 <div className='relative z-10 mx-auto w-full max-w-[1660px]'>
-                    <div className='grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[minmax(0,1.75fr)_minmax(0,0.85fr)] xl:gap-9 2xl:gap-12'>
+                    <div className='grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto] lg:items-stretch lg:gap-x-8 lg:gap-y-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)] xl:gap-x-9 2xl:gap-x-12'>
                         {/* LEFT: original heading, native JSX dashboard, then original CTAs */}
 
-                        <div className='min-w-0 animate-slide-in-left'>
-                            <h1 className='mb-5 text-[clamp(1.55rem,6.2vw,2.2rem)] font-black leading-[1.2] tracking-tight text-white sm:mb-7 sm:text-4xl md:text-5xl lg:text-4xl xl:mb-4 xl:text-[2.55rem]'>
+                        <div className='min-w-0 animate-slide-in-left lg:contents'>
+                            <h1 className='mb-5 text-[clamp(1.55rem,6.2vw,2.2rem)] font-black leading-[1.2] tracking-tight text-white sm:mb-7 sm:text-4xl md:text-5xl lg:col-start-1 lg:row-start-1 lg:mb-0 lg:text-4xl xl:text-[2.55rem]'>
                                 Email <span className='text-[#8350E0]'>CRM Lite</span>
                             </h1>
 
-                            <EmailMarketingDashboard />
+                            <div className='min-w-0 lg:col-start-1 lg:row-start-2'>
+                                <EmailMarketingDashboard />
+                            </div>
 
                             {/* Existing actions and their handlers are unchanged. */}
 
-                            <div className='mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:gap-4 xl:mt-4'>
+                            <div className='mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:gap-4 lg:col-start-1 lg:row-start-3 lg:mt-0 xl:mt-0'>
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
@@ -992,17 +994,18 @@ function EmailMarketing() {
                                 <Button
                                     onClick={() => setSlideshowOpen(true)}
                                     size='lg'
-                                    className='group h-12 w-full min-w-0 flex-1 rounded-lg px-5 text-base font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 box-border border-[#8350E0] bg-transparent px-5 text-base font-bold text-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)] transition-all duration-300 hover:scale-[1.02] hover:border-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px]'
                                 >
-                                    Learn more
+                                    Learn More
                                 </Button>
                             </div>
                         </div>
 
-                        {/* RIGHT: the existing JSON/Lottie hero animation, contained at every viewport. */}
+                        {/* RIGHT: On desktop this grid item has no in-flow child, so only the LEFT dashboard sets row 2 height.
+                            The absolutely positioned animation panel fills that same row exactly (no square SVG min-content height). */}
 
-                        <div className='relative flex min-w-0 animate-slide-in-right items-center justify-center'>
-                            <div className='relative aspect-[6/5] w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#414A5D] sm:rounded-3xl lg:max-w-[400px] xl:max-w-[440px] 2xl:max-w-[460px]'>
+                        <div className='relative flex min-w-0 animate-slide-in-right items-center justify-center lg:col-start-2 lg:row-start-2 lg:min-h-0 lg:self-stretch lg:items-stretch lg:justify-stretch'>
+                            <div className='relative aspect-[6/5] w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#414A5D] bg-[#0C0F18] sm:rounded-3xl lg:absolute lg:inset-0 lg:aspect-auto lg:h-full lg:max-w-none xl:max-w-[560px] 2xl:max-w-[600px]'>
                                 <LottieAnimation src='/animations/emailmarketing-herosection-page.json' className='h-full w-full' loop={true} autoplay={true} />
                             </div>
                         </div>
@@ -1032,8 +1035,6 @@ function EmailMarketing() {
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
                                 <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-black'>
-                                    <div className='absolute top-0 left-0 w-full h-[3px] bg-[#414A5D] opacity-60' />
-
                                     <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
 
                                     {/* TOP (Icon + Title) */}

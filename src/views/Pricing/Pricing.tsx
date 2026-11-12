@@ -398,7 +398,7 @@ function Pricing() {
 
                                 return (
                                     <div key={product.id} className='w-full min-w-full shrink-0 overflow-hidden'>
-                                        <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[1.6fr_0.6fr] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:px-12'>
+                                        <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.75fr)] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:grid-cols-[minmax(0,1.65fr)_minmax(310px,0.72fr)] xl:px-12'>
                                             <div className='grid min-w-0 gap-5 md:grid-cols-[104px_1fr] md:gap-6'>
                                                 <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#414A5D] bg-black transition-colors duration-300 hover:border-[#4333AF]/50 sm:h-24 sm:w-24 md:mx-0'>
                                                     <ProductIcon className='h-9 w-9 text-[#4333AF] sm:h-11 sm:w-11' strokeWidth={1.8} />
@@ -434,15 +434,15 @@ function Pricing() {
                                                 </div>
                                             </div>
 
-                                            <div className='flex w-full min-w-0 flex-col justify-center rounded-[24px] border border-[#414A5D] bg-black p-4 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:p-6 lg:border-l lg:border-y-0 lg:border-r-0 lg:bg-transparent lg:py-2 lg:pl-8 lg:pr-0 lg:shadow-none'>
-                                                <div className='flex min-w-0 flex-nowrap items-baseline gap-1 whitespace-nowrap sm:gap-2'>
+                                            <div className='flex w-full min-w-0 max-w-full flex-col justify-center rounded-[24px] border border-[#414A5D] px-4 py-6 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:px-6 sm:py-7 lg:px-5 lg:py-7 xl:px-7'>
+                                                <div className='flex w-full min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1'>
                                                     <span
-                                                        className={`${michroma.className} text-[clamp(1.65rem,7.5vw,2.7rem)] leading-none tracking-[-0.06em] text-white sm:text-5xl lg:text-[clamp(1.3rem,2.2vw,2.4rem)] xl:text-[clamp(2rem,2.6vw,3rem)]`}
+                                                        className={`${michroma.className} max-w-full whitespace-nowrap text-[clamp(1.4rem,6vw,2.7rem)] leading-[1.15] tracking-[-0.06em] text-white sm:text-[clamp(1.7rem,4.5vw,3rem)] lg:text-[clamp(1.15rem,1.9vw,2rem)] xl:text-[clamp(1.5rem,2.15vw,2.5rem)]`}
                                                     >
                                                         {getProductPrice(product)}
                                                     </span>
 
-                                                    <span className='shrink-0 whitespace-nowrap pb-0.5 font-medium text-sm text-gray-400 sm:pb-1 sm:text-base xl:text-lg'>
+                                                    <span className='shrink-0 whitespace-nowrap pb-0.5 text-sm font-medium text-gray-400 sm:pb-1 sm:text-base xl:text-lg'>
                                                         {getProductPeriod(product)}
                                                     </span>
                                                 </div>
@@ -456,11 +456,11 @@ function Pricing() {
                                                 {product.available ? (
                                                     <Button
                                                         size='lg'
-                                                        className={`mt-6 h-14 w-full cursor-pointer rounded-2xl ${product.color} text-sm font-black text-white transition-colors duration-300 hover:bg-[#38299B] sm:h-16 sm:text-lg`}
+                                                        className={`mt-6 h-14 w-full min-w-0 max-w-full cursor-pointer justify-center gap-2 rounded-2xl px-3 text-center ${product.color} text-sm font-black text-white transition-colors duration-300 hover:bg-[#38299B] sm:h-16 sm:px-4 sm:text-lg`}
                                                         onClick={() => goToProduct(product.redirectRoute)}
                                                     >
                                                         Get Started
-                                                        <ArrowRight className='ml-3 h-5 w-5 sm:h-6 sm:w-6' />
+                                                        <ArrowRight className='h-5 w-5 shrink-0 sm:h-6 sm:w-6' />
                                                     </Button>
                                                 ) : (
                                                     <div className='mt-6 w-full py-4 text-center'>

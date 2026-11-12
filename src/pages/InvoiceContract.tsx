@@ -366,7 +366,7 @@ export default function InvoiceContractPage() {
                                 className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
                             >
                                 {/* Top gradient line */}
-                                <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div>
+                                {/* <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div> */}
 
                                 <div className='p-6 sm:p-8 flex items-start gap-4 sm:gap-6'>
                                     {/* Icon */}
@@ -483,7 +483,7 @@ export default function InvoiceContractPage() {
                                 {/* Card */}
                                 <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
                                     {/* Gradient accent */}
-                                    <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div>
+                                    {/* <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div> */}
 
                                     <div className='p-6 sm:p-8 text-center'>
                                         {/* Icon */}

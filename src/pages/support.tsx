@@ -81,8 +81,6 @@ export default function Page() {
             <section className='relative pt-10 sm:pt-16 pb-8 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='relative bg-[#0C0F18] backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-[#414A5D] max-w-5xl mx-auto animate-slide-in-up overflow-hidden'>
-                        <div className='absolute top-0 left-0 w-full h-1 bg-[#414A5D] rounded-t-3xl'></div>
-
                         <div className='flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6'>
                             <div className='w-14 h-14 sm:w-16 sm:h-16 bg-[#414A5D]/20 rounded-2xl flex items-center justify-center flex-shrink-0'>
                                 <AlertTriangle className='w-7 h-7 sm:w-8 sm:h-8 text-[#6D83B2]' />
@@ -212,7 +210,7 @@ export default function Page() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 border-[#414A5D] text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
+                                        className='border-2 border-[#414A5D] text-white hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
                                     >
                                         Were here to support you
                                     </Button>

@@ -30,7 +30,7 @@ type TermsSlide = {
 const TERMS_SLIDES: TermsSlide[] = [
     {
         id: 'terms',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Terms & Conditions',
         titleGrad: 'Terms',
@@ -42,7 +42,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'privacy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Privacy Policy',
         titleGrad: 'Privacy',
@@ -54,7 +54,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'gdpr',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Legal — GDPR',
         titleGrad: 'GDPR',
@@ -70,7 +70,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'risk-disclosure',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Risk Disclosure',
         titleGrad: 'Risk',
@@ -86,7 +86,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'cookie-policy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Cookie Policy',
         titleGrad: 'Cookie',
@@ -102,7 +102,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'independent-contractor',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Independent Contractor',
         titleGrad: 'Independent',
@@ -118,7 +118,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'affiliate-agreement',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Affiliate Agreement',
         titleGrad: 'Affiliate',
@@ -134,7 +134,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'no-financial-advice',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'No Financial Advice',
         titleGrad: 'No Financial',
@@ -150,7 +150,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'subscription-policy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Subscription Policy',
         titleGrad: 'Subscription',
@@ -166,7 +166,7 @@ const TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'earnings-disclosure',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Earnings Disclosure',
         titleGrad: 'Earnings',
@@ -266,12 +266,12 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                 `}</style>
 
                 <div
-                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#07090d] sm:rounded-[32px]'
+                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#0C0F18] sm:rounded-[32px]'
                     style={{
                         minHeight: UNIFIED_CARD_HEIGHT,
                         height: UNIFIED_CARD_HEIGHT,
-                        borderColor: `${accent}35`,
-                        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
+                        borderColor: '#414A5D',
+                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
                     }}
                 >
                     <div
@@ -301,15 +301,11 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
-                                        {titleGrad}
-                                    </span>
+                                    <span className='text-[#4333AF]'>{titleGrad}</span>
                                 </>
                             ) : (
                                 <>
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
-                                        {titleGrad}
-                                    </span>
+                                    <span className='text-[#4333AF]'>{titleGrad}</span>
                                     {titlePlain}
                                 </>
                             )}
@@ -396,7 +392,7 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                                         isLast ? 'min-w-[112px] px-3 text-[10px] sm:min-w-[120px] sm:text-xs' : 'min-w-[70px] px-3 text-xs'
                                     }`}
                                     style={{
-                                        background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
+                                        background: accent,
                                         border: `1px solid ${accent}60`,
                                         boxShadow: `0 2px 12px ${accent}30`,
                                     }}
@@ -522,7 +518,7 @@ function ProductHeader({
     return (
         <div className='relative px-7 pt-6 pb-0'>
             <div className='grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-3 mb-3'>
-                <div className='h-11 w-11 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-center shadow-md'>
+                <div className='h-11 w-11 rounded-2xl border border-[#414A5D] bg-black/30 flex items-center justify-center shadow-md'>
                     {ProductIcon ? (
                         <ProductIcon className='w-6 h-6 text-white/80' />
                     ) : (
@@ -540,7 +536,7 @@ function ProductHeader({
 
             {product.hasSubscription && (
                 <div className='flex justify-center mb-3'>
-                    <div className='flex w-full max-w-[220px] rounded-full border border-white/12 bg-white/5 p-1 shadow-inner'>
+                    <div className='flex w-full max-w-[220px] rounded-full border border-[#414A5D] bg-white/5 p-1 shadow-inner'>
                         <button
                             type='button'
                             onClick={() => onBillingChange('monthly')}
@@ -635,7 +631,7 @@ export default function AuthModal({
     const isDangerVariant = visualVariant === 'danger';
     const isSuccessVariant = visualVariant === 'success';
 
-    const modalAccent = '#4cc7e8';
+    const modalAccent = '#4333AF';
 
     const redLogoFilter = 'brightness(0) saturate(100%) invert(18%) sepia(98%) saturate(4622%) hue-rotate(345deg) brightness(98%) contrast(98%)';
     const greenLogoFilter = 'brightness(0) saturate(100%) invert(24%) sepia(91%) saturate(876%) hue-rotate(115deg) brightness(82%) contrast(96%)';
@@ -1082,11 +1078,11 @@ export default function AuthModal({
                         style={{
                             height: UNIFIED_CARD_HEIGHT,
                             maxHeight: 'calc(100dvh - 2rem)',
-                            background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+                            background: '#0C0F18',
                             WebkitBackdropFilter: 'blur(8px) saturate(145%)',
                             backdropFilter: 'blur(8px) saturate(145%)',
                             boxShadow: '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                            borderColor: 'rgba(255,255,255,0.10)',
+                            borderColor: '#414A5D',
                         }}
                     >
                         {hasProduct && <ProductHeader product={productContext!} billingPeriod={billingPeriod} onBillingChange={setBillingPeriod} />}
@@ -1099,7 +1095,7 @@ export default function AuthModal({
                             }}
                             className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border hover:bg-white/10 transition-all duration-300 z-20'
                             style={{
-                                borderColor: 'rgba(255,255,255,0.1)',
+                                borderColor: '#414A5D',
                             }}
                         >
                             <X
@@ -1117,11 +1113,7 @@ export default function AuthModal({
                                     <div
                                         className='h-14 w-14 rounded-2xl border bg-black/30 flex items-center justify-center mb-4 shadow-xl'
                                         style={{
-                                            borderColor: isFeedbackAuth
-                                                ? 'rgba(6, 78, 59, 0.45)'
-                                                : isUnsubscribeAuth
-                                                ? 'rgba(127, 29, 29, 0.15)'
-                                                : 'rgba(255,255,255,0.1)',
+                                            borderColor: isFeedbackAuth ? 'rgba(6, 78, 59, 0.45)' : isUnsubscribeAuth ? 'rgba(127, 29, 29, 0.15)' : '#414A5D',
                                         }}
                                     >
                                         <Image
@@ -1191,7 +1183,7 @@ export default function AuthModal({
 
                             {showVerification ? (
                                 <div className='flex flex-col gap-3 flex-1'>
-                                    <div className='rounded-2xl border border-white/10 bg-black/25 p-4'>
+                                    <div className='rounded-2xl border border-[#414A5D] bg-black/25 p-4'>
                                         <p className='text-[10px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: modalAccent }}>
                                             Verify your account
                                         </p>
@@ -1257,7 +1249,7 @@ export default function AuthModal({
                                                     setOtp('');
                                                     setOtpSent(false);
                                                 }}
-                                                className='w-full rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 px-4 py-3 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
                                             <p className='text-[11px] text-white/45'>Use E.164 format, for example +923001234567.</p>
                                         </div>
@@ -1267,12 +1259,12 @@ export default function AuthModal({
                                         type='button'
                                         onClick={verificationMethod === 'sms' ? handleSendSmsOtp : handleSendEmailOtp}
                                         disabled={otpSending || otpVerifying}
-                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]'
                                         style={{
-                                            background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
-                                            borderColor: 'rgba(255,255,255,0.09)',
-                                            color: 'rgba(255,255,255,0.70)',
-                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
+                                            background: '#4333AF',
+                                            borderColor: '#414A5D',
+                                            color: '#FFFFFF',
+                                            boxShadow: '0 10px 26px rgba(0,0,0,0.3)',
                                             opacity: otpSending || otpVerifying ? 0.58 : 1,
                                         }}
                                     >
@@ -1300,19 +1292,19 @@ export default function AuthModal({
                                                     placeholder='Enter OTP'
                                                     value={otp}
                                                     onChange={(event) => setOtp(event.target.value)}
-                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                 />
 
-                                                <Shield className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                                <Shield className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
                                             </div>
 
                                             <Button
                                                 type='button'
                                                 onClick={verificationMethod === 'sms' ? handleVerifySmsOtp : handleVerifyEmailOtp}
                                                 disabled={otpVerifying || otpSending || !otp.trim()}
-                                                className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                                className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border backdrop-blur-2xl hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]'
                                                 style={{
-                                                    background: `linear-gradient(135deg, ${modalAccent}cc, ${modalAccent}88)`,
+                                                    background: modalAccent,
                                                     borderColor: `${modalAccent}60`,
                                                     color: 'rgba(255,255,255,0.88)',
                                                     boxShadow: `0 14px 34px ${modalAccent}22`,
@@ -1361,13 +1353,13 @@ export default function AuthModal({
                                                             return cleaned.length >= 2 || 'Please enter your name';
                                                         },
                                                     })}
-                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                     style={{
                                                         borderColor: undefined,
                                                     }}
                                                 />
 
-                                                <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                                <User className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
                                             </div>
 
                                             {errors?.fullName && <p className='text-red-400 text-xs px-1'>{(errors as any).fullName.message}</p>}
@@ -1382,10 +1374,10 @@ export default function AuthModal({
                                                     type='tel'
                                                     placeholder='Phone number'
                                                     {...register('phoneNumber', { required: 'Phone number is required', validate: validatePhoneNumber as any })}
-                                                    className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                 />
 
-                                                <Phone className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                                <Phone className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
                                             </div>
 
                                             {errors?.phoneNumber && <p className='text-red-400 text-xs px-1'>{(errors as any).phoneNumber.message}</p>}
@@ -1399,10 +1391,10 @@ export default function AuthModal({
                                                 type='email'
                                                 placeholder='Email address'
                                                 {...register('email', { required: 'Email is required', validate: validateEmail as any })}
-                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
 
-                                            <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
                                         </div>
 
                                         {errors?.email && <p className='text-red-400 text-xs px-1'>{(errors as any).email.message}</p>}
@@ -1415,15 +1407,15 @@ export default function AuthModal({
                                                 type={showPassword ? 'text' : 'password'}
                                                 placeholder='Password'
                                                 {...register('password', { required: 'Password is required', validate: validatePassword as any })}
-                                                className='w-full rounded-2xl border border-white/10 bg-black/25 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
 
-                                            <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40' />
+                                            <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
 
                                             <button
                                                 type='button'
                                                 onClick={() => setShowPassword((p) => !p)}
-                                                className='absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors duration-300'
+                                                className='absolute right-4 top-1/2 -translate-y-1/2 text-[#414A5D] hover:text-[#526D82] transition-colors duration-300'
                                             >
                                                 {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
                                             </button>
@@ -1458,7 +1450,7 @@ export default function AuthModal({
                                                     type='button'
                                                     onClick={() => setShowTermsModal(true)}
                                                     className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                                    style={{ color: '#93c5fd' }}
+                                                    style={{ color: modalAccent }}
                                                 >
                                                     Terms & Conditions
                                                 </button>{' '}
@@ -1469,14 +1461,14 @@ export default function AuthModal({
                                     <Button
                                         type='submit'
                                         disabled={isLoading || (isSignUp && !termsAccepted)}
-                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 group disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-3 border backdrop-blur-2xl hover:scale-[1.01] active:scale-[0.99]'
+                                        className='w-full rounded-2xl py-5 font-bold text-base transition-all duration-300 group disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-3 border backdrop-blur-2xl hover:brightness-110 hover:scale-[1.01] active:scale-[0.99]'
                                         style={{
-                                            background: 'linear-gradient(180deg, rgba(42, 47, 53, 0.62) 0%, rgba(20, 24, 29, 0.72) 100%)',
-                                            borderColor: 'rgba(255,255,255,0.09)',
-                                            color: 'rgba(255,255,255,0.66)',
+                                            background: '#4333AF',
+                                            borderColor: '#414A5D',
+                                            color: '#FFFFFF',
                                             WebkitBackdropFilter: 'blur(18px) saturate(135%)',
                                             backdropFilter: 'blur(18px) saturate(135%)',
-                                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.35), 0 14px 38px rgba(0,0,0,0.42)',
+                                            boxShadow: '0 10px 26px rgba(0,0,0,0.3)',
                                             opacity: isLoading || (isSignUp && !termsAccepted) ? 0.58 : 1,
                                         }}
                                     >
@@ -1497,7 +1489,7 @@ export default function AuthModal({
                                                 <span
                                                     className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
                                                     style={{
-                                                        color: '#4cc7e8',
+                                                        color: '#4333AF',
                                                     }}
                                                 >
                                                     Sign In

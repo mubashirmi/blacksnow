@@ -157,7 +157,7 @@ function LightningSilver() {
 
                         <div className='relative animate-slide-in-right min-w-0'>
                             <div className='relative flex items-center justify-center w-full h-full'>
-                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#2c7bbe]/20'>
+                                <div className='flex items-center justify-center w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] aspect-square rounded-2xl sm:rounded-3xl border border-[#414A5D]'>
                                     <div className='w-[90%] aspect-square sm:w-full'>
                                         <LottieAnimation src='/animations/lightning-silver-plane.json' className='w-full h-full' loop autoplay />
                                     </div>
@@ -182,7 +182,7 @@ function LightningSilver() {
                         </p>
                     </div>
 
-                    <Card className='bg-black/70 rounded-2xl overflow-hidden mb-8 sm:mb-10 border-[1px] border-[#8d96c2]/60'>
+                    <Card className='bg-black/70 rounded-2xl overflow-hidden mb-8 sm:mb-10 border-[1px] border-[#414A5D]'>
                         <CardContent className='p-6 sm:p-8'>
                             <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8'>
                                 <div className='flex flex-row justify-between w-full'>
@@ -262,7 +262,7 @@ function LightningSilver() {
                         </div>
 
                         <div className='flex items-center justify-center'>
-                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#2c7bbe]/30 flex items-center justify-center backdrop-blur-xl'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-gradient-to-br from-[#050608]/90 via-[#0a0b0f]/95 to-[#050608]/90 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl'>
                                 <LottieAnimation src='/animations/lightning-silver-cloud.json' loop autoplay className='w-full h-full' />
                             </div>
                         </div>

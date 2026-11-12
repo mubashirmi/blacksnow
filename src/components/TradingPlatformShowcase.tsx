@@ -381,7 +381,7 @@ function SimplePricingStrip() {
 
                     <ComingSoonTrigger
                         ariaLabel='Start monthly free trial'
-                        className='mt-6 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
+                        className='mt-6 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
                     >
                         Start Free Trial
                     </ComingSoonTrigger>
@@ -397,7 +397,7 @@ function SimplePricingStrip() {
 
                     <ComingSoonTrigger
                         ariaLabel='Start annual free trial'
-                        className='mt-5 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
+                        className='mt-5 flex min-h-11 w-full max-w-[270px] items-center justify-center rounded-md px-5 text-xs font-bold uppercase tracking-[.025em] text-white shadow-[0_0_24px_rgba(67,51,175,.12)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 bg-[#4333AF] hover:bg-[#372990]'
                     >
                         Start Free Trial
                     </ComingSoonTrigger>
@@ -862,10 +862,11 @@ const PAPER_DESK_DATA: Record<PaperDeskPeriod, PaperDeskPeriodData> = {
 };
 
 const PAPER_DESK_ALLOCATIONS = [
-    { label: 'Stocks', percent: 72, color: '#4333AF' },
+    { label: 'Stocks', percent: 67, color: '#4333AF' },
     { label: 'ETFs', percent: 15, color: '#4333AF' },
     { label: 'Cash', percent: 10, color: '#9183dd' },
     { label: 'Options', percent: 3, color: '#aeb4cd' },
+    { label: 'Bonds', percent: 5, color: '#737ea6' },
 ];
 
 const PAPER_DESK_HOLDINGS = [
@@ -880,7 +881,8 @@ const PAPER_DESK_SECTORS = [
     { label: 'Technology', percent: 42, color: '#414A5D' },
     { label: 'Financials', percent: 18, color: '#414A5D' },
     { label: 'Healthcare', percent: 14, color: '#414A5D' },
-    { label: 'Other', percent: 26, color: '#414A5D' },
+    { label: 'Energy', percent: 8, color: '#414A5D' },
+    { label: 'Other', percent: 18, color: '#414A5D' },
 ];
 
 function paperDeskMoney(amount: number) {
@@ -1010,7 +1012,7 @@ function PaperDeskDashboard() {
     const panelClass = 'min-w-0 h-full rounded-[13px] border border-[#414A5D] bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:rounded-[8px] xl:p-[7px]';
 
     return (
-        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:min-h-[430px] xl:h-auto xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
+        <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:min-h-[520px] xl:h-auto xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
             <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_30%,rgba(12,50,90,.16),transparent_58%)]' />
             <div className='relative space-y-2.5 sm:space-y-3 lg:space-y-2 xl:space-y-[6px]'>
                 <div className='flex flex-wrap items-center justify-between gap-x-3 gap-y-3 px-2 py-2 sm:px-3 sm:py-2.5 xl:h-[36px] xl:flex-nowrap xl:gap-y-0 xl:px-2 xl:py-0'>
@@ -1051,143 +1053,155 @@ function PaperDeskDashboard() {
                     </div>
                 </div>
 
-                <div className='grid grid-cols-3 rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:h-[56px] xl:items-center xl:px-1 xl:py-[3px]'>
-                    <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
-                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
-                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
-                            {paperDeskMoney(PAPER_DESK_ACCOUNT_VALUE)}
-                        </p>
-                    </div>
-                    <div className='min-w-0 border-x border-[#414A5D] px-2 sm:px-4 xl:px-3'>
-                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Total Return</p>
-                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
-                            +18.42%
-                        </p>
-                        <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
-                    </div>
-                    <div className='min-w-0 px-2 sm:px-4 xl:px-3' aria-live='polite' aria-atomic='true'>
-                        <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>{period === '1D' ? "Today's P&L" : `${period} P&L`}</p>
-                        <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
-                            +{paperDeskMoney(selected.change)}
-                        </p>
-                        <p className='mt-0.5 text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
-                    </div>
-                </div>
-
-                <div className={`${panelClass} xl:h-[106px]`}>
-                    <div className='mb-1.5 flex items-center justify-between gap-3'>
-                        <h3 className='text-[12px] font-bold uppercase tracking-[.015em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
-                            Account Performance
-                        </h3>
-                        <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] sm:h-5 sm:w-5 xl:h-3 xl:w-3' strokeWidth={1.8} aria-hidden='true' />
-                    </div>
-                    <PaperDeskPerformanceChart period={period} data={selected} />
-                </div>
-
-                <div className='grid auto-rows-fr items-stretch gap-2.5 min-[520px]:grid-cols-2 sm:gap-3 lg:gap-2 xl:gap-[6px]'>
-                    <div className={panelClass}>
-                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
-                                Asset Allocation
-                            </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
+                <div className='grid gap-2.5 sm:gap-3 lg:gap-2 xl:gap-[6px] min-[520px]:grid-cols-2 min-[520px]:grid-rows-4'>
+                    <div className='col-span-1 grid grid-cols-3 items-center rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:px-1 xl:py-[3px] min-[520px]:col-span-2'>
+                        <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
+                            <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
+                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
+                                {paperDeskMoney(PAPER_DESK_ACCOUNT_VALUE)}
+                            </p>
                         </div>
-                        <div className='flex items-center justify-between gap-2'>
-                            <div
-                                className='relative aspect-square w-[42%] max-w-[150px] shrink-0 rounded-full xl:w-[60px]'
-                                style={{ background: 'conic-gradient(#4333AF 0% 72%, #4333AF 72% 87%, #9183dd 87% 97%, #aeb4cd 97% 100%)' }}
-                            >
-                                <div className='absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-[#05111c] text-center shadow-[inset_0_0_10px_rgba(0,0,0,.3)]'>
-                                    <span className='text-[clamp(11px,1.65vw,17px)] font-bold xl:text-[9px]'>$125.7K</span>
-                                    <span className='mt-0.5 text-[10px] text-[#9ca7b7] sm:text-[11px] xl:mt-0 xl:text-[9px]'>Total</span>
+                        <div className='min-w-0 border-x border-[#414A5D] px-2 sm:px-4 xl:px-3'>
+                            <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Total Return</p>
+                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
+                                +18.42%
+                            </p>
+                            <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
+                        </div>
+                        <div className='min-w-0 px-2 sm:px-4 xl:px-3' aria-live='polite' aria-atomic='true'>
+                            <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>{period === '1D' ? "Today's P&L" : `${period} P&L`}</p>
+                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
+                                +{paperDeskMoney(selected.change)}
+                            </p>
+                            <p className='mt-0.5 text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
+                        </div>
+                    </div>
+
+                    <div className={`${panelClass} col-span-1 min-[520px]:col-span-2`}>
+                        <div className='mb-1.5 flex items-center justify-between gap-3'>
+                            <h3 className='text-[12px] font-bold uppercase tracking-[.015em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                Account Performance
+                            </h3>
+                            <TrendingUp
+                                className='h-[17px] w-[17px] shrink-0 text-[#4333AF] sm:h-5 sm:w-5 xl:h-3 xl:w-3'
+                                strokeWidth={1.8}
+                                aria-hidden='true'
+                            />
+                        </div>
+                        <PaperDeskPerformanceChart period={period} data={selected} />
+                    </div>
+
+                    <div className='contents'>
+                        <div className={panelClass}>
+                            <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                                <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                    Asset Allocation
+                                </h3>
+                                <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
+                            </div>
+                            <div className='flex items-center justify-between gap-2'>
+                                <div
+                                    className='relative aspect-square w-[42%] max-w-[150px] shrink-0 rounded-full xl:w-[60px]'
+                                    style={{
+                                        background: 'conic-gradient(#4333AF 0% 67%, #4333AF 67% 82%, #9183dd 82% 92%, #aeb4cd 92% 95%, #737ea6 95% 100%)',
+                                    }}
+                                >
+                                    <div className='absolute inset-[18%] flex flex-col items-center justify-center rounded-full bg-[#05111c] text-center shadow-[inset_0_0_10px_rgba(0,0,0,.3)]'>
+                                        <span className='text-[clamp(11px,1.65vw,17px)] font-bold xl:text-[9px]'>$125.7K</span>
+                                        <span className='mt-0.5 text-[10px] text-[#9ca7b7] sm:text-[11px] xl:mt-0 xl:text-[9px]'>Total</span>
+                                    </div>
+                                </div>
+                                <div className='min-w-0 flex-1 space-y-2 xl:space-y-[1px]'>
+                                    {PAPER_DESK_ALLOCATIONS.map(({ label, percent, color }) => (
+                                        <div
+                                            key={label}
+                                            className='flex items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'
+                                        >
+                                            <span className='h-3 w-3 shrink-0 rounded-full xl:h-2 xl:w-2' style={{ backgroundColor: color }} />
+                                            <span className='min-w-0 flex-1 text-[#b0b8ca]'>{label}</span>
+                                            <span className='font-medium tabular-nums text-white'>{percent}%</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div className='min-w-0 flex-1 space-y-2 xl:space-y-[1px]'>
-                                {PAPER_DESK_ALLOCATIONS.map(({ label, percent, color }) => (
-                                    <div key={label} className='flex items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'>
-                                        <span className='h-3 w-3 shrink-0 rounded-full xl:h-2 xl:w-2' style={{ backgroundColor: color }} />
-                                        <span className='min-w-0 flex-1 text-[#b0b8ca]'>{label}</span>
-                                        <span className='font-medium tabular-nums text-white'>{percent}%</span>
+                        </div>
+
+                        <div className={panelClass}>
+                            <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                                <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                    Top Holdings
+                                </h3>
+                                <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
+                            </div>
+                            <div className='space-y-2 xl:space-y-[4px]'>
+                                {PAPER_DESK_HOLDINGS.map(({ symbol, amount, change }) => (
+                                    <div
+                                        key={symbol}
+                                        className='grid grid-cols-[19px_minmax(0,1fr)_auto_auto] items-center gap-x-2.5 text-[10px] sm:text-[11px] xl:grid-cols-[13px_minmax(0,1fr)_auto_auto] xl:gap-x-1.5 xl:text-[9px] xl:leading-[12px]'
+                                    >
+                                        <PaperDeskHoldingLogo symbol={symbol} />
+                                        <span className='font-medium text-[#e0e7f3]'>{symbol}</span>
+                                        <span className='whitespace-nowrap tabular-nums text-[#dde1e9]'>{paperDeskMoney(amount)}</span>
+                                        <span className='w-[49px] whitespace-nowrap xl:w-[41px] text-right tabular-nums text-[#2ad9ab]'>{change}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    </div>
 
-                    <div className={panelClass}>
-                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
-                                Top Holdings
-                            </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
-                        </div>
-                        <div className='space-y-2 xl:space-y-[4px]'>
-                            {PAPER_DESK_HOLDINGS.slice(0, 4).map(({ symbol, amount, change }) => (
-                                <div
-                                    key={symbol}
-                                    className='grid grid-cols-[19px_minmax(0,1fr)_auto_auto] items-center gap-x-2.5 text-[10px] sm:text-[11px] xl:grid-cols-[13px_minmax(0,1fr)_auto_auto] xl:gap-x-1.5 xl:text-[9px] xl:leading-[12px]'
-                                >
-                                    <PaperDeskHoldingLogo symbol={symbol} />
-                                    <span className='font-medium text-[#e0e7f3]'>{symbol}</span>
-                                    <span className='whitespace-nowrap tabular-nums text-[#dde1e9]'>{paperDeskMoney(amount)}</span>
-                                    <span className='w-[49px] whitespace-nowrap xl:w-[41px] text-right tabular-nums text-[#2ad9ab]'>{change}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={panelClass}>
-                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
-                                Sector Exposure
-                            </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
-                        </div>
-                        <div className='space-y-2 xl:space-y-[4px]'>
-                            {PAPER_DESK_SECTORS.map(({ label, percent, color }) => (
-                                <div
-                                    key={label}
-                                    className='grid grid-cols-[minmax(0,1fr)_minmax(46px,1.1fr)_32px] items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'
-                                >
-                                    <span className='truncate text-[#aab4c7]'>{label}</span>
-                                    <span className='h-3 overflow-hidden rounded-full bg-[#162b3c] xl:h-[6px]'>
-                                        <span className='block h-full rounded-full' style={{ width: `${percent}%`, backgroundColor: color }} />
-                                    </span>
-                                    <span className='text-right tabular-nums text-[#e9edf6]'>{percent}%</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={panelClass}>
-                        <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
-                            <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
-                                Paper Trading Stats
-                            </h3>
-                            <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
-                        </div>
-                        <div
-                            className='divide-y divide-[#153047]/55 text-[11px] sm:text-[12px] xl:text-[9px] xl:leading-[11px]'
-                            aria-live='polite'
-                            aria-atomic='true'
-                        >
-                            {[
-                                ['Win Rate', `${winRate}%`, 'positive'],
-                                ['Total Trades', `${selected.totalTrades}`, 'normal'],
-                                ['Profitable Trades', `${selected.profitableTrades}`, 'normal'],
-                                ['Avg. Gain', selected.avgGain, 'positive'],
-                            ].map(([label, value, sentiment]) => (
-                                <div key={label} className='flex items-center justify-between gap-3 py-[5px] first:pt-0 last:pb-0 xl:py-[3px]'>
-                                    <span className='text-[#aab4c7]'>{label}</span>
-                                    <span
-                                        className={`font-medium tabular-nums ${
-                                            sentiment === 'positive' ? 'text-[#4333AF]' : sentiment === 'negative' ? 'text-[#fa5468]' : 'text-[#f2f6fd]'
-                                        }`}
+                        <div className={panelClass}>
+                            <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                                <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                    Sector Exposure
+                                </h3>
+                                <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
+                            </div>
+                            <div className='space-y-2 xl:space-y-[4px]'>
+                                {PAPER_DESK_SECTORS.map(({ label, percent, color }) => (
+                                    <div
+                                        key={label}
+                                        className='grid grid-cols-[minmax(0,1fr)_minmax(46px,1.1fr)_32px] items-center gap-2 text-[10px] sm:text-[11px] xl:gap-1 xl:text-[9px] xl:leading-[12px]'
                                     >
-                                        {value}
-                                    </span>
-                                </div>
-                            ))}
+                                        <span className='truncate text-[#aab4c7]'>{label}</span>
+                                        <span className='h-3 overflow-hidden rounded-full bg-[#162b3c] xl:h-[6px]'>
+                                            <span className='block h-full rounded-full' style={{ width: `${percent}%`, backgroundColor: color }} />
+                                        </span>
+                                        <span className='text-right tabular-nums text-[#e9edf6]'>{percent}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={panelClass}>
+                            <div className='mb-2.5 flex items-center justify-between xl:mb-[8px]'>
+                                <h3 className='text-[12px] font-bold uppercase tracking-[.01em] text-[#4333AF] sm:text-[14px] xl:text-[10px] xl:leading-[12px]'>
+                                    Paper Trading Stats
+                                </h3>
+                                <TrendingUp className='h-[17px] w-[17px] shrink-0 text-[#4333AF] xl:h-3 xl:w-3' aria-hidden='true' />
+                            </div>
+                            <div
+                                className='divide-y divide-[#153047]/55 text-[11px] sm:text-[12px] xl:text-[9px] xl:leading-[11px]'
+                                aria-live='polite'
+                                aria-atomic='true'
+                            >
+                                {[
+                                    ['Win Rate', `${winRate}%`, 'positive'],
+                                    ['Total Trades', `${selected.totalTrades}`, 'normal'],
+                                    ['Profitable Trades', `${selected.profitableTrades}`, 'normal'],
+                                    ['Avg. Gain', selected.avgGain, 'positive'],
+                                    ['Losing Trades', `${selected.totalTrades - selected.profitableTrades}`, 'normal'],
+                                ].map(([label, value, sentiment]) => (
+                                    <div key={label} className='flex items-center justify-between gap-3 py-[5px] first:pt-0 last:pb-0 xl:py-[3px]'>
+                                        <span className='text-[#aab4c7]'>{label}</span>
+                                        <span
+                                            className={`font-medium tabular-nums ${
+                                                sentiment === 'positive' ? 'text-[#4333AF]' : sentiment === 'negative' ? 'text-[#fa5468]' : 'text-[#f2f6fd]'
+                                            }`}
+                                        >
+                                            {value}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1257,7 +1271,7 @@ export default function TradingPlatformShowcase() {
                         <div className='mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row'>
                             <ComingSoonTrigger
                                 ariaLabel='Start 30-day free trial'
-                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg px-6 text-sm font-black text-white shadow-[0_0_30px_rgba(67,51,175,.16)] bg-[#4333AF]'
+                                className='group flex min-h-12 cursor-pointer items-center justify-center gap-3 rounded-lg bg-[#4333AF] px-6 text-sm font-black text-white shadow-[0_0_30px_rgba(67,51,175,.16)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#372990] hover:shadow-[0_8px_26px_rgba(67,51,175,.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
                             >
                                 Start 30-Day Free Trial
                                 <ArrowRight className='h-4 w-4' />
@@ -1265,7 +1279,7 @@ export default function TradingPlatformShowcase() {
 
                             <ComingSoonTrigger
                                 ariaLabel='View live demo'
-                                className='flex min-h-12 items-center justify-center gap-3 rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white'
+                                className='group flex min-h-12 cursor-pointer items-center justify-center gap-3 rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#0C0F18] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
                             >
                                 View Live Demo
                                 <Target className='h-4 w-4 text-[#4333AF]' />
@@ -1426,7 +1440,7 @@ export default function TradingPlatformShowcase() {
                                                                 activeExecutionSlide.details.length,
                                                         }))
                                                     }
-                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition hover:text-white'
+                                                    className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition-all duration-200 hover:border-[#4333AF] hover:bg-[#4333AF]/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                                 >
                                                     <ChevronLeft className='h-3.5 w-3.5' />
                                                 </button>
@@ -1439,7 +1453,7 @@ export default function TradingPlatformShowcase() {
                                                             executionDetailIndex: (current.executionDetailIndex + 1) % activeExecutionSlide.details.length,
                                                         }))
                                                     }
-                                                    className='flex h-7 w-7 items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition hover:text-white'
+                                                    className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-[#414A5D] text-white/55 transition-all duration-200 hover:border-[#4333AF] hover:bg-[#4333AF]/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                                 >
                                                     <ChevronRight className='h-3.5 w-3.5' />
                                                 </button>
@@ -1462,7 +1476,7 @@ export default function TradingPlatformShowcase() {
                                                     type='button'
                                                     aria-label={`Show ${detail.title}`}
                                                     onClick={() => setExecutionPosition((current) => ({ ...current, executionDetailIndex: index }))}
-                                                    className='h-[3px] flex-1 rounded-full bg-white/15 transition-all'
+                                                    className='h-[3px] flex-1 cursor-pointer rounded-full bg-white/15 transition-all duration-200 hover:scale-y-150 hover:brightness-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                                     style={{
                                                         backgroundColor: index === executionDetailIndex ? activeExecutionSlide.accent : 'rgba(255,255,255,.16)',
                                                         boxShadow: index === executionDetailIndex ? `0 0 12px ${activeExecutionSlide.accent}70` : 'none',
@@ -1480,21 +1494,20 @@ export default function TradingPlatformShowcase() {
                                 <div className='grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[390px]'>
                                     <Link
                                         href={activeExecutionSlide.href}
-                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] bg-[#4333AF] text-white transition hover:border-[#4333AF] min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        className='showcase-execution-action group flex h-10 min-w-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-[#4333AF] px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#372990] hover:shadow-[0_8px_20px_rgba(67,51,175,.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
                                     >
-                                        <span className='truncate text-[inherit] leading-none'>View {activeExecutionSlide.title}</span>
+                                        <span className='showcase-execution-label truncate'>View {activeExecutionSlide.title}</span>
                                         <ArrowRight className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1' />
                                     </Link>
 
                                     <ComingSoonTrigger
                                         ariaLabel={`Get started with ${activeExecutionSlide.title}`}
-                                        className='group flex h-10 min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-transparent px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-[#4333AF] transition hover:bg-[#4333AF]/10 min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
+                                        className='showcase-execution-action group flex h-10 min-w-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#4333AF] bg-transparent px-2 text-[8px] font-semibold uppercase leading-none tracking-[0.04em] text-[#4333AF] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#4333AF]/10 hover:text-[#8D81ED] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] min-[390px]:text-[9px] sm:px-5 sm:text-[10px] sm:tracking-[0.08em]'
                                         style={{
-                                            background: 'transparent',
                                             boxShadow: '0 0 18px rgba(67,51,175,0.12)',
                                         }}
                                     >
-                                        <span className='text-[inherit] leading-none'>Get Started</span>
+                                        <span className='showcase-execution-label showcase-execution-label-secondary'>Get Started</span>
                                         <ArrowRight className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-1' />
                                     </ComingSoonTrigger>
                                 </div>
@@ -1504,7 +1517,7 @@ export default function TradingPlatformShowcase() {
                                         type='button'
                                         onClick={previousExecutionSlide}
                                         aria-label='Previous tool'
-                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition hover:border-[#414A5D] hover:text-white'
+                                        className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition-all duration-200 hover:border-[#4333AF] hover:bg-[#4333AF]/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                     >
                                         <ChevronLeft className='h-4 w-4' />
                                     </button>
@@ -1516,7 +1529,7 @@ export default function TradingPlatformShowcase() {
                                                 type='button'
                                                 aria-label={`Show ${slide.title}`}
                                                 onClick={() => showExecutionSlide(index)}
-                                                className='h-2.5 rounded-full transition-all duration-300'
+                                                className='h-2.5 cursor-pointer rounded-full transition-all duration-300 hover:scale-125 hover:brightness-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                                 style={{
                                                     width: index === executionIndex ? '24px' : '10px',
                                                     backgroundColor: index === executionIndex ? activeExecutionSlide.accent : 'rgba(255,255,255,.26)',
@@ -1530,7 +1543,7 @@ export default function TradingPlatformShowcase() {
                                         type='button'
                                         onClick={nextExecutionSlide}
                                         aria-label='Next tool'
-                                        className='flex h-9 w-9 items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition hover:border-[#414A5D] hover:text-white'
+                                        className='flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#414A5D] text-white/50 transition-all duration-200 hover:border-[#4333AF] hover:bg-[#4333AF]/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#4333AF]'
                                     >
                                         <ChevronRight className='h-4 w-4' />
                                     </button>
@@ -1559,7 +1572,7 @@ export default function TradingPlatformShowcase() {
                     </div>
                     <ComingSoonTrigger
                         ariaLabel='Start your 30-day free trial'
-                        className='flex min-h-12 w-full items-center justify-center gap-3 rounded-lg px-7 text-sm font-black text-white sm:w-auto bg-[#4333AF]'
+                        className='group flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-lg bg-[#4333AF] px-7 text-sm font-black text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#372990] hover:shadow-[0_8px_26px_rgba(67,51,175,.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] sm:w-auto'
                     >
                         Start Your 30-Day Free Trial
                         <ArrowRight className='h-4 w-4' />
@@ -1580,6 +1593,42 @@ export default function TradingPlatformShowcase() {
                     font-weight: 400 !important;
                     overflow-wrap: normal;
                     word-break: normal;
+                }
+
+                .trading-platform-showcase .showcase-execution-action {
+                    cursor: pointer;
+                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
+                    font-weight: 700 !important;
+                    font-size: 8px !important;
+                    line-height: 1 !important;
+                }
+
+                .trading-platform-showcase .showcase-execution-action .showcase-execution-label {
+                    font-family: 'Roboto', Arial, Helvetica, sans-serif !important;
+                    font-size: inherit !important;
+                    font-weight: 700 !important;
+                    line-height: 1 !important;
+                    letter-spacing: inherit !important;
+                    text-transform: uppercase;
+                    -webkit-font-smoothing: antialiased;
+                    text-rendering: optimizeLegibility;
+                }
+
+                /* Purple type can appear optically thinner than white at small sizes. */
+                .trading-platform-showcase .showcase-execution-action .showcase-execution-label-secondary {
+                    -webkit-text-stroke: 0.18px currentColor;
+                }
+
+                @media (min-width: 390px) {
+                    .trading-platform-showcase .showcase-execution-action {
+                        font-size: 9px !important;
+                    }
+                }
+
+                @media (min-width: 640px) {
+                    .trading-platform-showcase .showcase-execution-action {
+                        font-size: 10px !important;
+                    }
                 }
 
                 .trading-platform-showcase * {
