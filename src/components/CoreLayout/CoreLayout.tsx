@@ -8,6 +8,8 @@ import { ReactNode } from 'react';
 import { HamburgerMenu } from '../hamburger-menu';
 
 function CoreLayout({ children }: { children: ReactNode }) {
+    const currentYear = new Date().getFullYear();
+
     return (
         <AuthProvider>
             <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#414A5D] min-h-[64px] sm:min-h-[80px] flex items-center'>
@@ -212,7 +214,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                         </div>
                     </div>
 
-                    <p className='text-gray-400 font-semibold text-center mt-12 text-sm sm:text-base'>© 2024 Black Snow. All rights reserved.</p>
+                    <p className='text-gray-400 font-semibold text-center mt-12 text-sm sm:text-base'>© {currentYear} Black Snow. All rights reserved.</p>
                 </div>
             </footer>
         </AuthProvider>

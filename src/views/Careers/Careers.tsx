@@ -359,7 +359,7 @@ function Careers() {
                                             />
                                             <div className='absolute inset-0 bg-gradient-to-t from-[#050608]/60 via-transparent to-transparent'></div>
 
-                                            <div className='absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1'>
+                                            <div className='absolute top-4 right-4 bg-[#0A0D14]/50 backdrop-blur-sm rounded-full px-3 py-1'>
                                                 <span className='text-white text-xs font-semibold'>{job.posted}</span>
                                             </div>
                                         </div>
@@ -374,21 +374,21 @@ function Careers() {
                                         <CardContent className='p-6 pt-0'>
                                             <div className='space-y-3 mb-6'>
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                    <div className='w-8 h-8 bg-[#0A0D14] rounded-lg flex items-center justify-center'>
                                                         <MapPin className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-300'>{job.location}</span>
                                                 </div>
 
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                    <div className='w-8 h-8 bg-[#0A0D14] rounded-lg flex items-center justify-center'>
                                                         <DollarSign className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-300 font-semibold'>{job.salary}</span>
                                                 </div>
 
                                                 <div className='flex items-center space-x-3 text-sm'>
-                                                    <div className='w-8 h-8 bg-black rounded-lg flex items-center justify-center'>
+                                                    <div className='w-8 h-8 bg-[#0A0D14] rounded-lg flex items-center justify-center'>
                                                         <Users className='w-4 h-4 text-[#4333AF]' />
                                                     </div>
                                                     <span className='text-gray-400'>{job.applicants}</span>
@@ -442,7 +442,7 @@ function Careers() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 border-[#414A5D] text-white hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
+                                        className='border-2 border-[#414A5D] text-[#4333AF] hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent'
                                     >
                                         Learn More
                                     </Button>

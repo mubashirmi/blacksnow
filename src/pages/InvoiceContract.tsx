@@ -363,7 +363,7 @@ export default function InvoiceContractPage() {
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
+                                className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-[#0A0D14]'
                             >
                                 {/* Top gradient line */}
 
@@ -480,7 +480,7 @@ export default function InvoiceContractPage() {
                         ].map((useCase, index) => (
                             <div key={index} className='group relative'>
                                 {/* Card */}
-                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
+                                <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-[#0A0D14]'>
                                     {/* Gradient accent */}
 
                                     <div className='p-6 sm:p-8 text-center'>

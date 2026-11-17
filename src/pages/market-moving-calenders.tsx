@@ -523,7 +523,7 @@ function HeroArtwork() {
             <div
                 className='absolute bottom-[7%] right-[0%] h-[70%] w-[53%] origin-bottom-right rotate-[7deg] rounded-[10px] border border-[#414A5D] p-[7px]'
                 style={{
-                    background: '#000000',
+                    background: '#0A0D14',
                     boxShadow: '-16px 18px 35px rgba(0,0,0,0.68), 0 0 25px rgba(67,51,175,0.12), inset 0 1px 0 rgba(255,255,255,0.09)',
                 }}
             >
@@ -542,7 +542,7 @@ function HeroArtwork() {
                     ))}
                 </div>
 
-                <div className='h-full rounded-[6px] border border-[#414A5D] bg-[#000000] px-[6%] pb-[7%] pt-[14%]'>
+                <div className='h-full rounded-[6px] border border-[#414A5D] bg-[#0A0D14] px-[6%] pb-[7%] pt-[14%]'>
                     <div className='grid grid-cols-7 text-center text-[6px] font-medium uppercase text-[#4333AF] sm:text-[7px]'>
                         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
                             <span key={day}>{day}</span>

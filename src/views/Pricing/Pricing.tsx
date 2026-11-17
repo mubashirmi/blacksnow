@@ -349,7 +349,7 @@ function Pricing() {
 
                                 {/* Half-size gold chip, centered vertically at the card's left edge. */}
                                 <div className='pointer-events-none absolute left-6 top-1/2 z-10 -translate-y-1/2 sm:left-9'>
-                                    <div className='rounded-[8px] border-[1px] border-[#E8C46E] bg-[rgba(232,196,110,0.05)] p-[4px] shadow-[0_0_0_1px_rgba(255,241,187,0.08)] sm:rounded-[10px] sm:p-[7px]'>
+                                    <div className='rounded-[10px] border border-[#E8C46E] bg-[rgba(232,196,110,0.05)] p-[4px] shadow-[0_0_0_1px_rgba(255,241,187,0.08)] sm:rounded-[12px] sm:p-[5px]'>
                                         <svg
                                             className='h-[21px] w-[28px] sm:h-[24px] sm:w-[32px]'
                                             viewBox='0 0 64 48'
@@ -412,7 +412,7 @@ function Pricing() {
                                     <div key={product.id} className='w-full min-w-full shrink-0 overflow-hidden'>
                                         <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.75fr)] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:grid-cols-[minmax(0,1.65fr)_minmax(310px,0.72fr)] xl:px-12'>
                                             <div className='grid min-w-0 gap-5 md:grid-cols-[104px_1fr] md:gap-6'>
-                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#414A5D] bg-black transition-colors duration-300 hover:border-[#4333AF]/50 sm:h-24 sm:w-24 md:mx-0'>
+                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#414A5D] bg-[#0A0D14] transition-colors duration-300 hover:border-[#4333AF]/50 sm:h-24 sm:w-24 md:mx-0'>
                                                     <ProductIcon className='h-9 w-9 text-[#4333AF] sm:h-11 sm:w-11' strokeWidth={1.8} />
                                                 </div>
 
@@ -431,7 +431,7 @@ function Pricing() {
                                                         {product.features.map((feature, i) => (
                                                             <div
                                                                 key={i}
-                                                                className='flex min-w-0 items-start gap-3 rounded-xl border border-[#414A5D] bg-black px-3 py-2.5 transition-all duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18]'
+                                                                className='flex min-w-0 items-start gap-3 rounded-xl border border-[#414A5D] bg-[#0A0D14] px-3 py-2.5 transition-all duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18]'
                                                             >
                                                                 <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#414A5D] bg-transparent'>
                                                                     <CheckCircle className='h-4 w-4 text-[#4333AF]' />
@@ -446,7 +446,7 @@ function Pricing() {
                                                 </div>
                                             </div>
 
-                                            <div className='flex w-full min-w-0 max-w-full flex-col justify-center rounded-[24px] border border-[#414A5D] px-4 py-6 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:px-6 sm:py-7 lg:px-5 lg:py-7 xl:px-7'>
+                                            <div className='flex w-full min-w-0 max-w-full flex-col justify-center rounded-[24px] border border-[#414A5D] bg-[#0A0D14] px-4 py-6 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:px-6 sm:py-7 lg:px-5 lg:py-7 xl:px-7'>
                                                 <div className='flex w-full min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1'>
                                                     <span
                                                         className={`${michroma.className} max-w-full whitespace-nowrap text-[clamp(1.4rem,6vw,2.7rem)] leading-[1.15] tracking-[-0.06em] text-white sm:text-[clamp(1.7rem,4.5vw,3rem)] lg:text-[clamp(1.15rem,1.9vw,2rem)] xl:text-[clamp(1.5rem,2.15vw,2.5rem)]`}

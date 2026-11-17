@@ -165,7 +165,19 @@ export default function HeroTradingCarousel(_props: HeroTradingCarouselProps) {
                 role='region'
                 aria-roledescription='carousel'
                 aria-label='Explore Black Snow trading tools'
-                className='relative w-full min-w-0 rounded-[20px] border border-[#4333AF] bg-[#0C0F18] px-4 py-3.5 text-white shadow-[0_14px_38px_rgba(0,0,0,.35)] sm:px-5 sm:py-4'
+                className='relative w-full min-w-0 rounded-[20px] border border-[#4333AF] px-4 py-3.5 text-white sm:px-5 sm:py-4'
+                style={{
+                    // Clearer glass: softer backdrop blur, more transparency and stronger light reflections.
+                    background: [
+                        'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.065) 24%, transparent 53%)',
+                        'linear-gradient(125deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.025) 29%, transparent 49%, rgba(255,255,255,0.035) 100%)',
+                        'linear-gradient(180deg, rgba(7,9,13,0.53) 0%, rgba(10,12,18,0.34) 45%, rgba(6,8,12,0.54) 100%)',
+                    ].join(', '),
+                    WebkitBackdropFilter: 'blur(7px) saturate(160%)',
+                    backdropFilter: 'blur(7px) saturate(160%)',
+                    boxShadow:
+                        '0 18px 48px rgba(0,0,0,0.46), 0 0 40px rgba(67,51,175,0.11), inset 0 1px 0 rgba(255,255,255,0.24), inset 1px 0 0 rgba(255,255,255,0.065), inset 0 -1px 0 rgba(255,255,255,0.05)',
+                }}
             >
                 <div aria-live='polite' aria-atomic='true' className='min-w-0'>
                     <h2

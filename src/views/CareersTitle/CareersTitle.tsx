@@ -606,7 +606,7 @@ function CareersTitle() {
                                         { icon: Award, text: 'Career Growth Programs', color: 'text-[#4333AF]' },
                                         { icon: Users, text: 'Global Team Collaboration', color: 'text-[#4333AF]' },
                                     ].map((item, index) => (
-                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-black border border-[#414A5D]'>
+                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-[#0A0D14] border border-[#414A5D]'>
                                             <item.icon className={`w-5 h-5 ${item.color}`} />
                                             <span className='text-gray-300 font-medium'>{item.text}</span>
                                         </div>
@@ -703,7 +703,7 @@ function CareersTitle() {
                                         { icon: Globe, text: 'International Hiring', color: 'text-[#4333AF]' },
                                         { icon: Award, text: 'Full Compliance Support', color: 'text-[#4333AF]' },
                                     ].map((item, index) => (
-                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-black border border-[#414A5D]'>
+                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-[#0A0D14] border border-[#414A5D]'>
                                             <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color}`} />
                                             <span className='text-sm sm:text-base text-gray-300 font-medium'>{item.text}</span>
                                         </div>
@@ -812,7 +812,7 @@ function CareersTitle() {
                                     })}
                                 </div>
 
-                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-black p-6 shadow-xl shadow-black/30'>
+                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-[#0A0D14] p-6 shadow-xl shadow-black/30'>
                                     <h3 className='mb-3 text-lg font-extrabold text-white'>{activeTalentService.pricingTitle}</h3>
                                     <div className='mb-5 space-y-2'>
                                         {activeTalentService.pricing.map((priceItem) => (
@@ -1100,7 +1100,7 @@ function CareersTitle() {
                                 <Link href={'/recruitmentagency'}>
                                     <Button
                                         variant='outline'
-                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-white hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
+                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-[#fff] hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
                                     >
                                         Hire Talent
                                     </Button>

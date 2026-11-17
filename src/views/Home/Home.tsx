@@ -913,6 +913,18 @@ function Home() {
         );
     };
 
+    const heroAnimationGlassStyle = {
+        background: [
+            'radial-gradient(circle at 18% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 25%, transparent 55%)',
+            'linear-gradient(125deg, rgba(255,255,255,0.09) 0%, transparent 43%, rgba(255,255,255,0.035) 100%)',
+            'linear-gradient(180deg, rgba(7,9,13,0.46) 0%, rgba(10,12,18,0.30) 48%, rgba(6,8,12,0.48) 100%)',
+        ].join(', '),
+        WebkitBackdropFilter: 'blur(3px) saturate(160%)',
+        backdropFilter: 'blur(3px) saturate(160%)',
+        boxShadow:
+            '0 18px 48px rgba(0,0,0,0.42), 0 0 35px rgba(67,51,175,0.1), inset 0 1px 0 rgba(255,255,255,0.23), inset 1px 0 0 rgba(255,255,255,0.055), inset 0 -1px 0 rgba(255,255,255,0.04)',
+    };
+
     // ---------- JSX ----------
 
     return (
@@ -937,7 +949,7 @@ function Home() {
                 <div className='absolute inset-0'>
                     <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
 
-                    <div className='absolute inset-0 bg-black/90' />
+                    <div className='absolute inset-0 bg-black/85' />
                 </div>
 
                 <div className='relative z-10 w-full max-w-[1160px] mx-auto'>
@@ -962,7 +974,10 @@ function Home() {
                             {/* Mobile animation */}
 
                             <div className='block min-[1100px]:hidden w-full animate-slide-in-left delay-300'>
-                                <div className='home-hero-lottie-surface flex items-center justify-center w-full rounded-2xl border border-[#414A5D] bg-transparent'>
+                                <div
+                                    className='home-hero-lottie-surface flex items-center justify-center w-full rounded-2xl border border-[#414A5D] bg-transparent'
+                                    style={heroAnimationGlassStyle}
+                                >
                                     <LottieAnimation
                                         src='/animations/growthChartIcon.json'
                                         className='w-full h-[220px] xs:h-[250px] bg-transparent'
@@ -980,7 +995,10 @@ function Home() {
                         {/* ── RIGHT — desktop only ── */}
 
                         <div className='hidden min-[1100px]:flex relative animate-slide-in-right w-full self-stretch items-center justify-center'>
-                            <div className='home-hero-lottie-surface w-full max-w-[440px] h-full min-h-[490px] max-h-[530px] rounded-3xl border border-[#414A5D] overflow-hidden bg-transparent'>
+                            <div
+                                className='home-hero-lottie-surface w-full max-w-[440px] h-full min-h-[490px] max-h-[530px] rounded-3xl border border-[#414A5D] overflow-hidden bg-transparent'
+                                style={heroAnimationGlassStyle}
+                            >
                                 <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full bg-transparent' loop={true} autoplay={true} />
                             </div>
                         </div>

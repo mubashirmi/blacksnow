@@ -258,7 +258,7 @@ function HeroArtwork() {
 
 function ModelBox({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
     return (
-        <div className='flex min-h-[48px] items-center gap-2 rounded-[6px] border border-[#414A5D] bg-[#000000] px-2 lg:min-h-[55px] lg:gap-3 lg:px-4'>
+        <div className='flex min-h-[48px] items-center gap-2 rounded-[6px] border border-[#414A5D] bg-[#0A0D14] px-2 lg:min-h-[55px] lg:gap-3 lg:px-4'>
             <Icon className='h-6 w-6 shrink-0' strokeWidth={1.35} style={{ color: PURPLE_SOFT }} />
 
             <span className='text-[12px] text-[#e7e5e8]'>{label}</span>
@@ -300,7 +300,7 @@ function ModelStructure() {
                     </div>
 
                     <div className='flex items-center'>
-                        <div className='flex min-h-[125px] w-full flex-col items-center justify-center rounded-[8px] border border-[#414A5D] bg-[#000000] px-4 text-center'>
+                        <div className='flex min-h-[125px] w-full flex-col items-center justify-center rounded-[8px] border border-[#414A5D] bg-[#0A0D14] px-4 text-center'>
                             <ShoppingCart className='h-8 w-8' strokeWidth={1.3} style={{ color: PURPLE_SOFT }} />
 
                             <p className='mt-2 text-[11px] font-medium' style={{ color: PURPLE_SOFT }}>
@@ -482,7 +482,7 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Scenario</span>
 
-                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px] text-[#e4e3e5]'>
+                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#0A0D14] px-3 text-[9px] text-[#e4e3e5]'>
                             Expansionary Policy
                             <span>⌄</span>
                         </div>
@@ -491,7 +491,7 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Fiscal Stimulus</span>
 
-                        <div className='grid grid-cols-[1fr_75px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
+                        <div className='grid grid-cols-[1fr_75px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#0A0D14]'>
                             <div className='flex min-h-[35px] items-center px-3 text-[10px]'>2.0</div>
 
                             <div className='flex items-center justify-center border-l border-[#414A5D] text-[8px] text-[#bdbcc0]'>% of GDP</div>
@@ -501,7 +501,7 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Interest Rate Change</span>
 
-                        <div className='grid grid-cols-[1fr_40px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
+                        <div className='grid grid-cols-[1fr_40px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#0A0D14]'>
                             <div className='flex min-h-[35px] items-center justify-between px-3 text-[10px]'>
                                 -1.00
                                 <span>⌄</span>
@@ -514,7 +514,7 @@ function ScenarioControls() {
                     <label className='block'>
                         <span className='mb-1 block text-[8px] text-[#b5b4b7]'>Simulation Horizon</span>
 
-                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px]'>
+                        <div className='flex min-h-[35px] items-center justify-between rounded-[4px] border border-[#414A5D] bg-[#0A0D14] px-3 text-[9px]'>
                             10 Years
                             <span>⌄</span>
                         </div>

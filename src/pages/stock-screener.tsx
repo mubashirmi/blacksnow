@@ -288,7 +288,7 @@ function HeroArtwork() {
 
 function ScreenField({ label, operator, value }: { label: string; operator: string; value: string }) {
     return (
-        <div className='grid grid-cols-[1.35fr_1.15fr_0.9fr_28px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#000000]'>
+        <div className='grid grid-cols-[1.35fr_1.15fr_0.9fr_28px] overflow-hidden rounded-[4px] border border-[#414A5D] bg-[#0A0D14]'>
             <div className='flex min-h-[37px] items-center px-3 text-[10px] text-[#d5d5d2]'>{label}</div>
 
             <button type='button' className='flex min-h-[37px] items-center justify-between border-l border-[#414A5D] px-3 text-[10px] text-[#d7d7d3]'>
@@ -327,7 +327,7 @@ function ScreenBuilder() {
 
                     <button
                         type='button'
-                        className='mt-3 flex min-h-[34px] items-center gap-2 rounded-[4px] border bg-[#000000] px-3 text-[10px]'
+                        className='mt-3 flex min-h-[34px] items-center gap-2 rounded-[4px] border bg-[#0A0D14] px-3 text-[10px]'
                         style={{
                             color: GOLD_LIGHT,
                             borderColor: 'rgba(67,51,175,0.28)',
@@ -405,7 +405,7 @@ function RangeBar({ value }: { value: number }) {
             <div className='absolute top-1/2 h-[5px] w-[5px] -translate-y-1/2 rounded-full bg-[#4333AF]' style={{ left: `${Math.max(8, value - 10)}%` }} />
 
             <div
-                className='absolute top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border border-[#4333AF] bg-[#000000]'
+                className='absolute top-1/2 h-[8px] w-[8px] -translate-y-1/2 rounded-full border border-[#4333AF] bg-[#0A0D14]'
                 style={{ left: `${value}%` }}
             />
         </div>
@@ -516,7 +516,7 @@ function CircularGauge() {
                 }}
             />
 
-            <div className='absolute inset-[10px] flex flex-col items-center justify-center rounded-full bg-[#000000]'>
+            <div className='absolute inset-[10px] flex flex-col items-center justify-center rounded-full bg-[#0A0D14]'>
                 <span className='text-[27px] leading-none text-[#f4f3ee]'>8.7</span>
                 <span className='mt-1 text-[9px] text-[#b5b6b2]'>/10</span>
             </div>

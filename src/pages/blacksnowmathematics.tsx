@@ -33,7 +33,9 @@ const CALCULATORS: CalculatorDef[] = [
             { key: 'principal', placeholder: 'Principal' },
             { key: 'years', placeholder: 'Years', step: '1' },
             { key: 'rate', placeholder: 'Rate (%)' },
+            { key: 'contributionPercent', placeholder: 'Contribution (%)' },
             { key: 'frequency', placeholder: 'Frequency', frequency: true },
+            { key: 'contributionFrequency', placeholder: 'Contribution Frequency', frequency: true },
         ],
     },
     {
@@ -74,32 +76,40 @@ const CALCULATORS: CalculatorDef[] = [
         fields: [
             { key: 'currentAge', placeholder: 'Current Age', step: '1' },
             { key: 'retirementAge', placeholder: 'Retirement Age', step: '1' },
-            { key: 'monthlySavings', placeholder: 'Monthly Savings' },
+            { key: 'savings', placeholder: 'Savings' },
+            { key: 'savingsFrequency', placeholder: 'Savings Frequency', frequency: true },
             { key: 'roi', placeholder: 'ROI (%)' },
         ],
     },
 ];
 
 // Empty field values are intentional: names remain visible as placeholders.
-// Until all four inputs have been supplied the chart displays a sample projection.
+// Until all required inputs have been supplied the chart displays a sample projection.
 const EMPTY_VALUES: Record<CalculatorKey, Record<string, string>> = {
-    investment: { principal: '', years: '', rate: '', frequency: '' },
+    investment: { principal: '', years: '', rate: '', contributionPercent: '', frequency: '', contributionFrequency: '' },
     mortgage: { homePrice: '', downPayment: '', term: '', rate: '' },
     loan: { loanAmount: '', term: '', rate: '', paymentFrequency: '' },
-    retirement: { currentAge: '', retirementAge: '', monthlySavings: '', roi: '' },
+    retirement: { currentAge: '', retirementAge: '', savings: '', savingsFrequency: '', roi: '' },
 };
 const EXAMPLE_VALUES: Record<CalculatorKey, Record<string, string>> = {
-    investment: { principal: '10000', years: '5', rate: '7', frequency: '1' },
+    investment: { principal: '10000', years: '5', rate: '7', contributionPercent: '2', frequency: '12', contributionFrequency: '12' },
     mortgage: { homePrice: '400000', downPayment: '40000', term: '30', rate: '6.5' },
     loan: { loanAmount: '20000', term: '4', rate: '9', paymentFrequency: '12' },
-    retirement: { currentAge: '35', retirementAge: '65', monthlySavings: '500', roi: '7' },
+    retirement: { currentAge: '35', retirementAge: '65', savings: '500', savingsFrequency: '12', roi: '7' },
 };
 // Preserve a two-column arrangement on small screens.
 const MOBILE_FIELD_ORDER: Record<CalculatorKey, Record<string, string>> = {
-    investment: { principal: 'order-1', frequency: 'order-2', years: 'order-3', rate: 'order-4' },
+    investment: {
+        principal: 'order-1',
+        years: 'order-2',
+        rate: 'order-3',
+        contributionPercent: 'order-4',
+        frequency: 'order-5',
+        contributionFrequency: 'order-6',
+    },
     mortgage: { homePrice: 'order-1', downPayment: 'order-2', term: 'order-3', rate: 'order-4' },
     loan: { loanAmount: 'order-1', paymentFrequency: 'order-2', term: 'order-3', rate: 'order-4' },
-    retirement: { currentAge: 'order-1', retirementAge: 'order-2', monthlySavings: 'order-3', roi: 'order-4' },
+    retirement: { currentAge: 'order-1', retirementAge: 'order-2', savings: 'order-3', savingsFrequency: 'order-4', roi: 'order-5' },
 };
 const FREQUENCIES = [
     { label: 'Annually', value: '1' },
@@ -143,9 +153,51 @@ function repaymentProjection(principal: number, annualRate: number, years: numbe
     return { chart, installment, total: installment * periods, interest: installment * periods - principal };
 }
 
+/**
+ * Recurring deposits are made at the beginning of each selected interval.
+ * Growth between contribution dates uses the effective equivalent of the
+ * selected compounding frequency, so mid-period deposits do not receive a
+ * full period of interest they have not yet earned.
+ */
+function recurringProjection(
+    initial: number,
+    annualRate: number,
+    years: number,
+    compoundingFrequency: number,
+    contributionPerPeriod: number,
+    contributionFrequency: number,
+    firstYear = 0,
+    secondaryType: 'gain' | 'contributions' = 'gain'
+) {
+    const periodBase = 1 + annualRate / 100 / compoundingFrequency;
+    const growthFactor = (fractionOfYear: number) => Math.pow(periodBase, fractionOfYear * compoundingFrequency);
+    let balance = initial;
+    let contributed = 0;
+    const chart: ChartPoint[] = [{ year: firstYear, amount: initial, secondary: 0 }];
+
+    for (let year = 1; year <= years; year++) {
+        // Contributions are deposited at the start of each interval. At the
+        // year boundary, that means the year's first deposit is made at t = 0.
+        for (let payment = 0; payment < contributionFrequency; payment++) {
+            if (payment) balance *= growthFactor(1 / contributionFrequency);
+            balance += contributionPerPeriod;
+            contributed += contributionPerPeriod;
+        }
+        balance *= growthFactor(1 / contributionFrequency);
+        const growth = balance - initial - contributed;
+        chart.push({
+            year: firstYear + year,
+            amount: balance,
+            secondary: secondaryType === 'gain' ? growth : contributed,
+        });
+    }
+
+    return { chart, ending: balance, contributions: contributed, gain: balance - initial - contributed };
+}
+
 function validate(key: CalculatorKey, fields: Record<string, string>): string | undefined {
     const definition = CALCULATORS.find((item) => item.key === key)!;
-    if (definition.fields.some((field) => !fields[field.key]?.trim())) return 'Please complete all four fields.';
+    if (definition.fields.some((field) => !fields[field.key]?.trim())) return `Please complete all ${definition.fields.length} fields.`;
     if (definition.fields.some((field) => !Number.isFinite(Number(fields[field.key])))) return 'Enter valid numbers.';
     if (definition.fields.some((field) => Number(fields[field.key]) < 0)) return 'Values cannot be negative.';
 
@@ -161,7 +213,10 @@ function validate(key: CalculatorKey, fields: Record<string, string>): string | 
     if (key === 'mortgage' && Number(fields.downPayment) > Number(fields.homePrice)) return 'Down payment cannot exceed home price.';
     if (key === 'loan' && Number(fields.loanAmount) <= 0) return 'Loan amount must be greater than zero.';
     if (key === 'investment' && ![1, 4, 12, 365].includes(Number(fields.frequency))) return 'Choose a compounding frequency.';
+    if (key === 'investment' && ![1, 4, 12, 365].includes(Number(fields.contributionFrequency))) return 'Choose a contribution frequency.';
+    if (key === 'investment' && Number(fields.contributionPercent) > 100) return 'Contribution must be between 0% and 100% of the initial principal.';
     if (key === 'loan' && ![1, 4, 12, 365].includes(Number(fields.paymentFrequency))) return 'Choose a payment frequency.';
+    if (key === 'retirement' && ![1, 4, 12, 365].includes(Number(fields.savingsFrequency))) return 'Choose a savings frequency.';
 
     if (key === 'retirement') {
         const current = Number(fields.currentAge);
@@ -181,20 +236,22 @@ function calculateProjection(key: CalculatorKey, fields: Record<string, string>)
 
     if (key === 'investment') {
         const principal = number('principal');
-        const years = number('years');
-        const rate = number('rate') / 100;
-        const periodsPerYear = number('frequency');
-        const chart = Array.from({ length: years + 1 }, (_, year) => {
-            const amount = principal * Math.pow(1 + rate / periodsPerYear, year * periodsPerYear);
-            return { year, amount, secondary: amount - principal };
-        });
-        const ending = chart[chart.length - 1].amount;
+        const contributionPerPeriod = (principal * number('contributionPercent')) / 100;
+        const { chart, ending, contributions, gain } = recurringProjection(
+            principal,
+            number('rate'),
+            number('years'),
+            number('frequency'),
+            contributionPerPeriod,
+            number('contributionFrequency')
+        );
         return {
             chart,
             results: [
                 { label: 'Estimated Value', value: money(ending) },
-                { label: 'Total Gain', value: money(ending - principal) },
-                { label: 'Return', value: `${((ending / principal - 1) * 100).toFixed(1)}%` },
+                { label: 'Total Contributions', value: money(contributions) },
+                { label: 'Total Gain (Growth)', value: money(gain) },
+                { label: 'Return on Invested Amount', value: `${((gain / (principal + contributions)) * 100).toFixed(1)}%` },
             ],
         };
     }
@@ -217,22 +274,22 @@ function calculateProjection(key: CalculatorKey, fields: Record<string, string>)
 
     const currentAge = number('currentAge');
     const retirementAge = number('retirementAge');
-    const monthlySavings = number('monthlySavings');
-    const monthlyRate = number('roi') / 1200;
-    // The x-axis uses actual ages, not elapsed years (35, 36...65).
-    const chart = Array.from({ length: retirementAge - currentAge + 1 }, (_, offset) => {
-        const months = offset * 12;
-        const total =
-            monthlyRate === 0 ? monthlySavings * months : monthlySavings * (Math.expm1(months * Math.log1p(monthlyRate)) / monthlyRate) * (1 + monthlyRate);
-        return { year: currentAge + offset, amount: total, secondary: monthlySavings * months };
-    });
-    const last = chart[chart.length - 1];
+    const { chart, ending, contributions, gain } = recurringProjection(
+        0,
+        number('roi'),
+        retirementAge - currentAge,
+        12,
+        number('savings'),
+        number('savingsFrequency'),
+        currentAge,
+        'contributions'
+    );
     return {
         chart,
         results: [
-            { label: 'Retirement Nest Egg', value: money(last.amount) },
-            { label: 'Total Contributions', value: money(last.secondary) },
-            { label: 'Investment Growth', value: money(last.amount - last.secondary) },
+            { label: 'Retirement Nest Egg', value: money(ending) },
+            { label: 'Total Contributions', value: money(contributions) },
+            { label: 'Investment Growth', value: money(gain) },
         ],
     };
 }
@@ -268,8 +325,8 @@ const REFERENCE_PREVIEW: ChartPoint[] = Array.from({ length: 6 }, (_, year) => (
 
 function NumericField({ field, value, onChange }: { field: FieldDef; value: string; onChange: (value: string) => void }) {
     const style =
-        'h-[51px] w-full min-w-0 rounded-[6px] border border-[#323e50] bg-[#0a1523] px-[15px] ' +
-        'text-[16px] font-normal text-[#e4e7ec] outline-none transition-colors ' +
+        'h-[54px] w-full min-w-0 rounded-[6px] border border-[#323e50] bg-[#0a1523] px-3 sm:px-[15px] ' +
+        'text-[14px] sm:text-[15px] font-normal text-[#e4e7ec] outline-none transition-colors ' +
         'placeholder:text-[#e0e3e9] focus:border-[#81dfe6] focus:ring-1 focus:ring-[#81dfe6]/20';
 
     if (field.frequency) {
@@ -329,15 +386,18 @@ function ChartPanel({
             {/* Upper status strip, with the cyan dot and muted right-aligned mode. */}
             <div className='flex h-[14px] items-center justify-between px-[6px] text-[10px] font-semibold tracking-[0.035em]'>
                 <span className='inline-flex items-center gap-[7px] text-[#81dadd]'>
-                    <span className='h-[9px] w-[9px] rounded-full bg-[#7ceaf0] shadow-[0_0_8px_rgba(124,234,240,0.12)]' />
+                    <span className='relative inline-flex h-[10px] w-[10px] shrink-0 items-center justify-center'>
+                        <span className='absolute inset-0 rounded-full bg-[#7ceaf0] opacity-65 motion-safe:animate-ping' />
+                        <span className='relative h-[9px] w-[9px] rounded-full bg-[#7ceaf0] shadow-[0_0_10px_rgba(124,234,240,0.55)] motion-safe:animate-pulse' />
+                    </span>
                     POWER LIVE
                 </span>
                 <span className='text-[10px] font-medium text-[#858895]'>MODE LOW</span>
             </div>
 
-            <div className='mt-[4px] h-[180px] w-full'>
+            <div className='mt-[8px] h-[220px] w-full sm:h-[280px]'>
                 <ResponsiveContainer width='100%' height='100%'>
-                    <LineChart data={chart} margin={{ top: 6, right: 14, bottom: 0, left: 0 }}>
+                    <LineChart data={chart} margin={{ top: 8, right: 18, bottom: 3, left: 14 }}>
                         <CartesianGrid stroke='rgba(135,150,172,0.105)' strokeDasharray='2 2' />
                         <XAxis
                             dataKey='year'
@@ -356,11 +416,11 @@ function ChartPanel({
                             domain={[yTicks[0], yTicks[yTicks.length - 1]]}
                             ticks={yTicks}
                             tickFormatter={compactMoney}
-                            width={32}
-                            tickMargin={6}
+                            width={76}
+                            tickMargin={10}
                             tickLine={false}
                             axisLine={false}
-                            tick={{ fontSize: 10, fill: axisColor }}
+                            tick={{ fontSize: 11, fill: axisColor }}
                         />
                         <Tooltip
                             cursor={{ stroke: '#b5c0d0', strokeOpacity: 0.3, strokeDasharray: '3 3' }}
@@ -427,12 +487,15 @@ export default function BlackSnowMathematics() {
     const referencePreview = selectedKey === 'investment' && selected.fields.every((field) => !fields[field.key]);
     const projection = useMemo(() => {
         if (referencePreview) return { chart: REFERENCE_PREVIEW, results: [] as ResultItem[] };
-        // Preview intermediate field changes with defaults. On Calculate, all four values are required.
+        // Preview intermediate field changes with defaults. On Calculate, all required values are needed.
         const previewFields = {
             ...EXAMPLE_VALUES[selectedKey],
             ...Object.fromEntries(Object.entries(values[selectedKey]).filter(([, value]) => value !== '')),
         };
-        return calculateProjection(selectedKey, previewFields);
+        const preview = calculateProjection(selectedKey, previewFields);
+        // Invalid partially typed values should show the example chart, never
+        // leave Recharts without an X-axis domain while the user is editing.
+        return preview.error ? calculateProjection(selectedKey, EXAMPLE_VALUES[selectedKey]) : preview;
     }, [selectedKey, values, referencePreview]);
     const series = displaySeries[selectedKey];
 
@@ -480,14 +543,28 @@ export default function BlackSnowMathematics() {
             {/* Fine, subdued line along the upper edge as in the screenshot. */}
             <div aria-hidden='true' className='pointer-events-none absolute inset-x-0 top-[5px] h-px bg-[#212a37]/50' />
 
-            <main className='flex min-h-screen items-center justify-center px-4 pb-0 pt-3'>
+            <main className='flex min-h-screen items-center justify-center px-3 py-8 sm:px-6 sm:py-12'>
                 <div
-                    className='w-full max-w-[686px] rounded-[22px] border border-[#2c3545] px-[22px] pb-[23px] pt-[11px] shadow-[0_18px_55px_rgba(0,0,0,0.21)]'
+                    className='w-full max-w-[960px] rounded-[24px] border border-[#2c3545] px-4 pb-7 pt-5 shadow-[0_22px_68px_rgba(0,0,0,0.24)] sm:px-7 sm:pt-6 lg:px-9'
                     style={{ background: 'linear-gradient(145deg, #131c29 0%, #0b1523 46%, #07101e 100%)' }}
                 >
                     <ChartPanel chart={projection.chart} series={series} isRetirement={selectedKey === 'retirement'} referencePreview={referencePreview} />
 
-                    {/* Main selectors: 311px columns at the reference's 961px viewport. */}
+                    {results[selectedKey] && (
+                        <div role='status' aria-live='polite' className='mt-4 rounded-[7px] border border-[#344154] bg-[#0a1523] px-4 py-2'>
+                            {results[selectedKey]!.map((item) => (
+                                <div
+                                    key={item.label}
+                                    className='flex items-center justify-between gap-3 border-b border-[#2a3545] py-2.5 text-sm last:border-0'
+                                >
+                                    <span className='text-[#c4ccd8]'>{item.label}</span>
+                                    <strong className='text-right tabular-nums text-[#e7e9ed]'>{item.value}</strong>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Calculator selector and chart series. */}
                     <div className='mt-[13px] grid grid-cols-2 gap-[18px] max-[530px]:grid-cols-1'>
                         <div className='relative min-w-0'>
                             <button
@@ -552,16 +629,38 @@ export default function BlackSnowMathematics() {
                         </label>
                     </div>
 
-                    {/* Four uniformly sized input boxes on desktop. */}
-                    <div className='mt-[18px] grid grid-cols-4 gap-[16px] max-[530px]:grid-cols-2 max-[530px]:gap-3'>
+                    {/* Narrow frequency controls and place Contribution (%) beside Rate (%) on desktop. */}
+                    <div
+                        className={`mt-5 grid grid-cols-2 gap-3 sm:gap-4 ${
+                            selectedKey === 'investment'
+                                ? 'sm:grid-cols-3 min-[960px]:grid-cols-[1.12fr_.72fr_.85fr_1.06fr_.78fr_1fr]'
+                                : selectedKey === 'retirement'
+                                ? 'sm:grid-cols-3 min-[850px]:grid-cols-[.85fr_.85fr_1fr_.95fr_.78fr]'
+                                : 'sm:grid-cols-4 min-[700px]:grid-cols-[1.15fr_1.05fr_.85fr_.8fr]'
+                        }`}
+                    >
                         {selected.fields.map((field) => (
                             <div key={`${selectedKey}-${field.key}`} className={`min-w-0 ${MOBILE_FIELD_ORDER[selectedKey][field.key]} min-[531px]:order-none`}>
+                                <label className='mb-1.5 block truncate text-[11px] font-medium tracking-[0.01em] text-[#b2bdca]' title={field.placeholder}>
+                                    {field.placeholder}
+                                </label>
                                 <NumericField field={field} value={fields[field.key]} onChange={(value) => updateValue(field.key, value)} />
                             </div>
                         ))}
                     </div>
 
-                    <div className='mt-[14px] grid grid-cols-2 gap-[15px]'>
+                    {selectedKey === 'investment' && (
+                        <p className='mt-2 text-xs leading-relaxed text-[#aab4c1]'>
+                            Contribution (%) is calculated from the initial principal and added at the selected contribution frequency, at the beginning of each
+                            interval.
+                        </p>
+                    )}
+                    {selectedKey === 'retirement' && (
+                        <p className='mt-2 text-xs leading-relaxed text-[#aab4c1]'>
+                            Savings is the amount contributed each selected period. Retirement growth uses a monthly compounded annual ROI.
+                        </p>
+                    )}
+                    <div className='mt-[16px] grid grid-cols-2 gap-[15px]'>
                         <button
                             type='button'
                             // eslint-disable-next-line
@@ -585,19 +684,6 @@ export default function BlackSnowMathematics() {
                         <p role='alert' className='mt-3 text-sm text-[#fda4af]'>
                             {error}
                         </p>
-                    )}
-                    {results[selectedKey] && (
-                        <div role='status' aria-live='polite' className='mt-4 rounded-[7px] border border-[#344154] bg-[#0a1523] px-4 py-2'>
-                            {results[selectedKey]!.map((item) => (
-                                <div
-                                    key={item.label}
-                                    className='flex items-center justify-between gap-3 border-b border-[#2a3545] py-2.5 text-sm last:border-0'
-                                >
-                                    <span className='text-[#c4ccd8]'>{item.label}</span>
-                                    <strong className='text-right tabular-nums text-[#e7e9ed]'>{item.value}</strong>
-                                </div>
-                            ))}
-                        </div>
                     )}
                 </div>
             </main>

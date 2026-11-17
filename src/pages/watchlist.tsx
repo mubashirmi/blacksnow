@@ -385,17 +385,17 @@ function WatchlistTable() {
                     </p>
 
                     <div className='flex items-center gap-2'>
-                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#000000]'>
+                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#0A0D14]'>
                             <Grid2X2 className='h-4 w-4 text-[#c9cac6]' />
                         </button>
 
-                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#000000]'>
+                        <button type='button' className='flex h-8 w-8 items-center justify-center rounded-[4px] border border-[#414A5D] bg-[#0A0D14]'>
                             <List className='h-4 w-4 text-[#c9cac6]' />
                         </button>
 
                         <button
                             type='button'
-                            className='flex h-8 items-center gap-4 rounded-[4px] border border-[#414A5D] bg-[#000000] px-3 text-[9px] text-[#d2d2cf]'
+                            className='flex h-8 items-center gap-4 rounded-[4px] border border-[#414A5D] bg-[#0A0D14] px-3 text-[9px] text-[#d2d2cf]'
                         >
                             Custom View
                             <ChevronDown className='h-3 w-3' />
@@ -539,7 +539,7 @@ function WatchlistCard({
             className='rounded-[8px] border px-4 py-4'
             style={{
                 borderColor: BORDER,
-                background: '#000000',
+                background: '#0A0D14',
                 boxShadow: active ? '0 0 18px rgba(67,51,175,0.08)' : 'none',
             }}
         >

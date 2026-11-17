@@ -271,7 +271,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
 
                 <main className='flex-1 p-8'>
                     <div className='mx-auto max-w-6xl'>
-                        <h1 className='mb-8 text-center text-4xl font-bold'>Invoice Contract Dashboard</h1>
+                        <h1 className='mb-8 text-center text-4xl font-bold'>Business Invoice Dashboard</h1>
 
                         {children}
                     </div>

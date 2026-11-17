@@ -112,7 +112,7 @@ function FAQ() {
                                         {openItems.includes(faq.id) && (
                                             <CardContent className='px-6 sm:px-8 pb-6 sm:pb-8 pt-0'>
                                                 <div className='ml-0 sm:ml-20'>
-                                                    <div className='bg-black rounded-2xl p-5 sm:p-6 border border-[#414A5D] group-hover:border-[#4333AF]/50 transition-all duration-300'>
+                                                    <div className='bg-[#0A0D14] rounded-2xl p-5 sm:p-6 border border-[#414A5D] group-hover:border-[#4333AF]/50 transition-all duration-300'>
                                                         <p className='text-sm sm:text-base text-gray-300 leading-relaxed'>{faq.text}</p>
                                                     </div>
                                                 </div>

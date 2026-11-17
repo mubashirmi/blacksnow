@@ -28,7 +28,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 
-const TOOL_PREVIEW_COLOR = '#2B358D';
+const TOOL_PREVIEW_COLOR = '#6D83B2';
 // const BLUE = '#4333AF';
 // const BLUE_MID = '#4333AF';
 
@@ -313,7 +313,7 @@ function MiniBars() {
     return (
         <div className='flex h-20 items-end justify-center gap-2'>
             {[34, 52, 42, 77, 48, 88, 63].map((h, i) => (
-                <div key={i} className='w-3 rounded-t-[2px] bg-[#2B358D]' style={{ height: `${h}%` }} />
+                <div key={i} className='w-3 rounded-t-[2px] bg-[#6D83B2]' style={{ height: `${h}%` }} />
             ))}
         </div>
     );
@@ -321,11 +321,9 @@ function MiniBars() {
 
 function MiniList() {
     return (
-        <div className='h-20 w-full'>
-            <div className='flex h-4 items-center justify-end'>
-                <ListChecks className='h-4 w-4 text-[#2B358D]' strokeWidth={1.8} aria-hidden='true' />
-            </div>
-            <div className='space-y-1.5 text-[10px] sm:text-[11px]'>
+        <div className='relative h-20 w-full'>
+            <ListChecks className='absolute right-0 top-0 h-7 w-7 text-[#6D83B2]' strokeWidth={1.8} aria-hidden='true' />
+            <div className='absolute inset-x-0 bottom-0 space-y-[2px] text-[9px] sm:text-[10px]'>
                 {[
                     ['AAPL', '193.42', '+1.92%'],
                     ['MSFT', '415.65', '+1.21%'],
@@ -349,9 +347,9 @@ function Preview({ kind, id }: { kind: (typeof tools)[number]['kind']; id: strin
     if (kind === 'globe')
         return (
             <div className='relative flex h-20 items-center justify-center'>
-                <Globe2 className='h-20 w-20 text-[#2B358D]' strokeWidth={1.5} />
-                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#2B358D]' />
-                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#2B358D]' />
+                <Globe2 className='h-20 w-20 text-[#6D83B2]' strokeWidth={1.5} />
+                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#6D83B2]' />
+                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#6D83B2]' />
             </div>
         );
     if (kind === 'curve') return <MiniLine id={`${id}-curve`} />;
@@ -431,7 +429,7 @@ function SimplePricingStrip() {
 
 function PreviewShell({ slide, children }: { slide: ExecutionSlide; children: ReactNode }) {
     return (
-        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-black p-4 sm:min-h-[320px] sm:p-5'>
+        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] p-4 sm:min-h-[320px] sm:p-5'>
             <div
                 className='pointer-events-none absolute inset-0 opacity-70'
                 style={{
@@ -467,14 +465,14 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Margin Used', '$0.00'],
                         ['Cash', '$100,000'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                             <p className='text-[9px] uppercase tracking-[0.1em] text-white/32'>{label}</p>
                             <p className='mt-1 text-xs font-semibold text-white/85'>{value}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[10px] font-semibold text-white/75'>Order Ticket</span>
                         <span className='rounded-full px-2 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
@@ -524,7 +522,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ].map(([metric, op, value]) => (
                         <div
                             key={metric}
-                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-black px-3 py-2.5 text-[9px] sm:text-[10px]'
+                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-2.5 text-[9px] sm:text-[10px]'
                         >
                             <span className='font-medium text-white/75'>{metric}</span>
                             <span className='text-white/38'>{op}</span>
@@ -585,7 +583,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['AMD', '+6.21%'],
                                 ['SMCI', '+5.18%'],
                             ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-black px-3 py-3'>
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
                                     <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
                                 </div>
@@ -601,7 +599,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                                 ['PYPL', '-3.18%'],
                                 ['SNAP', '-2.89%'],
                             ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-black px-3 py-3'>
+                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-3'>
                                     <span className='text-[10px] font-semibold text-white'>{symbol}</span>
                                     <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
                                 </div>
@@ -610,7 +608,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     </div>
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                     <div className='flex items-center justify-between'>
                         <span className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Most Active</span>
                         <span className='text-[10px] font-semibold' style={{ color: accent }}>
@@ -635,7 +633,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Operational Efficiency', '87%', '+6%'],
                         ['New Markets', '24', '+4'],
                     ].map(([label, value, delta]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                             <p className='text-[8px] uppercase leading-4 tracking-[0.08em] text-white/32'>{label}</p>
                             <div className='mt-2 flex items-end justify-between gap-2'>
                                 <span className='text-lg font-semibold text-white'>{value}</span>
@@ -686,7 +684,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                         ['Inflation', '2.4%'],
                         ['Unemployment', '5.1%'],
                     ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-black p-3'>
+                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                             <p className='text-[8px] uppercase tracking-[0.08em] text-white/32'>{label}</p>
                             <p className='mt-2 text-sm font-semibold' style={{ color: accent }}>
                                 {value}
@@ -695,7 +693,7 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                     ))}
                 </div>
 
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-black p-3'>
+                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
                     <p className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Model Structure</p>
                     <div className='mt-3 grid grid-cols-3 gap-2 text-center text-[9px]'>
                         {['Households', 'Markets', 'Central Bank'].map((item) => (
@@ -1013,7 +1011,7 @@ function PaperDeskDashboard() {
     const [period, setPeriod] = useState<PaperDeskPeriod>('1D');
     const selected = PAPER_DESK_DATA[period];
     const winRate = Math.round((selected.profitableTrades / selected.totalTrades) * 100);
-    const panelClass = 'min-w-0 h-full rounded-[13px] border border-[#414A5D] bg-[#040e18]/75 p-3 sm:p-4 lg:p-3 xl:rounded-[8px] xl:p-[7px]';
+    const panelClass = 'min-w-0 h-full rounded-[13px] border border-[#414A5D] bg-[#0A0D14] p-3 sm:p-4 lg:p-3 xl:rounded-[8px] xl:p-[7px]';
 
     return (
         <div className='relative w-full overflow-hidden rounded-[22px] border border-[#414A5D] bg-[#0C0F18] p-2.5 text-white xl:min-h-[520px] xl:h-auto xl:p-[8px] shadow-[0_22px_76px_rgba(0,0,0,.5),0_0_48px_rgba(67,51,175,.075)] sm:p-3'>
@@ -1029,7 +1027,7 @@ function PaperDeskDashboard() {
                             className='h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12 xl:h-8 xl:w-8'
                         />
                         <div className='min-w-0'>
-                            <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-[#2B358D] sm:text-[16px] xl:text-[12px]'>
+                            <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-[#6D83B2] sm:text-[16px] xl:text-[12px]'>
                                 BLACK SNOW
                             </p>
                             <p className='mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[.14em] text-[#4333AF] sm:text-[12px] xl:text-[9px]'>
@@ -1058,7 +1056,7 @@ function PaperDeskDashboard() {
                 </div>
 
                 <div className='grid gap-2.5 sm:gap-3 lg:gap-2 xl:gap-[6px] min-[520px]:grid-cols-2 min-[520px]:grid-rows-4'>
-                    <div className='col-span-1 grid grid-cols-3 items-center rounded-[13px] border border-[#414A5D] bg-[#0C0F18] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:px-1 xl:py-[3px] min-[520px]:col-span-2'>
+                    <div className='col-span-1 grid grid-cols-3 items-center rounded-[13px] border border-[#414A5D] bg-[#0A0D14] px-1.5 py-3 sm:px-2 sm:py-3.5 xl:px-1 xl:py-[3px] min-[520px]:col-span-2'>
                         <div className='min-w-0 px-2 sm:px-4 xl:px-3'>
                             <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Account Value</p>
                             <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.25vw,20px)] xl:text-[15px] font-bold tracking-[-.025em] text-white'>
@@ -1341,18 +1339,18 @@ export default function TradingPlatformShowcase() {
                                         <div className='flex items-center gap-3'>
                                             <span
                                                 aria-hidden='true'
-                                                className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#414A5D]/70 bg-[#07090E]'
+                                                className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#414A5D]/70 bg-[#0A0D14]'
                                             >
                                                 <Icon className='h-6 w-6 text-[#4333AF] sm:h-7 sm:w-7' strokeWidth={2} />
                                             </span>
-                                            <h3 className='showcase-subheading text-sm font-black uppercase tracking-[.02em] text-[#2B358D]'>{tool.title}</h3>
+                                            <h3 className='showcase-subheading text-sm font-black uppercase tracking-[.02em] text-[#6D83B2]'>{tool.title}</h3>
                                         </div>
                                         <p className='mt-3 text-xs leading-5 text-white/65 sm:text-sm sm:leading-6'>{tool.body}</p>
-                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#2B358D]'>
-                                            Learn More <ArrowRight className='h-3.5 w-3.5 text-[#2B358D]' />
+                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#6D83B2]'>
+                                            Learn More <ArrowRight className='h-3.5 w-3.5 text-[#6D83B2]' />
                                         </div>
                                     </div>
-                                    <div className='hidden min-h-[125px] items-center justify-center border-t border-[#414A5D] bg-[#080A0F] p-4 sm:flex md:border-l md:border-t-0'>
+                                    <div className='hidden min-h-[125px] items-center justify-center border-t border-[#414A5D] bg-[#0A0D14] p-4 sm:flex md:border-l md:border-t-0'>
                                         <Preview kind={tool.kind} id={`tool-${index}`} />
                                     </div>
                                 </Link>
@@ -1370,7 +1368,7 @@ export default function TradingPlatformShowcase() {
                         {audiences.map(({ icon: Icon, title, body }) => (
                             <article
                                 key={title}
-                                className='flex items-start gap-4 rounded-xl border border-[#414A5D] bg-black px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
+                                className='flex items-start gap-4 rounded-xl border border-[#414A5D] bg-[#0A0D14] px-4 py-4 text-left sm:block sm:min-w-[245px] sm:snap-start sm:py-5 sm:text-center xl:min-w-0'
                             >
                                 <Icon className='h-9 w-9 shrink-0 text-[#4333AF] sm:mx-auto sm:h-10 sm:w-10' strokeWidth={1.35} />
                                 <div className='min-w-0'>
@@ -1400,7 +1398,7 @@ export default function TradingPlatformShowcase() {
                             <div className='flex items-center justify-between gap-4'>
                                 <div className='flex min-w-0 items-center gap-3'>
                                     <Image src='/logocolored.png' alt='Black Snow' width={30} height={30} className='h-7 w-7 shrink-0 object-contain' />
-                                    <span className='truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-[#2B358D] sm:text-[11px]'>
+                                    <span className='truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-[#6D83B2] sm:text-[11px]'>
                                         Black Snow
                                     </span>
                                 </div>

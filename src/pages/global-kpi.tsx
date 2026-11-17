@@ -9,7 +9,7 @@ import { useState, type ReactNode } from 'react';
 const BLUE = '#4333AF';
 const BLUE_BRIGHT = '#4333AF';
 const GOLD = '#4333AF';
-// const GOLD_LIGHT = '#4333AF';
+const GOLD_LIGHT = '#4333AF';
 // const GREEN = '#4333AF';
 const PAGE_BG = '#0C0F18';
 
@@ -110,7 +110,7 @@ function SatisfactionChart() {
                     }}
                 />
 
-                <div className='absolute inset-[29px] flex items-center justify-center rounded-full bg-[#000000]'>
+                <div className='absolute inset-[29px] flex items-center justify-center rounded-full bg-[#0A0D14]'>
                     <div className='text-center'>
                         <div className='mx-auto h-11 w-11 rounded-t-full border-2 border-white border-b-0' />
                         <div className='mx-auto -mt-1 h-7 w-20 rounded-t-full border-2 border-white border-b-0' />
@@ -151,7 +151,7 @@ function EfficiencyRow({ icon, label, value }: { icon: ReactNode; label: string;
 
             <p className='text-[15px] text-[#e5e5e2]'>{label}</p>
 
-            <div className='relative h-[18px] rounded-[4px] bg-[#000000]'>
+            <div className='relative h-[18px] rounded-[4px] bg-[#0A0D14]'>
                 <div
                     className='absolute inset-y-0 left-0 rounded-[4px]'
                     style={{

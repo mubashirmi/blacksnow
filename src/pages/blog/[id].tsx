@@ -133,7 +133,7 @@ export default function BlogPostPage() {
                                 </div>
 
                                 {/* Views Badge */}
-                                <div className='absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-2'>
+                                <div className='absolute top-4 right-4 bg-[#0A0D14]/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-2'>
                                     <Eye className='w-3 h-3 text-white' />
                                     <span className='text-white text-xs font-semibold'>{formatViews(blogPost.views)}</span>
                                 </div>

@@ -210,7 +210,7 @@ export default function Page() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 border-[#414A5D] text-white hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
+                                        className='border-2 border-[#414A5D] text-[#fff] hover:bg-[#4333AF] hover:text-white px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg bg-transparent cursor-pointer w-full sm:w-[300px]'
                                     >
                                         Were here to support you
                                     </Button>

@@ -13,6 +13,15 @@ import { useForm } from 'react-hook-form';
 // ─── Shared Constants ─────────────────────────────────────────────────────────
 const UNIFIED_CARD_HEIGHT = 580;
 
+// Original Nov 10 translucent glass treatment, matching the approved Sign In page.
+const AUTH_GLASS_STYLE = {
+    background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+    WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+    backdropFilter: 'blur(7px) saturate(145%)',
+    borderColor: 'rgba(255,255,255,0.10)',
+    boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(44,123,190,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+} as const;
+
 // ─── Terms Slides ─────────────────────────────────────────────────────────────
 type TermsSlide = {
     id: string;
@@ -266,12 +275,11 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
                 `}</style>
 
                 <div
-                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#0C0F18] sm:rounded-[32px]'
+                    className='relative rounded-[24px] border overflow-hidden flex flex-col backdrop-blur-[7px] sm:rounded-[32px]'
                     style={{
+                        ...AUTH_GLASS_STYLE,
                         minHeight: UNIFIED_CARD_HEIGHT,
                         height: UNIFIED_CARD_HEIGHT,
-                        borderColor: '#414A5D',
-                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
                     }}
                 >
                     <div
@@ -522,7 +530,7 @@ function ProductHeader({
     return (
         <div className='relative px-7 pt-6 pb-0'>
             <div className='grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-3 mb-3'>
-                <div className='h-11 w-11 rounded-2xl border border-[#414A5D] bg-black/30 flex items-center justify-center shadow-md'>
+                <div className='h-11 w-11 rounded-2xl border border-[#414A5D] bg-[#0A0D14]/30 flex items-center justify-center shadow-md'>
                     {ProductIcon ? (
                         <ProductIcon className='w-6 h-6 text-white/80' />
                     ) : (
@@ -1062,12 +1070,15 @@ export default function AuthModal({
         const previewTitle = comingSoonToolName?.trim() || TOOL_PREVIEW_TITLES[toolSlug] || 'Coming Soon';
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[32px] border border-[#414A5D] bg-[#0C0F18] p-7 text-white shadow-[0_24px_60px_rgba(0,0,0,0.7)] [&>button]:hidden'>
+                <DialogContent
+                    className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[32px] border border-white/10 bg-transparent p-7 text-white backdrop-blur-[7px] [&>button]:hidden'
+                    style={AUTH_GLASS_STYLE}
+                >
                     <button
                         type='button'
                         aria-label='Close Coming Soon preview'
                         onClick={() => onOpenChange(false)}
-                        className='absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-[#414A5D] bg-black/40 text-white transition-colors hover:bg-white/10'
+                        className='absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-[#414A5D] bg-[#0A0D14]/40 text-white transition-colors hover:bg-white/10'
                     >
                         <X className='h-5 w-5' />
                     </button>
@@ -1082,28 +1093,28 @@ export default function AuthModal({
                             type='text'
                             placeholder='Full name'
                             aria-label='Full name (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
                         />
                         <Input
                             disabled
                             type='tel'
                             placeholder='Phone number'
                             aria-label='Phone number (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
                         />
                         <Input
                             disabled
                             type='email'
                             placeholder='Email address'
                             aria-label='Email address (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
                         />
                         <Input
                             disabled
                             type='password'
                             placeholder='Password'
                             aria-label='Password (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
                         />
                         <label className='flex items-start gap-3 text-xs text-white/50'>
                             <input disabled type='checkbox' className='mt-0.5 h-4 w-4 rounded border border-[#414A5D]' />I agree to the Terms &amp; Conditions
@@ -1160,15 +1171,11 @@ export default function AuthModal({
             >
                 <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
                     <div
-                        className='relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-2xl'
+                        className='relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-[7px]'
                         style={{
+                            ...AUTH_GLASS_STYLE,
                             height: UNIFIED_CARD_HEIGHT,
                             maxHeight: 'calc(100dvh - 2rem)',
-                            background: '#0C0F18',
-                            WebkitBackdropFilter: 'blur(8px) saturate(145%)',
-                            backdropFilter: 'blur(8px) saturate(145%)',
-                            boxShadow: '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                            borderColor: '#414A5D',
                         }}
                     >
                         {hasProduct && <ProductHeader product={productContext!} billingPeriod={billingPeriod} onBillingChange={setBillingPeriod} />}
@@ -1179,7 +1186,7 @@ export default function AuthModal({
                             onClick={() => {
                                 if (!isLoading && !otpSending && !otpVerifying) onOpenChange(false);
                             }}
-                            className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border hover:bg-white/10 transition-all duration-300 z-20'
+                            className='absolute right-4 top-4 w-10 h-10 bg-[#0A0D14]/40 rounded-2xl flex items-center justify-center border hover:bg-white/10 transition-all duration-300 z-20'
                             style={{
                                 borderColor: '#414A5D',
                             }}
@@ -1197,7 +1204,7 @@ export default function AuthModal({
                             <DialogHeader className='relative z-10 px-7 pt-7 pb-0 text-center'>
                                 <div className='flex flex-col items-center mb-5'>
                                     <div
-                                        className='h-14 w-14 rounded-2xl border bg-black/30 flex items-center justify-center mb-4 shadow-xl'
+                                        className='h-14 w-14 rounded-2xl border bg-[#0A0D14]/30 flex items-center justify-center mb-4 shadow-xl'
                                         style={{
                                             borderColor: isFeedbackAuth ? 'rgba(6, 78, 59, 0.45)' : isUnsubscribeAuth ? 'rgba(127, 29, 29, 0.15)' : '#414A5D',
                                         }}
@@ -1233,7 +1240,7 @@ export default function AuthModal({
                                         type='button'
                                         onClick={handleSignInRedirect}
                                         className='font-semibold hover:text-white transition-colors duration-300 cursor-pointer'
-                                        style={{ color: modalAccent }}
+                                        style={{ color: '#4cc7e8' }}
                                     >
                                         Sign In
                                     </button>
@@ -1269,7 +1276,7 @@ export default function AuthModal({
 
                             {showVerification ? (
                                 <div className='flex flex-col gap-3 flex-1'>
-                                    <div className='rounded-2xl border border-[#414A5D] bg-black/25 p-4'>
+                                    <div className='rounded-2xl border border-[#414A5D] bg-[#0A0D14]/25 p-4'>
                                         <p className='text-[10px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: modalAccent }}>
                                             Verify your account
                                         </p>
@@ -1335,7 +1342,7 @@ export default function AuthModal({
                                                     setOtp('');
                                                     setOtpSent(false);
                                                 }}
-                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 px-4 py-3 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 px-4 py-3 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
                                             <p className='text-[11px] text-white/45'>Use E.164 format, for example +923001234567.</p>
                                         </div>
@@ -1378,7 +1385,7 @@ export default function AuthModal({
                                                     placeholder='Enter OTP'
                                                     value={otp}
                                                     onChange={(event) => setOtp(event.target.value)}
-                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                 />
 
                                                 <Shield className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
@@ -1439,7 +1446,7 @@ export default function AuthModal({
                                                             return cleaned.length >= 2 || 'Please enter your name';
                                                         },
                                                     })}
-                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                     style={{
                                                         borderColor: undefined,
                                                     }}
@@ -1460,7 +1467,7 @@ export default function AuthModal({
                                                     type='tel'
                                                     placeholder='Phone number'
                                                     {...register('phoneNumber', { required: 'Phone number is required', validate: validatePhoneNumber as any })}
-                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                    className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                                 />
 
                                                 <Phone className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
@@ -1477,7 +1484,7 @@ export default function AuthModal({
                                                 type='email'
                                                 placeholder='Email address'
                                                 {...register('email', { required: 'Email is required', validate: validateEmail as any })}
-                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 pl-12 pr-4 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
 
                                             <Mail className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
@@ -1493,7 +1500,7 @@ export default function AuthModal({
                                                 type={showPassword ? 'text' : 'password'}
                                                 placeholder='Password'
                                                 {...register('password', { required: 'Password is required', validate: validatePassword as any })}
-                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-black/75 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
+                                                className='w-full rounded-2xl border border-[#414A5D] focus:border-[#4333AF] bg-[#0A0D14]/75 pl-12 pr-12 py-5 text-white placeholder:text-white/35 text-sm font-medium focus:bg-black/35 transition-all duration-300 outline-none'
                                             />
 
                                             <Lock className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#414A5D]' />
@@ -1536,7 +1543,7 @@ export default function AuthModal({
                                                     type='button'
                                                     onClick={() => setShowTermsModal(true)}
                                                     className='text-xs font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                                    style={{ color: modalAccent }}
+                                                    style={{ color: '#93c5fd' }}
                                                 >
                                                     Terms & Conditions
                                                 </button>{' '}
@@ -1575,7 +1582,7 @@ export default function AuthModal({
                                                 <span
                                                     className='hover:text-white transition-colors duration-300 cursor-pointer font-semibold'
                                                     style={{
-                                                        color: '#4333AF',
+                                                        color: '#4cc7e8',
                                                     }}
                                                 >
                                                     Sign In

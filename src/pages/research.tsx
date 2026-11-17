@@ -360,7 +360,7 @@ function OutlookBadge({ outlook }: { outlook: ResearchSnapshotRow['outlook'] }) 
 function DesktopRow({ children, columns }: { children: ReactNode; columns: string }) {
     return (
         <div
-            className='grid min-h-[35px] items-center border-b border-[#414A5D] bg-[#000000] px-2 py-1.5 text-[11px] leading-[1.25] text-[#d6d9dc] last:border-b-0'
+            className='grid min-h-[35px] items-center border-b border-[#414A5D] bg-[#0A0D14] px-2 py-1.5 text-[11px] leading-[1.25] text-[#d6d9dc] last:border-b-0'
             style={{ gridTemplateColumns: columns }}
         >
             {children}
@@ -374,7 +374,7 @@ function Cell({ children, className = '' }: { children: ReactNode; className?: s
 
 function MobileDataCard({ fields }: { fields: Array<{ label: string; value: ReactNode }> }) {
     return (
-        <div className='border-b border-[#414A5D] bg-[#000000] px-1 py-3 last:border-b-0'>
+        <div className='border-b border-[#414A5D] bg-[#0A0D14] px-1 py-3 last:border-b-0'>
             <dl className='grid grid-cols-2 gap-x-4 gap-y-2.5'>
                 {fields.map((field) => (
                     <div key={field.label} className='min-w-0'>
@@ -730,7 +730,7 @@ const ResearchPage: NextPage = () => {
                                     {researchTools.map(({ icon: Icon, title, body }) => (
                                         <div
                                             key={title}
-                                            className='page-compact-card flex min-h-[150px] flex-col items-center bg-[#000000] px-5 py-5 text-center sm:border-b sm:border-[#414A5D] lg:border-b-0'
+                                            className='page-compact-card flex min-h-[150px] flex-col items-center bg-[#0A0D14] px-5 py-5 text-center sm:border-b sm:border-[#414A5D] lg:border-b-0'
                                         >
                                             <Icon className='h-10 w-10 text-[#4333AF]' strokeWidth={1.4} />
 

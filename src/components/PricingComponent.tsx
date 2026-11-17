@@ -49,6 +49,15 @@ type TermsSlide = {
 
 const UNIFIED_CARD_HEIGHT = 580;
 
+// Original Nov 10 translucent glass treatment, matching the approved Sign In page.
+const AUTH_GLASS_STYLE = {
+    background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
+    WebkitBackdropFilter: 'blur(7px) saturate(145%)',
+    backdropFilter: 'blur(7px) saturate(145%)',
+    borderColor: 'rgba(255,255,255,0.10)',
+    boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(44,123,190,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+} as const;
+
 const BASE_TERMS_SLIDES: TermsSlide[] = [
     {
         id: 'gdpr',
@@ -292,12 +301,11 @@ function TermsSlideModal({
                 `}</style>
 
                 <div
-                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#0C0F18] sm:rounded-[32px]'
+                    className='relative rounded-[24px] border overflow-hidden flex flex-col backdrop-blur-[7px] sm:rounded-[32px]'
                     style={{
+                        ...AUTH_GLASS_STYLE,
                         minHeight: UNIFIED_CARD_HEIGHT,
                         height: UNIFIED_CARD_HEIGHT,
-                        borderColor: '#414A5D',
-                        boxShadow: '0 24px 60px rgba(0,0,0,0.55)',
                     }}
                 >
                     <button
@@ -334,7 +342,7 @@ function TermsSlideModal({
                         <div className='mb-4 h-px w-full rounded-full bg-[#414A5D] sm:mb-5' />
 
                         <div className='legal-slide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1'>
-                            <div className='mb-4 rounded-2xl border p-4 sm:mb-5' style={{ backgroundColor: '#000000', borderColor: '#414A5D' }}>
+                            <div className='mb-4 rounded-2xl border p-4 sm:mb-5' style={{ backgroundColor: '#0A0D14', borderColor: '#414A5D' }}>
                                 <p className='text-[11px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: accent }}>
                                     Summary
                                 </p>
@@ -384,7 +392,7 @@ function TermsSlideModal({
 
                             <span
                                 className='justify-self-center whitespace-nowrap rounded-xl px-2 py-1 text-[10px] font-bold text-white/70 sm:px-3 sm:text-xs'
-                                style={{ backgroundColor: '#000000', border: '1px solid #414A5D' }}
+                                style={{ backgroundColor: '#0A0D14', border: '1px solid #414A5D' }}
                             >
                                 Slide {current + 1}/{slides.length}
                             </span>
@@ -394,7 +402,7 @@ function TermsSlideModal({
                                     type='button'
                                     onClick={handlePrev}
                                     disabled={current === 0}
-                                    className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#414A5D] bg-[#000000] transition-all disabled:opacity-20 hover:border-[#4333AF] hover:scale-105'
+                                    className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#414A5D] bg-[#0A0D14] transition-all disabled:opacity-20 hover:border-[#4333AF] hover:scale-105'
                                     aria-label='Previous terms slide'
                                 >
                                     <ChevronLeft className='h-4 w-4 text-white' />
@@ -816,15 +824,13 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
-                className={`relative rounded-[32px] border border-[#414A5D] overflow-hidden flex flex-col ${product.available ? '' : 'opacity-70'} ${
-                    inModal ? 'w-full' : ''
-                }`}
+                className={`relative rounded-[32px] border border-[#414A5D] overflow-hidden flex flex-col backdrop-blur-[7px] ${
+                    product.available ? '' : 'opacity-70'
+                } ${inModal ? 'w-full' : ''}`}
                 style={{
+                    ...AUTH_GLASS_STYLE,
                     minHeight: UNIFIED_CARD_HEIGHT,
                     height: UNIFIED_CARD_HEIGHT,
-                    background: '#0C0F18',
-                    boxShadow: '0 24px 60px rgba(0,0,0,0.55)',
-                    borderColor: '#414A5D',
                 }}
             >
                 <div className='relative flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7'>
@@ -851,7 +857,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     {/* Billing toggle — hidden for monthlyOnly products */}
                     {product.hasSubscription && !product.monthlyOnly && (
                         <div className='mt-5 flex justify-center'>
-                            <div className='flex w-full max-w-[220px] rounded-full border border-[#414A5D] bg-[#000000] p-1'>
+                            <div className='flex w-full max-w-[220px] rounded-full border border-[#414A5D] bg-[#0A0D14] p-1'>
                                 <button
                                     type='button'
                                     onClick={() => setBillingPeriod('monthly')}
@@ -961,7 +967,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 )
                             ) : (
                                 <div className='w-full py-2 text-center'>
-                                    <span className='inline-flex items-center gap-2 rounded-xl border border-[#414A5D] bg-[#000000] px-5 py-3 text-sm font-bold text-white/70'>
+                                    <span className='inline-flex items-center gap-2 rounded-xl border border-[#414A5D] bg-[#0A0D14] px-5 py-3 text-sm font-bold text-white/70'>
                                         <Clock className='h-5 w-5' />
                                         Coming Soon
                                     </span>
@@ -1011,7 +1017,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Signup Modal */}
                 <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
-                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md border border-white/10 rounded-3xl backdrop-blur-[7px]' style={AUTH_GLASS_STYLE}>
                         <button
                             onClick={() => setShowSignupModal(false)}
                             className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'
@@ -1059,7 +1065,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Confirm Unsubscribe Modal */}
                 <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md border border-white/10 rounded-3xl backdrop-blur-[7px]' style={AUTH_GLASS_STYLE}>
                         <button
                             onClick={() => setShowConfirmModal(false)}
                             className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'
@@ -1097,7 +1103,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Success Modal */}
                 <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md border border-white/10 rounded-3xl backdrop-blur-[7px]' style={AUTH_GLASS_STYLE}>
                         <button
                             onClick={() => setShowSuccessModal(false)}
                             className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'

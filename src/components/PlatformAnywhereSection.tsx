@@ -275,25 +275,28 @@ function DeviceTile({ Icon, label }: { Icon: LucideIcon; label: string }) {
 function MobileArtwork() {
     return (
         <div
-            className='relative mx-auto flex w-full max-w-[315px] items-center justify-end pb-1 pt-4'
+            className='relative mx-auto flex w-full max-w-[265px] items-center justify-end pb-1 pt-2 sm:max-w-[315px] sm:pt-4'
             aria-label='Tablet and smartphone illustration of the Black Snow platform'
             role='img'
         >
-            <div className='w-[79%] rounded-[12px] border-[6px] border-[#4333AF] bg-[#0C0F18] p-[7px] shadow-[0_0_15px_rgba(67,51,175,.28)] sm:border-[8px]'>
-                <div className='grid aspect-[1.4/1] grid-cols-2 grid-rows-2 gap-1.5 rounded-md bg-[#080A10] p-1.5'>
+            <div className='w-[79%] rounded-[12px] border-[5px] border-[#4333AF] bg-[#0C0F18] p-[6px] shadow-[0_0_15px_rgba(67,51,175,.28)] sm:border-[8px] sm:p-[7px]'>
+                <div className='grid aspect-[1.6/1] grid-cols-2 grid-rows-2 gap-1 rounded-md bg-[#0A0D14] p-1 sm:aspect-[1.4/1] sm:gap-1.5 sm:p-1.5'>
                     <DeviceTile Icon={BarChart3} label='Analytics' />
                     <DeviceTile Icon={Send} label='Campaigns' />
                     <DeviceTile Icon={FileText} label='Invoices' />
                     <DeviceTile Icon={Users} label='Account' />
                 </div>
             </div>
-            <div className='absolute bottom-0 left-0 w-[30%] rounded-[12px] border-[3px] border-[#4333AF] bg-[#0C0F18] p-[4px] shadow-[0_0_0_2px_#414A5D,0_0_14px_rgba(67,51,175,.24)]'>
-                <div className='relative rounded-[6px] bg-[#080A10] p-1 pt-3'>
+            <div className='absolute bottom-0 left-0 w-[26%] rounded-[10px] border-[2px] border-[#4333AF] bg-[#0C0F18] p-[3px] shadow-[0_0_0_2px_#414A5D,0_0_14px_rgba(67,51,175,.24)] sm:w-[30%] sm:rounded-[12px] sm:border-[3px] sm:p-[4px]'>
+                <div className='relative rounded-[6px] bg-[#0A0D14] p-[3px] pt-2 sm:p-1 sm:pt-3'>
                     <span className='absolute left-1/2 top-[3px] h-[3px] w-5 -translate-x-1/2 rounded-full bg-[#414A5D]' />
-                    <MountainMark className='mx-auto mb-2 h-6 w-[78%] text-[#4333AF]' />
+                    <MountainMark className='mx-auto mb-1 h-4 w-[78%] text-[#4333AF] sm:mb-2 sm:h-6' />
                     {[BarChart3, Send, FileText, Users].map((Icon, index) => (
-                        <div key={index} className='mb-1 flex h-[22px] items-center gap-2 rounded-[3px] bg-[#151829] px-2 last:mb-0'>
-                            <Icon className='h-3.5 w-3.5 text-[#4333AF]' fill='currentColor' strokeWidth={1.6} />
+                        <div
+                            key={index}
+                            className='mb-[3px] flex h-[14px] items-center gap-1 rounded-[3px] bg-[#151829] px-1 last:mb-0 sm:mb-1 sm:h-[22px] sm:gap-2 sm:px-2'
+                        >
+                            <Icon className='h-2.5 w-2.5 text-[#4333AF] sm:h-3.5 sm:w-3.5' fill='currentColor' strokeWidth={1.6} />
                             <div className='h-1 w-[45%] rounded-full bg-[#414A5D]' />
                         </div>
                     ))}
@@ -305,7 +308,7 @@ function MobileArtwork() {
 
 function FeatureStrip({ items, accent, mobile }: { items: Feature[]; accent: string; mobile: boolean }) {
     return (
-        <div className='overflow-hidden rounded-[7px] border bg-[#080A10]' style={{ borderColor: CARD_BORDER }}>
+        <div className='overflow-hidden rounded-[7px] border bg-[#0A0D14]' style={{ borderColor: CARD_BORDER }}>
             <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: CARD_BORDER }}>
                 Key Features
             </p>
@@ -335,7 +338,7 @@ function FeatureStrip({ items, accent, mobile }: { items: Feature[]; accent: str
 
 function BenefitStrip({ items, accent }: { items: Benefit[]; accent: string }) {
     return (
-        <div className='mt-2 overflow-hidden rounded-[7px] border bg-[#080A10]' style={{ borderColor: CARD_BORDER }}>
+        <div className='mt-2 overflow-hidden rounded-[7px] border bg-[#0A0D14]' style={{ borderColor: CARD_BORDER }}>
             <p className='border-b px-4 py-1.5 text-[9px] font-bold uppercase tracking-[.25em] text-white/85' style={{ borderColor: CARD_BORDER }}>
                 Top Benefits
             </p>
@@ -401,7 +404,7 @@ function PlatformCard({ mode }: { mode: 'desktop' | 'mobile' }) {
 
             <div
                 className='grid min-h-[190px] grid-cols-[.9fr_1.4fr] items-center gap-1 overflow-hidden rounded-[9px] border px-3 py-3 sm:min-h-[200px] sm:grid-cols-[.85fr_1.35fr] sm:px-4'
-                style={{ borderColor: CARD_BORDER, background: '#080A10' }}
+                style={{ borderColor: CARD_BORDER, background: '#0A0D14' }}
             >
                 <div className='min-w-0'>
                     <h3 className='text-[20px] font-black leading-[1.3] tracking-tight text-white sm:text-[24px]'>

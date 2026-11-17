@@ -260,20 +260,20 @@ const SLIDES = [
         desc: 'Explore economic models through interactive charts and simulations.',
     },
     {
+        lottie: '/animations/calendericon1.json',
+        FallbackIcon: CalendarDays,
+        accent: '#4333AF',
+        label: 'Market Moving Calendars',
+        subtitle: 'Important Market Events',
+        desc: 'Stay organized around upcoming economic releases and market events.',
+    },
+    {
         lottie: '/animations/researchicon.json',
         FallbackIcon: BookOpen,
         accent: '#4333AF',
         label: 'Research',
         subtitle: 'Market Research & Insights',
         desc: 'Explore market research and structured insights to support your decisions.',
-    },
-    {
-        lottie: '/animations/calendericon1.json',
-        FallbackIcon: CalendarDays,
-        accent: '#4333AF',
-        label: 'Calendars',
-        subtitle: 'Important Market Events',
-        desc: 'Stay organized around upcoming economic releases and market events.',
     },
 ];
 
@@ -1448,7 +1448,7 @@ function SignIn() {
             <div className='absolute inset-0'>
                 <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
 
-                <div className='absolute inset-0 bg-black/90' />
+                <div className='absolute inset-0 bg-black/85' />
             </div>
 
             <div className='absolute inset-0 overflow-hidden pointer-events-none z-[5]'>
@@ -1471,19 +1471,20 @@ function SignIn() {
 
             <div className='relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6'>
                 <div
-                    className='relative flex rounded-3xl overflow-hidden border border-[#414A5D] shadow-2xl backdrop-blur-[7px]'
+                    className='relative flex rounded-3xl overflow-hidden border border-white/10 shadow-2xl backdrop-blur-[7px]'
                     style={{
                         height: showPostSignupSlideshow ? UNIFIED_CARD_HEIGHT : AUTH_CARD_HEIGHT,
 
                         minHeight: showPostSignupSlideshow ? UNIFIED_CARD_HEIGHT : AUTH_CARD_HEIGHT,
 
-                        background: '#0C0F18',
+                        background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
 
                         WebkitBackdropFilter: 'blur(7px) saturate(145%)',
 
                         backdropFilter: 'blur(7px) saturate(145%)',
 
-                        boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+                        boxShadow:
+                            '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(44,123,190,0.14), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
                     }}
                 >
                     <div
@@ -1520,7 +1521,9 @@ function SignIn() {
                                         <Image width={104} height={104} src='/logocolored.png' alt='Logo' />
                                     </div>
 
-                                    <h2 className='text-[22px] font-bold text-white mb-1'>{showVerification ? 'Verify Your Account' : 'Sign In'}</h2>
+                                    <h2 className='text-[22px] font-bold text-white mb-1'>
+                                        {showVerification ? 'Verify Your Account' : 'Sign In to Your Account'}
+                                    </h2>
                                 </div>
 
                                 <div className='min-h-0 overflow-visible pr-0'>
@@ -1794,6 +1797,41 @@ function SignIn() {
                                                         Sign Up
                                                     </span>
                                                 </button>
+                                            </div>
+                                            <div className='mt-3 flex shrink-0 items-center justify-center gap-2.5 text-[11px] leading-none'>
+                                                <div className='flex items-center gap-1.5 text-white/55'>
+                                                    <svg
+                                                        width='15'
+                                                        height='15'
+                                                        viewBox='0 0 24 24'
+                                                        fill='none'
+                                                        xmlns='http://www.w3.org/2000/svg'
+                                                        className='text-white/60'
+                                                    >
+                                                        <path
+                                                            d='M12 2.75L19 5.85V11.1C19 15.77 16.06 19.91 12 21.25C7.94 19.91 5 15.77 5 11.1V5.85L12 2.75Z'
+                                                            stroke='currentColor'
+                                                            strokeWidth='2'
+                                                            strokeLinecap='round'
+                                                            strokeLinejoin='round'
+                                                        />
+                                                        <path
+                                                            d='M9.2 11.95L11.2 13.95L15.2 9.95'
+                                                            stroke='currentColor'
+                                                            strokeWidth='2'
+                                                            strokeLinecap='round'
+                                                            strokeLinejoin='round'
+                                                        />
+                                                    </svg>
+                                                    <span className='whitespace-nowrap font-medium'>Secure Checkout</span>
+                                                </div>
+
+                                                <div className='h-4 w-px bg-white/12' />
+
+                                                <div className='flex items-center gap-1.5'>
+                                                    <span className='whitespace-nowrap text-white/40'>Powered by</span>
+                                                    <span className='text-[15px] font-black tracking-tight leading-none text-[#635BFF]'>stripe</span>
+                                                </div>
                                             </div>
                                         </form>
                                     )}

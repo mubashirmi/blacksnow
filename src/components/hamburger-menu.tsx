@@ -274,7 +274,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
 
                 {/* Menu Panel */}
                 <div
-                    className={`absolute right-0 top-0 flex h-full w-80 flex-col border-l border-[#414A5D] bg-[#0C0F18] shadow-2xl transition-all duration-500 ease-in-out ${
+                    className={`absolute right-0 top-0 flex h-full w-80 flex-col border-l border-[#414A5D] bg-[#0A0D14] shadow-2xl transition-all duration-500 ease-in-out ${
                         isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
                 >
@@ -354,7 +354,7 @@ export function HamburgerMenu({ userId }: { userId?: string }) {
                     {/* Footer is at least 96px high and expands if two dashboard buttons are shown. */}
                     {shouldShowFooter && (
                         <div
-                            className={`flex min-h-24 shrink-0 items-center justify-center border-t border-[#414A5D] bg-[#0C0F18] px-6 py-4 transform transition-all duration-700 delay-500 ${
+                            className={`flex min-h-24 shrink-0 items-center justify-center border-t border-[#414A5D] bg-[#0A0D14] px-6 py-4 transform transition-all duration-700 delay-500 ${
                                 isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                             }`}
                         >

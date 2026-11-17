@@ -602,7 +602,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Full Name</Label> */}
                             <Input
                                 placeholder='Enter your Full Name'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.fullName}
                                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             />
@@ -612,7 +612,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Website</Label> */}
                             <Input
                                 placeholder='Enter your Website URL'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.website}
                                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                             />
@@ -622,7 +622,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Podcast</Label> */}
                             <Input
                                 placeholder='Enter your Podcast Link'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.podcast}
                                 onChange={(e) => setFormData({ ...formData, podcast: e.target.value })}
                             />
@@ -632,7 +632,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Twitter</Label> */}
                             <Input
                                 placeholder='Enter your Twitter Link'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.twitter}
                                 onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                             />
@@ -642,7 +642,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>YouTube</Label> */}
                             <Input
                                 placeholder='Enter your Youtube Link'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.youTube}
                                 onChange={(e) => setFormData({ ...formData, youTube: e.target.value })}
                             />
@@ -652,7 +652,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Facebook</Label> */}
                             <Input
                                 placeholder='Enter your Facebook Link'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.facebook}
                                 onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
                             />
@@ -667,7 +667,7 @@ function Advertising() {
                                     const file = e.target.files?.[0];
                                     if (file) handleImageUpload(file);
                                 }}
-                                className='bg-black border-[#414A5D] border-2 text-white p-2 rounded-lg w-full'
+                                className='bg-[#0A0D14] border-[#414A5D] border-2 text-white p-2 rounded-lg w-full'
                             />
                             {formData.image && <p className='text-green-400 text-sm break-words'>{truncateImageName(formData.image)}</p>}
                             {errors.image && <p className='text-red-500 text-sm'>{errors.image}</p>}
@@ -676,7 +676,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Company Name</Label> */}
                             <Input
                                 placeholder='Enter your Company Name'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.companyName}
                                 onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                             />
@@ -686,7 +686,7 @@ function Advertising() {
                             {/* <Label className='text-white font-semibold'>Description</Label> */}
                             <Input
                                 placeholder='Enter Description'
-                                className='bg-black border-[#414A5D] text-white'
+                                className='bg-[#0A0D14] border-[#414A5D] text-white'
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             />
