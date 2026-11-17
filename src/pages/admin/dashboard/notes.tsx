@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Loader2, Mail, Maximize2, Minimize2, Trash2, X } from 'lucide-react';
+import { Loader2, Mail, Maximize2, Minimize2, Plus, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -251,9 +251,9 @@ export default function NotesPage() {
                     <h2 className='text-2xl font-bold text-white'>Notes</h2>
                     <Button
                         onClick={openNoteModal}
-                        className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 cursor-pointer'
+                        className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 text-4xl rounded-lg shadow-sm transition-all duration-200 cursor-pointer'
                     >
-                        Add New Note
+                        <Plus className='h-7 w-7' />
                     </Button>
                 </div>
                 <div className='p-6'>

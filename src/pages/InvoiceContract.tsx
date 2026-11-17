@@ -267,7 +267,7 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>
@@ -311,34 +311,34 @@ export default function InvoiceContractPage() {
                     </div>
 
                     <div className='relative'>
-                        {/* Connection Line */}
-                        <div className='hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 bg-[#8350E0]'></div>
-
-                        <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8'>
+                        <div className='grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8'>
                             {steps.map((item, index) => (
-                                <div key={index} className='relative group'>
-                                    <div className='relative border border-[#414A5D] rounded-2xl p-6 sm:p-8 transition-all duration-500 hover:border-[#414A5D] hover:shadow-lg hover:shadow-[#8350E0]/15 hover:-translate-y-2 bg-[#0C0F18]'>
+                                <div key={index} className='group relative h-full min-w-0'>
+                                    <div className='relative flex h-full min-h-[230px] flex-col rounded-2xl border border-[#414A5D] bg-[#0C0F18] p-6 transition-[border-color,box-shadow] duration-300 hover:border-[#414A5D] hover:shadow-lg hover:shadow-[#8350E0]/15 sm:p-8 lg:min-h-[250px]'>
                                         {/* Step Number Badge */}
-                                        <div className='absolute -top-4 -right-4 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#8350E0]/15 group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
-                                            <span className='text-lg sm:text-xl font-black text-white'>{item.step}</span>
+                                        <div className='absolute -top-4 -right-4 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#8350E0] shadow-lg shadow-[#8350E0]/15 transition-transform duration-300 group-hover:scale-110 sm:h-14 sm:w-14'>
+                                            <span className='text-lg font-black text-white sm:text-xl'>{item.step}</span>
                                         </div>
 
                                         <div className='mt-6 sm:mt-8'>
-                                            <h3 className='text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 leading-[1.28] group-hover:text-[#8350E0] transition-colors duration-300'>
+                                            <h3 className='mb-3 text-xl font-bold leading-[1.28] text-white transition-colors duration-300 group-hover:text-[#8350E0] sm:mb-4 sm:text-2xl'>
                                                 {item.title}
                                             </h3>
-                                            <p className='text-sm sm:text-base text-gray-400 leading-relaxed'>{item.description}</p>
+                                            <p className='text-sm leading-relaxed text-gray-400 sm:text-base'>{item.description}</p>
                                         </div>
-
-                                        {/* Arrow Indicator */}
-                                        {index < steps.length - 1 && (
-                                            <div className='hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 z-10'>
-                                                <div className='w-8 h-8 rounded-full flex items-center justify-center shadow-md bg-[#8350E0]'>
-                                                    <ArrowRight className='w-4 h-4 text-white' />
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
+
+                                    {/* Fixed connector sits in the 32px grid gap, outside the card's hover styles. */}
+                                    {index < steps.length - 1 && (
+                                        <div
+                                            aria-hidden='true'
+                                            className='pointer-events-none absolute left-full top-1/2 z-20 hidden h-0.5 w-8 -translate-y-1/2 bg-[#8350E0] lg:block'
+                                        >
+                                            <span className='absolute left-1/2 top-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#8350E0] shadow-md'>
+                                                <ArrowRight className='h-4 w-4 text-white' />
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -347,7 +347,7 @@ export default function InvoiceContractPage() {
             </section>
 
             {/* Features Section - IMPROVED */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8   bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8   bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -366,7 +366,6 @@ export default function InvoiceContractPage() {
                                 className='group relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-1 bg-black'
                             >
                                 {/* Top gradient line */}
-                                {/* <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div> */}
 
                                 <div className='p-6 sm:p-8 flex items-start gap-4 sm:gap-6'>
                                     {/* Icon */}
@@ -431,7 +430,7 @@ export default function InvoiceContractPage() {
             </section>
 
             {/* Use Cases Section - IMPROVED  */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8   bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8   bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -483,7 +482,6 @@ export default function InvoiceContractPage() {
                                 {/* Card */}
                                 <div className='relative border border-[#414A5D] rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#414A5D] hover:shadow-xl hover:shadow-[#8350E0]/15 hover:-translate-y-2 h-full bg-black'>
                                     {/* Gradient accent */}
-                                    {/* <div className='absolute top-0 left-0 right-0 h-1 bg-[#414A5D]'></div> */}
 
                                     <div className='p-6 sm:p-8 text-center'>
                                         {/* Icon */}
@@ -534,7 +532,7 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>

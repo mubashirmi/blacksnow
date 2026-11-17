@@ -296,7 +296,7 @@ function DataAnalyticsSection() {
         {
             label: 'Philosophy',
 
-            title: 'Black Snow Philosophy',
+            title: 'Modern Workflows',
 
             accent: '#4333AF',
 
@@ -361,7 +361,7 @@ function DataAnalyticsSection() {
             <div className='container mx-auto max-w-7xl relative z-10'>
                 <div className='text-center mb-12 sm:mb-14'>
                     <h2 className='text-[clamp(1.6rem,6.8vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-3 leading-[1.22] sm:leading-tight'>
-                        <span className='whitespace-nowrap'>Built for Modern</span> <span className='whitespace-nowrap text-[#4333AF]'>Trading Workflows</span>
+                        <span className='whitespace-nowrap'>Blacksnow </span> <span className='whitespace-nowrap text-[#4333AF]'>Philosophy</span>
                     </h2>
 
                     <p className='text-sm sm:text-base text-gray-400 max-w-2xl mx-auto'>

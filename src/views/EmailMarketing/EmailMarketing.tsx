@@ -341,7 +341,7 @@ function EmailMarketingDashboard() {
     return (
         <div
             aria-label='Interactive sample email marketing dashboard'
-            className='relative w-full min-w-0 max-w-[650px] rounded-[24px] border border-[#414A5D] bg-[#0C0F18] p-[7px] shadow-[0_0_30px_rgba(131,80,224,0.12),inset_0_0_0_1px_rgba(131,80,224,0.09)] sm:p-[10px] lg:max-w-none xl:mr-auto xl:w-[82%] xl:p-[7px]'
+            className='relative w-full min-w-0 max-w-[650px] rounded-[24px] border border-[#414A5D] bg-[#0C0F18] p-[7px] shadow-[0_0_30px_rgba(131,80,224,0.12),inset_0_0_0_1px_rgba(131,80,224,0.09)] sm:p-[10px] lg:max-w-none xl:mr-auto xl:w-full xl:p-[7px]'
         >
             <div className='min-w-0 rounded-[19px] border border-[#414A5D] bg-[#0C0F18] p-[9px] sm:p-[15px] xl:p-[11px]'>
                 {/* Native dropdown: keyboard and touch accessible; changes all demo statistics. */}
@@ -968,11 +968,11 @@ function EmailMarketing() {
 
             <section className='relative px-4 py-10 sm:px-6 sm:py-16 md:px-8 lg:py-11 xl:py-10'>
                 <div className='relative z-10 mx-auto w-full max-w-[1660px]'>
-                    <div className='grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto] lg:items-stretch lg:gap-x-8 lg:gap-y-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)] xl:gap-x-9 2xl:gap-x-12'>
+                    <div className='grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto] lg:items-stretch lg:gap-x-8 lg:gap-y-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:gap-x-7 2xl:gap-x-8'>
                         {/* LEFT: original heading, native JSX dashboard, then original CTAs */}
 
                         <div className='min-w-0 animate-slide-in-left lg:contents'>
-                            <h1 className='mb-5 text-[clamp(1.55rem,6.2vw,2.2rem)] font-black leading-[1.2] tracking-tight text-white sm:mb-7 sm:text-4xl md:text-5xl lg:col-start-1 lg:row-start-1 lg:mb-0 lg:text-4xl xl:text-[2.55rem]'>
+                            <h1 className='mb-8 text-center text-[clamp(1.55rem,6.2vw,2.2rem)] font-black leading-[1.2] tracking-tight text-white sm:mb-10 sm:text-4xl md:text-5xl lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mb-0 lg:text-center lg:text-4xl xl:text-[2.55rem]'>
                                 Email <span className='text-[#8350E0]'>CRM Lite</span>
                             </h1>
 
@@ -982,7 +982,7 @@ function EmailMarketing() {
 
                             {/* Existing actions and their handlers are unchanged. */}
 
-                            <div className='mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:gap-4 lg:col-start-1 lg:row-start-3 lg:mt-0 xl:mt-0'>
+                            <div className='mt-8 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:gap-4 lg:col-start-1 lg:row-start-3 lg:mt-0 xl:mt-0'>
                                 <Button
                                     size='lg'
                                     onClick={handlePurchaseClick}
@@ -994,7 +994,7 @@ function EmailMarketing() {
                                 <Button
                                     onClick={() => setSlideshowOpen(true)}
                                     size='lg'
-                                    className='group h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 box-border border-[#8350E0] bg-transparent px-5 text-base font-bold text-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)] transition-all duration-300 hover:scale-[1.02] hover:border-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px]'
+                                    className='group h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 box-border bg-transparent px-5 text-base font-bold shadow-[0_0_18px_rgba(131,80,224,0.12)] transition-all duration-300 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>
@@ -1005,8 +1005,18 @@ function EmailMarketing() {
                             The absolutely positioned animation panel fills that same row exactly (no square SVG min-content height). */}
 
                         <div className='relative flex min-w-0 animate-slide-in-right items-center justify-center lg:col-start-2 lg:row-start-2 lg:min-h-0 lg:self-stretch lg:items-stretch lg:justify-stretch'>
-                            <div className='relative aspect-[6/5] w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#414A5D] bg-[#0C0F18] sm:rounded-3xl lg:absolute lg:inset-0 lg:aspect-auto lg:h-full lg:max-w-none xl:max-w-[560px] 2xl:max-w-[600px]'>
-                                <LottieAnimation src='/animations/emailmarketing-herosection-page.json' className='h-full w-full' loop={true} autoplay={true} />
+                            <div className='relative aspect-[6/5] w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#414A5D] bg-[#0C0F18] sm:rounded-3xl lg:absolute lg:inset-0 lg:aspect-auto lg:h-full lg:max-w-none'>
+                                {/* Enlarge the PANEL, not the animation. Center the artwork at its original maximum width. */}
+                                <div className='flex h-full w-full items-center justify-center'>
+                                    <div className='h-full w-full max-w-[560px] 2xl:max-w-[600px]'>
+                                        <LottieAnimation
+                                            src='/animations/emailmarketing-herosection-page.json'
+                                            className='h-full w-full'
+                                            loop={true}
+                                            autoplay={true}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1017,7 +1027,7 @@ function EmailMarketing() {
 
             {/* Main Features */}
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -1034,7 +1044,7 @@ function EmailMarketing() {
                     <div className='grid lg:grid-cols-2 gap-6 sm:gap-8= items-stretch'>
                         {features.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-left h-full' style={{ animationDelay: `${index * 200}ms` }}>
-                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-black'>
+                                <Card className='relative overflow-hidden border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl h-full flex flex-col min-h-[260px] sm:min-h-[300px] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8350E0]/15 bg-[#0C0F18]'>
                                     <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
 
                                     {/* TOP (Icon + Title) */}
@@ -1065,7 +1075,7 @@ function EmailMarketing() {
 
             {/* Additional Features */}
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -1080,7 +1090,7 @@ function EmailMarketing() {
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
                         {additionalFeatures.map((feature, index) => (
                             <div key={index} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-[#0C0F18]'>
                                     <CardContent className='p-6 sm:p-8 text-center'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -1101,7 +1111,7 @@ function EmailMarketing() {
 
             {/* Final CTA */}
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
                         <div>
@@ -1127,7 +1137,7 @@ function EmailMarketing() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group border-2 box-border px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 rounded-lg w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>
@@ -1138,7 +1148,7 @@ function EmailMarketing() {
                             <div className='relative'>
                                 <div className='absolute inset-0 w-96 h-96 rounded-full blur-2xl'></div>
 
-                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center shadow-2xl backdrop-blur-xl p-8 bg-black'>
+                                <div className='relative w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center shadow-2xl backdrop-blur-xl p-8 bg-[#0C0F18]\'>
                                     <LottieAnimation src='/animations/emailmarketingicon.json' loop={true} autoplay={true} />
                                 </div>
                             </div>

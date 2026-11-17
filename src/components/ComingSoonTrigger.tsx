@@ -59,26 +59,13 @@ export default function ComingSoonTrigger({ children, className = '', style, ari
                             role='dialog'
                             aria-modal='true'
                             aria-labelledby='coming-soon-title'
-                            className='relative w-full max-w-[460px] overflow-hidden rounded-[28px] border border-[#4cc7e8]/25 px-6 py-10 text-center shadow-[0_30px_100px_rgba(0,0,0,0.75),0_0_50px_rgba(44,123,190,0.12)] sm:px-10 sm:py-12'
-                            style={{
-                                background: 'linear-gradient(145deg, rgba(10,18,28,0.92) 0%, rgba(5,6,8,0.88) 54%, rgba(9,19,30,0.92) 100%)',
-                                backdropFilter: 'blur(24px)',
-                                WebkitBackdropFilter: 'blur(24px)',
-                            }}
+                            className='relative w-full max-w-[460px] overflow-hidden rounded-[28px] border border-[#414A5D] bg-[#0C0F18] px-6 py-10 text-center shadow-[0_30px_100px_rgba(0,0,0,0.75)] sm:px-10 sm:py-12'
                         >
-                            <div
-                                className='pointer-events-none absolute inset-0 opacity-70'
-                                style={{
-                                    background:
-                                        'radial-gradient(circle at 50% 0%, rgba(76,199,232,0.14), transparent 42%), radial-gradient(circle at 50% 100%, rgba(44,123,190,0.08), transparent 45%)',
-                                }}
-                            />
-
                             <button
                                 type='button'
                                 aria-label='Close coming soon dialog'
                                 onClick={() => setIsOpen(false)}
-                                className='absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-xl leading-none text-white/70 transition hover:border-[#4cc7e8]/35 hover:bg-[#4cc7e8]/10 hover:text-white'
+                                className='absolute right-4 top-4 z-20 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#414A5D] bg-[#050608] text-xl leading-none text-white/70 transition-colors duration-200 hover:border-[#4333AF] hover:bg-[#4333AF]/15 hover:text-white'
                             >
                                 ×
                             </button>
@@ -104,8 +91,6 @@ export default function ComingSoonTrigger({ children, className = '', style, ari
                                     </p>
                                 </div>
 
-                                {/* <div className='mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-[#4cc7e8]/70 to-transparent' /> */}
-
                                 <h2
                                     id='coming-soon-title'
                                     className='mt-7 text-[clamp(2rem,9vw,3.25rem)] leading-[1.12] tracking-[-0.025em] text-white'
@@ -114,7 +99,7 @@ export default function ComingSoonTrigger({ children, className = '', style, ari
                                         fontWeight: 400,
                                     }}
                                 >
-                                    Coming Soon
+                                    Coming <span className='text-[#4333AF]'>Soon</span>
                                 </h2>
                             </div>
                         </div>

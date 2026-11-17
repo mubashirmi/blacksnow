@@ -52,7 +52,7 @@ const UNIFIED_CARD_HEIGHT = 580;
 const BASE_TERMS_SLIDES: TermsSlide[] = [
     {
         id: 'gdpr',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Globe,
         badge: 'Legal — GDPR',
         titleGrad: 'GDPR',
@@ -64,7 +64,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'terms',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Terms & Conditions',
         titleGrad: 'Terms',
@@ -76,7 +76,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'privacy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Privacy Policy',
         titleGrad: 'Privacy',
@@ -88,7 +88,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'risk-disclosure',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: AlertTriangle,
         badge: 'Risk Disclosure',
         titleGrad: 'Risk',
@@ -104,7 +104,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'cookie-policy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: Shield,
         badge: 'Cookie Policy',
         titleGrad: 'Cookie',
@@ -120,7 +120,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'independent-contractor',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: UserCheck,
         badge: 'Independent Contractor',
         titleGrad: 'Independent',
@@ -136,7 +136,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'affiliate-agreement',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Affiliate Agreement',
         titleGrad: 'Affiliate',
@@ -152,7 +152,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'no-financial-advice',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: AlertTriangle,
         badge: 'No Financial Advice',
         titleGrad: 'No Financial',
@@ -168,7 +168,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'subscription-policy',
-        accent: '#4cc7e8',
+        accent: '#4333AF',
         Icon: FileText,
         badge: 'Subscription Policy',
         titleGrad: 'Subscription',
@@ -184,7 +184,7 @@ const BASE_TERMS_SLIDES: TermsSlide[] = [
     },
     {
         id: 'earnings-disclosure',
-        accent: '#2c7bbe',
+        accent: '#4333AF',
         Icon: AlertTriangle,
         badge: 'Earnings Disclosure',
         titleGrad: 'Earnings',
@@ -292,32 +292,20 @@ function TermsSlideModal({
                 `}</style>
 
                 <div
-                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#07090d] sm:rounded-[32px]'
+                    className='relative rounded-[24px] border overflow-hidden flex flex-col bg-[#0C0F18] sm:rounded-[32px]'
                     style={{
                         minHeight: UNIFIED_CARD_HEIGHT,
                         height: UNIFIED_CARD_HEIGHT,
-                        borderColor: `${accent}35`,
-                        boxShadow: `0 24px 60px rgba(0,0,0,0.7), 0 0 40px ${accent}10`,
+                        borderColor: '#414A5D',
+                        boxShadow: '0 24px 60px rgba(0,0,0,0.55)',
                     }}
                 >
-                    <div
-                        className='absolute inset-0 pointer-events-none'
-                        style={{
-                            background: `radial-gradient(circle at top, ${accent}18 0%, transparent 36%)`,
-                        }}
-                    />
-                    <div
-                        className='absolute top-0 left-0 right-0 h-[2px]'
-                        style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                    />
-
                     <button
                         type='button'
                         onClick={() => onOpenChange(false)}
-                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110'
-                        style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        className='absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center border border-[#414A5D] bg-[#050608] text-[#414A5D] transition-all hover:border-[#4333AF] hover:text-white hover:scale-105'
                     >
-                        <X className='w-4 h-4 text-white/60' />
+                        <X className='w-4 h-4' />
                     </button>
 
                     <div className='relative z-10 flex h-full min-h-0 flex-1 flex-col px-4 pt-6 pb-4 sm:px-7 sm:pt-8 sm:pb-6' style={slideAnim}>
@@ -333,24 +321,20 @@ function TermsSlideModal({
                             {gradAtEnd ? (
                                 <>
                                     {titlePlain}
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
-                                        {titleGrad}
-                                    </span>
+                                    <span style={{ color: '#4333AF' }}>{titleGrad}</span>
                                 </>
                             ) : (
                                 <>
-                                    <span className='bg-clip-text text-transparent' style={{ backgroundImage: `linear-gradient(135deg, ${accent}, #4cc7e8)` }}>
-                                        {titleGrad}
-                                    </span>
+                                    <span style={{ color: '#4333AF' }}>{titleGrad}</span>
                                     {titlePlain}
                                 </>
                             )}
                         </h2>
 
-                        <div className='mb-4 h-px w-full rounded-full bg-white/10 sm:mb-5' />
+                        <div className='mb-4 h-px w-full rounded-full bg-[#414A5D] sm:mb-5' />
 
                         <div className='legal-slide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1'>
-                            <div className='mb-4 rounded-2xl border p-4 sm:mb-5' style={{ backgroundColor: `${accent}08`, borderColor: `${accent}25` }}>
+                            <div className='mb-4 rounded-2xl border p-4 sm:mb-5' style={{ backgroundColor: '#000000', borderColor: '#414A5D' }}>
                                 <p className='text-[11px] font-bold uppercase tracking-[0.18em] mb-2' style={{ color: accent }}>
                                     Summary
                                 </p>
@@ -400,7 +384,7 @@ function TermsSlideModal({
 
                             <span
                                 className='justify-self-center whitespace-nowrap rounded-xl px-2 py-1 text-[10px] font-bold text-white/70 sm:px-3 sm:text-xs'
-                                style={{ backgroundColor: `${accent}14`, border: `1px solid ${accent}35` }}
+                                style={{ backgroundColor: '#000000', border: '1px solid #414A5D' }}
                             >
                                 Slide {current + 1}/{slides.length}
                             </span>
@@ -410,8 +394,7 @@ function TermsSlideModal({
                                     type='button'
                                     onClick={handlePrev}
                                     disabled={current === 0}
-                                    className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-all disabled:opacity-20 hover:scale-105'
-                                    style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#414A5D] bg-[#000000] transition-all disabled:opacity-20 hover:border-[#4333AF] hover:scale-105'
                                     aria-label='Previous terms slide'
                                 >
                                     <ChevronLeft className='h-4 w-4 text-white' />
@@ -424,9 +407,8 @@ function TermsSlideModal({
                                         isLast ? 'min-w-[112px] px-3 text-[10px] sm:min-w-[120px] sm:text-xs' : 'min-w-[70px] px-3 text-xs'
                                     }`}
                                     style={{
-                                        background: `linear-gradient(135deg, ${accent}cc, ${accent}88)`,
-                                        border: `1px solid ${accent}60`,
-                                        boxShadow: `0 2px 12px ${accent}30`,
+                                        background: '#4333AF',
+                                        border: '1px solid #414A5D',
                                     }}
                                 >
                                     <span className='whitespace-nowrap'>{isLast ? 'I Understand ✓' : 'Next'}</span>
@@ -459,7 +441,7 @@ const PRODUCTS = [
             'Market Data Briefings',
         ],
         icon: Newspaper,
-        color: 'from-[#4cc7e8] to-[#2c7bbe]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: true,
         productLink: 'https://blacksnowholdings.com',
@@ -476,7 +458,7 @@ const PRODUCTS = [
         description: 'All-in-one contracts, signatures, and invoices—made simple',
         features: ['Instant Invoice Builder', 'Email Delivery', 'Invoice Dashboard', 'Create Invoice Contracts', 'Add Multiple Users', 'Recurring Invoices'],
         icon: FilePen,
-        color: 'from-[#2c7bbe] to-[#4cc7e8]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: false,
         productLink: 'https://blacksnowholdings.com/InvoiceContract',
@@ -500,7 +482,7 @@ const PRODUCTS = [
             'Create Up to 4 Billboards',
         ],
         icon: Monitor,
-        color: 'from-[#4cc7e8] to-[#2a8dcc]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: false,
         productLink: 'https://blacksnowholdings.com/advertising',
@@ -524,7 +506,7 @@ const PRODUCTS = [
             'List Upload Tools',
         ],
         icon: MessageSquare,
-        color: 'from-[#2a8dcc] to-[#2c7bbe]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: false,
         productLink: 'https://blacksnowholdings.com/emailMarketing',
@@ -549,7 +531,7 @@ const PRODUCTS = [
             'Email & SMS CRM included to promote offers',
         ],
         icon: Zap,
-        color: 'from-[#4cc7e8] to-[#2c7bbe]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: false,
         productLink: 'https://blacksnowholdings.com/lightningSilver',
@@ -574,7 +556,7 @@ const PRODUCTS = [
             'Email & SMS CRM included to promote offers',
         ],
         icon: Star,
-        color: 'from-[#fbbf24] to-[#f59e0b]',
+        color: 'from-[#4333AF] to-[#4333AF]',
         available: true,
         popular: false,
         productLink: 'https://blacksnowholdings.com/lightningGold',
@@ -627,8 +609,8 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     // ── Per-product accent color ──
     const productAccent = useMemo(() => {
         if (!product) return null;
-        if (product.id === 'SuperAffiliate') return '#ffd500';
-        if (product.id === 'LightningSilver') return '#8d96c2';
+        if (product.id === 'SuperAffiliate') return '#4333AF';
+        if (product.id === 'LightningSilver') return '#4333AF';
         return null;
     }, [product]);
 
@@ -829,56 +811,27 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
     const savings = getSavingsPercentage(product);
     const displayPeriod = getProductPeriod(product).replace('/', '').trim();
 
-    // ── Resolve button accent for subtle glass glow ──
-    const btnFrom = productAccent ?? '#2c7bbe';
-    const btnTo = productAccent ?? '#4cc7e8';
     const isPurchaseButtonLoading = isPurchasing || isLoadingEmail;
 
     const CheckoutCard = ({ inModal }: { inModal: boolean }) => (
         <div className={`w-full ${!inModal ? 'mt-8 sm:mt-10 max-w-md mx-auto' : ''}`}>
             <div
-                className={`relative rounded-[32px] border overflow-hidden flex flex-col backdrop-blur-[7px] ${
-                    isPurchased ? 'border-emerald-400/25' : isPaused ? 'border-amber-400/35' : productAccent ? '' : 'border-white/10'
-                } ${product.available ? '' : 'opacity-70'} ${inModal ? 'w-full' : ''}`}
+                className={`relative rounded-[32px] border border-[#414A5D] overflow-hidden flex flex-col ${product.available ? '' : 'opacity-70'} ${
+                    inModal ? 'w-full' : ''
+                }`}
                 style={{
                     minHeight: UNIFIED_CARD_HEIGHT,
                     height: UNIFIED_CARD_HEIGHT,
-                    background: 'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.52) 45%, rgba(6,8,12,0.68) 100%)',
-                    WebkitBackdropFilter: 'blur(8px) saturate(145%)',
-                    backdropFilter: 'blur(8px) saturate(145%)',
-                    boxShadow: isPurchased
-                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)'
-                        : isPaused
-                        ? '0 24px 60px rgba(0,0,0,0.7), 0 0 35px rgba(245,158,11,0.16), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)'
-                        : productAccent
-                        ? `0 24px 60px rgba(0,0,0,0.7), 0 0 35px ${productAccent}22, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)`
-                        : '0 24px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                    borderColor: isPurchased
-                        ? 'rgba(16,185,129,0.25)'
-                        : isPaused
-                        ? 'rgba(245,158,11,0.42)'
-                        : productAccent
-                        ? `${productAccent}30`
-                        : 'rgba(255,255,255,0.10)',
+                    background: '#0C0F18',
+                    boxShadow: '0 24px 60px rgba(0,0,0,0.55)',
+                    borderColor: '#414A5D',
                 }}
             >
-                {/* Top accent line */}
-                {/* <div
-                    className={`absolute top-0 left-0 w-full h-[3px] ${!productAccent && !isPurchased ? `bg-gradient-to-r ${product.color}` : ''}`}
-                    style={
-                        isPurchased
-                            ? { background: 'linear-gradient(to right, #34d399, #10b981)' }
-                            : productAccent
-                                ? { background: `linear-gradient(90deg, transparent, ${productAccent}, transparent)` }
-                                : undefined
-                    }
-                /> */}
-
                 <div className='relative flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7'>
                     <div className='relative grid grid-cols-[56px_minmax(0,1fr)_56px] items-start gap-3'>
                         {product.popular && (
                             <div className='absolute -top-1 right-0'>
-                                <Badge className='uppercase bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold px-3 py-1 text-[10px] tracking-wide'>
+                                <Badge className='uppercase bg-[#4333AF] border border-[#414A5D] text-white font-bold px-3 py-1 text-[10px] tracking-wide'>
                                     Popular
                                 </Badge>
                             </div>
@@ -898,12 +851,12 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     {/* Billing toggle — hidden for monthlyOnly products */}
                     {product.hasSubscription && !product.monthlyOnly && (
                         <div className='mt-5 flex justify-center'>
-                            <div className='flex w-full max-w-[220px] rounded-full border border-white/12 bg-white/5 p-1 shadow-inner'>
+                            <div className='flex w-full max-w-[220px] rounded-full border border-[#414A5D] bg-[#000000] p-1'>
                                 <button
                                     type='button'
                                     onClick={() => setBillingPeriod('monthly')}
                                     className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-                                        billingPeriod === 'monthly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                                        billingPeriod === 'monthly' ? 'bg-[#4333AF] text-white' : 'text-white/60 hover:text-white'
                                     }`}
                                 >
                                     Monthly
@@ -912,7 +865,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     type='button'
                                     onClick={() => setBillingPeriod('yearly')}
                                     className={`flex-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-                                        billingPeriod === 'yearly' ? 'bg-white/10 text-white shadow' : 'text-white/55 hover:text-white/85'
+                                        billingPeriod === 'yearly' ? 'bg-[#4333AF] text-white' : 'text-white/60 hover:text-white'
                                     }`}
                                 >
                                     Annual
@@ -926,13 +879,13 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                         <div className='mt-2 text-sm font-bold tracking-wide text-white/75'>{displayPeriod}</div>
 
                         {billingPeriod === 'yearly' && product.hasSubscription && !product.monthlyOnly && savings > 0 && (
-                            <div className='mt-3 inline-flex items-center rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-300'>
+                            <div className='mt-3 inline-flex items-center rounded-full border border-[#414A5D] bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-300'>
                                 Save {savings}% with yearly billing
                             </div>
                         )}
                     </div>
 
-                    <div className='mt-6 h-px w-full bg-white/10' />
+                    <div className='mt-6 h-px w-full bg-[#414A5D]' />
 
                     <div className='flex-1' />
 
@@ -944,12 +897,8 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 onClick={() => termsCompleted && setTermsChecked(!termsChecked)}
                                 className='mt-0.5 h-5 w-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-all duration-200 disabled:cursor-not-allowed'
                                 style={{
-                                    backgroundColor: termsChecked ? productAccent ?? '#4cc7e8' : 'transparent',
-                                    borderColor: termsChecked
-                                        ? productAccent ?? '#4cc7e8'
-                                        : termsCompleted
-                                        ? 'rgba(255,255,255,0.35)'
-                                        : 'rgba(255,255,255,0.15)',
+                                    backgroundColor: termsChecked ? productAccent ?? '#4333AF' : 'transparent',
+                                    borderColor: termsChecked ? '#4333AF' : '#414A5D',
                                     opacity: termsCompleted ? 1 : 0.5,
                                 }}
                             >
@@ -962,7 +911,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     type='button'
                                     onClick={() => setShowTermsModal(true)}
                                     className='text-sm font-semibold underline underline-offset-2 transition-colors hover:text-white'
-                                    style={{ color: '#93c5fd' }}
+                                    style={{ color: '#4333AF' }}
                                 >
                                     Terms and Conditions
                                 </button>
@@ -975,7 +924,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 isPurchased ? (
                                     <Button
                                         size='lg'
-                                        className='w-full rounded-xl border border-green-400/20 bg-green-500/15 text-green-200 py-6 font-bold transition cursor-not-allowed'
+                                        className='w-full rounded-xl border border-[#414A5D] bg-green-500/15 text-green-200 py-6 font-bold transition cursor-not-allowed'
                                         disabled
                                     >
                                         Already Subscribed
@@ -983,7 +932,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 ) : (
                                     <>
                                         {isPaused && (
-                                            <div className='mb-3 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-center'>
+                                            <div className='mb-3 rounded-xl border border-[#414A5D] bg-amber-400/10 px-4 py-3 text-center'>
                                                 <p className='text-sm font-semibold text-amber-200'>Your {product.name} subscription is currently paused.</p>
                                                 <p className='mt-1 text-xs text-amber-100/65'>Purchase it again to restore access.</p>
                                             </div>
@@ -991,28 +940,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                                         <Button
                                             size='lg'
-                                            className={`w-full cursor-pointer rounded-xl border py-6 font-bold transition disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-[7px] hover:scale-[1.01] active:scale-[0.99] ${
-                                                isPaused ? 'text-amber-100' : 'text-white/75'
-                                            }`}
-                                            style={
-                                                isPaused
-                                                    ? {
-                                                          background: 'linear-gradient(180deg, rgba(245,158,11,0.24) 0%, rgba(120,53,15,0.32) 100%)',
-                                                          borderColor: 'rgba(251,191,36,0.55)',
-                                                          WebkitBackdropFilter: 'blur(7px) saturate(145%)',
-                                                          backdropFilter: 'blur(7px) saturate(145%)',
-                                                          boxShadow:
-                                                              'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.30), 0 14px 34px rgba(245,158,11,0.16)',
-                                                      }
-                                                    : {
-                                                          background: `linear-gradient(180deg, rgba(42,47,53,0.54) 0%, rgba(15,18,23,0.66) 100%), radial-gradient(circle at top left, ${btnFrom}22 0%, transparent 45%), radial-gradient(circle at bottom right, ${btnTo}18 0%, transparent 42%)`,
-                                                          borderColor: 'rgba(255,255,255,0.10)',
-                                                          WebkitBackdropFilter: 'blur(7px) saturate(145%)',
-                                                          backdropFilter: 'blur(7px) saturate(145%)',
-                                                          boxShadow:
-                                                              'inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.38), 0 14px 34px rgba(0,0,0,0.42)',
-                                                      }
-                                            }
+                                            className='w-full cursor-pointer rounded-xl border border-[#414A5D] bg-[#4333AF] py-6 font-bold text-white transition-all duration-300 hover:bg-[#372990] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed'
                                             onClick={() => handlePurchase(product)}
                                             disabled={isPurchaseButtonLoading || !termsChecked}
                                             title={!termsChecked ? 'Please agree to Terms and Conditions first' : undefined}
@@ -1033,7 +961,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                 )
                             ) : (
                                 <div className='w-full py-2 text-center'>
-                                    <span className='inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-5 py-3 text-sm font-bold text-white/70'>
+                                    <span className='inline-flex items-center gap-2 rounded-xl border border-[#414A5D] bg-[#000000] px-5 py-3 text-sm font-bold text-white/70'>
                                         <Clock className='h-5 w-5' />
                                         Coming Soon
                                     </span>
@@ -1061,7 +989,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                     <DialogContent className='sm:max-w-[540px] p-0 border-0 bg-transparent shadow-none'>
                         <button
                             onClick={() => setModalOpen(false)}
-                            className='absolute right-4 top-4 w-10 h-10 bg-black/40 rounded-2xl flex items-center justify-center border border-white/10 hover:bg-white/10 transition z-10'
+                            className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-2xl flex items-center justify-center border border-[#414A5D] hover:bg-[#4333AF] hover:text-white transition z-10'
                             aria-label='Close'
                         >
                             <X className='w-5 h-5 text-white/70' />
@@ -1083,17 +1011,17 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Signup Modal */}
                 <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
-                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
                         <button
                             onClick={() => setShowSignupModal(false)}
-                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                            className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'
                         >
-                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                            <X className='w-5 h-5 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                         </button>
 
                         <DialogHeader className='space-y-6 text-center'>
                             <div className='flex flex-col items-center'>
-                                <div className='w-16 h-16 mb-4 p-2 border-2 border-[#2c7bbe] rounded-2xl flex items-center justify-center shadow-xl'>
+                                <div className='w-16 h-16 mb-4 p-2 border border-[#414A5D] rounded-2xl flex items-center justify-center'>
                                     <Image
                                         src='/logocolored.png'
                                         alt='Black Snow Logo'
@@ -1104,7 +1032,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     />
                                 </div>
                                 <DialogTitle className='text-2xl font-black text-white'>Signup Required</DialogTitle>
-                                <DialogDescription className='text-[#4cc7e8] font-semibold mt-2'>
+                                <DialogDescription className='text-[#4333AF] font-semibold mt-2'>
                                     You can&apos;t access this feature until you sign up.
                                 </DialogDescription>
                             </div>
@@ -1121,7 +1049,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                                     return false;
                                 }}
                             >
-                                <Button className='w-full bg-gradient-to-r from-[#2c7bbe] to-[#4cc7e8] hover:from-[#4cc7e8] hover:to-[#2a8dcc] text-white font-bold py-6 text-lg shadow-2xl shadow-[#2c7bbe]/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'>
+                                <Button className='w-full cursor-pointer bg-[#4333AF] hover:bg-[#372990] border border-[#414A5D] text-white font-bold py-6 text-lg transition-all duration-300 hover:scale-[1.01] rounded-2xl'>
                                     Signup Now
                                 </Button>
                             </AuthModalTrigger>
@@ -1131,17 +1059,17 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Confirm Unsubscribe Modal */}
                 <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
                         <button
                             onClick={() => setShowConfirmModal(false)}
-                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                            className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'
                         >
-                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                            <X className='w-5 h-5 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                         </button>
 
                         <DialogHeader className='space-y-6'>
                             <div className='flex items-center space-x-4'>
-                                <div className='w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl'>
+                                <div className='w-12 h-12 bg-[#4333AF] border border-[#414A5D] rounded-2xl flex items-center justify-center'>
                                     <Calendar className='w-6 h-6 text-white' />
                                 </div>
                                 <div>
@@ -1157,7 +1085,7 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
                             <p className='text-gray-300 text-center'>This action cannot be undone.</p>
                             <Button
                                 onClick={confirmUnsubscribe}
-                                className='w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 text-lg shadow-2xl shadow-red-500/40 transition-all duration-300 transform hover:scale-105 rounded-2xl'
+                                className='w-full cursor-pointer bg-[#4333AF] hover:bg-[#372990] border border-[#414A5D] text-white font-bold py-6 text-lg transition-all duration-300 hover:scale-[1.01] rounded-2xl'
                                 disabled={isLoadingUnsubscribe}
                             >
                                 {isLoadingUnsubscribe ? 'Processing...' : 'Confirm Unsubscribe'}
@@ -1169,17 +1097,17 @@ export function PricingComponent({ name, defaultBillingPeriod = 'monthly', class
 
                 {/* Success Modal */}
                 <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-                    <DialogContent className='sm:max-w-md bg-gradient-to-br from-[#050608] via-[#0a0b0f] to-[#050608] border-2 border-[#2c7bbe]/30 shadow-2xl rounded-3xl backdrop-blur-2xl'>
+                    <DialogContent className='sm:max-w-md bg-[#0C0F18] border border-[#414A5D] shadow-2xl rounded-3xl backdrop-blur-2xl'>
                         <button
                             onClick={() => setShowSuccessModal(false)}
-                            className='absolute right-4 top-4 w-10 h-10 bg-gradient-to-r from-[#2c7bbe]/20 to-[#4cc7e8]/20 rounded-full flex items-center justify-center border border-[#2c7bbe]/30 hover:border-[#4cc7e8]/50 transition-all duration-300 group z-10'
+                            className='absolute right-4 top-4 w-10 h-10 bg-[#050608] rounded-full flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] hover:bg-[#4333AF]/15 transition-all duration-300 group z-10'
                         >
-                            <X className='w-5 h-5 text-[#4cc7e8] group-hover:text-white transition-colors duration-300' />
+                            <X className='w-5 h-5 text-[#4333AF] group-hover:text-white transition-colors duration-300' />
                         </button>
 
                         <DialogHeader className='space-y-6 text-center'>
                             <div className='flex flex-col items-center'>
-                                <div className='w-14 h-14 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-xl mb-4'>
+                                <div className='w-14 h-14 bg-[#4333AF] border border-[#414A5D] rounded-2xl flex items-center justify-center mb-4'>
                                     <CheckCircle className='w-8 h-8 text-white' />
                                 </div>
                                 <DialogTitle className='text-2xl font-black text-white'>Unsubscribed Successfully</DialogTitle>

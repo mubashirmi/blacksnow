@@ -113,7 +113,7 @@ function Affiliate() {
                                 <Button
                                     onClick={handleScrollToEarnBig}
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                 >
                                     Join Now
                                 </Button>
@@ -150,7 +150,7 @@ function Affiliate() {
                 </div>
             </section>
 
-            <section ref={earnBigRef} className='relative flow-root pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section ref={earnBigRef} className='relative flow-root pt-10 sm:pt-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-14 sm:mb-16'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -165,7 +165,7 @@ function Affiliate() {
                 </div>
             </section>
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-10 sm:mb-14'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -179,7 +179,7 @@ function Affiliate() {
                     </div>
 
                     <div className='grid md:grid-cols-3 gap-6 sm:gap-8'>
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <Users className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -191,7 +191,7 @@ function Affiliate() {
                             </CardContent>
                         </Card>
 
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <Rocket className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -203,7 +203,7 @@ function Affiliate() {
                             </CardContent>
                         </Card>
 
-                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-black'>
+                        <Card className='border-2 border-[#414A5D] rounded-2xl bg-[#0C0F18]'>
                             <CardContent className='p-6 sm:p-8'>
                                 <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg bg-[#8350E0]'>
                                     <BarChart3 className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -218,7 +218,7 @@ function Affiliate() {
                 </div>
             </section>
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='text-center mb-16 sm:mb-20'>
                         <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl md:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
@@ -234,7 +234,7 @@ function Affiliate() {
                     <div className='grid md:grid-cols-4 gap-6 sm:gap-8'>
                         {whyJoin.map((feature, index) => (
                             <div key={feature.title} className='group animate-slide-in-up' style={{ animationDelay: `${index * 100}ms` }}>
-                                <Card className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-black'>
+                                <Card className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 h-full bg-[#0C0F18]'>
                                     <CardContent className='p-6 sm:p-8'>
                                         <div className='w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-5 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 bg-[#8350E0] hover:bg-[#693DB6]'>
                                             <feature.icon className='w-7 h-7 sm:w-8 sm:h-8 text-white' />
@@ -251,7 +251,7 @@ function Affiliate() {
                 </div>
             </section>
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-12 sm:gap-16 items-center'>
                         <div className='space-y-6 sm:space-y-8'>
@@ -277,7 +277,7 @@ function Affiliate() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                     >
                                         Lightning Gold
                                     </Button>
@@ -286,7 +286,7 @@ function Affiliate() {
                         </div>
 
                         <div className='flex items-center justify-center'>
-                            <div className='w-full h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-black'>
+                            <div className='w-full h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-[#0C0F18]\'>
                                 <LottieAnimation src='/animations/dividendicon.json' loop={true} autoplay={true} className='w-full h-full' />
                             </div>
                         </div>

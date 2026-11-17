@@ -1,14 +1,15 @@
+import AuthModal from '@/components/AuthModal';
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
-import { ArrowRight, ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Truck } from 'lucide-react';
+import { ArrowRight, ArrowUp, BarChart3, Globe2, Settings, ShieldCheck, Star, Target, Truck } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 const BLUE = '#4333AF';
 const BLUE_BRIGHT = '#4333AF';
 const GOLD = '#4333AF';
-const GOLD_LIGHT = '#4333AF';
+// const GOLD_LIGHT = '#4333AF';
 // const GREEN = '#4333AF';
 const PAGE_BG = '#0C0F18';
 
@@ -168,14 +169,14 @@ function EfficiencyRow({ icon, label, value }: { icon: ReactNode; label: string;
     );
 }
 
-function GlobalKpiPageContent() {
+function GlobalKpiPageContent({ onViewDemo }: { onViewDemo: () => void }) {
     return (
         <main className='global-kpi-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
             {/* HERO */}
             <section className='border-b border-[#414A5D]'>
                 <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-8 sm:px-8 sm:pb-9 sm:pt-10 lg:grid-cols-[0.39fr_0.61fr] lg:gap-3 lg:px-9'>
                     <div>
-                        <p className='text-[11px] font-medium uppercase tracking-[0.06em] sm:text-[12px]' style={{ color: GOLD_LIGHT }}>
+                        <p className='text-[11px] font-medium uppercase tracking-[0.06em] sm:text-[12px]' style={{ color: '#FFFFFF' }}>
                             Performance Overview
                         </p>
 
@@ -378,147 +379,162 @@ function GlobalKpiPageContent() {
                         </p>
                     </div>
 
-                    <ComingSoonTrigger
-                        ariaLabel='Get started'
-                        className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.22)] transition-all duration-200 hover:bg-[#4333AF]'
-                    >
-                        Get Started
-                        <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
-                    </ComingSoonTrigger>
+                    <div className='flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end'>
+                        <ComingSoonTrigger
+                            ariaLabel='Get started'
+                            className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.22)] transition-all duration-200 hover:bg-[#4333AF]'
+                        >
+                            Get Started
+                            <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
+                        </ComingSoonTrigger>
+                        <button
+                            type='button'
+                            onClick={onViewDemo}
+                            aria-label='View live demo (coming soon)'
+                            className='group flex min-h-12 w-[200px] shrink-0 cursor-pointer items-center justify-center gap-3 whitespace-nowrap rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#0C0F18] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
+                        >
+                            View Live Demo
+                            <Target className='h-4 w-4 text-[#4333AF]' />
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
     );
 }
 
-const GlobalKpiPage: NextPage = () => (
-    <>
-        <HeroSection />
-        <GlobalKpiPageContent />
+const GlobalKpiPage: NextPage = () => {
+    const [demoOpen, setDemoOpen] = useState(false);
+    return (
+        <>
+            <HeroSection />
+            <GlobalKpiPageContent onViewDemo={() => setDemoOpen(true)} />
+            <AuthModal open={demoOpen} onOpenChange={setDemoOpen} comingSoon />
 
-        <style jsx global>{`
-            .global-kpi-page {
-                font-family: 'Roboto', Arial, Helvetica, sans-serif;
-                background-color: ${PAGE_BG};
-                -webkit-font-smoothing: antialiased;
-                text-rendering: geometricPrecision;
-            }
-
-            .global-kpi-page h1,
-            .global-kpi-page h2,
-            .global-kpi-page h3,
-            .global-kpi-page h4,
-            .global-kpi-page h5,
-            .global-kpi-page h6 {
-                font-family: var(--font-michroma), sans-serif !important;
-                font-weight: 400 !important;
-                overflow-wrap: normal;
-                word-break: normal;
-            }
-
-            .global-kpi-page button,
-            .global-kpi-page a {
-                -webkit-tap-highlight-color: transparent;
-            }
-
-            .global-kpi-page *,
-            .global-kpi-page *::before,
-            .global-kpi-page *::after {
-                box-sizing: border-box;
-                min-width: 0;
-            }
-
-            @media (max-width: 639px) {
+            <style jsx global>{`
                 .global-kpi-page {
+                    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+                    background-color: ${PAGE_BG};
+                    -webkit-font-smoothing: antialiased;
+                    text-rendering: geometricPrecision;
+                }
+
+                .global-kpi-page h1,
+                .global-kpi-page h2,
+                .global-kpi-page h3,
+                .global-kpi-page h4,
+                .global-kpi-page h5,
+                .global-kpi-page h6 {
+                    font-family: var(--font-michroma), sans-serif !important;
+                    font-weight: 400 !important;
                     overflow-wrap: normal;
                     word-break: normal;
                 }
 
-                .global-kpi-page .page-hero-title {
-                    font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
-                    line-height: 1.26 !important;
-                    letter-spacing: -0.02em !important;
+                .global-kpi-page button,
+                .global-kpi-page a {
+                    -webkit-tap-highlight-color: transparent;
                 }
 
-                .global-kpi-page .page-section-number {
-                    font-size: 1.95rem !important;
-                    line-height: 1 !important;
-                    letter-spacing: -0.02em !important;
-                }
-
-                .global-kpi-page .page-section-title {
-                    font-size: clamp(1rem, 5vw, 1.22rem) !important;
-                    line-height: 1.36 !important;
-                    letter-spacing: -0.01em !important;
-                }
-
-                .global-kpi-page .page-hero-features {
-                    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                    gap: 0.85rem !important;
-                    margin-top: 1.35rem !important;
-                }
-
-                .global-kpi-page .page-hero-features > * {
+                .global-kpi-page *,
+                .global-kpi-page *::before,
+                .global-kpi-page *::after {
+                    box-sizing: border-box;
                     min-width: 0;
                 }
 
-                .global-kpi-page .page-hero-features > * > div:first-child {
-                    width: 2.75rem !important;
-                    height: 2.75rem !important;
-                }
+                @media (max-width: 639px) {
+                    .global-kpi-page {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
 
-                .global-kpi-page .page-hero-features h3 {
-                    margin-top: 0.55rem !important;
-                    font-size: 0.64rem !important;
-                    line-height: 1.43 !important;
-                }
+                    .global-kpi-page .page-hero-title {
+                        font-size: clamp(1.9rem, 8.6vw, 2.25rem) !important;
+                        line-height: 1.26 !important;
+                        letter-spacing: -0.02em !important;
+                    }
 
-                .global-kpi-page .page-hero-features p {
-                    margin-top: 0.35rem !important;
-                    font-size: 0.5rem !important;
-                    line-height: 1.35 !important;
-                }
+                    .global-kpi-page .page-section-number {
+                        font-size: 1.95rem !important;
+                        line-height: 1 !important;
+                        letter-spacing: -0.02em !important;
+                    }
 
-                .global-kpi-page .page-hero-art {
-                    min-height: 11.5rem !important;
-                    margin-top: 0.25rem !important;
-                }
+                    .global-kpi-page .page-section-title {
+                        font-size: clamp(1rem, 5vw, 1.22rem) !important;
+                        line-height: 1.36 !important;
+                        letter-spacing: -0.01em !important;
+                    }
 
-                .global-kpi-page .page-mobile-grid {
-                    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                    gap: 0.75rem !important;
-                }
+                    .global-kpi-page .page-hero-features {
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 0.85rem !important;
+                        margin-top: 1.35rem !important;
+                    }
 
-                .global-kpi-page .page-mobile-grid > * {
-                    min-height: 0 !important;
-                    border-left: 0 !important;
-                    border-right: 0 !important;
-                    border-top: 0 !important;
-                    border-bottom: 0 !important;
-                }
+                    .global-kpi-page .page-hero-features > * {
+                        min-width: 0;
+                    }
 
-                .global-kpi-page .page-compact-card {
-                    min-height: 0 !important;
-                    padding: 0.9rem 0.65rem !important;
-                }
+                    .global-kpi-page .page-hero-features > * > div:first-child {
+                        width: 2.75rem !important;
+                        height: 2.75rem !important;
+                    }
 
-                .global-kpi-page .kpi-donut {
-                    transform: scale(0.9);
-                    transform-origin: center;
-                }
+                    .global-kpi-page .page-hero-features h3 {
+                        margin-top: 0.55rem !important;
+                        font-size: 0.64rem !important;
+                        line-height: 1.43 !important;
+                    }
 
-                .global-kpi-page p,
-                .global-kpi-page li,
-                .global-kpi-page td,
-                .global-kpi-page th,
-                .global-kpi-page dd,
-                .global-kpi-page dt {
-                    overflow-wrap: normal;
-                    word-break: normal;
+                    .global-kpi-page .page-hero-features p {
+                        margin-top: 0.35rem !important;
+                        font-size: 0.5rem !important;
+                        line-height: 1.35 !important;
+                    }
+
+                    .global-kpi-page .page-hero-art {
+                        min-height: 11.5rem !important;
+                        margin-top: 0.25rem !important;
+                    }
+
+                    .global-kpi-page .page-mobile-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important;
+                    }
+
+                    .global-kpi-page .page-mobile-grid > * {
+                        min-height: 0 !important;
+                        border-left: 0 !important;
+                        border-right: 0 !important;
+                        border-top: 0 !important;
+                        border-bottom: 0 !important;
+                    }
+
+                    .global-kpi-page .page-compact-card {
+                        min-height: 0 !important;
+                        padding: 0.9rem 0.65rem !important;
+                    }
+
+                    .global-kpi-page .kpi-donut {
+                        transform: scale(0.9);
+                        transform-origin: center;
+                    }
+
+                    .global-kpi-page p,
+                    .global-kpi-page li,
+                    .global-kpi-page td,
+                    .global-kpi-page th,
+                    .global-kpi-page dd,
+                    .global-kpi-page dt {
+                        overflow-wrap: normal;
+                        word-break: normal;
+                    }
                 }
-            }
-        `}</style>
-    </>
-);
+            `}</style>
+        </>
+    );
+};
 
 export default GlobalKpiPage;

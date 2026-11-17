@@ -349,30 +349,42 @@ function Pricing() {
 
                                 {/* Half-size gold chip, centered vertically at the card's left edge. */}
                                 <div className='pointer-events-none absolute left-6 top-1/2 z-10 -translate-y-1/2 sm:left-9'>
-                                    <svg
-                                        className='h-[21px] w-[28px] sm:h-[24px] sm:w-[32px]'
-                                        viewBox='0 0 64 48'
-                                        role='img'
-                                        aria-label='Gold payment card chip'
-                                        xmlns='http://www.w3.org/2000/svg'
-                                    >
-                                        <defs>
-                                            <linearGradient id='pricing-gold-chip' x1='0%' y1='0%' x2='100%' y2='100%'>
-                                                <stop offset='0%' stopColor='#FFF1BB' />
-                                                <stop offset='34%' stopColor='#E8C46E' />
-                                                <stop offset='70%' stopColor='#C99742' />
-                                                <stop offset='100%' stopColor='#F6D88B' />
-                                            </linearGradient>
-                                        </defs>
-                                        <rect x='1' y='1' width='62' height='46' rx='8' fill='url(#pricing-gold-chip)' stroke='#FFE1A0' strokeWidth='1.2' />
-                                        <g fill='none' stroke='#9C7137' strokeWidth='1.5' strokeLinejoin='round' opacity='0.88'>
-                                            <path d='M1 15 H18 M1 33 H18 M46 15 H63 M46 33 H63' />
-                                            <path d='M18 1 V15 M46 1 V15 M18 33 V47 M46 33 V47' />
-                                            <path d='M32 1 V14 M32 34 V47 M1 24 H18 M46 24 H63' />
-                                            <rect x='18' y='14' width='28' height='20' rx='5' />
-                                        </g>
-                                        <rect x='21.5' y='17.5' width='21' height='13' rx='3.5' fill='none' stroke='#FFF1BA' strokeWidth='0.9' opacity='0.75' />
-                                    </svg>
+                                    <div className='rounded-[8px] border-[1px] border-[#E8C46E] bg-[rgba(232,196,110,0.05)] p-[4px] shadow-[0_0_0_1px_rgba(255,241,187,0.08)] sm:rounded-[10px] sm:p-[7px]'>
+                                        <svg
+                                            className='h-[21px] w-[28px] sm:h-[24px] sm:w-[32px]'
+                                            viewBox='0 0 64 48'
+                                            role='img'
+                                            aria-label='Gold payment card chip'
+                                            xmlns='http://www.w3.org/2000/svg'
+                                        >
+                                            <defs>
+                                                <linearGradient id='pricing-gold-chip' x1='0%' y1='0%' x2='100%' y2='100%'>
+                                                    <stop offset='0%' stopColor='#FFF1BB' />
+                                                    <stop offset='34%' stopColor='#E8C46E' />
+                                                    <stop offset='70%' stopColor='#C99742' />
+                                                    <stop offset='100%' stopColor='#F6D88B' />
+                                                </linearGradient>
+                                            </defs>
+                                            <rect x='1' y='1' width='62' height='46' rx='8' fill='url(#pricing-gold-chip)' stroke='#FFE1A0' strokeWidth='1.2' />
+                                            <g fill='none' stroke='#9C7137' strokeWidth='1.5' strokeLinejoin='round' opacity='0.88'>
+                                                <path d='M1 15 H18 M1 33 H18 M46 15 H63 M46 33 H63' />
+                                                <path d='M18 1 V15 M46 1 V15 M18 33 V47 M46 33 V47' />
+                                                <path d='M32 1 V14 M32 34 V47 M1 24 H18 M46 24 H63' />
+                                                <rect x='18' y='14' width='28' height='20' rx='5' />
+                                            </g>
+                                            <rect
+                                                x='21.5'
+                                                y='17.5'
+                                                width='21'
+                                                height='13'
+                                                rx='3.5'
+                                                fill='none'
+                                                stroke='#FFF1BA'
+                                                strokeWidth='0.9'
+                                                opacity='0.75'
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>

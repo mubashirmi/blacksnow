@@ -1,8 +1,23 @@
+import AuthModal from '@/components/AuthModal';
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
-import { ArrowRight, BarChart3, Bell, Check, Download, Globe2, Lightbulb, LineChart, PieChart, Search, ShieldCheck, type LucideIcon } from 'lucide-react';
+import {
+    ArrowRight,
+    BarChart3,
+    Bell,
+    Check,
+    Download,
+    Globe2,
+    Lightbulb,
+    LineChart,
+    PieChart,
+    Search,
+    ShieldCheck,
+    Target,
+    type LucideIcon,
+} from 'lucide-react';
 import type { NextPage } from 'next';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 // const ACCENT = '#f2f2f0';
 // const GREEN = '#4333AF';
@@ -260,7 +275,7 @@ function SectionIntro({ number, title, description, bullets }: { number: string;
 function Panel({ title, children, cta }: { title?: string; children: ReactNode; cta?: string }) {
     return (
         <div
-            className='overflow-hidden rounded-[12px] border'
+            className='tool-data-panel overflow-hidden rounded-[12px] border'
             style={{
                 borderColor: BORDER,
                 background: '#0C0F18',
@@ -269,7 +284,9 @@ function Panel({ title, children, cta }: { title?: string; children: ReactNode; 
         >
             {title && (
                 <div className='px-4 pb-2 pt-4 sm:px-5'>
-                    <p className='text-[12px] font-medium uppercase tracking-[0.015em] text-[#f0f0ee]'>{title}</p>
+                    <p className='tool-panel-title text-[12px] font-medium uppercase tracking-[0.015em]' style={{ color: '#2B358D' }}>
+                        {title}
+                    </p>
                 </div>
             )}
 
@@ -598,9 +615,11 @@ function EarningsPanel() {
 }
 
 const ResearchPage: NextPage = () => {
+    const [demoOpen, setDemoOpen] = useState(false);
     return (
         <>
             <HeroSection />
+            <AuthModal open={demoOpen} onOpenChange={setDemoOpen} comingSoon />
 
             <main className='research-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 <section className='relative overflow-hidden border-b border-[#414A5D]'>
@@ -615,7 +634,7 @@ const ResearchPage: NextPage = () => {
 
                     <div className='relative mx-auto grid w-full max-w-[1180px] items-start gap-7 px-5 pb-5 pt-8 sm:px-8 sm:pt-10 lg:grid-cols-[0.41fr_0.59fr] lg:gap-3 lg:px-9'>
                         <div className='relative z-10'>
-                            <p className='text-[11px] font-medium uppercase tracking-[0.03em] text-[#4333AF] sm:text-[12px]'>
+                            <p className='text-[11px] font-medium uppercase tracking-[0.03em] text-white sm:text-[12px]'>
                                 Deeper research. Better insights. Smarter decisions.
                             </p>
 
@@ -741,13 +760,24 @@ const ResearchPage: NextPage = () => {
                                     </div>
                                 </div>
 
-                                <ComingSoonTrigger
-                                    ariaLabel='Get started'
-                                    className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.20)] transition-all duration-200 hover:bg-[#4333AF]'
-                                >
-                                    Get Started
-                                    <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
-                                </ComingSoonTrigger>
+                                <div className='flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end'>
+                                    <ComingSoonTrigger
+                                        ariaLabel='Get started'
+                                        className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.20)] transition-all duration-200 hover:bg-[#4333AF]'
+                                    >
+                                        Get Started
+                                        <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
+                                    </ComingSoonTrigger>
+                                    <button
+                                        type='button'
+                                        onClick={() => setDemoOpen(true)}
+                                        aria-label='View live demo (coming soon)'
+                                        className='group flex min-h-12 w-[200px] shrink-0 cursor-pointer items-center justify-center gap-3 whitespace-nowrap rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#0C0F18] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
+                                    >
+                                        View Live Demo
+                                        <Target className='h-4 w-4 text-[#4333AF]' />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -755,6 +785,14 @@ const ResearchPage: NextPage = () => {
             </main>
 
             <style jsx global>{`
+                /* Dashboard/table hierarchy: panel headings blue, data white, existing CTA purple. */
+                .tool-data-panel :is(p, span, td, th, dt, dd, div):not(.tool-panel-title) {
+                    color: #ffffff !important;
+                }
+                .tool-data-panel .tool-panel-title {
+                    color: #2b358d !important;
+                }
+
                 .research-page {
                     font-family: 'Roboto', Arial, Helvetica, sans-serif;
                     background-color: ${PAGE_BG};

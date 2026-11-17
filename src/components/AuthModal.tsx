@@ -444,6 +444,10 @@ export type AuthModalProps = {
     productContext?: ProductContext;
     visualVariant?: AuthModalVisualVariant;
     authAction?: AuthModalAction;
+    /** Read-only preview used exclusively by the eight trading tool demo CTAs. */
+    comingSoon?: boolean;
+    /** Optional selected-tool label for carousel-triggered Coming Soon previews. */
+    comingSoonToolName?: string;
     onSuccess?: (ctx: { kind: 'login' | 'signup'; role?: string; roles?: string[]; userId?: string }) => boolean | void;
 };
 
@@ -580,6 +584,20 @@ function ProductHeader({
     );
 }
 
+// Tool-page titles for the disabled demo preview. Carousel callers can override
+// the label via comingSoonToolName, so autoplay cannot change an open modal.
+const TOOL_PREVIEW_TITLES: Record<string, string> = {
+    'paper-trading': 'Paper Trading',
+    'stock-screener': 'Stock Screener',
+    watchlist: 'Watchlist',
+    'market-movers': 'Market Movers',
+    'global-kpi': 'Global KPI',
+    'economic-simulator': 'Economic Simulator',
+    research: 'Research',
+    'market-moving-calendars': 'Calendars',
+    'market-moving-calenders': 'Calendars',
+};
+
 // ─── Auth Modal ───────────────────────────────────────────────────────────────
 export default function AuthModal({
     open,
@@ -591,6 +609,8 @@ export default function AuthModal({
     productContext,
     visualVariant = 'default',
     authAction,
+    comingSoon = false,
+    comingSoonToolName,
     onSuccess,
 }: AuthModalProps) {
     const router = useRouter();
@@ -1033,6 +1053,72 @@ export default function AuthModal({
         } finally {
             setIsLoading(false);
         }
+    }
+
+    // This is an opt-in preview. It does not change the normal sign-in or sign-up experience.
+    if (comingSoon) {
+        const previewPath = (sourceRoute || router.asPath || currentRoute).split(/[?#]/)[0];
+        const toolSlug = previewPath.split('/').filter(Boolean).pop()?.toLowerCase() ?? '';
+        const previewTitle = comingSoonToolName?.trim() || TOOL_PREVIEW_TITLES[toolSlug] || 'Coming Soon';
+        return (
+            <Dialog open={open} onOpenChange={onOpenChange}>
+                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[32px] border border-[#414A5D] bg-[#0C0F18] p-7 text-white shadow-[0_24px_60px_rgba(0,0,0,0.7)] [&>button]:hidden'>
+                    <button
+                        type='button'
+                        aria-label='Close Coming Soon preview'
+                        onClick={() => onOpenChange(false)}
+                        className='absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-[#414A5D] bg-black/40 text-white transition-colors hover:bg-white/10'
+                    >
+                        <X className='h-5 w-5' />
+                    </button>
+                    <DialogHeader className='items-center pt-4 text-center'>
+                        <Image src='/logocolored.png' width={64} height={64} alt='Black Snow' className='mx-auto mb-4 h-14 w-14 object-contain' />
+                        <DialogTitle className='text-2xl font-extrabold text-white'>{previewTitle}</DialogTitle>
+                        <p className='text-sm text-white/60'>Live demos are not available yet.</p>
+                    </DialogHeader>
+                    <div className='mt-3 flex flex-col gap-3' aria-label='Preview registration fields (disabled)'>
+                        <Input
+                            disabled
+                            type='text'
+                            placeholder='Full name'
+                            aria-label='Full name (disabled)'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                        />
+                        <Input
+                            disabled
+                            type='tel'
+                            placeholder='Phone number'
+                            aria-label='Phone number (disabled)'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                        />
+                        <Input
+                            disabled
+                            type='email'
+                            placeholder='Email address'
+                            aria-label='Email address (disabled)'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                        />
+                        <Input
+                            disabled
+                            type='password'
+                            placeholder='Password'
+                            aria-label='Password (disabled)'
+                            className='h-12 rounded-2xl border-[#414A5D] bg-black/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                        />
+                        <label className='flex items-start gap-3 text-xs text-white/50'>
+                            <input disabled type='checkbox' className='mt-0.5 h-4 w-4 rounded border border-[#414A5D]' />I agree to the Terms &amp; Conditions
+                        </label>
+                        <Button
+                            type='button'
+                            disabled
+                            className='mt-2 h-12 w-full rounded-2xl border border-[#414A5D] bg-[#4333AF] text-base font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                        >
+                            Coming Soon
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        );
     }
 
     return (

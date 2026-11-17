@@ -7,14 +7,89 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription as DialogDesc, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/lib/auth';
-import { Calendar, CheckCircle, X } from 'lucide-react';
+import { BookOpen, Calendar, CalendarDays, CheckCircle, X } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+// Use the same animation assets and slide order as the Sign In/Sign Up carousel.
+// The final two tools are still using Lucide placeholders in those forms.
+const HERO_TOOL_ICONS = [
+    '/animations/papertradingicon.json',
+    '/animations/stockscreenericon.json',
+    '/animations/watchlisticon.json',
+    '/animations/marketmover.json',
+    '/animations/globaleconomicindicatoricon.json',
+    '/animations/economicsimulator.json',
+    '/animations/researchicon.json',
+    '/animations/calendericon1.json',
+] as const;
+
+// On the eight trading-tool pages the hero icon is selected from the PAGE URL,
+// not from whichever slide happens to be active in the homepage carousel.
+// Normalization accommodates both camelCase routes and kebab-case slugs.
+function getToolIndexFromPath(pathname: string): number | null {
+    const path = pathname
+        .split('?')[0]
+        .split('#')[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    if (path.includes('papertrading')) return 0;
+    if (path.includes('stockscreener')) return 1;
+    if (path.includes('watchlist') || path.includes('wishlist')) return 2;
+    if (path.includes('marketmovers') || path.includes('marketmover')) return 3;
+    if (path.includes('globalkpi') || path.includes('globaleconomicindicator')) return 4;
+    if (path.includes('economicsimulator')) return 5;
+    if (path.includes('marketmovingcalendar') || path.includes('marketcalendar') || path.includes('economiccalendar')) return 7;
+    if (path.includes('research')) return 6;
+    return null;
+}
+
+function ActiveToolIcon({ slideIndex }: { slideIndex: number }) {
+    const src = HERO_TOOL_ICONS[slideIndex] ?? null;
+    const FallbackIcon = slideIndex === 7 ? CalendarDays : BookOpen;
+
+    return (
+        <div className='flex h-full w-full items-center justify-center overflow-hidden'>
+            {src ? (
+                <LottieAnimation key={src} src={src} className='h-full w-full' loop={true} autoplay={true} />
+            ) : (
+                <FallbackIcon className='h-[52%] w-[52%] text-[#4333AF]' strokeWidth={1.6} aria-hidden='true' />
+            )}
+        </div>
+    );
+}
+
 export default function HeroSection() {
+    const router = useRouter();
+    const currentPageToolIndex = getToolIndexFromPath(router.asPath || router.pathname || '');
     const [pricingOpen, setPricingOpen] = useState(false);
     const [authOpen, setAuthOpen] = useState(false);
     const [openPricingAfterAuth, setOpenPricingAfterAuth] = useState(false);
     const { loading: authLoading } = useAuth();
+    const heroCarouselRootRef = useRef<HTMLDivElement>(null);
+    const [activeHeroToolIndex, setActiveHeroToolIndex] = useState(0);
+    // Tool pages show their own icon at all times. Only the homepage follows the carousel.
+    const displayedToolIndex = currentPageToolIndex ?? activeHeroToolIndex;
+
+    // Preserve the homepage's current carousel-driven icon behavior.
+    useEffect(() => {
+        if (currentPageToolIndex !== null) return;
+        const root = heroCarouselRootRef.current;
+        if (!root) return;
+
+        const syncSelectedTool = () => {
+            const slideButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[aria-label="Choose a trading tool"] button'));
+            const activeIndex = slideButtons.findIndex((button) => button.getAttribute('aria-current') === 'true');
+            if (activeIndex >= 0 && activeIndex < HERO_TOOL_ICONS.length) {
+                setActiveHeroToolIndex((previous) => (previous === activeIndex ? previous : activeIndex));
+            }
+        };
+
+        syncSelectedTool();
+        const observer = new MutationObserver(syncSelectedTool);
+        observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-current'] });
+        return () => observer.disconnect();
+    }, [currentPageToolIndex]);
     const [isSubscribeFormOpen, setIsSubscribeFormOpen] = useState(false);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [isCheckingOpen, setIsCheckingOpen] = useState(false);
@@ -158,22 +233,25 @@ export default function HeroSection() {
                             {/* Mobile animation */}
                             <div className='block min-[1100px]:hidden w-full animate-slide-in-left delay-300'>
                                 <div className='home-hero-lottie-surface flex items-center justify-center w-full rounded-2xl border border-[#414A5D] bg-transparent'>
-                                    <LottieAnimation
-                                        src='/animations/growthChartIcon.json'
-                                        className='w-full h-[220px] xs:h-[250px] bg-transparent'
-                                        loop={true}
-                                        autoplay={true}
-                                    />
+                                    <div className='h-[220px] w-full xs:h-[250px] flex items-center justify-center'>
+                                        <div className='h-[200px] w-[200px] xs:h-[230px] xs:w-[230px]'>
+                                            <ActiveToolIcon slideIndex={displayedToolIndex} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className='animate-slide-in-left delay-400 w-full min-w-0'>
+                            <div ref={heroCarouselRootRef} className='animate-slide-in-left delay-400 w-full min-w-0'>
                                 <HeroTradingCarousel onSubscribe={openSubscribeFlow} disabled={authLoading || checkingAccess} checkingAccess={checkingAccess} />
                             </div>
                         </div>
                         {/* ── RIGHT — desktop only ── */}
                         <div className='hidden min-[1100px]:flex relative animate-slide-in-right w-full self-stretch items-center justify-center'>
                             <div className='home-hero-lottie-surface w-full max-w-[440px] h-full min-h-[490px] max-h-[530px] rounded-3xl border border-[#414A5D] overflow-hidden bg-transparent'>
-                                <LottieAnimation src='/animations/growthChartIcon.json' className='w-full h-full bg-transparent' loop={true} autoplay={true} />
+                                <div className='flex h-full w-full items-center justify-center'>
+                                    <div className='h-[280px] w-[280px]'>
+                                        <ActiveToolIcon slideIndex={displayedToolIndex} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

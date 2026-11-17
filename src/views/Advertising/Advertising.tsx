@@ -315,7 +315,7 @@ function Advertising() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                     onClick={() => setSlideshowOpen(true)}
                                 >
                                     Learn More
@@ -338,7 +338,7 @@ function Advertising() {
 
             <ProductPricingOverview product='digital-billboard' onGetStarted={handlePurchaseClick} />
 
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='mt-10 sm:mt-6 container mx-auto max-w-8xl relative z-10'>
                     <h2 className='text-[clamp(1.65rem,7.6vw,2.25rem)] sm:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-5 leading-[1.22] text-center leading-[1.22]'>
                         Digital Billboard <span className='text-[#8350E0]'>Features</span>{' '}
@@ -393,7 +393,7 @@ function Advertising() {
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#414A5D] p-5 sm:p-6 transition-all duration-300 hover:border-[#414A5D] hover:translate-y-[-2px] bg-black '
+                                className='group relative overflow-hidden cursor-pointer rounded-2xl border border-[#414A5D] p-5 sm:p-6 transition-all duration-300 hover:border-[#8350E0] hover:translate-y-[-2px] bg-[#0C0F18] '
                             >
                                 {/* glow */}
                                 <div className='pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#8350E0]/10' />
@@ -464,7 +464,7 @@ function Advertising() {
                         ].map((feature, index) => (
                             <Card
                                 key={index}
-                                className='border-2 border-[#414A5D] hover:border-[#414A5D] transition-all duration-300 rounded-2xl transform hover:scale-105 bg-[#0C0F18]'
+                                className='border-2 border-[#414A5D] hover:border-[#8350E0] transition-all duration-300 rounded-2xl transform hover:scale-105 bg-[#0C0F18]'
                             >
                                 <CardContent className='p-8'>
                                     <div className='w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-[#8350E0]'>
@@ -480,7 +480,7 @@ function Advertising() {
             </section>
 
             {/* Call to Action Section with Lottie Animation */}
-            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#0C0F18]'>
+            <section className='relative py-10 sm:py-16 px-4 sm:px-6 md:px-8 bg-[#050608]'>
                 <div className='container mx-auto max-w-8xl'>
                     <div className='grid lg:grid-cols-2 gap-16 items-center'>
                         {/* Left Content */}
@@ -504,7 +504,7 @@ function Advertising() {
                                 </Button>
                                 <Button
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px] border-[#8350E0] bg-transparent text-[#8350E0] hover:bg-[#8350E0]/10 hover:text-[#B38DF3] hover:border-[#8350E0] shadow-[0_0_18px_rgba(131,80,224,0.12)]'
+                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
                                     onClick={() => setSlideshowOpen(true)}
                                 >
                                     Learn More
@@ -514,7 +514,7 @@ function Advertising() {
 
                         {/* Right Animation */}
                         <div className='flex items-center justify-center'>
-                            <div className='w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-black'>
+                            <div className='w-80 h-80 sm:w-96 sm:h-96 rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl bg-[#0C0F18]\'>
                                 <LottieAnimation src='/animations/advretisingicon.json' loop={true} autoplay={true} />
                             </div>
                         </div>

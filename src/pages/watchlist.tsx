@@ -1,3 +1,4 @@
+import AuthModal from '@/components/AuthModal';
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
 import HeroSection from '@/components/MainHeroSection';
 import {
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 type WatchlistRow = {
     symbol: string;
@@ -261,7 +262,7 @@ const alertRows: AlertRow[] = [
 function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
     return (
         <div
-            className={`overflow-hidden rounded-[12px] border ${className}`}
+            className={`tool-data-panel overflow-hidden rounded-[12px] border ${className}`}
             style={{
                 borderColor: BORDER,
                 background: '#0C0F18',
@@ -379,7 +380,7 @@ function WatchlistTable() {
         <Panel>
             <div className='px-4 pb-3 pt-3 sm:px-5'>
                 <div className='flex flex-wrap items-center justify-between gap-3'>
-                    <p className='text-[11px] font-medium uppercase tracking-[0.02em]' style={{ color: ORANGE_LIGHT }}>
+                    <p className='text-[11px] font-medium uppercase tracking-[0.02em] tool-panel-title' style={{ color: ORANGE_LIGHT }}>
                         My Watchlist
                     </p>
 
@@ -590,7 +591,7 @@ function AlertsPanel() {
         <Panel>
             <div className='px-4 pb-3 pt-4 sm:px-5'>
                 <div className='flex items-center justify-between gap-4'>
-                    <p className='text-[11px] font-medium uppercase' style={{ color: ORANGE_LIGHT }}>
+                    <p className='text-[11px] font-medium uppercase tool-panel-title' style={{ color: ORANGE_LIGHT }}>
                         Recent Alerts
                     </p>
 
@@ -644,16 +645,18 @@ function AlertsPanel() {
 }
 
 const WatchlistPage: NextPage = () => {
+    const [demoOpen, setDemoOpen] = useState(false);
     return (
         <>
             <HeroSection />
+            <AuthModal open={demoOpen} onOpenChange={setDemoOpen} comingSoon />
 
             <main className='watchlist-page min-h-screen overflow-hidden text-white' style={{ background: '#050608' }}>
                 {/* HERO */}
                 <section id='overview' className='relative overflow-hidden border-b border-[#414A5D]'>
                     <div className='mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pb-7 pt-5 sm:px-8 sm:pb-9 sm:pt-7 lg:grid-cols-[0.40fr_0.60fr] lg:gap-2 lg:px-9'>
                         <div className='relative z-10'>
-                            <p className='text-[11px] font-medium uppercase tracking-[0.055em]' style={{ color: ORANGE_LIGHT }}>
+                            <p className='text-[11px] font-medium uppercase tracking-[0.055em]' style={{ color: '#FFFFFF' }}>
                                 Track what matters.
                             </p>
 
@@ -739,7 +742,7 @@ const WatchlistPage: NextPage = () => {
                         <Panel>
                             <div className='px-4 pb-4 pt-4 sm:px-5'>
                                 <div className='flex items-center justify-between gap-4'>
-                                    <p className='text-[11px] font-medium uppercase' style={{ color: ORANGE_LIGHT }}>
+                                    <p className='text-[11px] font-medium uppercase tool-panel-title' style={{ color: ORANGE_LIGHT }}>
                                         My Watchlists
                                     </p>
 
@@ -872,19 +875,38 @@ const WatchlistPage: NextPage = () => {
                                 </div>
                             </div>
 
-                            <ComingSoonTrigger
-                                ariaLabel='Get started'
-                                className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.24)] transition-all duration-200 hover:bg-[#4333AF]'
-                            >
-                                Get Started
-                                <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
-                            </ComingSoonTrigger>
+                            <div className='flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end'>
+                                <ComingSoonTrigger
+                                    ariaLabel='Get started'
+                                    className='group flex h-[48px] w-[200px] shrink-0 items-center justify-center gap-3 whitespace-nowrap rounded-[5px] bg-[#4333AF] px-5 text-[11px] font-medium uppercase tracking-[0.03em] text-white shadow-[0_0_24px_rgba(67,51,175,0.24)] transition-all duration-200 hover:bg-[#4333AF]'
+                                >
+                                    Get Started
+                                    <ArrowRight className='h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1' />
+                                </ComingSoonTrigger>
+                                <button
+                                    type='button'
+                                    onClick={() => setDemoOpen(true)}
+                                    aria-label='View live demo (coming soon)'
+                                    className='group flex min-h-12 w-[200px] shrink-0 cursor-pointer items-center justify-center gap-3 whitespace-nowrap rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#0C0F18] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
+                                >
+                                    View Live Demo
+                                    <Target className='h-4 w-4 text-[#4333AF]' />
+                                </button>
+                            </div>
                         </div>
                     </section>
                 </div>
             </main>
 
             <style jsx global>{`
+                /* Dashboard/table hierarchy: panel headings blue, data white, existing CTA purple. */
+                .tool-data-panel :is(p, span, td, th, dt, dd, div):not(.tool-panel-title) {
+                    color: #ffffff !important;
+                }
+                .tool-data-panel .tool-panel-title {
+                    color: #2b358d !important;
+                }
+
                 .watchlist-page {
                     font-family: 'Roboto', Arial, Helvetica, sans-serif;
                     background-color: ${PAGE_BG};

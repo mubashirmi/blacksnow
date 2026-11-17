@@ -13,6 +13,7 @@ import {
     Filter,
     Globe2,
     Landmark,
+    ListChecks,
     Newspaper,
     Rocket,
     Search,
@@ -27,7 +28,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 
-const TOOL_PREVIEW_COLOR = '#414A5D';
+const TOOL_PREVIEW_COLOR = '#2B358D';
 // const BLUE = '#4333AF';
 // const BLUE_MID = '#4333AF';
 
@@ -312,7 +313,7 @@ function MiniBars() {
     return (
         <div className='flex h-20 items-end justify-center gap-2'>
             {[34, 52, 42, 77, 48, 88, 63].map((h, i) => (
-                <div key={i} className='w-3 rounded-t-[2px] bg-[#414A5D]' style={{ height: `${h}%` }} />
+                <div key={i} className='w-3 rounded-t-[2px] bg-[#2B358D]' style={{ height: `${h}%` }} />
             ))}
         </div>
     );
@@ -320,19 +321,24 @@ function MiniBars() {
 
 function MiniList() {
     return (
-        <div className='space-y-2.5 py-2 text-[11px]'>
-            {[
-                ['AAPL', '193.42', '+1.92%'],
-                ['MSFT', '415.65', '+1.21%'],
-                ['NVDA', '1,037.21', '+4.36%'],
-                ['TSLA', '248.56', '+2.87%'],
-            ].map(([s, p, c]) => (
-                <div key={s} className='grid grid-cols-[1fr_auto_auto] gap-3'>
-                    <span className='font-semibold text-white'>{s}</span>
-                    <span className='text-white/65'>{p}</span>
-                    <span className='text-[#414A5D]'>{c}</span>
-                </div>
-            ))}
+        <div className='h-20 w-full'>
+            <div className='flex h-4 items-center justify-end'>
+                <ListChecks className='h-4 w-4 text-[#2B358D]' strokeWidth={1.8} aria-hidden='true' />
+            </div>
+            <div className='space-y-1.5 text-[10px] sm:text-[11px]'>
+                {[
+                    ['AAPL', '193.42', '+1.92%'],
+                    ['MSFT', '415.65', '+1.21%'],
+                    ['NVDA', '1,037.21', '+4.36%'],
+                    ['TSLA', '248.56', '+2.87%'],
+                ].map(([s, p, c]) => (
+                    <div key={s} className='grid grid-cols-[1fr_auto_auto] items-center gap-2'>
+                        <span className='font-semibold text-white'>{s}</span>
+                        <span className='text-white/65'>{p}</span>
+                        <span className='text-[#414A5D]'>{c}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -343,9 +349,9 @@ function Preview({ kind, id }: { kind: (typeof tools)[number]['kind']; id: strin
     if (kind === 'globe')
         return (
             <div className='relative flex h-20 items-center justify-center'>
-                <Globe2 className='h-20 w-20 text-[#414A5D]' strokeWidth={1.5} />
-                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#414A5D]' />
-                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#414A5D]' />
+                <Globe2 className='h-20 w-20 text-[#2B358D]' strokeWidth={1.5} />
+                <span className='absolute left-[38%] top-[25%] h-2 w-2 rounded-full bg-[#2B358D]' />
+                <span className='absolute right-[30%] top-[48%] h-2 w-2 rounded-full bg-[#2B358D]' />
             </div>
         );
     if (kind === 'curve') return <MiniLine id={`${id}-curve`} />;
@@ -353,15 +359,13 @@ function Preview({ kind, id }: { kind: (typeof tools)[number]['kind']; id: strin
 }
 
 function SimplePricingStrip() {
-    const benefits = ['All 6 tools included', 'Real-time data & updates', 'Advanced analytics', 'Cancel anytime'];
+    const benefits = ['All 8 tools included', 'Real-time data & updates', 'Advanced analytics', 'Cancel anytime'];
 
     return (
         <div className='overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_18px_55px_rgba(0,0,0,.32)]'>
             <div className='grid md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1.05fr]'>
                 <div className='border-b border-[#414A5D] p-5 sm:p-6 md:border-r xl:border-b-0'>
-                    <h2 className='showcase-section-title text-[clamp(1.1rem,4vw,1.6rem)] text-white'>Simple Pricing. Maximum Value.</h2>
-
-                    <div className='mt-5 space-y-3'>
+                    <div className='space-y-3'>
                         {benefits.map((item) => (
                             <div key={item} className='flex items-center gap-3 text-sm text-white/72'>
                                 <Check className='h-5 w-5 shrink-0 text-[#4333AF]' strokeWidth={1.8} />
@@ -1025,7 +1029,7 @@ function PaperDeskDashboard() {
                             className='h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12 xl:h-8 xl:w-8'
                         />
                         <div className='min-w-0'>
-                            <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-white sm:text-[16px] xl:text-[12px]'>
+                            <p className='whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[.22em] text-[#2B358D] sm:text-[16px] xl:text-[12px]'>
                                 BLACK SNOW
                             </p>
                             <p className='mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[.14em] text-[#4333AF] sm:text-[12px] xl:text-[9px]'>
@@ -1063,17 +1067,17 @@ function PaperDeskDashboard() {
                         </div>
                         <div className='min-w-0 border-x border-[#414A5D] px-2 sm:px-4 xl:px-3'>
                             <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>Total Return</p>
-                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
+                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(13px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#fff]'>
                                 +18.42%
                             </p>
-                            <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p>
+                            {/* <p className='mt-0.5 whitespace-nowrap text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>+$19,532.40</p> */}
                         </div>
                         <div className='min-w-0 px-2 sm:px-4 xl:px-3' aria-live='polite' aria-atomic='true'>
                             <p className='text-[9px] text-[#9ca6b8] sm:text-[12px] xl:text-[9px]'>{period === '1D' ? "Today's P&L" : `${period} P&L`}</p>
-                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#4333AF]'>
+                            <p className='mt-1 whitespace-nowrap xl:mt-0 text-[clamp(12px,2.2vw,20px)] xl:text-[15px] font-bold leading-tight text-[#fff]'>
                                 +{paperDeskMoney(selected.change)}
                             </p>
-                            <p className='mt-0.5 text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p>
+                            {/* <p className='mt-0.5 text-[10px] text-[#4333AF] sm:text-[12px] xl:mt-0 xl:text-[9px]'>{selected.changePercent}</p> */}
                         </div>
                     </div>
 
@@ -1341,11 +1345,11 @@ export default function TradingPlatformShowcase() {
                                             >
                                                 <Icon className='h-6 w-6 text-[#4333AF] sm:h-7 sm:w-7' strokeWidth={2} />
                                             </span>
-                                            <h3 className='showcase-subheading text-sm font-black uppercase tracking-[.02em] text-white'>{tool.title}</h3>
+                                            <h3 className='showcase-subheading text-sm font-black uppercase tracking-[.02em] text-[#2B358D]'>{tool.title}</h3>
                                         </div>
                                         <p className='mt-3 text-xs leading-5 text-white/65 sm:text-sm sm:leading-6'>{tool.body}</p>
-                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#4333AF]'>
-                                            Learn More <ArrowRight className='h-3.5 w-3.5 text-[#414A5D]' />
+                                        <div className='mt-auto flex items-center gap-2 pt-4 text-[10px] font-bold uppercase tracking-[.04em] text-[#2B358D]'>
+                                            Learn More <ArrowRight className='h-3.5 w-3.5 text-[#2B358D]' />
                                         </div>
                                     </div>
                                     <div className='hidden min-h-[125px] items-center justify-center border-t border-[#414A5D] bg-[#080A0F] p-4 sm:flex md:border-l md:border-t-0'>
@@ -1396,7 +1400,7 @@ export default function TradingPlatformShowcase() {
                             <div className='flex items-center justify-between gap-4'>
                                 <div className='flex min-w-0 items-center gap-3'>
                                     <Image src='/logocolored.png' alt='Black Snow' width={30} height={30} className='h-7 w-7 shrink-0 object-contain' />
-                                    <span className='truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-white/85 sm:text-[11px]'>
+                                    <span className='truncate text-[10px] font-semibold uppercase tracking-[0.22em] text-[#2B358D] sm:text-[11px]'>
                                         Black Snow
                                     </span>
                                 </div>
@@ -1408,20 +1412,13 @@ export default function TradingPlatformShowcase() {
                                 </div>
                             </div>
 
-                            <div className='mt-8 grid h-[610px] content-start gap-8 sm:h-[640px] lg:h-[360px] lg:grid-cols-[1.08fr_.92fr] lg:items-start lg:gap-10'>
-                                <div className='min-w-0 self-start'>
-                                    <h3 className='showcase-display showcase-execution-title block h-[104px] w-full text-[clamp(1.3rem,5.4vw,2.05rem)] uppercase leading-[1.28] tracking-[-0.02em] text-white sm:h-[110px] sm:text-[clamp(1.8rem,4vw,2.6rem)] lg:h-[112px] lg:text-[clamp(1.65rem,2.6vw,2.4rem)]'>
+                            <div className='mt-8 grid h-[610px] content-start gap-8 sm:h-[640px] lg:h-[360px] lg:grid-cols-[1.08fr_.92fr] lg:content-center lg:items-center lg:gap-10'>
+                                <div className='min-w-0 self-start lg:self-center'>
+                                    <h3 className='showcase-display showcase-execution-title block w-full whitespace-nowrap text-[clamp(0.95rem,3.4vw,1.8rem)] uppercase leading-[1.28] tracking-[-0.035em] text-white sm:text-[clamp(1.2rem,2.6vw,2rem)] lg:text-[clamp(1.3rem,2vw,2rem)]'>
                                         {activeExecutionSlide.title}
                                     </h3>
 
-                                    <p
-                                        className='mt-2 min-h-[48px] text-[clamp(.95rem,3.7vw,1.25rem)] font-medium leading-[1.35] sm:min-h-[50px]'
-                                        style={{ color: activeExecutionSlide.accent }}
-                                    >
-                                        {activeExecutionSlide.subtitle}
-                                    </p>
-
-                                    <div className='mt-4 min-h-[118px]'>
+                                    <div className='mt-7 min-h-[118px]'>
                                         <div className='flex items-center justify-between gap-4'>
                                             <p className='text-[9px] font-medium uppercase tracking-[0.2em] text-white/36'>
                                                 {String(executionDetailIndex + 1).padStart(2, '0')} /{' '}
@@ -1559,24 +1556,10 @@ export default function TradingPlatformShowcase() {
                 </div>
 
                 <div className='mt-8'>
+                    <h2 className='showcase-section-title mb-6 text-center text-[clamp(1.4rem,5vw,2rem)] font-black text-white'>
+                        Simple Pricing. Maximum Value.
+                    </h2>
                     <SimplePricingStrip />
-                </div>
-
-                <div className='mt-7 flex flex-col gap-5 rounded-xl border border-[#414A5D] bg-[#0C0F18] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7'>
-                    <div className='flex items-start gap-4 sm:items-center'>
-                        <Rocket className='mt-0.5 h-9 w-9 shrink-0 text-[#4333AF] sm:mt-0 sm:h-10 sm:w-10' strokeWidth={1.35} />
-                        <div>
-                            <h3 className='showcase-subheading text-lg font-black text-white'>Ready to Take Control of the Markets?</h3>
-                            <p className='mt-1 text-xs leading-5 text-white/45 sm:text-sm'>Join traders using Black Snow to gain an edge every day.</p>
-                        </div>
-                    </div>
-                    <ComingSoonTrigger
-                        ariaLabel='Start your 30-day free trial'
-                        className='group flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-lg bg-[#4333AF] px-7 text-sm font-black text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#372990] hover:shadow-[0_8px_26px_rgba(67,51,175,.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF] sm:w-auto'
-                    >
-                        Start Your 30-Day Free Trial
-                        <ArrowRight className='h-4 w-4' />
-                    </ComingSoonTrigger>
                 </div>
             </div>
 
@@ -1652,9 +1635,9 @@ export default function TradingPlatformShowcase() {
                     }
 
                     .trading-platform-showcase .showcase-execution-title {
-                        font-size: clamp(1.3rem, 5.4vw, 2.05rem) !important;
+                        font-size: clamp(0.95rem, 3.4vw, 1.8rem) !important;
                         line-height: 1.3 !important;
-                        letter-spacing: -0.02em !important;
+                        letter-spacing: -0.035em !important;
                     }
 
                     .trading-platform-showcase .showcase-section-title {

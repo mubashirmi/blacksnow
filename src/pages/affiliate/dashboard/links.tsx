@@ -5,11 +5,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-/** Copy the provided transparent logo to your Next.js project's public directory. */
 const COMPANY_LOGO_URL = '/logocolored.png';
-const QR_BLUE = '#073ccc';
+const QR_BLUE = '#000000';
 const QR_SIZE = 320;
-const QR_LOGO_SIZE = 60; // 18.75% of the SVG; level H protects scannability.
+const QR_LOGO_SIZE = 60;
 
 interface AffiliateLink {
     id: number;

@@ -1520,9 +1520,7 @@ function SignIn() {
                                         <Image width={104} height={104} src='/logocolored.png' alt='Logo' />
                                     </div>
 
-                                    <h2 className='text-[22px] font-bold text-white mb-1'>
-                                        {showVerification ? 'Verify Your Account' : 'Sign In to Your Account'}
-                                    </h2>
+                                    <h2 className='text-[22px] font-bold text-white mb-1'>{showVerification ? 'Verify Your Account' : 'Sign In'}</h2>
                                 </div>
 
                                 <div className='min-h-0 overflow-visible pr-0'>
