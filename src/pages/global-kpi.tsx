@@ -9,8 +9,7 @@ import { useState, type ReactNode } from 'react';
 const BLUE = '#4333AF';
 const BLUE_BRIGHT = '#4333AF';
 const GOLD = '#4333AF';
-const GOLD_LIGHT = '#4333AF';
-// const GREEN = '#4333AF';
+
 const PAGE_BG = '#0C0F18';
 
 function SectionNumber({ number }: { number: string }) {
