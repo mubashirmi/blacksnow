@@ -916,11 +916,16 @@ function Home() {
     const heroAnimationGlassStyle = {
         background: [
             'radial-gradient(circle at 18% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 25%, transparent 55%)',
+
             'linear-gradient(125deg, rgba(255,255,255,0.09) 0%, transparent 43%, rgba(255,255,255,0.035) 100%)',
-            'linear-gradient(180deg, rgba(7,9,13,0.46) 0%, rgba(10,12,18,0.30) 48%, rgba(6,8,12,0.48) 100%)',
+
+            'linear-gradient(180deg, rgba(7,9,13,0.68) 0%, rgba(10,12,18,0.55) 48%, rgba(6,8,12,0.70) 100%)',
         ].join(', '),
+
         WebkitBackdropFilter: 'blur(3px) saturate(160%)',
+
         backdropFilter: 'blur(3px) saturate(160%)',
+
         boxShadow:
             '0 18px 48px rgba(0,0,0,0.42), 0 0 35px rgba(67,51,175,0.1), inset 0 1px 0 rgba(255,255,255,0.23), inset 1px 0 0 rgba(255,255,255,0.055), inset 0 -1px 0 rgba(255,255,255,0.04)',
     };
@@ -949,7 +954,7 @@ function Home() {
                 <div className='absolute inset-0'>
                     <div className='absolute inset-0 bg-cover bg-center bg-no-repeat' style={{ backgroundImage: "url('/blacksnowbgimage.webp')" }} />
 
-                    <div className='absolute inset-0 bg-black/85' />
+                    <div className='absolute inset-0 bg-black/70' />
                 </div>
 
                 <div className='relative z-10 w-full max-w-[1160px] mx-auto'>

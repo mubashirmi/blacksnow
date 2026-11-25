@@ -994,7 +994,7 @@ function EmailMarketing() {
                                 <Button
                                     onClick={() => setSlideshowOpen(true)}
                                     size='lg'
-                                    className='group h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 box-border bg-transparent px-5 text-base font-bold shadow-[0_0_18px_rgba(131,80,224,0.12)] transition-all duration-300 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
+                                    className='group h-12 w-full min-w-0 flex-1 cursor-pointer rounded-lg border-2 box-border bg-transparent px-5 text-base font-bold shadow-[0_0_18px_rgba(131,80,224,0.12)] transition-all duration-300 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-[#8350E0] sm:h-14 sm:text-lg xl:h-[50px] xl:max-w-[295px] !border-white !bg-transparent hover:!border-[#8350E0] text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>

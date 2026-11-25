@@ -1070,62 +1070,68 @@ export default function AuthModal({
         const previewTitle = comingSoonToolName?.trim() || TOOL_PREVIEW_TITLES[toolSlug] || 'Coming Soon';
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent
-                    className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[32px] border border-white/10 bg-transparent p-7 text-white backdrop-blur-[7px] [&>button]:hidden'
-                    style={AUTH_GLASS_STYLE}
-                >
-                    <button
-                        type='button'
-                        aria-label='Close Coming Soon preview'
-                        onClick={() => onOpenChange(false)}
-                        className='absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-[#414A5D] bg-[#0A0D14]/40 text-white transition-colors hover:bg-white/10'
+                {/* Match the normal Sign Up modal: transparent dialog shell + inner glass card. */}
+                <DialogContent className='w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[calc(100dvh-2rem)] p-0 overflow-hidden border-0 bg-transparent shadow-none [&>button]:hidden'>
+                    <div
+                        className='relative flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-[32px] border text-white backdrop-blur-[7px]'
+                        style={AUTH_GLASS_STYLE}
                     >
-                        <X className='h-5 w-5' />
-                    </button>
-                    <DialogHeader className='items-center pt-4 text-center'>
-                        <Image src='/logocolored.png' width={64} height={64} alt='Black Snow' className='mx-auto mb-4 h-14 w-14 object-contain' />
-                        <DialogTitle className='text-2xl font-extrabold text-white'>{previewTitle}</DialogTitle>
-                        <p className='text-sm text-white/60'>Live demos are not available yet.</p>
-                    </DialogHeader>
-                    <div className='mt-3 flex flex-col gap-3' aria-label='Preview registration fields (disabled)'>
-                        <Input
-                            disabled
-                            type='text'
-                            placeholder='Full name'
-                            aria-label='Full name (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
-                        />
-                        <Input
-                            disabled
-                            type='tel'
-                            placeholder='Phone number'
-                            aria-label='Phone number (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
-                        />
-                        <Input
-                            disabled
-                            type='email'
-                            placeholder='Email address'
-                            aria-label='Email address (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
-                        />
-                        <Input
-                            disabled
-                            type='password'
-                            placeholder='Password'
-                            aria-label='Password (disabled)'
-                            className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
-                        />
-                        <label className='flex items-start gap-3 text-xs text-white/50'>
-                            <input disabled type='checkbox' className='mt-0.5 h-4 w-4 rounded border border-[#414A5D]' />I agree to the Terms &amp; Conditions
-                        </label>
-                        <Button
+                        <button
                             type='button'
-                            disabled
-                            className='mt-2 h-12 w-full rounded-2xl border border-[#414A5D] bg-[#4333AF] text-base font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                            aria-label='Close Coming Soon preview'
+                            onClick={() => onOpenChange(false)}
+                            className='absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-2xl border border-[#414A5D] bg-[#0A0D14]/40 text-white transition-colors hover:bg-white/10'
                         >
-                            Coming Soon
-                        </Button>
+                            <X className='h-5 w-5' />
+                        </button>
+                        <div className='min-h-0 overflow-y-auto p-7'>
+                            <DialogHeader className='items-center pt-4 text-center'>
+                                <Image src='/logocolored.png' width={64} height={64} alt='Black Snow' className='mx-auto mb-4 h-14 w-14 object-contain' />
+                                <DialogTitle className='text-2xl font-extrabold text-white'>{previewTitle}</DialogTitle>
+                                <p className='text-sm text-white/60'>Live demos are not available yet.</p>
+                            </DialogHeader>
+                            <div className='mt-3 flex flex-col gap-3' aria-label='Preview registration fields (disabled)'>
+                                <Input
+                                    disabled
+                                    type='text'
+                                    placeholder='Full name'
+                                    aria-label='Full name (disabled)'
+                                    className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                                />
+                                <Input
+                                    disabled
+                                    type='tel'
+                                    placeholder='Phone number'
+                                    aria-label='Phone number (disabled)'
+                                    className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                                />
+                                <Input
+                                    disabled
+                                    type='email'
+                                    placeholder='Email address'
+                                    aria-label='Email address (disabled)'
+                                    className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                                />
+                                <Input
+                                    disabled
+                                    type='password'
+                                    placeholder='Password'
+                                    aria-label='Password (disabled)'
+                                    className='h-12 rounded-2xl border-[#414A5D] bg-[#0A0D14]/75 text-white placeholder:text-white/40 disabled:opacity-60'
+                                />
+                                <label className='flex items-start gap-3 text-xs text-white/50'>
+                                    <input disabled type='checkbox' className='mt-0.5 h-4 w-4 rounded border border-[#414A5D]' />I agree to the{' '}
+                                    <span className='font-semibold text-[#93c5fd]'>Terms &amp; Conditions</span>
+                                </label>
+                                <Button
+                                    type='button'
+                                    disabled
+                                    className='mt-2 h-12 w-full rounded-2xl border border-[#414A5D] bg-[#4333AF] text-base font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                                >
+                                    Coming Soon
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>

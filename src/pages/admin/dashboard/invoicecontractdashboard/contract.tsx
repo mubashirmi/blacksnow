@@ -327,14 +327,14 @@ const ContractsPage: NextPage = () => {
 
                     <div className='flex items-center gap-3'>
                         {/* ✅ Invoices button */}
-                        <button
+                        {/* <button
                             type='button'
                             // eslint-disable-next-line
                             onClick={() => void router.push('/admin/dashboard/invoicecontractdashboard/invoice')}
                             className='inline-flex items-center gap-2 rounded-[13px] border border-gray-300 bg-white px-[16px] py-[10px] text-sm font-medium text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:bg-gray-50'
                         >
                             Invoices
-                        </button>
+                        </button> */}
 
                         <button
                             type='button'

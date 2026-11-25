@@ -154,10 +154,6 @@ export default function HeroTradingCarousel(_props: HeroTradingCarouselProps) {
     const words = slide.title.split(' ');
     const accentWord = words.pop() || slide.title;
     const firstWords = words.join(' ');
-    // Economic Simulator is longer than the other tool names.
-    // Fit it on ONE line instead of allowing the card/hero to jump in height.
-    const compactTitle = slide.id === 'economic-simulator';
-
     return (
         <>
             <AuthModal open={comingSoonOpen} onOpenChange={setComingSoonOpen} comingSoon comingSoonToolName={previewToolName || slide.title} />
@@ -167,27 +163,20 @@ export default function HeroTradingCarousel(_props: HeroTradingCarouselProps) {
                 aria-label='Explore Black Snow trading tools'
                 className='relative w-full min-w-0 rounded-[20px] border border-[#4333AF] px-4 py-3.5 text-white sm:px-5 sm:py-4'
                 style={{
-                    // Clearer glass: softer backdrop blur, more transparency and stronger light reflections.
+                    // Keep the darker glass finish while allowing more of the hero image to show through.
                     background: [
-                        'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.065) 24%, transparent 53%)',
-                        'linear-gradient(125deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.025) 29%, transparent 49%, rgba(255,255,255,0.035) 100%)',
-                        'linear-gradient(180deg, rgba(7,9,13,0.53) 0%, rgba(10,12,18,0.34) 45%, rgba(6,8,12,0.54) 100%)',
+                        'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.045) 22%, transparent 50%)',
+                        'linear-gradient(125deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.018) 28%, transparent 48%, rgba(255,255,255,0.025) 100%)',
+                        'linear-gradient(180deg, rgba(5,7,10,0.62) 0%, rgba(8,10,15,0.48) 45%, rgba(4,6,9,0.64) 100%)',
                     ].join(', '),
-                    WebkitBackdropFilter: 'blur(7px) saturate(160%)',
-                    backdropFilter: 'blur(7px) saturate(160%)',
+                    WebkitBackdropFilter: 'blur(5px) saturate(150%)',
+                    backdropFilter: 'blur(5px) saturate(150%)',
                     boxShadow:
-                        '0 18px 48px rgba(0,0,0,0.46), 0 0 40px rgba(67,51,175,0.11), inset 0 1px 0 rgba(255,255,255,0.24), inset 1px 0 0 rgba(255,255,255,0.065), inset 0 -1px 0 rgba(255,255,255,0.05)',
+                        '0 18px 48px rgba(0,0,0,0.52), 0 0 36px rgba(67,51,175,0.09), inset 0 1px 0 rgba(255,255,255,0.18), inset 1px 0 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(255,255,255,0.035)',
                 }}
             >
                 <div aria-live='polite' aria-atomic='true' className='min-w-0'>
-                    <h2
-                        className={[
-                            'flex min-h-[46px] min-w-0 items-center whitespace-nowrap py-[6px] font-black uppercase leading-[1.2] tracking-[-0.045em]',
-                            compactTitle
-                                ? 'text-[clamp(1.05rem,4.2vw,1.6rem)] min-[1100px]:text-[clamp(1.2rem,1.85vw,1.6rem)]'
-                                : 'text-[clamp(1.25rem,5vw,2.1rem)] min-[1100px]:text-[clamp(1.5rem,2.15vw,2.15rem)]',
-                        ].join(' ')}
-                    >
+                    <h2 className='flex min-h-[46px] min-w-0 items-center whitespace-nowrap py-[6px] font-black uppercase leading-[1.2] tracking-[-0.045em] text-[clamp(1.05rem,4.2vw,1.6rem)] min-[1100px]:text-[clamp(1.2rem,1.85vw,1.6rem)]'>
                         {firstWords && <span className='shrink-0 text-white'>{firstWords}&nbsp;</span>}
                         <span className='min-w-0 text-[#4333AF]'>{accentWord}</span>
                     </h2>

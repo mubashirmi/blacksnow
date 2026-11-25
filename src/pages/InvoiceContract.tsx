@@ -267,7 +267,7 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
+                                    className='group border-2 box-border cursor-pointer px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent hover:!border-[#8350E0] text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>
@@ -532,7 +532,7 @@ export default function InvoiceContractPage() {
                                 <Button
                                     size='lg'
                                     onClick={() => setSlideshowOpen(true)}
-                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
+                                    className='border-2 box-border cursor-pointer px-12 py-6 text-lg font-bold transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent hover:!border-[#8350E0] text-[#8350E0]'
                                 >
                                     Learn More
                                 </Button>

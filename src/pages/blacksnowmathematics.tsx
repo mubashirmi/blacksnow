@@ -449,17 +449,6 @@ function ChartPanel({
                     </LineChart>
                 </ResponsiveContainer>
             </div>
-
-            <div className='mt-[2px] flex h-[22px] items-center justify-center gap-[21px] text-[16px] leading-[22px] text-[#e9eaf0]'>
-                <span className='inline-flex items-center gap-[10px]'>
-                    <span>X</span>
-                    <span>Principal</span>
-                </span>
-                <span className='inline-flex items-center gap-[10px]'>
-                    <span>Y</span>
-                    <span>Time</span>
-                </span>
-            </div>
         </section>
     );
 }
@@ -629,25 +618,59 @@ export default function BlackSnowMathematics() {
                         </label>
                     </div>
 
-                    {/* Narrow frequency controls and place Contribution (%) beside Rate (%) on desktop. */}
-                    <div
-                        className={`mt-5 grid grid-cols-2 gap-3 sm:gap-4 ${
-                            selectedKey === 'investment'
-                                ? 'sm:grid-cols-3 min-[960px]:grid-cols-[1.12fr_.72fr_.85fr_1.06fr_.78fr_1fr]'
-                                : selectedKey === 'retirement'
-                                ? 'sm:grid-cols-3 min-[850px]:grid-cols-[.85fr_.85fr_1fr_.95fr_.78fr]'
-                                : 'sm:grid-cols-4 min-[700px]:grid-cols-[1.15fr_1.05fr_.85fr_.8fr]'
-                        }`}
-                    >
-                        {selected.fields.map((field) => (
-                            <div key={`${selectedKey}-${field.key}`} className={`min-w-0 ${MOBILE_FIELD_ORDER[selectedKey][field.key]} min-[531px]:order-none`}>
-                                <label className='mb-1.5 block truncate text-[11px] font-medium tracking-[0.01em] text-[#b2bdca]' title={field.placeholder}>
-                                    {field.placeholder}
-                                </label>
-                                <NumericField field={field} value={fields[field.key]} onChange={(value) => updateValue(field.key, value)} />
-                            </div>
-                        ))}
-                    </div>
+                    {/* Investment: one desktop row. Principal + Years: 50%; Rate + Frequency: 25%; Contribution + Frequency: 25%. */}
+                    {selectedKey === 'investment' ? (
+                        <div className='mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-[2fr_1fr_1fr] lg:gap-3'>
+                            {(
+                                [
+                                    ['principal', 'years'],
+                                    ['rate', 'frequency'],
+                                    ['contributionPercent', 'contributionFrequency'],
+                                ] as const
+                            ).map((pair, groupIndex) => (
+                                <div
+                                    key={pair[0]}
+                                    className={`grid min-w-0 grid-cols-2 gap-2 sm:gap-3 lg:gap-2 ${groupIndex === 0 ? 'sm:col-span-2 lg:col-span-1' : ''}`}
+                                >
+                                    {pair.map((fieldKey) => {
+                                        const field = selected.fields.find((item) => item.key === fieldKey)!;
+                                        const shortLabel = fieldKey === 'contributionFrequency' ? 'Frequency' : field.placeholder;
+                                        return (
+                                            <div key={fieldKey} className='min-w-0'>
+                                                <label
+                                                    className='mb-1.5 block truncate text-[11px] font-medium tracking-[0.01em] text-[#b2bdca]'
+                                                    title={field.placeholder}
+                                                >
+                                                    {shortLabel}
+                                                </label>
+                                                <NumericField field={field} value={fields[field.key]} onChange={(value) => updateValue(field.key, value)} />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div
+                            className={`mt-5 grid grid-cols-2 gap-3 sm:gap-4 ${
+                                selectedKey === 'retirement'
+                                    ? 'sm:grid-cols-3 min-[850px]:grid-cols-[.85fr_.85fr_1fr_.95fr_.78fr]'
+                                    : 'sm:grid-cols-4 min-[700px]:grid-cols-[1.15fr_1.05fr_.85fr_.8fr]'
+                            }`}
+                        >
+                            {selected.fields.map((field) => (
+                                <div
+                                    key={`${selectedKey}-${field.key}`}
+                                    className={`min-w-0 ${MOBILE_FIELD_ORDER[selectedKey][field.key]} min-[531px]:order-none`}
+                                >
+                                    <label className='mb-1.5 block truncate text-[11px] font-medium tracking-[0.01em] text-[#b2bdca]' title={field.placeholder}>
+                                        {field.placeholder}
+                                    </label>
+                                    <NumericField field={field} value={fields[field.key]} onChange={(value) => updateValue(field.key, value)} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     {selectedKey === 'investment' && (
                         <p className='mt-2 text-xs leading-relaxed text-[#aab4c1]'>

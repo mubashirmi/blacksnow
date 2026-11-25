@@ -370,7 +370,7 @@ function MoverTable({ title, rows, positive }: { title: string; rows: MoverRow[]
     return (
         <div className='min-w-0 px-4 py-4 sm:px-5'>
             <div className='flex items-center gap-2'>
-                <span className='tool-panel-title text-[10px] font-medium uppercase tracking-[0.02em]' style={{ color: '#2B358D' }}>
+                <span className='tool-panel-title text-[10px] font-medium uppercase tracking-[0.02em]' style={{ color: '#6D83B2' }}>
                     {title}
                 </span>
 
@@ -825,7 +825,7 @@ const MarketMoversPage: NextPage = () => {
                                     aria-label='View live demo (coming soon)'
                                     className='group flex min-h-12 w-[200px] shrink-0 cursor-pointer items-center justify-center gap-3 whitespace-nowrap rounded-lg border border-[#414A5D] bg-[#050608] px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[#4333AF] hover:bg-[#0C0F18] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4333AF]'
                                 >
-                                    View Live Demo
+                                    Demo
                                     <Target className='h-4 w-4 text-[#4333AF]' />
                                 </button>
                             </div>
@@ -840,7 +840,7 @@ const MarketMoversPage: NextPage = () => {
                     color: #ffffff !important;
                 }
                 .tool-data-panel .tool-panel-title {
-                    color: #2b358d !important;
+                    color: #6d83b2 !important;
                 }
 
                 .market-movers-page {

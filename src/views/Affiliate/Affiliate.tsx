@@ -113,7 +113,7 @@ function Affiliate() {
                                 <Button
                                     onClick={handleScrollToEarnBig}
                                     size='lg'
-                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
+                                    className='group border-2 box-border cursor-pointer px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-[calc(50%_-_0.75rem)] lg:w-full lg:max-w-[300px] 2xl:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent hover:!border-[#8350E0] text-[#8350E0]'
                                 >
                                     Join Now
                                 </Button>
@@ -277,7 +277,7 @@ function Affiliate() {
                                     <Button
                                         size='lg'
                                         variant='outline'
-                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent !text-white hover:!border-[#8350E0] hover:!text-[#8350E0]'
+                                        className='border-2 px-8 sm:px-10 md:px-12 py-5 sm:py-6 text-base sm:text-lg font-bold transition-all duration-300 transform hover:scale-105 rounded-lg cursor-pointer w-full sm:w-[300px] bg-transparent shadow-[0_0_18px_rgba(131,80,224,0.12)] !border-white !bg-transparent hover:!border-[#8350E0] text-[#8350E0]'
                                     >
                                         Lightning Gold
                                     </Button>

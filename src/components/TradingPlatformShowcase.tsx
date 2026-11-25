@@ -362,7 +362,7 @@ function SimplePricingStrip() {
     return (
         <div className='overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_18px_55px_rgba(0,0,0,.32)]'>
             <div className='grid md:grid-cols-2 xl:grid-cols-[1.45fr_1fr_1fr_1.05fr]'>
-                <div className='border-b border-[#414A5D] p-5 sm:p-6 md:border-r xl:border-b-0'>
+                <div className='flex flex-col justify-center border-b border-[#414A5D] p-5 sm:p-6 md:border-r xl:border-b-0'>
                     <div className='space-y-3'>
                         {benefits.map((item) => (
                             <div key={item} className='flex items-center gap-3 text-sm text-white/72'>
@@ -427,360 +427,530 @@ function SimplePricingStrip() {
     );
 }
 
-function PreviewShell({ slide, children }: { slide: ExecutionSlide; children: ReactNode }) {
+// These eight self-contained illustrations are presentation-only previews.
+// They deliberately do not place trades, create alerts, or modify account data.
+function ShowcasePreviewFrame({ children, className = '' }: { children: ReactNode; className?: string }) {
     return (
-        <div className='relative min-h-[270px] overflow-hidden rounded-xl border border-[#414A5D] bg-[#0C0F18] p-4 sm:min-h-[320px] sm:p-5'>
+        <div
+            className={`relative h-full min-h-[310px] min-w-0 overflow-hidden rounded-xl border border-[#414A5D] bg-[#080A11] p-3 text-white sm:p-4 ${className}`}
+        >
             <div
-                className='pointer-events-none absolute inset-0 opacity-70'
-                style={{
-                    background: `radial-gradient(circle at 58% 48%, ${slide.accent}16, transparent 52%)`,
-                }}
+                className='pointer-events-none absolute inset-0'
+                style={{ background: 'radial-gradient(ellipse at 85% 8%, rgba(67,51,175,0.10), transparent 52%)' }}
             />
-            <div className='relative z-10'>{children}</div>
+            <div className='relative z-10 h-full min-w-0'>{children}</div>
         </div>
     );
 }
 
-function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
-    const accent = slide.accent;
+function ShowcaseMiniTrend({ values, id, height = 74 }: { values: number[]; id: string; height?: number }) {
+    const high = Math.max(...values) + 8;
+    const low = Math.min(...values) - 8;
+    const points = values.map((v, i) => `${(i / (values.length - 1)) * 320},${88 - ((v - low) / (high - low)) * 75}`);
+    const path = `M ${points.join(' L ')}`;
+    return (
+        <svg
+            viewBox='0 0 320 100'
+            preserveAspectRatio='none'
+            className='block w-full'
+            style={{ height }}
+            role='img'
+            aria-label='Illustrative market trend chart'
+        >
+            <defs>
+                <linearGradient id={`preview-${id}`} x1='0' x2='0' y1='0' y2='1'>
+                    <stop offset='0%' stopColor='#4333AF' stopOpacity='.38' />
+                    <stop offset='100%' stopColor='#4333AF' stopOpacity='.015' />
+                </linearGradient>
+            </defs>
+            {[22, 44, 66, 88].map((y) => (
+                <line key={y} x1='0' x2='320' y1={y} y2={y} stroke='#414A5D' strokeOpacity='.45' strokeWidth='.7' />
+            ))}
+            {[0, 80, 160, 240, 320].map((x) => (
+                <line key={x} x1={x} x2={x} y1='8' y2='92' stroke='#414A5D' strokeOpacity='.3' strokeWidth='.7' />
+            ))}
+            <path d={`${path} L 320 95 L 0 95 Z`} fill={`url(#preview-${id})`} />
+            <path d={path} fill='none' stroke='#8D81ED' strokeWidth='2.5' vectorEffect='non-scaling-stroke' strokeLinecap='round' strokeLinejoin='round' />
+            {points.length > 0 &&
+                (() => {
+                    const [cx, cy] = points[points.length - 1].split(',');
+                    return <circle cx={cx} cy={cy} r='4' fill='#B9B2FF' stroke='#4333AF' strokeWidth='1.5' />;
+                })()}
+        </svg>
+    );
+}
 
+function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
     if (slide.id === 'paper-trading') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='flex items-center justify-between'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Paper Account</p>
-                        <p className='mt-1 text-2xl font-semibold text-white'>$100,000.00</p>
-                    </div>
-                    <div className='text-right'>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Day P&amp;L</p>
-                        <p className='mt-1 text-sm font-semibold text-[#4333AF]'>+$1,250.00</p>
-                    </div>
-                </div>
-
-                <div className='mt-5 grid grid-cols-2 gap-3'>
-                    {[
-                        ['Buying Power', '$100,000'],
-                        ['Net Liq', '$100,000'],
-                        ['Margin Used', '$0.00'],
-                        ['Cash', '$100,000'],
-                    ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                            <p className='text-[9px] uppercase tracking-[0.1em] text-white/32'>{label}</p>
-                            <p className='mt-1 text-xs font-semibold text-white/85'>{value}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-[10px] font-semibold text-white/75'>Order Ticket</span>
-                        <span className='rounded-full px-2 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
-                            PAPER
-                        </span>
-                    </div>
-                    <div className='mt-3 grid grid-cols-3 gap-2 text-center'>
-                        {[
-                            ['Symbol', 'NVDA'],
-                            ['Side', 'BUY'],
-                            ['Qty', '25'],
-                        ].map(([label, value]) => (
-                            <div key={label} className='rounded-md border border-[#414A5D] px-2 py-2'>
-                                <p className='text-[8px] uppercase text-white/30'>{label}</p>
-                                <p className='mt-1 text-[10px] font-semibold text-white'>{value}</p>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col gap-2.5'>
+                    <div className='rounded-xl border border-[#414A5D] bg-[#0C0F18] p-3'>
+                        <div className='flex items-start justify-between gap-3'>
+                            <div>
+                                <p className='text-[10px] text-white/65 sm:text-xs'>Paper Account Value</p>
+                                <p className='mt-0.5 text-xl font-extrabold tracking-tight text-white sm:text-2xl'>$100,000.00</p>
                             </div>
-                        ))}
+                            <div className='text-right'>
+                                <p className='text-[10px] uppercase tracking-[.08em] text-white/60'>Day P&amp;L</p>
+                                <p className='mt-1 whitespace-nowrap text-xs font-bold text-[#A99FFF] sm:text-sm'>+$1,250.00 (+1.26%)</p>
+                            </div>
+                        </div>
+                        <div className='mt-1.5'>
+                            <ShowcaseMiniTrend id='paper' values={[22, 38, 59, 57, 49, 67, 56, 49, 63, 82, 75, 96]} height={66} />
+                        </div>
+                        <div className='mt-1 flex items-center justify-between gap-1 text-[9px] sm:text-[10px]'>
+                            {['1D', '1W', '1M', '3M', 'YTD', '1Y', 'ALL'].map((period) => (
+                                <span
+                                    key={period}
+                                    className={`rounded-full px-2.5 py-1 ${period === '1D' ? 'bg-[#4333AF] font-semibold text-white' : 'text-white/55'}`}
+                                >
+                                    {period}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className='flex-1 rounded-xl border border-[#414A5D] bg-[#0C0F18] p-2.5 sm:p-3'>
+                        <div className='grid grid-cols-2 gap-1 rounded-full border border-[#414A5D] bg-[#080A11] p-0.5 text-center text-[11px]'>
+                            <span className='rounded-full bg-[#4333AF] py-1 font-bold text-white'>Buy</span>
+                            <span className='py-1 text-white/65'>Sell</span>
+                        </div>
+                        <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5'>
+                            {[
+                                ['Order Type', 'Market  ▾'],
+                                ['Quantity', '−       100       +'],
+                                ['Time in Force', 'Day  ▾'],
+                                ['Estimated Cost', '$17,872.00'],
+                            ].map(([label, value]) => (
+                                <div key={label} className='min-w-0'>
+                                    <p className='mb-0.5 text-[9px] text-white/55'>{label}</p>
+                                    <div className='truncate rounded-md border border-[#414A5D] bg-[#080A11] px-2 py-1.5 text-center text-[10px] text-white/90'>
+                                        {value}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className='mt-2 rounded-full bg-[#4333AF] py-1.5 text-center text-xs font-semibold text-white'>Buy</div>
+                        <p className='mt-1 text-center text-[9px] text-[#A99FFF]'>Buying Power: $100,000.00</p>
                     </div>
                 </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'stock-screener') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='flex items-center justify-between'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Screen Builder</p>
-                        <p className='mt-1 text-lg font-semibold text-white'>Precision Filters</p>
-                    </div>
-                    <div className='text-right'>
-                        <p className='text-[9px] uppercase text-white/30'>Matches</p>
-                        <p className='mt-1 text-2xl font-semibold' style={{ color: accent }}>
-                            248
-                        </p>
-                    </div>
-                </div>
-
-                <div className='mt-5 space-y-2'>
-                    {[
-                        ['Market Cap', 'Greater Than', '$2B'],
-                        ['P/E Ratio', 'Less Than', '20'],
-                        ['ROE', 'Greater Than', '15%'],
-                        ['Revenue Growth', 'Greater Than', '10%'],
-                        ['50-Day MA', 'Above', '200-Day MA'],
-                    ].map(([metric, op, value]) => (
-                        <div
-                            key={metric}
-                            className='grid grid-cols-[1.15fr_.9fr_.75fr] items-center gap-2 rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-2.5 text-[9px] sm:text-[10px]'
-                        >
-                            <span className='font-medium text-white/75'>{metric}</span>
-                            <span className='text-white/38'>{op}</span>
-                            <span className='text-right font-semibold' style={{ color: accent }}>
-                                {value}
-                            </span>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between border-b border-[#414A5D] pb-2'>
+                        <div>
+                            <p className='text-[10px] font-bold uppercase tracking-[.14em] text-white/90'>Advanced Stock Screener</p>
+                            <p className='mt-0.5 text-[9px] text-white/45'>Fundamentals · Technicals · Valuation</p>
                         </div>
-                    ))}
+                        <span className='rounded-full bg-[#4333AF]/15 px-2 py-1 text-[10px] font-bold text-[#A99FFF]'>248 MATCHES</span>
+                    </div>
+                    <div className='mt-2.5 grid grid-cols-2 gap-2'>
+                        {[
+                            ['Market Cap', 'Above $2B'],
+                            ['P/E Ratio', 'Below 20'],
+                            ['Relative Volume', 'Above 1.5×'],
+                            ['Price Trend', 'Above 50D MA'],
+                        ].map(([label, value]) => (
+                            <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] px-2.5 py-2'>
+                                <p className='text-[9px] text-white/50'>{label}</p>
+                                <p className='mt-1 text-[11px] font-semibold text-[#A99FFF]'>{value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='mt-3 flex items-center justify-between'>
+                        <p className='text-[10px] font-bold uppercase tracking-[.09em] text-white/85'>Top Screen Matches</p>
+                        <span className='text-[9px] text-[#A99FFF]'>Score / 100</span>
+                    </div>
+                    <div className='mt-1.5 min-h-0 flex-1 divide-y divide-[#414A5D]/65'>
+                        {[
+                            ['NVDA', 'NVIDIA', 96],
+                            ['AAPL', 'Apple', 92],
+                            ['MSFT', 'Microsoft', 90],
+                            ['AVGO', 'Broadcom', 88],
+                        ].map(([ticker, name, score]) => (
+                            <div key={ticker} className='grid grid-cols-[46px_1fr_65px] items-center gap-2 py-[7px] text-[10px]'>
+                                <span className='font-bold text-white'>{ticker}</span>
+                                <span className='truncate text-white/55'>{name}</span>
+                                <div className='flex items-center gap-1.5'>
+                                    <div className='h-1.5 flex-1 rounded-full bg-[#414A5D]'>
+                                        <div className='h-full rounded-full bg-[#6D5DD5]' style={{ width: `${score}%` }} />
+                                    </div>
+                                    <span className='font-bold text-[#A99FFF]'>{score}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'watchlist') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='flex items-center justify-between'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>My Watchlist</p>
-                        <p className='mt-1 text-lg font-semibold text-white'>Live Monitoring</p>
-                    </div>
-                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
-                        24 ASSETS
-                    </span>
-                </div>
-
-                <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
-                    {[
-                        ['NVDA', 'NVIDIA', '$950.02', '+7.42%'],
-                        ['AAPL', 'Apple', '$182.63', '+1.35%'],
-                        ['MSFT', 'Microsoft', '$415.90', '+0.89%'],
-                        ['TSLA', 'Tesla', '$173.24', '-0.72%'],
-                        ['SPY', 'S&P 500 ETF', '$517.38', '+0.32%'],
-                    ].map(([symbol, name, price, change]) => (
-                        <div key={symbol} className='grid grid-cols-[.7fr_1.2fr_.85fr_.75fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
-                            <span className='font-semibold text-white'>{symbol}</span>
-                            <span className='truncate text-white/42'>{name}</span>
-                            <span className='text-right text-white/72'>{price}</span>
-                            <span className={`text-right font-semibold ${change.startsWith('-') ? 'text-[#4333AF]' : 'text-[#4333AF]'}`}>{change}</span>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between border-b border-[#414A5D] pb-2.5'>
+                        <div>
+                            <p className='text-[10px] font-bold uppercase tracking-[.14em] text-white/90'>My Watchlist</p>
+                            <p className='mt-0.5 text-[9px] text-white/45'>Track your favorite assets in one place</p>
                         </div>
-                    ))}
+                        <span className='rounded-full border border-[#4333AF]/50 px-2.5 py-1 text-[10px] text-[#A99FFF]'>24 Assets</span>
+                    </div>
+                    <div className='mt-2 grid grid-cols-[52px_1fr_74px_65px] gap-2 border-b border-[#414A5D]/60 pb-2 text-[9px] uppercase text-white/40'>
+                        <span>Symbol</span>
+                        <span>Trend</span>
+                        <span className='text-right'>Last</span>
+                        <span className='text-right'>Day</span>
+                    </div>
+                    <div className='flex-1 divide-y divide-[#414A5D]/55'>
+                        {[
+                            ['NVDA', [22, 30, 24, 45, 39, 66, 61, 78], '$950.02', '+7.42%'],
+                            ['AAPL', [40, 32, 49, 46, 55, 58, 67, 65], '$182.63', '+1.35%'],
+                            ['MSFT', [24, 33, 31, 45, 42, 51, 63, 72], '$415.90', '+0.89%'],
+                            ['TSLA', [68, 62, 57, 61, 48, 53, 39, 34], '$173.24', '-0.72%'],
+                            ['SPY', [32, 35, 43, 40, 51, 55, 58, 64], '$517.38', '+0.32%'],
+                        ].map(([symbol, values, price, delta]) => (
+                            <div key={symbol as string} className='grid grid-cols-[52px_1fr_74px_65px] items-center gap-2 py-2'>
+                                <span className='text-[11px] font-bold text-white'>{symbol as string}</span>
+                                <div className='h-7 min-w-0'>
+                                    <ShowcaseMiniTrend id={`watch-${symbol}`} values={values as number[]} height={28} />
+                                </div>
+                                <span className='text-right text-[10px] text-white/85'>{price as string}</span>
+                                <span className='text-right text-[10px] font-semibold text-[#A99FFF]'>{delta as string}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='mt-2 flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 py-2 text-[10px]'>
+                        <span className='text-white/70'>Price alerts &amp; custom lists</span>
+                        <span className='font-semibold text-[#A99FFF]'>ACTIVE ●</span>
+                    </div>
                 </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'market-movers') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='grid grid-cols-2 gap-3'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em]' style={{ color: accent }}>
-                            Top Gainers
-                        </p>
-                        <div className='mt-3 space-y-2'>
-                            {[
-                                ['NVDA', '+7.42%'],
-                                ['AMD', '+6.21%'],
-                                ['SMCI', '+5.18%'],
-                            ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-3'>
-                                    <span className='text-[10px] font-semibold text-white'>{symbol}</span>
-                                    <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between border-b border-[#414A5D] pb-2.5'>
+                        <p className='text-[10px] font-bold uppercase tracking-[.14em] text-white/90'>Market Movers</p>
+                        <span className='text-[9px] text-[#A99FFF]'>U.S. Market Snapshot</span>
+                    </div>
+                    <div className='mt-3 grid grid-cols-2 gap-3'>
+                        {[
+                            {
+                                label: 'TOP GAINERS',
+                                items: [
+                                    ['NVDA', '+7.42%', 92],
+                                    ['AMD', '+6.21%', 81],
+                                    ['SMCI', '+5.18%', 68],
+                                ],
+                            },
+                            {
+                                label: 'TOP LOSERS',
+                                items: [
+                                    ['SPOT', '-4.21%', 72],
+                                    ['PYPL', '-3.18%', 54],
+                                    ['SNAP', '-2.89%', 46],
+                                ],
+                            },
+                        ].map((group) => (
+                            <div key={group.label} className='min-w-0 rounded-lg border border-[#414A5D] bg-[#0C0F18] p-2.5'>
+                                <p className='mb-3 text-[9px] font-bold tracking-[.1em] text-[#A99FFF]'>{group.label}</p>
+                                <div className='space-y-3'>
+                                    {group.items.map(([ticker, change, strength]) => (
+                                        <div key={ticker as string}>
+                                            <div className='flex items-center justify-between gap-1 text-[10px]'>
+                                                <span className='font-bold text-white'>{ticker}</span>
+                                                <span className='text-[#A99FFF]'>{change}</span>
+                                            </div>
+                                            <div className='mt-1.5 h-1 rounded-full bg-[#414A5D]/70'>
+                                                <div className='h-full rounded-full bg-[#6D5DD5]' style={{ width: `${strength}%` }} />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
-
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-[#4333AF]'>Top Losers</p>
-                        <div className='mt-3 space-y-2'>
-                            {[
-                                ['SPOT', '-4.21%'],
-                                ['PYPL', '-3.18%'],
-                                ['SNAP', '-2.89%'],
-                            ].map(([symbol, change]) => (
-                                <div key={symbol} className='flex items-center justify-between rounded-lg border border-[#414A5D] bg-[#0A0D14] px-3 py-3'>
-                                    <span className='text-[10px] font-semibold text-white'>{symbol}</span>
-                                    <span className='text-[10px] font-semibold text-[#4333AF]'>{change}</span>
-                                </div>
-                            ))}
-                        </div>
+                    <div className='mt-3 flex items-center justify-between'>
+                        <p className='text-[10px] font-bold uppercase text-white/80'>Unusual Volume</p>
+                        <p className='text-[9px] text-white/45'>Relative activity</p>
                     </div>
+                    <div className='mt-2 flex min-h-0 flex-1 items-end gap-2 rounded-lg border border-[#414A5D] bg-[#0C0F18] px-3 pb-2 pt-3'>
+                        {[35, 58, 44, 77, 53, 89, 63, 97, 71, 83, 60, 91, 72, 100, 78].map((value, index) => (
+                            <div
+                                key={index}
+                                className='flex-1 rounded-t-sm bg-[#6554D0]'
+                                style={{ height: `${value}%`, opacity: index === 13 ? 1 : 0.35 + value / 190 }}
+                            />
+                        ))}
+                    </div>
+                    <p className='mt-1.5 text-right text-[9px] text-white/45'>Illustrative volume</p>
                 </div>
-
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Most Active</span>
-                        <span className='text-[10px] font-semibold' style={{ color: accent }}>
-                            TSLA
-                        </span>
-                    </div>
-                    <p className='mt-2 text-xs text-white/65'>112.6M volume · options activity elevated</p>
-                </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'global-kpi') {
         return (
-            <PreviewShell slide={slide}>
-                <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Performance Overview</p>
-
-                <div className='mt-4 grid grid-cols-2 gap-3'>
-                    {[
-                        ['Revenue Growth', '$2.45B', '+18.6%'],
-                        ['Customer Satisfaction', '92%', '+7%'],
-                        ['Operational Efficiency', '87%', '+6%'],
-                        ['New Markets', '24', '+4'],
-                    ].map(([label, value, delta]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                            <p className='text-[8px] uppercase leading-4 tracking-[0.08em] text-white/32'>{label}</p>
-                            <div className='mt-2 flex items-end justify-between gap-2'>
-                                <span className='text-lg font-semibold text-white'>{value}</span>
-                                <span className='text-[9px] font-semibold text-[#4333AF]'>{delta}</span>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between border-b border-[#414A5D] pb-2'>
+                        <p className='text-[10px] font-bold uppercase tracking-[.14em] text-white/90'>Global Economic KPI</p>
+                        <span className='text-[9px] text-[#A99FFF]'>MACRO OVERVIEW</span>
+                    </div>
+                    <div className='mt-3 grid grid-cols-2 gap-2'>
+                        {[
+                            ['GDP Growth', '3.1%', '+0.4 pp'],
+                            ['Inflation', '2.8%', '-0.2 pp'],
+                            ['Unemployment', '4.0%', '-0.1 pp'],
+                            ['Policy Rate', '4.75%', 'UNCHANGED'],
+                        ].map(([label, value, delta]) => (
+                            <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0C0F18] p-2.5'>
+                                <p className='text-[9px] uppercase tracking-[.07em] text-white/45'>{label}</p>
+                                <div className='mt-1.5 flex items-end justify-between gap-1'>
+                                    <span className='text-lg font-bold text-white'>{value}</span>
+                                    <span className='pb-0.5 text-[9px] text-[#A99FFF]'>{delta}</span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                    <div className='mt-3 flex items-center justify-between'>
+                        <p className='text-[10px] font-semibold uppercase text-white/80'>Growth Trend</p>
+                        <span className='text-[9px] text-white/45'>Last 12 periods</span>
+                    </div>
+                    <div className='mt-1.5 flex-1 rounded-lg border border-[#414A5D] bg-[#0C0F18] px-2 pt-2'>
+                        <ShowcaseMiniTrend id='kpi' values={[32, 41, 38, 55, 49, 60, 56, 66, 63, 71, 76, 86]} height={72} />
+                    </div>
+                    <div className='mt-2 flex items-center justify-between text-[9px] text-white/50'>
+                        <span>United States · EU · Asia</span>
+                        <span className='text-[#A99FFF]'>Compare countries ↗</span>
+                    </div>
                 </div>
-
-                <div className='mt-5 space-y-3'>
-                    {[
-                        ['Process', 87],
-                        ['Utilization', 82],
-                        ['Quality', 91],
-                    ].map(([label, value]) => (
-                        <div key={label as string}>
-                            <div className='flex items-center justify-between text-[9px]'>
-                                <span className='text-white/48'>{label}</span>
-                                <span className='font-semibold text-white/78'>{value}%</span>
-                            </div>
-                            <div className='mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/[0.07]'>
-                                <div className='h-full rounded-full' style={{ width: `${value}%`, background: accent }} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'economic-simulator') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='flex items-center justify-between'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Scenario Controls</p>
-                        <p className='mt-1 text-lg font-semibold text-white'>Expansionary Policy</p>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between'>
+                        <p className='text-[10px] font-bold uppercase tracking-[.13em] text-white/90'>Supply &amp; Demand Simulator</p>
+                        <span className='rounded-full border border-[#4333AF]/50 px-2 py-1 text-[9px] text-[#A99FFF]'>SCENARIO 02</span>
                     </div>
-                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
-                        10 YEARS
-                    </span>
-                </div>
-
-                <div className='mt-5 grid grid-cols-2 gap-3'>
-                    {[
-                        ['Fiscal Stimulus', '2.0% GDP'],
-                        ['Rate Change', '-1.00 pp'],
-                        ['Inflation', '2.4%'],
-                        ['Unemployment', '5.1%'],
-                    ].map(([label, value]) => (
-                        <div key={label} className='rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                            <p className='text-[8px] uppercase tracking-[0.08em] text-white/32'>{label}</p>
-                            <p className='mt-2 text-sm font-semibold' style={{ color: accent }}>
-                                {value}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className='mt-5 rounded-lg border border-[#414A5D] bg-[#0A0D14] p-3'>
-                    <p className='text-[9px] uppercase tracking-[0.14em] text-white/35'>Model Structure</p>
-                    <div className='mt-3 grid grid-cols-3 gap-2 text-center text-[9px]'>
-                        {['Households', 'Markets', 'Central Bank'].map((item) => (
-                            <div
-                                key={item}
-                                className='rounded-md border px-2 py-3'
-                                style={{ borderColor: `${accent}36`, color: item === 'Markets' ? accent : 'rgba(255,255,255,.72)' }}
-                            >
-                                {item}
-                            </div>
-                        ))}
+                    <svg
+                        viewBox='0 0 440 266'
+                        preserveAspectRatio='xMidYMid meet'
+                        className='mt-2 block min-h-0 w-full flex-1'
+                        role='img'
+                        aria-label='Economic simulation of supply and demand shifts with equilibrium points'
+                    >
+                        <defs>
+                            <filter id='execution-economic-glow' x='-30%' y='-30%' width='160%' height='160%'>
+                                <feGaussianBlur stdDeviation='3' />
+                            </filter>
+                        </defs>
+                        <path d='M43 8 V240 H432' fill='none' stroke='white' strokeWidth='1.5' strokeOpacity='.8' />
+                        <text x='18' y='16' fill='white' fontSize='16' fontWeight='600'>
+                            P
+                        </text>
+                        <text x='426' y='259' fill='white' fontSize='16' fontWeight='600'>
+                            Q
+                        </text>
+                        <text x='17' y='154' transform='rotate(-90 17 154)' fill='white' fontSize='13'>
+                            Price
+                        </text>
+                        <text x='207' y='262' fill='white' fontSize='13'>
+                            Quantity
+                        </text>
+                        <path
+                            d='M60 36 Q157 154 403 226'
+                            fill='none'
+                            stroke='#6D5DD5'
+                            strokeWidth='9'
+                            strokeOpacity='.18'
+                            filter='url(#execution-economic-glow)'
+                        />
+                        <path d='M60 36 Q157 154 403 226' fill='none' stroke='#9B8DFF' strokeWidth='2.5' />
+                        <path
+                            d='M60 226 Q223 194 402 35'
+                            fill='none'
+                            stroke='#6D5DD5'
+                            strokeWidth='9'
+                            strokeOpacity='.2'
+                            filter='url(#execution-economic-glow)'
+                        />
+                        <path d='M60 226 Q223 194 402 35' fill='none' stroke='#9B8DFF' strokeWidth='2.5' />
+                        <path
+                            d='M198 20 Q227 163 377 200'
+                            fill='none'
+                            stroke='#6D5DD5'
+                            strokeWidth='9'
+                            strokeOpacity='.18'
+                            filter='url(#execution-economic-glow)'
+                        />
+                        <path d='M198 20 Q227 163 377 200' fill='none' stroke='#6D5DD5' strokeWidth='2.5' />
+                        <g stroke='white' strokeOpacity='.6' strokeDasharray='4 4' strokeWidth='1'>
+                            <line x1='215' x2='215' y1='142' y2='240' />
+                            <line x1='43' x2='215' y1='142' y2='142' />
+                            <line x1='276' x2='276' y1='103' y2='240' />
+                            <line x1='43' x2='276' y1='103' y2='103' />
+                        </g>
+                        <g fill='white' stroke='#8D81ED' strokeWidth='2'>
+                            <circle cx='215' cy='142' r='5' />
+                            <circle cx='276' cy='103' r='5' />
+                        </g>
+                        <g fontSize='13' fontWeight='600' fill='#B5AAFF'>
+                            <text x='116' y='49'>
+                                D
+                            </text>
+                            <text x='270' y='25'>
+                                D1
+                            </text>
+                            <text x='318' y='81'>
+                                S
+                            </text>
+                        </g>
+                        <g fontSize='12' fill='white'>
+                            <text x='223' y='136'>
+                                E1
+                            </text>
+                            <text x='283' y='115'>
+                                E2
+                            </text>
+                        </g>
+                    </svg>
+                    <div className='flex items-center justify-between gap-2 text-[9px] text-white/55'>
+                        <span>Baseline equilibrium</span>
+                        <span className='text-[#A99FFF]'>Demand shift → New equilibrium</span>
                     </div>
                 </div>
-            </PreviewShell>
+            </ShowcasePreviewFrame>
         );
     }
 
     if (slide.id === 'research') {
         return (
-            <PreviewShell slide={slide}>
-                <div className='flex items-center justify-between'>
-                    <div>
-                        <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Market Research Snapshot</p>
-                        <p className='mt-1 text-lg font-semibold text-white'>Latest Intelligence</p>
+            <ShowcasePreviewFrame>
+                <div className='flex h-full flex-col'>
+                    <div className='flex items-center justify-between border-b border-[#414A5D] pb-2'>
+                        <p className='text-[10px] font-bold uppercase tracking-[.11em] text-white/90 sm:text-[11px]'>Single Stock Research</p>
+                        <span className='rounded-full bg-[#4333AF]/20 px-2.5 py-0.5 text-[10px] font-medium text-[#A99FFF]'>AAPL</span>
                     </div>
-                    <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
-                        5 TOPICS
-                    </span>
+                    <div className='mt-2.5 border-b border-[#414A5D]/65 pb-2.5'>
+                        <p className='text-[10px] font-medium uppercase tracking-[.08em] text-white/80'>Consensus Rating</p>
+                        <div className='mt-2 flex h-3 overflow-hidden rounded-sm bg-[#414A5D]'>
+                            <div className='w-[65%] bg-[#4333AF]' />
+                            <div className='w-[25%] bg-[#8D81ED]/65' />
+                            <div className='w-[10%] bg-[#414A5D]' />
+                        </div>
+                        <div className='mt-1.5 flex justify-between text-[9px] text-white/70 sm:text-[10px]'>
+                            <span>Buy 65%</span>
+                            <span>Hold 25%</span>
+                            <span>Sell 10%</span>
+                        </div>
+                    </div>
+                    <div className='mt-2.5 border-b border-[#414A5D]/65 pb-2.5'>
+                        <p className='text-[10px] font-medium uppercase tracking-[.08em] text-white/80'>Price Target</p>
+                        <div className='relative mt-3 h-1 rounded-full bg-[#414A5D]'>
+                            <div className='h-full w-1/2 rounded-full bg-[#4333AF]' />
+                            <div className='absolute left-1/2 top-1/2 h-4 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#A99FFF] shadow-[0_0_8px_rgba(141,129,237,.7)]' />
+                        </div>
+                        <div className='mt-2 grid grid-cols-3 gap-2 text-[10px] text-white/90'>
+                            <div>
+                                $150
+                                <br />
+                                <span className='text-[9px] text-white/45'>Low</span>
+                            </div>
+                            <div className='text-center text-sm font-bold'>
+                                $195
+                                <br />
+                                <span className='text-[9px] font-normal text-white/45'>Current</span>
+                            </div>
+                            <div className='text-right'>
+                                $220
+                                <br />
+                                <span className='text-[9px] text-white/45'>High</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='mt-2.5 min-h-0 flex-1'>
+                        <p className='text-[10px] font-medium uppercase tracking-[.08em] text-white/80'>Earnings Trend</p>
+                        <svg
+                            viewBox='0 0 360 98'
+                            preserveAspectRatio='none'
+                            className='mt-1 h-[78px] w-full'
+                            role='img'
+                            aria-label='Illustrative earnings trend rising across four quarters'
+                        >
+                            {[28, 50, 72].map((y) => (
+                                <line key={y} x1='18' x2='353' y1={y} y2={y} stroke='#414A5D' strokeOpacity='.4' strokeDasharray='2 5' />
+                            ))}
+                            <g fill='#4333AF' fillOpacity='.8'>
+                                <rect x='48' y='62' width='28' height='25' />
+                                <rect x='140' y='49' width='28' height='38' />
+                                <rect x='230' y='43' width='28' height='44' />
+                                <rect x='320' y='31' width='28' height='56' />
+                            </g>
+                            <polyline points='62,52 154,33 244,25 334,14' fill='none' stroke='#9B8DFF' strokeWidth='2.3' vectorEffect='non-scaling-stroke' />
+                            {[
+                                ['62', '52'],
+                                ['154', '33'],
+                                ['244', '25'],
+                                ['334', '14'],
+                            ].map(([cx, cy], i) => (
+                                <circle key={i} cx={cx} cy={cy} r='3.3' fill='#B9B2FF' stroke='#4333AF' strokeWidth='1' />
+                            ))}
+                            {['Q1', 'Q2', 'Q3', 'Q4'].map((q, i) => (
+                                <text key={q} x={62 + i * 91} y='97' textAnchor='middle' fontSize='11' fill='rgba(255,255,255,.55)'>
+                                    {q}
+                                </text>
+                            ))}
+                        </svg>
+                    </div>
                 </div>
+            </ShowcasePreviewFrame>
+        );
+    }
 
-                <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
+    // Advanced market calendar: rows and calendar outlines follow the supplied reference.
+    return (
+        <ShowcasePreviewFrame>
+            <div className='flex h-full flex-col'>
+                <div className='flex items-center justify-between border-b border-[#414A5D] pb-2'>
+                    <p className='text-[10px] font-bold uppercase tracking-[.12em] text-white/80'>Advanced Market Calendar</p>
+                    <span className='text-[9px] font-medium text-[#A99FFF]'>UPCOMING</span>
+                </div>
+                <div className='min-h-0 flex-1 divide-y divide-[#414A5D]/60'>
                     {[
-                        ['U.S. Economy', 'Inflation cooling', 'Neutral'],
-                        ['Global Markets', 'Growth resilient', 'Positive'],
-                        ['Interest Rates', 'Cuts expected Q3', 'Neutral'],
-                        ['Commodities', 'Supply tightness', 'Positive'],
-                        ['Currencies', 'USD may moderate', 'Neutral'],
-                    ].map(([topic, insight, outlook]) => (
-                        <div key={topic} className='grid grid-cols-[1fr_1.25fr_.65fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
-                            <span className='font-medium text-white/82'>{topic}</span>
-                            <span className='truncate text-white/42'>{insight}</span>
-                            <span className='text-right font-semibold' style={{ color: outlook === 'Positive' ? '#4333AF' : accent }}>
-                                {outlook}
+                        ['Upcoming Earnings', '05/02  AMC  EPS: 1.52'],
+                        ['Dividend Date', '05/10  $0.70'],
+                        ['Ex-Dividend', '05/10  $0.70'],
+                        ['Analyst Estimates', '05/10  $0.70'],
+                        ['Conference Calls', '05/03  10:00 AM EST'],
+                        ['Key Events', 'Rate Decision  05/11'],
+                    ].map(([label, detail]) => (
+                        <div key={label} className='flex items-center justify-between gap-2 py-2'>
+                            <div className='min-w-0'>
+                                <p className='text-[10px] font-semibold text-[#A99FFF] sm:text-[11px]'>{label}</p>
+                                <p className='mt-0.5 truncate text-[10px] text-white/90 sm:text-[11px]'>{detail}</p>
+                            </div>
+                            <span className='shrink-0 rounded-full border border-[#8D81ED] px-2.5 py-1 text-[9px] text-white/85 sm:text-[10px]'>
+                                <span className='font-bold text-[#A99FFF]'>+</span> Calendar
                             </span>
                         </div>
                     ))}
                 </div>
-            </PreviewShell>
-        );
-    }
-
-    return (
-        <PreviewShell slide={slide}>
-            <div className='flex items-center justify-between'>
-                <div>
-                    <p className='text-[9px] uppercase tracking-[0.16em] text-white/35'>Upcoming Market Events</p>
-                    <p className='mt-1 text-lg font-semibold text-white'>Calendar Snapshot</p>
-                </div>
-                <span className='rounded-full px-2.5 py-1 text-[9px]' style={{ color: accent, background: `${accent}14` }}>
-                    TODAY
-                </span>
             </div>
-
-            <div className='mt-5 divide-y divide-[#414A5D] border-y border-[#414A5D]'>
-                {[
-                    ['May 16', 'Retail Sales (MoM)', 'HIGH'],
-                    ['May 16', 'Industrial Production', 'MED'],
-                    ['May 17', 'Building Permits', 'MED'],
-                    ['May 17', 'Consumer Sentiment', 'HIGH'],
-                    ['May 17', 'Fed Chair Powell', 'HIGH'],
-                ].map(([date, event, impact]) => (
-                    <div key={`${date}-${event}`} className='grid grid-cols-[.7fr_1.6fr_.55fr] items-center gap-2 py-3 text-[9px] sm:text-[10px]'>
-                        <span className='text-white/42'>{date}</span>
-                        <span className='truncate font-medium text-white/82'>{event}</span>
-                        <span
-                            className='rounded-full px-2 py-1 text-center text-[8px] font-semibold'
-                            style={{
-                                color: impact === 'HIGH' ? accent : 'rgba(255,255,255,.62)',
-                                background: impact === 'HIGH' ? `${accent}12` : 'rgba(255,255,255,.035)',
-                            }}
-                        >
-                            {impact}
-                        </span>
-                    </div>
-                ))}
-            </div>
-        </PreviewShell>
+        </ShowcasePreviewFrame>
     );
 }
 

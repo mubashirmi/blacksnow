@@ -1,5 +1,4 @@
 import ComingSoonTrigger from '@/components/ComingSoonTrigger';
-import { LottieAnimation } from '@/components/lottie-animation';
 import { AuthProvider } from '@/lib/auth';
 import { ArrowRight, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Image from 'next/image';
@@ -12,7 +11,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
 
     return (
         <AuthProvider>
-            <header className='fixed top-0 left-0 w-full z-50 bg-[#050608] border-b border-b-[#414A5D] min-h-[64px] sm:min-h-[80px] flex items-center'>
+            <header className='fixed top-0 left-0 w-full z-50 bg-[#020304] border-b border-b-[#414A5D] min-h-[64px] sm:min-h-[80px] flex items-center'>
                 <div className='container mx-auto px-4 sm:px-6 md:px-8 w-full'>
                     <div className='flex items-center justify-between relative'>
                         {/* Logo */}
@@ -68,7 +67,13 @@ function CoreLayout({ children }: { children: ReactNode }) {
 
                                 <ComingSoonTrigger ariaLabel='Black Snow Headphones Coming Soon' className='relative group cursor-pointer'>
                                     <div className='relative transform group-hover:scale-105 transition-transform duration-300'>
-                                        <LottieAnimation src='/animations/headphone.json' className='w-[170px] h-[170px]' loop autoplay />
+                                        <Image
+                                            src='/blacksnowfooterheadphone.png'
+                                            alt='Black Snow Headphones'
+                                            width={170}
+                                            height={170}
+                                            className='w-[170px] h-[170px] object-contain'
+                                        />
                                     </div>
                                 </ComingSoonTrigger>
 
@@ -95,7 +100,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                                         href={social.href}
                                         className='w-10 h-10 bg-[#0C0F18] rounded-xl flex items-center justify-center border border-[#414A5D] hover:border-[#4333AF] transition-all duration-300 group transform hover:scale-110'
                                     >
-                                        <social.icon className='w-4 h-4 text-[#414A5D] transition-colors duration-300' />
+                                        <social.icon className='w-4 h-4 text-[#fff] transition-colors duration-300' />
                                     </Link>
                                 ))}
                             </div>
@@ -132,6 +137,7 @@ function CoreLayout({ children }: { children: ReactNode }) {
                             <h4 className='text-lg sm:text-xl font-black text-[#6D83B2]'>Resources</h4>
                             <div className='space-y-3'>
                                 {[
+                                    { name: 'Newsletter', href: '/newsletter' },
                                     { name: 'Affiliate Program', href: '/affiliate' },
                                     { name: 'Business Invoice', href: '/InvoiceContract' },
                                     { name: 'Digital Billboards', href: '/advertising' },

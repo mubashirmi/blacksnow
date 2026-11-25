@@ -262,7 +262,9 @@ const InvoicesPage: NextPage = () => {
 
     // Contracts state
     const [contracts, setContracts] = useState<Contract[]>([]);
+    // eslint-disable-next-line
     const [isLoadingContracts, setIsLoadingContracts] = useState(false);
+    // eslint-disable-next-line
     const [contractsError, setContractsError] = useState<string | null>(null);
 
     // Invoices state
@@ -410,6 +412,7 @@ const InvoicesPage: NextPage = () => {
         return () => window.removeEventListener('keydown', handleEscape);
     }, [paymentLinkInvoice]);
 
+    // eslint-disable-next-line
     const hasInvoice = (contractId: number): boolean => {
         return invoices.some((invoice) => invoice.contractId === contractId);
     };
@@ -419,6 +422,7 @@ const InvoicesPage: NextPage = () => {
         void router.push('/invoicecontractdashboard/subscription/create');
     };
 
+    // eslint-disable-next-line
     const handleCreateInvoiceForContract = (contractId: number) => {
         // eslint-disable-next-line
         void router.push(`/invoicecontractdashboard/subscription/create?contractId=${contractId}`);
@@ -601,14 +605,14 @@ const InvoicesPage: NextPage = () => {
                     </div>
 
                     <div className='flex flex-wrap items-center gap-3'>
-                        <button
+                        {/* <button
                             type='button'
                             // eslint-disable-next-line
                             onClick={() => void router.push('/invoicecontractdashboard/contract')}
                             className='inline-flex items-center gap-2 rounded-[13px] border border-gray-300 bg-white px-[16px] py-[10px] text-sm font-medium text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:bg-gray-50'
                         >
                             Contracts
-                        </button>
+                        </button> */}
 
                         <button
                             type='button'
@@ -638,7 +642,7 @@ const InvoicesPage: NextPage = () => {
                 </section>
 
                 {/* Signed Contracts Table */}
-                <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
+                {/* <section className='mb-6 rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
                     <div className='mb-3 flex items-center justify-between gap-2'>
                         <h2 className='text-lg font-semibold text-slate-900'>Subscription Invoicing</h2>
                     </div>
@@ -712,7 +716,7 @@ const InvoicesPage: NextPage = () => {
                             </table>
                         </div>
                     )}
-                </section>
+                </section> */}
 
                 {/* All Subscriptions Table */}
                 <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
