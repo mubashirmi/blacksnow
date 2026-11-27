@@ -2,14 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import lottie from 'lottie-web';
 import {
+    ArrowRight,
     Award,
     Briefcase,
     Building2,
     CalendarDays,
     CheckCircle,
-    CheckCircle2,
     ChevronLeft,
     ChevronRight,
     FileText,
@@ -19,24 +18,19 @@ import {
     MapPin,
     Phone,
     Shield,
+    ShieldCheck,
     Star,
     Target,
     User,
-    UserCheck,
     Users,
     X,
-    Zap,
     type LucideIcon,
 } from 'lucide-react';
+import { Michroma } from 'next/font/google';
 import Link from 'next/link';
-import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type ChangeEvent, type FormEvent } from 'react';
 
-type LottieAnimationProps = {
-    src: string;
-    loop: boolean;
-    autoplay: boolean;
-    style?: CSSProperties;
-};
+const michroma = Michroma({ subsets: ['latin'], weight: '400' });
 
 type TalentTab = 'us' | 'global';
 
@@ -51,11 +45,6 @@ type ConsultationFormState = {
     dateTime: string;
     termsAccepted: boolean;
 };
-
-const talentTabs: Array<{ key: TalentTab; label: string }> = [
-    { key: 'us', label: 'U.S. Talent Acquisition' },
-    { key: 'global', label: 'Global Workforce (BPO)' },
-];
 
 const talentServiceContent: Record<
     TalentTab,
@@ -361,27 +350,90 @@ function TermsSlideModal({ open, onOpenChange, onComplete }: { open: boolean; on
     );
 }
 
-function LottieAnimation({ src, loop, autoplay, style }: LottieAnimationProps) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        if (!containerRef.current) return undefined;
-
-        const animation = lottie.loadAnimation({
-            container: containerRef.current,
-            renderer: 'svg',
-            loop,
-            autoplay,
-            path: src,
-        });
-
-        return () => animation.destroy();
-    }, [src, loop, autoplay]);
-
-    return <div ref={containerRef} style={style} />;
-}
+const slides = [
+    {
+        icon: Briefcase,
+        title: 'Career Opportunities',
+        kicker: 'For Job Seekers',
+        description: 'Discover career opportunities across the United States and explore roles in a wide variety of professional fields.',
+        features: [
+            'Opportunities across U.S. states',
+            'Sales and finance positions',
+            'Healthcare and technical roles',
+            'Remote-first career interests',
+            'Trucking and warehouse roles',
+            'Software and AI careers',
+        ],
+        panelTitle: 'Find your next move',
+        panelBody: 'Explore available opportunities and find paths that fit your skills and experience.',
+        panelPoints: ['Browse job openings', 'Explore different industries', 'Plan your next step'],
+        action: 'See Career Opportunities',
+        href: '/careeroptions',
+        service: null,
+    },
+    {
+        icon: Target,
+        title: 'Recruitment Agency',
+        kicker: 'For Employers',
+        description: 'Connect your organization with qualified candidates through our recruitment and hiring support services.',
+        features: ['Candidate sourcing', 'Role-specific matching', 'Recruitment support', '30-day guarantee', 'International hiring', 'Compliance support'],
+        panelTitle: 'Recruitment solutions',
+        panelBody: 'Our team works with employers to find candidates aligned with the role and the organization.',
+        panelPoints: ['Recruitment assistance', 'Employer-focused process', 'Talent across industries'],
+        action: 'Explore Recruitment',
+        href: '/recruitmentagency',
+        service: null,
+    },
+    {
+        icon: Users,
+        title: 'U.S. Talent Acquisition',
+        kicker: 'Consultation Service',
+        description: 'Source and place professionals for sales, operations, and technical roles with focused recruiting and clear communication.',
+        features: [
+            'Full-cycle recruitment',
+            'Background checks',
+            'Role-specific recruiting',
+            'Performance-focused placement',
+            'Pre-vetted candidates',
+            'Faster time-to-hire',
+        ],
+        panelTitle: 'Schedule a consultation',
+        panelBody: 'Review your recruiting goals with our team and discuss your talent requirements.',
+        panelPoints: ['U.S. candidate sourcing', 'Dedicated recruiting guidance', 'Consultation fee: $249.99'],
+        action: 'Schedule Consultation',
+        href: '',
+        service: 'us' as TalentTab,
+    },
+    {
+        icon: Globe,
+        title: 'Global Workforce (BPO)',
+        kicker: 'Consultation Service',
+        description: 'Explore international sourcing, workforce outsourcing, and payroll support for distributed teams.',
+        features: [
+            'International sourcing',
+            'Workforce outsourcing',
+            'Payroll coordination',
+            'Flexible team structures',
+            'Fast onboarding',
+            'Contracts and compliance',
+        ],
+        panelTitle: 'Plan global hiring',
+        panelBody: 'Review international hiring needs, outsourcing arrangements, and payroll administration options.',
+        panelPoints: ['Global recruiting support', 'Payroll and contracts', 'Consultation fee: $249.99'],
+        action: 'Schedule Consultation',
+        href: '',
+        service: 'global' as TalentTab,
+    },
+];
+const valueCards = [
+    { icon: Briefcase, title: 'Career Paths', description: 'Explore opportunities across industries.' },
+    { icon: Users, title: 'Talent Matching', description: 'Recruitment that considers your goals.' },
+    { icon: Globe, title: 'Global Workforce', description: 'International sourcing and team support.' },
+    { icon: ShieldCheck, title: 'Trusted Process', description: 'Clear steps for employers and candidates.' },
+];
 
 function CareersTitle() {
+    const [activeSlide, setActiveSlide] = useState(0);
     const [activeTalentTab, setActiveTalentTab] = useState<TalentTab>('us');
     const [consultationForm, setConsultationForm] = useState<ConsultationFormState>(initialConsultationForm);
     const [consultationErrors, setConsultationErrors] = useState<Record<string, string>>({});
@@ -533,590 +585,497 @@ function CareersTitle() {
     };
 
     return (
-        <div className='relative isolate min-h-screen overflow-hidden bg-[#050608] text-white'>
-            {/* Solid page background using the Black Snow surface hierarchy. */}
-
+        <div className='relative min-h-screen isolate overflow-hidden bg-[#050608] text-white'>
             <TermsSlideModal open={isTermsModalOpen} onOpenChange={setIsTermsModalOpen} onComplete={handleTermsComplete} />
-            {/* Job Seekers Section */}
-            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='animate-slide-in-left'>
-                            <div>
-                                {/* ✅ wrapper makes width = heading text width */}
-                                <div className='inline-block'>
-                                    <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.2] min-[1100px]:leading-[1.22] tracking-tight text-white mb-4 sm:mb-5'>
-                                        Careers
-                                    </h2>
-                                </div>
-                            </div>
 
-                            <div className='space-y-4 sm:space-y-5 mb-8 sm:mb-10'>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Join us in reshaping the future for employee job search across all 50 States in the United States. Black Snow is committed
-                                    to helping you find employment through a series of job posts across many different markets.
-                                </p>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Our Recruiters work diligently to match your experience and credentials to jobs in{' '}
-                                    <span className='text-[#4333AF] font-semibold'>Sales, Finance, Trucking, Warehouse, Medicine</span>,{' '}
-                                    <span className='text-[#4333AF] font-semibold'>Dental, Nursing, Pharmacy, Web Development</span>,{' '}
-                                    <span className='text-[#4333AF] font-semibold'>A.I., Retail</span> and much more.
-                                </p>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    We are a growing global organization prioritizing{' '}
-                                    <span className='text-[#4333AF] font-semibold'>Full-time remote careers</span> with our company and job opportunities with
-                                    our contracted customers.
-                                </p>
-                            </div>
-
-                            <div className='hidden lg:flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
-                                <Link href={'/careeroptions'}>
-                                    <Button
-                                        size='lg'
-                                        className='group bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        See Career Opportunities
-                                    </Button>
+            <section className='relative z-10 px-4 pb-8 pt-12 sm:px-6 sm:pt-16 md:px-8 lg:pb-10'>
+                <div className='mx-auto max-w-[1380px]'>
+                    <div className='grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14'>
+                        <div className='relative isolate z-10 animate-slide-in-left'>
+                            <h1
+                                className={`${michroma.className} max-w-3xl text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black leading-[1.32] min-[1100px]:leading-[1.34] tracking-tight text-white`}
+                            >
+                                <span className='block lg:whitespace-nowrap'>Careers.</span>
+                                <span className='block text-[#4333AF] lg:whitespace-nowrap'>Grow With Us.</span>
+                            </h1>
+                            <p className='mt-7 max-w-xl text-base leading-8 text-gray-300 sm:text-lg'>
+                                Explore career opportunities, connect with qualified professionals, and discover talent services designed for organizations of
+                                different sizes.
+                            </p>
+                            <div className='mt-8 flex flex-wrap items-center gap-4'>
+                                <Link
+                                    href='/careeroptions'
+                                    className='flex h-14 items-center justify-center gap-3 rounded-full bg-[#4333AF] px-6 text-base font-semibold text-white transition-colors hover:bg-[#38299B]'
+                                >
+                                    Browse Opportunities <ArrowRight className='h-5 w-5 shrink-0' />
+                                </Link>
+                                <Link
+                                    href='#career-paths'
+                                    className='flex h-14 items-center justify-center gap-3 rounded-full border border-[#414A5D] bg-[#0C0F18] px-6 text-base font-semibold text-white transition-colors hover:border-[#4333AF]/50'
+                                >
+                                    Explore Talent Services
                                 </Link>
                             </div>
                         </div>
-
-                        <div className='relative animate-slide-in-right'>
-                            <div className='bg-[#0C0F18] rounded-3xl p-10 border border-[#414A5D] shadow-xl shadow-black/30 backdrop-blur-2xl'>
-                                <h3 className='text-2xl font-bold text-white mb-8 flex items-center leading-[1.28]'>
-                                    <Globe className='w-8 h-8 text-[#4333AF] mr-3' />
+                        <div className='relative isolate flex min-w-0 items-center justify-center animate-slide-in-right lg:min-h-[470px]'>
+                            <div
+                                aria-hidden='true'
+                                className='pointer-events-none absolute left-1/2 top-1/2 z-0 h-[calc(100%_+_120px)] w-[calc(100%_+_160px)] min-h-[490px] max-w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[44px] sm:min-h-[620px] sm:blur-[52px] lg:min-h-[660px] lg:w-[900px]'
+                                style={{
+                                    background:
+                                        'radial-gradient(ellipse at center, rgba(67,51,175,0.36) 0%, rgba(67,51,175,0.23) 36%, rgba(67,51,175,0.10) 58%, rgba(5,6,8,0) 80%)',
+                                }}
+                            />
+                            <div className='relative z-20 w-full min-w-0 max-w-[530px] rounded-[28px] bg-[#0C0F18] p-5 sm:p-7 border border-[#414A5D] shadow-[0_32px_110px_-38px_rgba(67,51,175,0.42),0_22px_46px_-25px_rgba(0,0,0,0.85)]'>
+                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-5 flex items-center leading-[1.35]'>
+                                    <Globe className='w-8 h-8 shrink-0 text-[#4333AF] mr-3' />
                                     Global Opportunities
                                 </h3>
 
-                                <div className='grid grid-cols-2 gap-6 mb-8'>
+                                <div className='grid grid-cols-2 gap-4 mb-5'>
                                     <div className='text-center'>
-                                        <div className='text-4xl font-black text-[#4333AF] mb-2'>50+</div>
-                                        <div className='text-gray-400 font-semibold'>States Covered</div>
+                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>50+</div>
+                                        <div className='text-sm text-gray-400 font-semibold'>States Covered</div>
                                     </div>
                                     <div className='text-center'>
-                                        <div className='text-4xl font-black text-[#4333AF] mb-2'>15+</div>
-                                        <div className='text-gray-400 font-semibold'>Industries</div>
+                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>15+</div>
+                                        <div className='text-sm text-gray-400 font-semibold'>Industries</div>
                                     </div>
                                 </div>
 
-                                <div className='space-y-4'>
+                                <div className='space-y-3'>
                                     {[
                                         { icon: CheckCircle, text: 'Remote-First Opportunities', color: 'text-[#4333AF]' },
                                         { icon: Star, text: 'Competitive Compensation', color: 'text-[#4333AF]' },
                                         { icon: Award, text: 'Career Growth Programs', color: 'text-[#4333AF]' },
                                         { icon: Users, text: 'Global Team Collaboration', color: 'text-[#4333AF]' },
                                     ].map((item, index) => (
-                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-[#0A0D14] border border-[#414A5D]'>
-                                            <item.icon className={`w-5 h-5 ${item.color}`} />
-                                            <span className='text-gray-300 font-medium'>{item.text}</span>
+                                        <div key={index} className='flex items-center space-x-3 p-2.5 rounded-xl bg-[#0A0D14] border border-[#414A5D]'>
+                                            <item.icon className={`w-5 h-5 shrink-0 ${item.color}`} />
+                                            <span className='min-w-0 break-words text-sm sm:text-base text-gray-300 font-medium'>{item.text}</span>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                            <div className='flex mt-7 lg:hidden flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
-                                <Link href={'/careeroptions'}>
-                                    <Button
-                                        size='lg'
-                                        className='group bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all cursor-pointer duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        See Career Opportunities
-                                    </Button>
-                                </Link>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Recruitment Agency Section */}
-            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20 items-center'>
-                        <div className='animate-slide-in-right'>
-                            <div>
-                                {/* ✅ wrapper makes width = heading text width */}
-                                <div className='inline-block'>
-                                    <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                        <span className=' text-[#4333AF] '>Recruitment Agency</span>
-                                        <br className='sm:block hidden' />
-                                        &nbsp;Inquiry
-                                    </h2>
-                                </div>
-                            </div>
-
-                            <div className='space-y-4 sm:space-y-5  mb-8 sm:mb-10'>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    We take pride in helping you find the best candidates nationwide and around the world. Let us assist you in talent discovery
-                                    as well as finding candidates that match your company criteria, work experience, and credentials.
-                                </p>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Whether you are a <span className='text-[#4333AF] font-semibold'>small business or corporation</span> we provide quality
-                                    candidates with a complimentary <span className='text-[#4333AF] font-semibold'>30-day guarantee</span>.
-                                </p>
-                                <p className='text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg sm:max-w-xl md:max-w-2xl'>
-                                    Our industry-leading team of <span className='text-[#4333AF] font-semibold'>global HR experts</span> can help you enter new
-                                    markets in minutes, search for candidates, and hire international employees all while maintaining full compliance. Take
-                                    advantage of some of the competitive rates that we have to offer today.
-                                </p>
-                            </div>
-                            <div className='hidden lg:flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
-                                <Link href={'/recruitmentagency'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        See Opportunities
-                                    </Button>
-                                </Link>
-                                <Link href={'/consultation'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
-                                    >
-                                        Consultation
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                        <div className='relative animate-slide-in-left'>
-                            <div className='bg-[#0C0F18] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border border-[#414A5D] shadow-2xl shadow-black/30 backdrop-blur-2xl'>
-                                <h3 className='text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center leading-[1.28]'>
-                                    <Target className='w-6 h-6 sm:w-8 sm:h-8 text-[#4333AF] mr-3' />
-                                    Recruitment Excellence
-                                </h3>
-
-                                <div className='grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8'>
-                                    <div className='text-center'>
-                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>30</div>
-                                        <div className='text-sm sm:text-base text-gray-400 font-semibold'>Day Guarantee</div>
-                                    </div>
-                                    <div className='text-center'>
-                                        <div className='text-3xl sm:text-4xl font-black text-[#4333AF] mb-2'>24/7</div>
-                                        <div className='text-sm sm:text-base text-gray-400 font-semibold'>Global Support</div>
-                                    </div>
-                                </div>
-
-                                <div className='space-y-3 sm:space-y-4'>
-                                    {[
-                                        { icon: UserCheck, text: 'Quality Candidate Matching', color: 'text-[#4333AF]' },
-                                        { icon: Zap, text: 'Rapid Market Entry', color: 'text-[#4333AF]' },
-                                        { icon: Globe, text: 'International Hiring', color: 'text-[#4333AF]' },
-                                        { icon: Award, text: 'Full Compliance Support', color: 'text-[#4333AF]' },
-                                    ].map((item, index) => (
-                                        <div key={index} className='flex items-center space-x-3 p-3 rounded-xl bg-[#0A0D14] border border-[#414A5D]'>
-                                            <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color}`} />
-                                            <span className='text-sm sm:text-base text-gray-300 font-medium'>{item.text}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className='lg:hidden mt-7 flex flex-col sm:flex-row gap-4 sm:gap-5 pt-2'>
-                                <Link href={'/recruitmentagency'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-[300px]'
-                                    >
-                                        See Opportunities
-                                    </Button>
-                                </Link>
-                                <Link href={'/consultation'}>
-                                    <Button
-                                        size='lg'
-                                        className='group cursor-pointer bg-[#4333AF] hover:bg-[#38299B] text-white px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 transform hover:scale-105 w-full sm:w-auto'
-                                    >
-                                        Consultation
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Talent Acquisition / BPO Section */}
-            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='rounded-[2rem] border border-[#414A5D] bg-[#0C0F18] p-4 sm:p-6 md:p-10 shadow-2xl shadow-black/30'>
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8'>
-                            {talentTabs.map((tab) => {
-                                const isActive = activeTalentTab === tab.key;
-
+            <section id='career-paths' className='relative z-10 overflow-hidden px-4 pb-10 sm:px-6 md:px-8'>
+                <div className='relative mx-auto max-w-[1380px]'>
+                    <div className='relative w-full overflow-hidden rounded-[28px] border border-[#414A5D] bg-[#0C0F18] shadow-[0_28px_110px_-40px_rgba(67,51,175,0.25),0_20px_65px_-35px_rgba(0,0,0,0.8)]'>
+                        <div className='bs-info-slider-track relative z-10 flex w-full min-w-0' style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
+                            {slides.map((slide) => {
+                                const SlideIcon = slide.icon;
                                 return (
-                                    <button
-                                        key={tab.key}
-                                        type='button'
-                                        onClick={() => setActiveTalentTab(tab.key)}
-                                        className={`rounded-xl border px-5 py-3 text-sm sm:text-base font-bold transition-all duration-300 ${
-                                            isActive
-                                                ? 'border-[#414A5D] bg-[#4333AF] text-white shadow-sm shadow-[#4333AF]/15'
-                                                : 'border-white/10 bg-transparent text-gray-300 hover:border-[#4333AF]/50 hover:text-white'
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
+                                    <div key={slide.title} className='w-full min-w-full shrink-0 overflow-hidden'>
+                                        <div className='grid w-full min-w-0 grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-7 sm:pb-24 sm:pt-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.75fr)] lg:gap-8 lg:px-10 lg:pb-20 lg:pt-10 xl:grid-cols-[minmax(0,1.65fr)_minmax(310px,0.72fr)] xl:px-12 h-full lg:h-[480px] xl:h-[440px] lg:grid-rows-[minmax(0,1fr)]'>
+                                            <div className='grid min-w-0 gap-5 md:grid-cols-[104px_1fr] md:gap-6 lg:min-h-0 lg:overflow-y-auto'>
+                                                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-[#414A5D] bg-[#0A0D14] sm:h-24 sm:w-24 md:mx-0'>
+                                                    <SlideIcon className='h-9 w-9 text-[#4333AF] sm:h-11 sm:w-11' strokeWidth={1.8} />
+                                                </div>
+                                                <div className='flex min-w-0 flex-col text-center md:text-left'>
+                                                    <p className='mb-1.5 text-xs font-semibold uppercase tracking-[.16em] text-[#4333AF]'>{slide.kicker}</p>
+                                                    <h2
+                                                        className={`${michroma.className} break-words text-xl leading-[1.32] tracking-[-0.02em] text-white sm:text-3xl lg:text-[clamp(1.5rem,2.25vw,2.25rem)]`}
+                                                    >
+                                                        {slide.title}
+                                                    </h2>
+                                                    <p className='mx-auto mt-3 max-w-2xl break-words text-sm leading-7 text-gray-300 sm:text-base md:mx-0'>
+                                                        {slide.description}
+                                                    </p>
+                                                    <div className='mt-5 grid min-w-0 gap-3 sm:grid-cols-2 lg:flex-1 lg:auto-rows-fr'>
+                                                        {slide.features.map((feature) => (
+                                                            <div
+                                                                key={feature}
+                                                                className='flex min-w-0 items-center gap-3 rounded-xl border border-[#414A5D] bg-[#0A0D14] px-3 py-2.5 lg:gap-2 lg:px-2 lg:py-2 xl:gap-3 xl:px-3 xl:py-2.5 transition-colors duration-300 hover:border-[#4333AF]/50'
+                                                            >
+                                                                <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#414A5D]'>
+                                                                    <CheckCircle className='h-4 w-4 text-[#4333AF]' />
+                                                                </span>
+                                                                <span className='min-w-0 break-words text-left text-sm leading-6 text-gray-100 sm:text-base lg:text-sm lg:leading-5 xl:text-base xl:leading-6'>
+                                                                    {feature}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='flex w-full min-w-0 flex-col rounded-[24px] lg:min-h-0 lg:overflow-y-auto border border-[#414A5D] bg-[#0A0D14] px-4 py-5 shadow-[0_12px_48px_-26px_rgba(67,51,175,0.13)] sm:px-6 sm:py-6 lg:px-5 lg:py-4 xl:px-6'>
+                                                <h3 className={`${michroma.className} text-base leading-[1.45] text-white sm:text-lg`}>{slide.panelTitle}</h3>
+                                                <p className='mt-2 text-sm leading-5 text-gray-300'>{slide.panelBody}</p>
+                                                <div className='mt-3 space-y-2 pb-4'>
+                                                    {slide.panelPoints.map((point) => (
+                                                        <div key={point} className='flex items-start gap-3 text-sm text-gray-200'>
+                                                            <CheckCircle className='mt-0.5 h-4 w-4 shrink-0 text-[#4333AF]' />
+                                                            {point}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                {slide.service ? (
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => {
+                                                            setActiveTalentTab(slide.service as TalentTab);
+                                                            openConsultationModal();
+                                                        }}
+                                                        className='mt-4 flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#4333AF] px-3 py-2 text-center text-sm font-black leading-snug text-white transition-colors duration-300 hover:bg-[#38299B] lg:mt-auto'
+                                                    >
+                                                        {slide.action}
+                                                        <ArrowRight className='h-5 w-5 shrink-0' />
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <Link
+                                                            href={slide.href}
+                                                            className='mt-4 flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#4333AF] px-3 py-2 text-center text-sm font-black leading-snug text-white transition-colors duration-300 hover:bg-[#38299B] lg:mt-auto'
+                                                        >
+                                                            {slide.action}
+                                                            <ArrowRight className='h-5 w-5 shrink-0' />
+                                                        </Link>
+                                                        {slide.href === '/recruitmentagency' && (
+                                                            <Link
+                                                                href='/consultation'
+                                                                className='mt-2 flex min-h-10 w-full shrink-0 items-center justify-center rounded-xl border border-[#414A5D] px-3 py-2 text-center text-sm font-semibold text-white transition-colors hover:border-[#4333AF]'
+                                                            >
+                                                                Consultation
+                                                            </Link>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 );
                             })}
                         </div>
-
-                        <div className='grid lg:grid-cols-2 gap-10 lg:gap-16 items-center'>
-                            <div>
-                                <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
-                                <h2 className='mb-6 max-w-2xl text-xl sm:text-2xl md:text-3xl lg:text-[2rem] xl:text-[2.25rem] font-black leading-[1.22] text-white'>
-                                    {activeTalentService.headline}
-                                </h2>
-
-                                <div className='space-y-5'>
-                                    {activeTalentService.sections.map((section) => (
-                                        <div key={section.title}>
-                                            <h3 className='mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-white leading-[1.3]'>
-                                                {section.title}
-                                            </h3>
-                                            <p className='text-sm sm:text-base leading-relaxed text-gray-300'>{section.body}</p>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className='mt-7'>
-                                    <h3 className='mb-4 text-sm font-extrabold uppercase tracking-[0.18em] text-white leading-[1.3]'>Key Points:</h3>
-                                    <div className='grid sm:grid-cols-2 gap-3'>
-                                        {activeTalentService.keyPoints.map((point) => (
-                                            <div key={point} className='flex items-start gap-3 text-sm font-semibold text-gray-200'>
-                                                <CheckCircle2 className='mt-0.5 h-5 w-5 shrink-0 text-[#4333AF]' />
-                                                <span>{point}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className='relative flex flex-col items-center justify-center gap-8'>
-                                <div className='relative h-56 w-56 sm:h-64 sm:w-64'>
-                                    <div className='absolute inset-8 rounded-full border-4 border-white/80' />
-                                    <div className='absolute inset-0 flex items-center justify-center'>
-                                        <div className='flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#050608]'>
-                                            <User className='h-14 w-14 text-white' />
-                                        </div>
-                                    </div>
-                                    {Array.from({ length: 8 }).map((_, index) => {
-                                        const angle = (index * 45 * Math.PI) / 180;
-                                        const x = Math.cos(angle) * 96;
-                                        const y = Math.sin(angle) * 96;
-
-                                        return (
-                                            <span
-                                                key={index}
-                                                className='absolute h-8 w-8 rounded-full border-4 border-white bg-[#050608] shadow-lg shadow-black/30'
-                                                style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)`, transform: 'translate(-50%, -50%)' }}
-                                            />
-                                        );
-                                    })}
-                                </div>
-
-                                <div className='w-full max-w-sm rounded-2xl border-2 border-white/80 bg-[#0A0D14] p-6 shadow-xl shadow-black/30'>
-                                    <h3 className='mb-3 text-lg font-extrabold text-white'>{activeTalentService.pricingTitle}</h3>
-                                    <div className='mb-5 space-y-2'>
-                                        {activeTalentService.pricing.map((priceItem) => (
-                                            <div key={priceItem} className='flex items-center gap-3 text-base font-semibold text-gray-200'>
-                                                <span className='text-2xl leading-none text-white'>+</span>
-                                                <span>{priceItem}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <Button
-                                        type='button'
-                                        onClick={openConsultationModal}
-                                        className='w-full bg-[#4333AF] py-5 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(67,51,175,0.16)] transition-all duration-300 hover:bg-[#38299B] '
-                                    >
-                                        {activeTalentService.buttonLabel}
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <Dialog open={isConsultationModalOpen} onOpenChange={setIsConsultationModalOpen}>
-                        <DialogContent className='w-[calc(100vw-2rem)] max-w-6xl sm:max-w-6xl max-h-[92vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
-                            <DialogTitle className='sr-only'>Schedule Consultation</DialogTitle>
-
-                            <div
-                                id='consultation-form'
-                                className='relative overflow-hidden rounded-[1.75rem] border p-4 sm:p-6 md:p-12'
-                                style={{
-                                    borderColor: 'rgba(255,255,255,0.1)',
-                                    backgroundColor: '#0C0F18',
-                                    WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-                                    backdropFilter: 'blur(20px) saturate(160%)',
-                                    boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
-                                }}
+                        <div className='pointer-events-none absolute inset-x-0 bottom-5 z-20 flex items-center justify-between px-5 sm:px-7 lg:px-10'>
+                            <button
+                                type='button'
+                                onClick={() => setActiveSlide((current) => (current - 1 + slides.length) % slides.length)}
+                                className='pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#414A5D] bg-[#050608] text-gray-200 transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18] hover:text-white'
+                                aria-label='Previous slide'
                             >
-                                <button
-                                    type='button'
-                                    onClick={() => setIsConsultationModalOpen(false)}
-                                    className='absolute right-2 top-2 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:scale-110 hover:bg-white/10 hover:text-white'
-                                    aria-label='Close consultation modal'
-                                >
-                                    <X className='h-4 w-4' />
-                                </button>
-
-                                <div className='pointer-events-none absolute inset-0 bg-transparent' />
-
-                                <div className='relative z-10 grid gap-8 lg:grid-cols-[0.75fr_1.55fr] lg:gap-10 lg:items-center'>
-                                    <div className='text-center lg:text-left'>
-                                        <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
-                                        <h2 className='text-4xl sm:text-5xl font-black leading-[1.22] text-white'>
-                                            Schedule
-                                            <br />
-                                            Consultation
-                                        </h2>
-                                        <p className='mx-auto lg:mx-0 mt-5 max-w-sm text-sm sm:text-base leading-relaxed text-gray-300'>
-                                            Ready to find your perfect candidates? Book a free consultation with our experts.
-                                        </p>
-                                        <div className='mt-8'>
-                                            <div className='text-5xl sm:text-6xl font-black text-white'>$249.99</div>
-                                            <p className='mt-2 text-sm font-semibold text-gray-400'>One-Time Consultation</p>
-                                        </div>
+                                <ChevronLeft className='h-5 w-5 text-[#4333AF]' />
+                            </button>
+                            <div className='pointer-events-auto hidden items-center justify-center gap-2 sm:flex'>
+                                {slides.map((slide, index) => (
+                                    <button
+                                        key={slide.title}
+                                        type='button'
+                                        onClick={() => setActiveSlide(index)}
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            activeSlide === index ? 'w-8 bg-[#4333AF]' : 'w-2 bg-[#4333AF]/45 hover:bg-[#4333AF]/70'
+                                        }`}
+                                        aria-label={`Show ${slide.title}`}
+                                        aria-current={activeSlide === index ? 'true' : undefined}
+                                    />
+                                ))}
+                            </div>
+                            <button
+                                type='button'
+                                onClick={() => setActiveSlide((current) => (current + 1) % slides.length)}
+                                className='pointer-events-auto flex h-10 items-center gap-1 rounded-full border border-[#414A5D] bg-[#050608] px-4 text-sm font-semibold text-gray-200 transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18] hover:text-white'
+                                aria-label='Next slide'
+                            >
+                                Next <ChevronRight className='h-4 w-4 text-[#4333AF]' />
+                            </button>
+                        </div>
+                    </div>
+                    <div className='mt-10 flex items-center gap-4'>
+                        <div className='h-px flex-1 bg-[#4333AF]/35' />
+                        <p className={`${michroma.className} text-center text-[11px] leading-[1.6] uppercase tracking-[0.5em] text-[#4333AF]`}>
+                            Built For Better Careers
+                        </p>
+                        <div className='h-px flex-1 bg-[#4333AF]/35' />
+                    </div>
+                    <div className='mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                        {valueCards.map(({ icon: Icon, title, description }) => (
+                            <div
+                                key={title}
+                                className='rounded-2xl border border-[#414A5D] bg-[#0C0F18] shadow-[0_14px_55px_-30px_rgba(67,51,175,0.16)] transition-colors duration-300 hover:border-[#4333AF]/50 hover:bg-[#0C0F18]/80'
+                            >
+                                <div className='flex items-center gap-5 p-6'>
+                                    <Icon className='h-12 w-12 shrink-0 text-[#4333AF]' aria-hidden='true' />
+                                    <div>
+                                        <h3 className={`${michroma.className} text-sm leading-6 text-white`}>{title}</h3>
+                                        <p className='mt-2 text-sm leading-6 text-gray-400'>{description}</p>
                                     </div>
-
-                                    <form onSubmit={handleScheduleConsultation} noValidate>
-                                        <div className='grid md:grid-cols-2 gap-4'>
-                                            <div>
-                                                <label className='relative block'>
-                                                    <Building2 className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        name='companyName'
-                                                        value={consultationForm.companyName}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Company Name'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.companyName ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.companyName && (
-                                                    <p className='mt-1 text-xs text-red-300'>{consultationErrors.companyName}</p>
-                                                )}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <MapPin className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        name='location'
-                                                        value={consultationForm.location}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Location'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.location ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.location && <p className='mt-1 text-xs text-red-300'>{consultationErrors.location}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <Briefcase className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        name='jobTitle'
-                                                        value={consultationForm.jobTitle}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Your Job Title'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.jobTitle ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.jobTitle && <p className='mt-1 text-xs text-red-300'>{consultationErrors.jobTitle}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <User className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        name='fullName'
-                                                        value={consultationForm.fullName}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Full Name'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.fullName ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.fullName && <p className='mt-1 text-xs text-red-300'>{consultationErrors.fullName}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <Mail className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        type='email'
-                                                        name='email'
-                                                        value={consultationForm.email}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Work Email'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.email ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.email && <p className='mt-1 text-xs text-red-300'>{consultationErrors.email}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <Phone className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        type='tel'
-                                                        name='phone'
-                                                        value={consultationForm.phone}
-                                                        onChange={handleConsultationChange}
-                                                        placeholder='Phone Number'
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.phone ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.phone && <p className='mt-1 text-xs text-red-300'>{consultationErrors.phone}</p>}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <Users className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <select
-                                                        name='numOfPositions'
-                                                        value={consultationForm.numOfPositions}
-                                                        onChange={handleConsultationChange}
-                                                        className={`w-full appearance-none rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.numOfPositions ? 'border-red-400/70' : 'border-white/10'
-                                                        } ${consultationForm.numOfPositions ? 'text-white' : 'text-gray-500'}`}
-                                                    >
-                                                        <option value='' className='bg-[#0C0F18] text-gray-300'>
-                                                            Number of positions
-                                                        </option>
-                                                        {[1, 2, 3, 4, 5, 10, 15, 20].map((positionCount) => (
-                                                            <option key={positionCount} value={positionCount} className='bg-[#0C0F18] text-white'>
-                                                                {positionCount}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </label>
-                                                {consultationErrors.numOfPositions && (
-                                                    <p className='mt-1 text-xs text-red-300'>{consultationErrors.numOfPositions}</p>
-                                                )}
-                                            </div>
-
-                                            <div>
-                                                <label className='relative block'>
-                                                    <CalendarDays className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
-                                                    <input
-                                                        type='datetime-local'
-                                                        name='dateTime'
-                                                        value={consultationForm.dateTime}
-                                                        onChange={handleConsultationChange}
-                                                        className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
-                                                            consultationErrors.dateTime ? 'border-red-400/70' : 'border-white/10'
-                                                        }`}
-                                                    />
-                                                </label>
-                                                {consultationErrors.dateTime && <p className='mt-1 text-xs text-red-300'>{consultationErrors.dateTime}</p>}
-                                            </div>
-                                        </div>
-
-                                        <div className='mt-5 space-y-3'>
-                                            <div className='flex items-start gap-3 text-sm text-gray-300'>
-                                                <input
-                                                    type='checkbox'
-                                                    name='termsAccepted'
-                                                    checked={consultationForm.termsAccepted}
-                                                    onChange={handleConsultationCheckboxChange}
-                                                    className='mt-1 h-4 w-4 rounded border-white/20 bg-white/5 accent-[#4333AF]'
-                                                />
-                                                <span>
-                                                    I agree to the{' '}
-                                                    <button
-                                                        type='button'
-                                                        onClick={() => setIsTermsModalOpen(true)}
-                                                        className='text-white underline decoration-[#4333AF]/70 underline-offset-4 transition hover:text-[#4333AF]'
-                                                    >
-                                                        Terms and Conditions
-                                                    </button>
-                                                </span>
-                                            </div>
-                                            {consultationErrors.termsAccepted && <p className='text-xs text-red-300'>{consultationErrors.termsAccepted}</p>}
-                                        </div>
-
-                                        <div className='mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-                                            <div className='min-h-6'>
-                                                {consultationMessage && <p className='text-sm font-semibold text-red-300'>{consultationMessage}</p>}
-                                                {consultationSuccess && <p className='text-sm font-semibold text-green-300'>{consultationSuccess}</p>}
-                                            </div>
-
-                                            <Button
-                                                type='submit'
-                                                disabled={isSubmittingConsultation}
-                                                className='w-full sm:w-auto min-w-[250px] bg-[#4333AF] px-8 py-6 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(67,51,175,0.16)] cursor-pointer transition-all duration-300 hover:bg-[#38299B] disabled:cursor-not-allowed disabled:opacity-70'
-                                            >
-                                                {isSubmittingConsultation ? (
-                                                    <>
-                                                        <Loader2 className='mr-2 h-5 w-5 animate-spin' />
-                                                        Processing...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {/* <CalendarDays className='mr-2 h-5 w-5' /> */}
-                                                        Schedule Consultation
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </form>
                                 </div>
                             </div>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </section>
-
-            {/* Call to Action Section with Lottie Animation */}
-            <section className='relative z-10 py-10 sm:py-16 px-4 sm:px-6 md:px-8'>
-                <div className='container mx-auto max-w-8xl relative z-10'>
-                    <div className='grid lg:grid-cols-2 gap-16 items-center'>
-                        <div className='space-y-8'>
-                            <h2 className='text-[clamp(1.45rem,6.2vw,2rem)] sm:text-4xl md:text-5xl min-[1100px]:text-[clamp(1.85rem,2.65vw,3.1rem)] font-black text-white mb-4 sm:mb-5 leading-[1.22]'>
-                                Join the <span className=' text-[#4333AF] '>Black Snow</span>
-                                <br className='hidden sm:block' />
-                                &nbsp;Revolution
-                            </h2>
-                            <p className='text-xl text-gray-300 leading-relaxed'>
-                                Whether you&apos;re looking for your next career opportunity or seeking top talent for your organization, we&apos;re here to
-                                make it happen. Be a first mover in your career journey.
-                            </p>
-                            <div className='flex flex-col sm:flex-row gap-6 pt-8'>
-                                <Link href={'/careeroptions'}>
-                                    <Button className='border-2 box-border border-[#414A5D] bg-[#4333AF] hover:bg-[#38299B] text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 w-full sm:w-[300px]'>
-                                        Browse Jobs
-                                    </Button>
-                                </Link>
-                                <Link href={'/recruitmentagency'}>
-                                    <Button
-                                        variant='outline'
-                                        className='border-2 box-border border-[#414A5D] cursor-pointer text-[#fff] hover:bg-[#4333AF] hover:text-white px-12 py-6 text-lg font-bold shadow-[0_4px_14px_rgba(67,51,175,0.16)] transform hover:scale-105 transition-all duration-300 bg-transparent w-full sm:w-[300px]'
-                                    >
-                                        Hire Talent
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Lottie Animation */}
-                        <div className='flex items-center justify-center'>
-                            <div className='w-full h-80 sm:w-96 sm:h-96 bg-[#0C0F18] rounded-3xl border border-[#414A5D] flex items-center justify-center backdrop-blur-xl'>
-                                <LottieAnimation src='/animations/careericon.json' loop={true} autoplay={true} />
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
+            <Dialog open={isConsultationModalOpen} onOpenChange={setIsConsultationModalOpen}>
+                <DialogContent className='w-[calc(100vw-2rem)] max-w-6xl sm:max-w-6xl max-h-[92vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none [&>button]:hidden'>
+                    <DialogTitle className='sr-only'>Schedule Consultation</DialogTitle>
+
+                    <div
+                        id='consultation-form'
+                        className='relative overflow-hidden rounded-[1.75rem] border p-4 sm:p-6 md:p-12'
+                        style={{
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            backgroundColor: '#0C0F18',
+                            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+                            backdropFilter: 'blur(20px) saturate(160%)',
+                            boxShadow: '0 28px 80px rgba(0,0,0,0.78), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.03)',
+                        }}
+                    >
+                        <button
+                            type='button'
+                            onClick={() => setIsConsultationModalOpen(false)}
+                            className='absolute right-2 top-2 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:scale-110 hover:bg-white/10 hover:text-white'
+                            aria-label='Close consultation modal'
+                        >
+                            <X className='h-4 w-4' />
+                        </button>
+
+                        <div className='pointer-events-none absolute inset-0 bg-transparent' />
+
+                        <div className='relative z-10 grid gap-8 lg:grid-cols-[0.75fr_1.55fr] lg:gap-10 lg:items-center'>
+                            <div className='text-center lg:text-left'>
+                                <p className='mb-4 text-sm font-extrabold uppercase tracking-[0.28em] text-[#4333AF]'>{activeTalentService.eyebrow}</p>
+                                <h2 className='text-4xl sm:text-5xl font-black leading-[1.22] text-white'>
+                                    Schedule
+                                    <br />
+                                    Consultation
+                                </h2>
+                                <p className='mx-auto lg:mx-0 mt-5 max-w-sm text-sm sm:text-base leading-relaxed text-gray-300'>
+                                    Ready to find your perfect candidates? Book a free consultation with our experts.
+                                </p>
+                                <div className='mt-8'>
+                                    <div className='text-5xl sm:text-6xl font-black text-white'>$249.99</div>
+                                    <p className='mt-2 text-sm font-semibold text-gray-400'>One-Time Consultation</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleScheduleConsultation} noValidate>
+                                <div className='grid md:grid-cols-2 gap-4'>
+                                    <div>
+                                        <label className='relative block'>
+                                            <Building2 className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                name='companyName'
+                                                value={consultationForm.companyName}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Company Name'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.companyName ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.companyName && <p className='mt-1 text-xs text-red-300'>{consultationErrors.companyName}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <MapPin className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                name='location'
+                                                value={consultationForm.location}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Location'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.location ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.location && <p className='mt-1 text-xs text-red-300'>{consultationErrors.location}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <Briefcase className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                name='jobTitle'
+                                                value={consultationForm.jobTitle}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Your Job Title'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.jobTitle ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.jobTitle && <p className='mt-1 text-xs text-red-300'>{consultationErrors.jobTitle}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <User className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                name='fullName'
+                                                value={consultationForm.fullName}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Full Name'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.fullName ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.fullName && <p className='mt-1 text-xs text-red-300'>{consultationErrors.fullName}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <Mail className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                type='email'
+                                                name='email'
+                                                value={consultationForm.email}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Work Email'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.email ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.email && <p className='mt-1 text-xs text-red-300'>{consultationErrors.email}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <Phone className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                type='tel'
+                                                name='phone'
+                                                value={consultationForm.phone}
+                                                onChange={handleConsultationChange}
+                                                placeholder='Phone Number'
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.phone ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.phone && <p className='mt-1 text-xs text-red-300'>{consultationErrors.phone}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <Users className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <select
+                                                name='numOfPositions'
+                                                value={consultationForm.numOfPositions}
+                                                onChange={handleConsultationChange}
+                                                className={`w-full appearance-none rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.numOfPositions ? 'border-red-400/70' : 'border-white/10'
+                                                } ${consultationForm.numOfPositions ? 'text-white' : 'text-gray-500'}`}
+                                            >
+                                                <option value='' className='bg-[#0C0F18] text-gray-300'>
+                                                    Number of positions
+                                                </option>
+                                                {[1, 2, 3, 4, 5, 10, 15, 20].map((positionCount) => (
+                                                    <option key={positionCount} value={positionCount} className='bg-[#0C0F18] text-white'>
+                                                        {positionCount}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                        {consultationErrors.numOfPositions && <p className='mt-1 text-xs text-red-300'>{consultationErrors.numOfPositions}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className='relative block'>
+                                            <CalendarDays className='pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+                                            <input
+                                                type='datetime-local'
+                                                name='dateTime'
+                                                value={consultationForm.dateTime}
+                                                onChange={handleConsultationChange}
+                                                className={`w-full rounded-lg border bg-white/5 py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-[#4333AF] focus:ring-2 focus:ring-[#4333AF]/20 ${
+                                                    consultationErrors.dateTime ? 'border-red-400/70' : 'border-white/10'
+                                                }`}
+                                            />
+                                        </label>
+                                        {consultationErrors.dateTime && <p className='mt-1 text-xs text-red-300'>{consultationErrors.dateTime}</p>}
+                                    </div>
+                                </div>
+
+                                <div className='mt-5 space-y-3'>
+                                    <div className='flex items-start gap-3 text-sm text-gray-300'>
+                                        <input
+                                            type='checkbox'
+                                            name='termsAccepted'
+                                            checked={consultationForm.termsAccepted}
+                                            onChange={handleConsultationCheckboxChange}
+                                            className='mt-1 h-4 w-4 rounded border-white/20 bg-white/5 accent-[#4333AF]'
+                                        />
+                                        <span>
+                                            I agree to the{' '}
+                                            <button
+                                                type='button'
+                                                onClick={() => setIsTermsModalOpen(true)}
+                                                className='text-white underline decoration-[#4333AF]/70 underline-offset-4 transition hover:text-[#4333AF]'
+                                            >
+                                                Terms and Conditions
+                                            </button>
+                                        </span>
+                                    </div>
+                                    {consultationErrors.termsAccepted && <p className='text-xs text-red-300'>{consultationErrors.termsAccepted}</p>}
+                                </div>
+
+                                <div className='mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+                                    <div className='min-h-6'>
+                                        {consultationMessage && <p className='text-sm font-semibold text-red-300'>{consultationMessage}</p>}
+                                        {consultationSuccess && <p className='text-sm font-semibold text-green-300'>{consultationSuccess}</p>}
+                                    </div>
+
+                                    <Button
+                                        type='submit'
+                                        disabled={isSubmittingConsultation}
+                                        className='w-full sm:w-auto min-w-[250px] bg-[#4333AF] px-8 py-6 text-base font-extrabold text-white shadow-[0_4px_14px_rgba(67,51,175,0.16)] cursor-pointer transition-all duration-300 hover:bg-[#38299B] disabled:cursor-not-allowed disabled:opacity-70'
+                                    >
+                                        {isSubmittingConsultation ? (
+                                            <>
+                                                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                {/* <CalendarDays className='mr-2 h-5 w-5' /> */}
+                                                Schedule Consultation
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+            <style jsx global>{`
+                .bs-info-hero-card {
+                    --bs-info-card-x: 0;
+                    transform-style: preserve-3d;
+                    animation: bs-info-float 5.5s ease-in-out infinite;
+                }
+                @media (min-width: 1024px) {
+                    .bs-info-hero-card {
+                        --bs-info-card-x: -50%;
+                    }
+                }
+                .bs-info-slider-track {
+                    transition: transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
+                    will-change: transform;
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .bs-info-hero-card {
+                        animation: none;
+                    }
+                    .bs-info-slider-track {
+                        transition: none;
+                    }
+                }
+                @keyframes bs-info-float {
+                    0%,
+                    100% {
+                        transform: translateX(var(--bs-info-card-x)) translateY(0);
+                    }
+                    50% {
+                        transform: translateX(var(--bs-info-card-x)) translateY(-12px);
+                    }
+                }
+            `}</style>
         </div>
     );
 }

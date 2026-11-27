@@ -262,6 +262,16 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
 
     const needsStripeConnection = userData.adminStripeConnectIdStatus !== true || showStripeModal;
 
+    // Use the active Pages Router section for the shared dashboard title.
+    const dashboardSection = router.pathname.split('/').filter(Boolean);
+    const section = dashboardSection[0] === 'invoicecontractdashboard' ? dashboardSection[1] : undefined;
+    const dashboardTitle =
+        section === 'invoice' || section === 'invoices'
+            ? 'Invoices Dashboard'
+            : section === 'subscription' || section === 'subscriptions'
+            ? 'Subscriptions Dashboard'
+            : 'Business Invoice Dashboard';
+
     return (
         <div className='relative min-h-screen bg-gray-50'>
             {/* <EmailMarketingTourPopup onComplete={() => console.log('Tour complete')} /> */}
@@ -271,7 +281,7 @@ export default function InvoiceDashboardLayout({ children }: { children: React.R
 
                 <main className='flex-1 p-8'>
                     <div className='mx-auto max-w-6xl'>
-                        <h1 className='mb-8 text-center text-4xl font-bold'>Business Invoice Dashboard</h1>
+                        <h1 className='mb-8 text-center text-4xl font-bold'>{dashboardTitle}</h1>
 
                         {children}
                     </div>

@@ -343,12 +343,7 @@ function DataAnalyticsSection() {
     ];
 
     return (
-        <section className='relative py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-[#050608] overflow-hidden'>
-            <div
-                className='pointer-events-none absolute inset-0'
-                style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(67,51,175,0.06) 0%, transparent 60%)' }}
-            />
-
+        <section className='relative py-16 sm:py-24 px-4 sm:px-6 md:px-8 overflow-hidden bg-transparent'>
             <div
                 className='pointer-events-none absolute inset-0'
                 style={{
@@ -1023,11 +1018,13 @@ function Home() {
                 <StackedStrategiesSection />
             </div>
 
-            <TradingPlatformShowcase />
+            <div style={{ background: 'linear-gradient(180deg, #07101a 0%, #050608 100%)' }}>
+                <TradingPlatformShowcase useSharedBackground />
 
-            {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
+                {/* ─── DATA DRIVEN ANALYTICS SECTION ─── */}
 
-            <DataAnalyticsSection />
+                <DataAnalyticsSection />
+            </div>
 
             {/* --- MODALS --- */}
 

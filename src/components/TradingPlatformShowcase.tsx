@@ -483,39 +483,41 @@ function ShowcaseMiniTrend({ values, id, height = 74 }: { values: number[]; id: 
 function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
     if (slide.id === 'paper-trading') {
         return (
-            <ShowcasePreviewFrame>
-                <div className='flex h-full flex-col gap-2.5'>
-                    <div className='rounded-xl border border-[#414A5D] bg-[#0C0F18] p-3'>
+            <ShowcasePreviewFrame className='lg:p-2'>
+                <div className='flex h-full flex-col gap-2.5 lg:gap-1.5'>
+                    <div className='rounded-xl border border-[#414A5D] bg-[#0C0F18] p-3 lg:p-2'>
                         <div className='flex items-start justify-between gap-3'>
                             <div>
                                 <p className='text-[10px] text-white/65 sm:text-xs'>Paper Account Value</p>
-                                <p className='mt-0.5 text-xl font-extrabold tracking-tight text-white sm:text-2xl'>$100,000.00</p>
+                                <p className='mt-0.5 text-xl font-extrabold tracking-tight text-white sm:text-2xl lg:text-xl'>$100,000.00</p>
                             </div>
                             <div className='text-right'>
                                 <p className='text-[10px] uppercase tracking-[.08em] text-white/60'>Day P&amp;L</p>
                                 <p className='mt-1 whitespace-nowrap text-xs font-bold text-[#A99FFF] sm:text-sm'>+$1,250.00 (+1.26%)</p>
                             </div>
                         </div>
-                        <div className='mt-1.5'>
-                            <ShowcaseMiniTrend id='paper' values={[22, 38, 59, 57, 49, 67, 56, 49, 63, 82, 75, 96]} height={66} />
+                        <div className='mt-1.5 lg:mt-1'>
+                            <ShowcaseMiniTrend id='paper' values={[22, 38, 59, 57, 49, 67, 56, 49, 63, 82, 75, 96]} height={52} />
                         </div>
                         <div className='mt-1 flex items-center justify-between gap-1 text-[9px] sm:text-[10px]'>
                             {['1D', '1W', '1M', '3M', 'YTD', '1Y', 'ALL'].map((period) => (
                                 <span
                                     key={period}
-                                    className={`rounded-full px-2.5 py-1 ${period === '1D' ? 'bg-[#4333AF] font-semibold text-white' : 'text-white/55'}`}
+                                    className={`rounded-full px-2.5 py-1 lg:px-2 lg:py-0.5 ${
+                                        period === '1D' ? 'bg-[#4333AF] font-semibold text-white' : 'text-white/55'
+                                    }`}
                                 >
                                     {period}
                                 </span>
                             ))}
                         </div>
                     </div>
-                    <div className='flex-1 rounded-xl border border-[#414A5D] bg-[#0C0F18] p-2.5 sm:p-3'>
+                    <div className='min-h-0 flex-1 rounded-xl border border-[#414A5D] bg-[#0C0F18] p-2.5 sm:p-3 lg:p-2'>
                         <div className='grid grid-cols-2 gap-1 rounded-full border border-[#414A5D] bg-[#080A11] p-0.5 text-center text-[11px]'>
-                            <span className='rounded-full bg-[#4333AF] py-1 font-bold text-white'>Buy</span>
-                            <span className='py-1 text-white/65'>Sell</span>
+                            <span className='rounded-full bg-[#4333AF] py-1 font-bold text-white lg:py-0.5'>Buy</span>
+                            <span className='py-1 text-white/65 lg:py-0.5'>Sell</span>
                         </div>
-                        <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5'>
+                        <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5 lg:mt-1.5 lg:gap-y-1'>
                             {[
                                 ['Order Type', 'Market  ▾'],
                                 ['Quantity', '−       100       +'],
@@ -524,14 +526,14 @@ function ExecutionPreview({ slide }: { slide: ExecutionSlide }) {
                             ].map(([label, value]) => (
                                 <div key={label} className='min-w-0'>
                                     <p className='mb-0.5 text-[9px] text-white/55'>{label}</p>
-                                    <div className='truncate rounded-md border border-[#414A5D] bg-[#080A11] px-2 py-1.5 text-center text-[10px] text-white/90'>
+                                    <div className='truncate rounded-md border border-[#414A5D] bg-[#080A11] px-2 py-1.5 text-center text-[10px] text-white/90 lg:py-1'>
                                         {value}
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <div className='mt-2 rounded-full bg-[#4333AF] py-1.5 text-center text-xs font-semibold text-white'>Buy</div>
-                        <p className='mt-1 text-center text-[9px] text-[#A99FFF]'>Buying Power: $100,000.00</p>
+                        <div className='mt-2 rounded-full bg-[#4333AF] py-1.5 text-center text-xs font-semibold text-white lg:mt-1.5 lg:py-1'>Buy</div>
+                        <p className='mt-1 text-center text-[9px] text-[#A99FFF] lg:mt-0.5'>Buying Power: $100,000.00</p>
                     </div>
                 </div>
             </ShowcasePreviewFrame>
@@ -1385,7 +1387,7 @@ function PaperDeskDashboard() {
     );
 }
 
-export default function TradingPlatformShowcase() {
+export default function TradingPlatformShowcase({ useSharedBackground = false }: { useSharedBackground?: boolean } = {}) {
     // Keep main slide and sub-slide indexes together to advance atomically.
     const [executionPosition, setExecutionPosition] = useState({ executionIndex: 0, executionDetailIndex: 0 });
     const { executionIndex, executionDetailIndex } = executionPosition;
@@ -1423,8 +1425,14 @@ export default function TradingPlatformShowcase() {
     };
 
     return (
-        <section className='trading-platform-showcase relative overflow-x-clip bg-[#050608] px-4 py-10 text-white sm:px-6 sm:py-16 md:px-8 lg:py-20'>
-            <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_6%,rgba(67,51,175,.08),transparent_24%),radial-gradient(circle_at_10%_42%,rgba(67,51,175,.07),transparent_30%),linear-gradient(180deg,#050608_0%,#07101a_48%,#050608_100%)]' />
+        <section
+            className={`trading-platform-showcase relative overflow-x-clip ${
+                useSharedBackground ? 'bg-transparent' : 'bg-[#050608]'
+            } px-4 py-10 text-white sm:px-6 sm:py-16 md:px-8 lg:py-20`}
+        >
+            {!useSharedBackground && (
+                <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_6%,rgba(67,51,175,.08),transparent_24%),radial-gradient(circle_at_10%_42%,rgba(67,51,175,.07),transparent_30%),linear-gradient(180deg,#050608_0%,#07101a_48%,#050608_100%)]' />
+            )}
             <div className='relative mx-auto max-w-[1180px]'>
                 <div className='grid items-center gap-8 sm:gap-10 lg:grid-cols-[.82fr_1.18fr] lg:gap-10'>
                     <div>

@@ -324,27 +324,6 @@ const ContractsPage: NextPage = () => {
                         <h1 className='mb-1 text-[28px] font-semibold text-slate-900'>Contracts</h1>
                         <p className='text-sm text-gray-500'>Create contracts, send them for signing, and track their status in one place.</p>
                     </div>
-
-                    <div className='flex items-center gap-3'>
-                        {/* ✅ Invoices button */}
-                        {/* <button
-                            type='button'
-                            // eslint-disable-next-line
-                            onClick={() => void router.push('/admin/dashboard/invoicecontractdashboard/invoice')}
-                            className='inline-flex items-center gap-2 rounded-[13px] border border-gray-300 bg-white px-[16px] py-[10px] text-sm font-medium text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:bg-gray-50'
-                        >
-                            Invoices
-                        </button> */}
-
-                        <button
-                            type='button'
-                            onClick={handleOpenCreateModal}
-                            className='inline-flex items-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)] px-[18px] py-[10px] text-sm font-medium text-white shadow-[0_10px_25px_rgba(37,99,235,0.35)]'
-                        >
-                            <span className='text-[18px] leading-none'>＋</span>
-                            <span>Start a Contract</span>
-                        </button>
-                    </div>
                 </header>
 
                 {/* Overview stats */}
@@ -365,13 +344,21 @@ const ContractsPage: NextPage = () => {
 
                 {/* All Contracts Table */}
                 <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
                         <h2 className='text-lg font-semibold text-slate-900'>{dataScope === 'mine' ? 'My Contracts' : 'All Contracts'}</h2>
-                        <div className='flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center'>
+                        <div className='flex min-w-0 flex-wrap items-center gap-3'>
+                            <button
+                                type='button'
+                                onClick={handleOpenCreateModal}
+                                className='inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-[13px] bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)] px-[18px] text-sm font-medium text-white shadow-[0_10px_25px_rgba(37,99,235,0.35)] transition-shadow hover:shadow-[0_12px_28px_rgba(37,99,235,0.45)]'
+                            >
+                                <span className='text-[18px] leading-none'>＋</span>
+                                <span>Contract</span>
+                            </button>
                             <select
                                 value={contractFilter}
                                 onChange={(event) => setContractFilter(event.target.value as ContractFilter)}
-                                className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                                className='h-10 min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
                                 aria-label='Filter contracts by status'
                             >
                                 <option value='all'>All Contracts</option>
@@ -383,7 +370,7 @@ const ContractsPage: NextPage = () => {
                                 value={contractSearch}
                                 onChange={(event) => setContractSearch(event.target.value)}
                                 placeholder='Search contracts...'
-                                className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-64'
+                                className='h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:w-64'
                                 aria-label='Search contracts'
                             />
                         </div>
@@ -405,10 +392,10 @@ const ContractsPage: NextPage = () => {
 
                     {!isLoadingInvoices && filteredInvoices.length > 0 && (
                         <div className='mt-2 overflow-x-auto rounded-xl border border-gray-200'>
-                            <table className='min-w-[1120px] w-full border-collapse text-[13px]'>
+                            <table className='min-w-[1350px] w-full border-collapse text-[13px]'>
                                 <thead className='bg-gray-50'>
                                     <tr>
-                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Share Link', 'Status'].map(
+                                        {['Sr #', 'Contract Name', 'Email', 'Name', 'Business Name', 'Created At', 'PDF', 'Share Link', 'Status', 'Action'].map(
                                             (header) => (
                                                 <th
                                                     key={header}
@@ -483,6 +470,38 @@ const ContractsPage: NextPage = () => {
                                                     >
                                                         {contractIsUnsigned ? 'Not Signed' : contractIsSigned ? 'Signed' : 'Rejected'}
                                                     </span>
+                                                </td>
+                                                <td className='px-3 py-2.5 text-[13px]'>
+                                                    <div className='flex items-center gap-2 whitespace-nowrap'>
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => {
+                                                                // eslint-disable-next-line
+                                                                void router.push(
+                                                                    `/admin/dashboard/invoicecontractdashboard/subscription/create?contractId=${encodeURIComponent(
+                                                                        invoice.id
+                                                                    )}`
+                                                                );
+                                                            }}
+                                                            className='inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                                                        >
+                                                            <span aria-hidden='true'>+</span> Subscription
+                                                        </button>
+                                                        <button
+                                                            type='button'
+                                                            onClick={() => {
+                                                                // eslint-disable-next-line
+                                                                void router.push(
+                                                                    `/admin/dashboard/invoicecontractdashboard/invoice/create?contractId=${encodeURIComponent(
+                                                                        invoice.id
+                                                                    )}`
+                                                                );
+                                                            }}
+                                                            className='inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                                                        >
+                                                            <span aria-hidden='true'>+</span> Invoice
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );

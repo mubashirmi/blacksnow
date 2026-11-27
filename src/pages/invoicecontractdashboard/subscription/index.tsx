@@ -604,25 +604,14 @@ const InvoicesPage: NextPage = () => {
                         <p className='text-sm text-gray-500'>Manage all your subscriptions and signed contracts in one place.</p>
                     </div>
 
-                    <div className='flex flex-wrap items-center gap-3'>
-                        {/* <button
-                            type='button'
-                            // eslint-disable-next-line
-                            onClick={() => void router.push('/invoicecontractdashboard/contract')}
-                            className='inline-flex items-center gap-2 rounded-[13px] border border-gray-300 bg-white px-[16px] py-[10px] text-sm font-medium text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:bg-gray-50'
+                    {/* <button
+                        type='button'
+                        // eslint-disable-next-line
+                        onClick={() => void router.push('/invoicecontractdashboard/contract')}
+                        className='inline-flex items-center gap-2 rounded-[13px] border border-gray-300 bg-white px-[16px] py-[10px] text-sm font-medium text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)] hover:bg-gray-50'
                         >
-                            Contracts
-                        </button> */}
-
-                        <button
-                            type='button'
-                            onClick={handleCreateInvoice}
-                            className='inline-flex cursor-pointer items-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)] px-[18px] py-[10px] text-sm font-medium text-white shadow-[0_10px_25px_rgba(37,99,235,0.35)] transition-shadow hover:shadow-[0_12px_28px_rgba(37,99,235,0.45)]'
-                        >
-                            <span className='text-[18px] leading-none'>＋</span>
-                            <span>Create Subscription</span>
-                        </button>
-                    </div>
+                        Contracts
+                    </button> */}
                 </header>
 
                 {/* Overview stats */}
@@ -720,18 +709,28 @@ const InvoicesPage: NextPage = () => {
 
                 {/* All Subscriptions Table */}
                 <section className='rounded-[16px] border border-gray-200 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)]'>
-                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
                         <h2 className='text-lg font-semibold text-slate-900'>All Subscriptions</h2>
-                        <select
-                            value={paymentStatusFilter}
-                            onChange={(event) => setPaymentStatusFilter(event.target.value as PaymentStatusFilter)}
-                            className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
-                            aria-label='Filter subscriptions by payment status'
-                        >
-                            <option value='all'>All Subscriptions</option>
-                            <option value='paid'>Paid</option>
-                            <option value='unpaid'>Pending</option>
-                        </select>
+                        <div className='flex min-w-0 flex-wrap items-center gap-3'>
+                            <button
+                                type='button'
+                                onClick={handleCreateInvoice}
+                                className='inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-[13px] bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)] px-[18px] text-sm font-medium text-white shadow-[0_10px_25px_rgba(37,99,235,0.35)] transition-shadow hover:shadow-[0_12px_28px_rgba(37,99,235,0.45)]'
+                            >
+                                <span className='text-[18px] leading-none'>＋</span>
+                                <span>Subscription</span>
+                            </button>
+                            <select
+                                value={paymentStatusFilter}
+                                onChange={(event) => setPaymentStatusFilter(event.target.value as PaymentStatusFilter)}
+                                className='h-10 min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                                aria-label='Filter subscriptions by payment status'
+                            >
+                                <option value='all'>All Subscriptions</option>
+                                <option value='paid'>Paid</option>
+                                <option value='unpaid'>Pending</option>
+                            </select>
+                        </div>
                     </div>
 
                     {downloadError && (

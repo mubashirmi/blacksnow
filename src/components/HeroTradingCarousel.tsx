@@ -163,16 +163,17 @@ export default function HeroTradingCarousel(_props: HeroTradingCarouselProps) {
                 aria-label='Explore Black Snow trading tools'
                 className='relative w-full min-w-0 rounded-[20px] border border-[#4333AF] px-4 py-3.5 text-white sm:px-5 sm:py-4'
                 style={{
-                    // Keep the darker glass finish while allowing more of the hero image to show through.
+                    // Neutral dark glass: retain the mountain image, but avoid milky
+                    // white reflections that wash out text and purple headings.
                     background: [
-                        'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.045) 22%, transparent 50%)',
-                        'linear-gradient(125deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.018) 28%, transparent 48%, rgba(255,255,255,0.025) 100%)',
-                        'linear-gradient(180deg, rgba(5,7,10,0.62) 0%, rgba(8,10,15,0.48) 45%, rgba(4,6,9,0.64) 100%)',
+                        'radial-gradient(circle at 18% 0%, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.016) 30%, transparent 58%)',
+                        'linear-gradient(125deg, rgba(255,255,255,0.035) 0%, transparent 38%, rgba(110,97,180,0.025) 85%, transparent 100%)',
+                        'linear-gradient(180deg, rgba(7,9,15,0.83) 0%, rgba(9,11,18,0.78) 48%, rgba(5,7,12,0.86) 100%)',
                     ].join(', '),
-                    WebkitBackdropFilter: 'blur(5px) saturate(150%)',
-                    backdropFilter: 'blur(5px) saturate(150%)',
+                    WebkitBackdropFilter: 'blur(6px) saturate(120%)',
+                    backdropFilter: 'blur(6px) saturate(120%)',
                     boxShadow:
-                        '0 18px 48px rgba(0,0,0,0.52), 0 0 36px rgba(67,51,175,0.09), inset 0 1px 0 rgba(255,255,255,0.18), inset 1px 0 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(255,255,255,0.035)',
+                        '0 18px 48px rgba(0,0,0,0.48), 0 0 30px rgba(67,51,175,0.10), inset 0 1px 0 rgba(255,255,255,0.12), inset 1px 0 0 rgba(255,255,255,0.035), inset 0 -1px 0 rgba(255,255,255,0.025)',
                 }}
             >
                 <div aria-live='polite' aria-atomic='true' className='min-w-0'>
